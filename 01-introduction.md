@@ -4,25 +4,24 @@ Introduction
 Scope
 -----
 
-This document is a reference for the Slang programming language.
+This document is a specification for the Slang programming language.
 
 Slang is language primarily designed for use in *shader programming*: performance oriented GPU programming for real-time graphics.
 
 Conformance
 -----------
 
-This document is *not* intended to serve as a formal specification of Slang, but it *is* intended to document the language with a high level of rigor.
-As such, the text often makes statements *as if* it is a specification, and defines behaviors expected of a conforming implementation.
+This document aspires to specify the Slang language, and the behaviors expected of conforming implementations, with a high level of rigor.
 
-The Slang compiler *implementation* may deviate from the language as documented here, in a few key ways:
+The open-source Slang compiler *implementation* may deviate from the language as specified here, in a few key ways:
 
 * The implementation is necessarily imperfect, and can have bugs
 
-* The implementation may not fully support constructs documented here, or their capabilities may not be as complete as what is documented
+* The implementation may not fully support constructs specified here, or their capabilities may not be as complete as what is required by the specification
 
-* The implementation may support certain constructs that are experimental, deprecated, or are otherwise intentionally undocumented
+* The implementation may support certain constructs that are experimental, deprecated, or are otherwise intentionally unspecified (or even undocumented)
 
-Where possible, this document will call out known deviations between the language as defined here and the implementation in the compiler.
+Where possible, this document will call out known deviations between the language as specified, and the current implementation in the open-source Slang compiler.
 
 Document Conventions
 --------------------
@@ -55,9 +54,11 @@ The kinds of callouts used in this document, are:
 
 * **Legacy** callouts are described below.
 
-* **Limitation** callouts are used to provide non-normative discussion of how the Slang compiler implementation may deviate from the language as documented here.
+* **Limitation** callouts are used to provide non-normative discussion of how the Slang compiler implementation may deviate from the language as specified here.
 
 * **Note**s give non-normative information that may help readers to understand and apply the normative information in the document.
+
+* **Rationale** callouts provide non-normative explanations about *why* certain constructs, constraints, or rules are part of the language.
 
 * **Syntax** callouts are described below.
 
@@ -99,10 +100,10 @@ The normative reference for standard-library constructs *not* defined in this do
 
 > **Incomplete**: Need to turn that into a link.
 
-In cases where a language construct is documented in *both* this language reference and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either reference.
-In cases where the two references disagree, there is a correctness issue in one or the other.
+In cases where a language construct is described in *both* this specification and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either source.
+In cases where the two sources disagree, there is a correctness issue in one or the other.
 
 Normative References
 --------------------
 
-> **Incomplete**: This section should list any external documents/specifications/etc. that are necessary in order to correctly interpret the information in this reference.
+> **Incomplete**: This section should list any external documents/specifications/etc. that are necessary in order to correctly interpret the information in this specification.

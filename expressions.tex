@@ -1,13 +1,12 @@
 \Chapter{Expressions}{expr}
 
-\begin{verbatim}
-Expressions are terms that can be _evaluated_ to produce values.
+Expressions are terms that can be \SpecDef{evaluated} to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
 
 In general, the order of evaluation of a Slang expression proceeds from left to right.
 Where specific expressions do not follow this order of evaluation, it will be noted.
 
-Some expressions can yield _l-values_, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
+Some expressions can yield \SpecDef{l-values}, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
 \Section{Literal Expressions}{lit}
 
@@ -17,9 +16,11 @@ Literal expressions are never l-values.
 
 An integer literal expression consists of a single integer literal token:
 
-```hlsl
+\begin{codeblock}
 123
-```
+\end{codeblock}
+
+\begin{verbatim}
 
 An unsuffixed integer literal expression always has type `int`.
 
@@ -330,12 +331,14 @@ The conditonal operator, `?:`, is used to select between two expressions based o
 ```hlsl
 useNegative ? -1.0f : 1.0f
 ```
+\end{verbatim}
 
-The condition may be either a single value of type `bool`, or a vector of `bool`.
+The condition may be either a single value of type \code{bool}, or a vector of \code{bool}.
 When a vector of `bool` is used, the two values being selected between must be vectors, and selection is performed component-wise.
 
-> Note: Unlike C, C++, GLSL, and most other C-family languages, Slang currently follows the precedent of HLSL where `?:` does not short-circuit.
->
-> This decision may change (for the scalar case) in a future version of the language.
-> Programmer are encouraged to write code that does not depend on whether or not `?:` short-circuits.
-\end{verbatim}
+\begin{Note}
+Unlike C, C++, GLSL, and most other C-family languages, Slang currently follows the precedent of HLSL where `?:` does not short-circuit.
+
+This decision may change (for the scalar case) in a future version of the language.
+Programmer are encouraged to write code that does not depend on whether or not `?:` short-circuits.
+\end{Note}

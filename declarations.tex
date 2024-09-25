@@ -1,8 +1,87 @@
 \Chapter{Declarations}{decl}
 
+A \SpecDefine{declaration} is a unit of syntax that typically affects what names are visibile in a scope, and how those names are interpreted.
+In the abstract syntax, a source unit comprises a sequence of declarations.
 
+\begin{Syntax}
+    \SynDefine{SourceUnit} \\
+        ( \SynRef{ModuleDeclaration} \SynOr \SynRef{ImplementingDeclaration} ) \SynOpt \\
+        \SynRef{IncludeDeclaration} \SynStar \\
+        \SynRef{ImportDeclaration} \SynStar \\
+        ( \SynRef{Declaration} ) \SynStar
+\end{Syntax}
+
+A declaration may be preceded by zero or more modifiers.
+
+\begin{Syntax}
+    \SynDefine{Declaration} \\
+        \SynRef{Modifier} \SynRef{Declaration} \\
+    \SynOr \SynRef{VariableDeclaration} \\
+    \SynOr \SynRef{FunctionDeclaration} \\
+    \SynOr \SynRef{TypeDeclaration} \\
+\end{Syntax}
+
+A \SpecDefine{binding} is an association of an identifier with a specific entity, such as a declaration.
+A \SpecDefine{scope} is a set of bindings.
+
+\begin{Note}
+A scope may include more than one binding for the same identifier.
+\end{Note}
+
+An \SpecDefine{environment} is either the unique \SpecDefine{empty environment}, or it comprises a scope that is the \SpecDefine{local scope} of that environment, and a \SpecDefine{parent environment}.
+
+For each production in the abtract syntax, there is a \SpecDefine{input environment} in effect at the start of that production, and an \SpecDefine{output environment} in effect after that production.
+Each production determines the input environment used by its sub-terms.
+When the description of a production does not say otherwise:
+
+\begin{itemize}
+\item The input environment of a production's first sub-term is the input environment of that production.
+\item The input environment of each sub-term other than the first is the output environment of the preceding sub-term.
+\item The output environment of the entire production is the output environment of its last sub-term.
+\end{itemize}
+
+The output environment of a token is its input environment.
+The output environment of an empty production is its input environment.
+
+When we say that a declaration \SpecDefine{introduces} a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
 \Section{Variables}{var}
+
+\begin{Syntax}
+    \SynDefine{VariableDeclaration} \\
+        (\code{let} \SynOr \code{var}) \SynRef{Identifier}
+            \SynRef{TypeAscriptionClause}\SynOpt
+            \SynRef{InitialValueClause}\SynOpt \code{;}
+    
+    \SynDefine{TypeAscriptionClause}
+        \code{:} \SynRef{TypeExpression}
+    
+    \SynDefine{InitialValueClause}
+        \code{=} \SynRef{Expression}
+\end{Syntax}
+
+A \SpecDef{variable} is a storage location that can hold a value.
+Every variable has a type, and it can only hold values of that type.
+Every variable is either immutable or mutable.
+
+A \SpecDef{variable declaration} introduces a binding for the given \SynRef{Identifier}, to a variable.
+A variable declaration using the \kw{let} keyword binds an immutable variable.
+A variable declaration using the \kw{var} keyword binds a mutable variable.
+
+Every variable declaration has a type, and the variable it binds is of the same type.
+
+A variable declaration must have either a \SynRef{TypeAscription} or an \SynRef{InitialValue}; a variable declaration may have both.
+
+If a variable declaration has a type ascription, then let \MetaVar{T} be the type that results from evaluating the type expression of that type ascription in the input environment of the declaration.
+
+If a variable declaration has a \SynRef{TypeAscription} and no \SynRef{InitialValue}, then the type of that variable declaration is \MetaVar{T}.
+
+If a variable declaration has a \SynRef{TypeAscription} and a \SynRef{InitialValue}, then let \MetaVar(E) be the value that results from evaluating the expression of the initial value caluse
+
+If a variable declaration has a \SynRef{InitialValue} but not \SynRef{TypeAscription}, then the
+
+no \SynRef{TypeAscription}, then the type of the variable is determined by evaluating its type expression in the current environment.
+If a variable declaration with a \SynRef{TypeAscription} also has an \SynRef{InitialValue}, then 
 
 Variables are declared using the keywords `let` and `var`:
 

@@ -1,6 +1,6 @@
-Expressions
-===========
+\Chapter{Expressions}{expr}
 
+\begin{verbatim}
 Expressions are terms that can be _evaluated_ to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
 
@@ -9,12 +9,11 @@ Where specific expressions do not follow this order of evaluation, it will be no
 
 Some expressions can yield _l-values_, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
-Literal Expressions
--------------------
+\Section{Literal Expressions}{lit}
 
 Literal expressions are never l-values.
 
-### Integer Literal Expressions
+\SubSection{Integer Literal Expressions}{int}
 
 An integer literal expression consists of a single integer literal token:
 
@@ -24,7 +23,7 @@ An integer literal expression consists of a single integer literal token:
 
 An unsuffixed integer literal expression always has type `int`.
 
-### Floating-Point Literal Expressions
+\SubSection{Floating-Point Literal Expressions}{float}
 
 A floating-point literal expression consists of a single floating-point literal token:
 
@@ -34,11 +33,11 @@ A floating-point literal expression consists of a single floating-point literal 
 
 A unsuffixed floating-point literal expression always has type `float`.
 
-### Boolean Literal Expressions
+\SubSection{Boolean Literal Expressions}{bool}
 
 Boolean literal expressions use the keywords `true` and `false`.
 
-### String Literal Expressions
+\SubSection{String Literal Expressions}{string}
 
 A string literal expressions consists of one or more string literal tokens in a row:
 
@@ -46,8 +45,7 @@ A string literal expressions consists of one or more string literal tokens in a 
 "This" "is one" "string"
 ```
 
-Identifier Expression
----------------------
+\Section{Identifier Expression}{ident}
 
 An _identifier expression_ consists of a single identifier:
 
@@ -59,12 +57,12 @@ When evaluated, this expression looks up `someName` in the environment of the ex
 
 An identifier expression is an l-value if the declaration it refers to is mutable.
 
-### Overloading
+\SubSection{Overloading}{overload}
 
 It is possible for an identifier expression to be _overloaded_, such that it refers to one or more candidate declarations with the same name.
 If the expression appears in a context where the correct declaration to use can be disambiguated, then that declaration is used as the result of  the name expression; otherwise use of an overloaded name is an error at the use site.
 
-### Implicit Lookup
+\SubSection{Implicit Lookup}{lookup.implicit}
 
 It is possible for a name expression to refer to nested declarations in two ways:
 
@@ -72,8 +70,7 @@ It is possible for a name expression to refer to nested declarations in two ways
 
 * When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may refer to a field declared inside the `cbuffer` or `tbuffer`
 
-Member Expression
------------------
+\Section{Member Expression}{member}
 
 A _member expression_ consists of a base expression followed by a dot (`.`) and an identifier naming a member to be accessed:
 
@@ -86,11 +83,11 @@ Just as for an identifier expression, the result of a member expression may be o
 
 A member expression is an l-value if the base expression is an l-value and the member it refers to is mutable.
 
-### Implicit Dereference
+\SubSection{Implicit Dereference}{dereference.implicit}
 
 If the base expression of a member reference is a _pointer-like type_ such as `ConstantBuffer<T>`, then a member reference expression will implicitly dereference the base expression to refer to the pointed-to value (e.g., in the case of `ConstantBuffer<T>` this is the buffer contents of type `T`).
 
-### Vector Swizzles
+\SubSection{Vector Swizzles}{swizzle.vector}
 
 When the base expression of a member expression is of a vector type `vector<T,N>` then a member expression is a _vector swizzle expression_.
 The member name must conform to these constraints:
@@ -105,11 +102,11 @@ If the member name of a swizzle consists of `M` characters, then the result is a
 
 A vector swizzle expression is an l-value if the base expression was an l-value and the list of indices corresponding to the characeters of the member name contains no duplicates.
 
-### Matrix Swizzles
+\SubSection{Matrix Swizzles}{swizzle.matrix}
 
 > Note: The Slang implementation currently doesn't support matrix swizzles.
 
-### Static Member Expressions
+\SubSection{Static Member Expressions}{member.static}
 
 When the base expression of a member expression is a type instead of a value, the result is a _static member expression_.
 A static member expression can refer to a static field or static method of a structure type.
@@ -123,20 +120,17 @@ Color.Red
 Color::Red
 ```
 
-This Expression
----------------
+\Section{This Expression}{this}
 
 A _this expression_ consists of the keyword `this` and refers to the implicit instance of the enclosing type that is being operated on in instance methods, subscripts, and initializers.
 
 The type of `this` is `This`.
 
-Parenthesized Expression
-----------------------
+\Section{Parenthesized Expression}{paren}
 
 An expression wrapped in parentheses `()` is a _parenthesized expression_ and evaluates to the same value as the wrapped expression.
 
-Call Expression
----------------
+\Section{Call Expression}{call}
 
 A _call expression_ consists of a base expression and a list of argument expressions, separated by commas and enclosed in `()`:
 
@@ -154,7 +148,7 @@ myObject.myFunc( 1.0f )
 
 In this case the base expression of the member reference (e.g., `myObject` in this case) is used as the argument for the implicit `this` parameter of the callee.
 
-### Mutability
+\SubSection{Mutability}{mutable}
 
 If a `[mutating]` instance is being called, the argument for the implicit `this` parameter must be an l-value.
 
@@ -162,7 +156,7 @@ The argument expressions corresponding to any `out` or `in out` parameters of th
 
 A call expression is never an l-value.
 
-### Initializer Expressions
+\SubSection{Initializer Expressions}{init}
 
 When the base expression of a call is a type instead of a value, the expression is an initializer expression:
 
@@ -180,8 +174,7 @@ int(1.0f)
 (int) 1.0f
 ```
 
-Subscript Expression
---------------------
+\Section{Subscript Expression}{subscript}
 
 A _subscript expression_ consists of a base expression and a list of argument expressions, separated by commas and enclosed in `[]`:
 
@@ -196,8 +189,7 @@ A subscript expression is an l-value if the base expression is an l-value and if
 Subscripts may be formed on the built-in vector, matrix, and array types.
 
 
-Initializer List Expression
----------------------------
+\Section{Initializer List Expression}{init-list}
 
 An _initializer list expression_ comprises zero or more expressions, separated by commas, enclosed in `{}`:
 
@@ -209,8 +201,7 @@ An initialier list expression may only be used directly as the initial-value exp
 
 > Note: This section will need to be updated with the detailed rules for how expressions in the initializer list are used to initialize values of each kind of type.
 
-Cast Expression
----------------
+\Section{Cast Expression}{cast}
 
 A _cast expression_ attempt to coerce a single value (the base expression) to a desired type (the target type):
 
@@ -220,7 +211,7 @@ A _cast expression_ attempt to coerce a single value (the base expression) to a 
 
 A cast expression can perform both built-in type conversions and invoke any single-argument initializers of the target type.
 
-### Compatibility Feature
+\SubSection{Compatibility Feature}{compatiblity}
 
 As a compatiblity feature for older code, Slang supports using a cast where the base expression is an integer literal zero and the target type is a user-defined structure type:
 
@@ -234,8 +225,7 @@ The semantics of such a cast are equivalent to initialization from an empty init
 MyStruct s = {};
 ```
 
-Assignment Expression
----------------------
+\Section{Assignment Expression}{assign}
 
 An _assignment expression_ consists of a left-hand side expression, an equals sign (`=`), and a right-hand-side expressions:
 
@@ -250,10 +240,9 @@ The semantics of an assignment expression are to:
 * Store the value of the right-hand side to the l-value of the left-hand side
 * Yield the l-value of the left-hand-side
 
-Operator Expressions
---------------------
+\Section{Operator Expressions}{op}
 
-### Prefix Operator Expressions
+\SubSection{Prefix Operator Expressions}{prefix}
 
 The following prefix operators are supported:
 
@@ -276,7 +265,7 @@ The built-in prefix `++` and `--` operators require that their operand is an l-v
 * Write the new value to the l-value
 * Yield the new value
 
-### Postfix Operator Expressions
+\SubSection{Postfix Operator Expressions}{postfix}
 
 The following postfix operators are supported:
 
@@ -295,7 +284,7 @@ The built-in prefix `++` and `--` operators require that their operand is an l-v
 * Write the new value to the l-value
 * Yield the old value
 
-### Infix Operator Expressions
+\SubSection{Infix Operator Expressions}{infix}
 
 The follow infix binary operators are supported:
 
@@ -334,7 +323,7 @@ The follow infix binary operators are supported:
 
 With the exception of the assignment operator (`=`), an infix operator expression like `left + right` is equivalent to a call expression to a function of the matching name `operator+(left, right)`.
 
-### Conditional Expression
+\SubSection{Conditional Expression}{cond}
 
 The conditonal operator, `?:`, is used to select between two expressions based on the value of a condition:
 
@@ -349,3 +338,4 @@ When a vector of `bool` is used, the two values being selected between must be v
 >
 > This decision may change (for the scalar case) in a future version of the language.
 > Programmer are encouraged to write code that does not depend on whether or not `?:` short-circuits.
+\end{verbatim}

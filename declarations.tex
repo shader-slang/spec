@@ -1,8 +1,6 @@
-Declarations
-============
+\Chapter{Declarations}{decl}
 
-Variables
----------
+\Section{Variables}{var}
 
 Variables are declared using the keywords `let` and `var`:
 
@@ -31,11 +29,11 @@ A variable declared with `var` may be declared without an initial-value expressi
 var y : float;
 ```
 
-In this case the variable is _uninitialized_ at the point of declaration, and must be explicitly initialized by assigning to it.
+In this case the variable is  \emph{uninitialized} at the point of declaration, and must be explicitly initialized by assigning to it.
 Code that uses the value of an uninitialized variable may produce arbitrary results, or even exhibit undefined behavior depending on the type of the variable.
 Implementations *may* issue an error or warning for code that might make use of an uninitialized variable.
 
-### Traditional Syntax
+\SubSection{Traditional Syntax}{legacy}
 
 Variables may also be declared with traditional C-style syntax:
 
@@ -50,19 +48,19 @@ For traditional variable declarations a type must be specified.
 
 Traditional variable declarations are immutable if they are declared with the `const` modifier, and are otherwise mutable.
 
-### Variables at Global Scope
+\SubSubSection{Variables at Global Scope}{globalvar}
 
 Variables declared at global scope may be either a global constant, a static global variables, or a global shader parameters.
 
-#### Global Constants
+\SubSubSection{Global Constants}{global.const}
 
-A variable declared at global scope and marked with `static` and `const` is a _global constant_.
+A variable declared at global scope and marked with `static` and `const` is a \SpecDefine{global constant}.
 
 A global constant must have an initial-value expression, and that initial-value expression must be a compile-time constant expression.
 
-#### Static Global Variables
+\SubSubSection{Static Global Variables}{global.static}
 
-A variable declared at global scope and marked with `static` (but not with `const`) is a _static global variable_.
+A variable declared at global scope and marked with `static` (but not with `const`) is a \SpecDefine{static global variable}.
 
 A static global variable provides storage for each invocation executing an entry point.
 Assignments to a static global variable from one invocation do not affect the value seen by other invocations.
@@ -74,8 +72,9 @@ There is no guarantee that the initial-value expression for a static global vari
 
 > Note: the above rules mean that an implementation may perform dead code elimination on static global variables, and may choose between eager and lazy initialization of those variables at its discretion.
 
-#### Global Shader Parameters
+\SubSubSection{Global Shader Parameters}{global.param}
 
+\begin{verbatim}
 A variable declared at global scope and not marked with `static` (even if marked with `const`) is a _global shader parameter_.
 
 Global shader parameters are used to pass arguments from application code into invocations of an entry point.
@@ -87,16 +86,16 @@ A global shader parameter may include an initial-value epxression, but such an e
 
 > Note: Initial-value expressions on global shader parameters are only useful to set up "default values" that can be read via reflection information and used by application code.
 
-### Variables at Function Scope
+\SubSection{Variables at Function Scope}{func}
 
 Variables declared at _function scope_ (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
 
-#### Function-Scope Constants
+\SubSubSection{Function-Scope Constants}{const}
 
 A variable declared at function scope and marked with both `static` and `const` is a _function-scope constant_.
 Semantically, a function-scope constant behaves like a global constant except that is name is only visible in the local scope.
 
-#### Function-Scope Static Variables
+\SubSubSection{Function-Scope Static Variables}{static}
 
 A variable declared at function scope and marked with `static` (but not `const`) is a _function-scope static variable_.
 Semantically, a function-scope static variable behaves like a global static variable except that its name is only visible in the local scope.
@@ -104,14 +103,13 @@ Semantically, a function-scope static variable behaves like a global static vari
 The initial-value expression for a function-scope static variable may refer to non-static variables in the body of the function.
 In these cases initialization of the variable is guaranteed not to occur until at least the first time the function body is evaluated for a given invocation.
 
-#### Local Variables
+\SubSubSection{Local Variables}{local}
 
 A variable declared at function scope and not marked with `static` (even if marked with `const`) is a _local variable_.
 A local variable has unique storage for each _activation_ of a function by an invocation.
 When a function is called recursively, each call produces a distinct activation with its own copies of local variables.
 
-Functions
----------
+\Section{Functions}{func}
 
 Functions are declared using the `func` keyword:
 
@@ -119,8 +117,7 @@ Functions are declared using the `func` keyword:
 func add(x: int, y: float) -> float { return float(x) + y; }
 ```
 
-Parameters
-----------
+\Section{Parameters}{param}
 
 The parameters of the function are declared as `name: type` pairs.
 
@@ -175,7 +172,7 @@ func modify(x: in out int) { x++; }
 ```
 
 
-### Traditional Syntax
+\SubSection{Traditional Syntax}{legacy}
 
 Functions can also be declared with traditional C-style syntax:
 
@@ -189,14 +186,13 @@ void modify(in out int x) { x ++; }
 > because only the traditional syntax currently supports attaching semantics to
 > parameters.
 
-### Entry Points
+\SubSection{Entry Points}{entry}
 
 An _entry point_ is a function that will be used as the starting point of execution for one or more invocations of a shader.
 
 
 
-Structure Types
----------------
+\Section{Structure Types}{struct}
 
 Structure types are declared using the `struct` keyword:
 
@@ -214,7 +210,7 @@ struct Person
 
 The body of a structure type declaration may include variable, type, function, and initializer declarations.
 
-### Fields
+\SubSection{Fields}{field}
 
 Variable declarations in the body of a structure type declaration are also referred to as _fields_.
 
@@ -222,7 +218,7 @@ A field that is marked `static` is shared between all instances of the type, and
 
 A non-`static` field is also called an _instance field_.
 
-### Methods
+\SubSection{Methods}{method}
 
 Function declarations in the body of a structure type declaration are also referred to as _methods_.
 
@@ -236,7 +232,7 @@ The body of an instance method has access to an implicit `this` parameter which 
 By default the `this` parameter of an instance method acts as an immutable variable.
 An instance method with the `[mutating]` attribute receives a mutable `this` parameter, and can only be invoked on a mutable value of the structure type.
 
-### Inheritance
+\SubSection{Inheritance}{inherit}
 
 A structure type declaration may include an _inheritance clause_ that consists of a colon (`:`) followed by a comma-separated list of types that the structure type inherits from:
 
@@ -247,7 +243,7 @@ struct Person : IHasAge, IHasName
 
 When a structure type declares that it inherits from an interface, the programmer asserts that the structure type implements the required members of the interface.
 
-### Syntax Details
+\SubSection{Syntax Details}{syntax}
 
 A structure declaration does *not* need to be terminated with a semicolon:
 
@@ -280,8 +276,7 @@ If a structure type declaration will be used as part of a variable declaration, 
 The whole variable declaration must be terminated with a semicolon (`;`) as normal.
 
 
-Enumeration Types
------------------
+\Section{Enumeration Types}{enum}
 
 Enumeration type declarations are introduced with the `enum` keyword:
 
@@ -294,7 +289,7 @@ enum Color
 }
 ```
 
-### Cases
+\SubSection{Cases}{case}
 
 The body of an enumeration type declaration consists of a comma-separated list of case declarations.
 An optional trailing comma may terminate the lis of cases.
@@ -305,7 +300,7 @@ If any other case decalration elides an initial-value expresison, its tag value 
 
 An enumeration case is referred to as if it were a `static` member of the enumeration type (e.g., `Color.Red`).
 
-### Inheritance
+\SubSection{Inheritance}{inherit}
 
 An enumeration type declaration may include an inheritance clause:
 
@@ -322,7 +317,7 @@ If no explicit tag type is specified, the type `int` is used instead.
 
 > Note: The current Slang implementation has bugs that prevent explicit tag types from working correctly.
 
-### Conversions
+\SubSection{Conversions}{conv}
 
 A value of an enumeration type can be implicitly converted to a value of its tag type:
 
@@ -336,8 +331,7 @@ Values of the tag type can be explicitly converted to the enumeration type:
 Color red = Color(r);
 ```
 
-Type Aliases
-------------
+\Section{Type Aliases}{alias}
 
 A type alias is declared using the `typealias` keyword:
 
@@ -347,7 +341,7 @@ typealias Height  = int;
 
 A type alias defines a name that will be equivalent to the type to the right of `=`.
 
-### Traditional Syntax
+\SubSection{Traditional Syntax}{legacy}
 
 Type aliases can also be declared with traditional C-style syntax:
 
@@ -355,8 +349,7 @@ Type aliases can also be declared with traditional C-style syntax:
 typedef int Height;
 ```
 
-Constant Buffers and Texture Buffers
-------------------------------------
+\Section{Constant Buffers and Texture Buffers}{buffer}
 
 As a compatiblity feature, the `cbuffer` and `tbuffer` keywords can be used to introduce variable declarations.
 
@@ -385,8 +378,7 @@ In this expansion, `AnonType` and `anonVar` are fresh names generated for the ex
 
 The keyword `tbuffer` uses an equivalent expansion, but with `TextureBuffer<T>` used instead of `ConstantBuffer<T>`.
 
-Interfaces
-----------
+\Section{Interfaces}{interface}
 
 An interface is declared using the `interface` keyword:
 
@@ -421,8 +413,7 @@ The inheritance clause for an interface must only list other interfaces.
 If an interface `I` lists another interface `J` in its inheritance clause, then `J` is a _base interface_ of `I`.
 In order to conform to `I`, a type must also conform to `J`.
 
-Associated Types
-----------------
+\Section{Associated Types}{assoc}
 
 An associated type declaration is introduced with `associatedtype`:
 
@@ -459,8 +450,7 @@ An associated type declaration may have an inheritance clause.
 The inheritance clause of an associated type may only list interfaces; these are the _required interfaces_ for the associated type.
 A concrete type that is used to satisfy an associated type requirement must conform to all of the required interaces of the associated type.
 
-Initializers
-------------
+\Section{Initializers}{init}
 
 An initializer declaration is introduced with the `__init` keyword:
 
@@ -501,8 +491,7 @@ The `this` variable of an initializer is always mutable; an initializer need not
 
 > Note: Slang does not provide any equivalent to C++ _destructors_ which run automatically when an instance goes out of scope.
 
-Subscripts
-----------
+\Section{Subscripts}{subscript}
 
 A subscript declaration is introduced with the `__subscript` keyword:
 
@@ -539,8 +528,7 @@ The body of a getter is a code block like a function body, and must return the a
 The body of a getter can access the parameters of the enclosing subscript, as a well as an implicit `this` parameter of the type that encloses the accessor.
 The `this` parameter of a getter is immutable; `[mutating]` getters are not currently supported.
 
-Extensions
-----------
+\Section{Extensions}{ext}
 
 An extension declaration is introduced with the `extension` keyword:
 
@@ -603,8 +591,7 @@ The runtime behavior of programs that include overlapping retroactive conformanc
 
 Currently, extension declarations can only apply to structure types; extensions cannot apply to enumeration types or interfaces.
 
-Generics
---------
+\Section{Generics}{generic}
 
 Many kinds of declarations can be made _generic_: structure types, interfaces, extensions, functions, initializers, and subscripts.
 
@@ -617,7 +604,7 @@ T myFunction<T>(T left, T right, bool condition)
 }
 ```
 
-### Generic Parameters
+\SubSection{Generic Parameters}{param}
 
 A generic parameter list can include one or more parameters separated by commas.
 The allowed forms for generic parameters are:
@@ -639,7 +626,7 @@ T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
 For generic type parameters, the default value is a type to use if no argument is specified.
 For generic value parameters, the default value is a value of the same type to use if no argument is specified.
 
-### Explicit Specialization
+\SubSection{Explicit Specialization}{specialize}
 
 A generic is _specialized_ by applying it to _generic arguments_ listed inside angle brackets `<>`:
 
@@ -658,7 +645,7 @@ An explicitly specialized function, type, etc. may be used wherever a non-generi
 int i = anotherFunction<int,3>( int3(99) );
 ```
 
-### Implicit Specialization
+\SubSection{Implicit Specialization}{specialization.implicit}
 
 If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts _implicit specialization_.
 Implicit specialization infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.
@@ -674,7 +661,7 @@ The compiler will infer the generic arguments `<int, 3>` from the way that `anot
 > Note: Inference for generic arguments currently only takes the types of value arguments into account.
 > The expected result type does not currently affect inference.
 
-### Syntax Details
+\SubSection{Syntax Details}{syntax}
 
 The following examples show how generic declarations of different kinds are written:
 
@@ -697,3 +684,5 @@ interface IGenericInterface<T> : IBase<T>
 ```
 
 > Note: Currently there is no user-exposed syntax for writing a generic extension.
+
+\end{verbatim}

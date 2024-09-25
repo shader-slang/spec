@@ -1,36 +1,32 @@
-Introduction
-============
+\Chapter{Introduction}{intro}
 
-Scope
------
+\Section{Scope}{scope}
 
 This document is a specification for the Slang programming language.
 
 Slang is language primarily designed for use in *shader programming*: performance oriented GPU programming for real-time graphics.
 
-Conformance
------------
+\Section{Conformance}{conformance}
 
 This document aspires to specify the Slang language, and the behaviors expected of conforming implementations, with a high level of rigor.
 
 The open-source Slang compiler *implementation* may deviate from the language as specified here, in a few key ways:
 
-* The implementation is necessarily imperfect, and can have bugs
-
-* The implementation may not fully support constructs specified here, or their capabilities may not be as complete as what is required by the specification
-
-* The implementation may support certain constructs that are experimental, deprecated, or are otherwise intentionally unspecified (or even undocumented)
+\begin{itemize}
+    \item{The implementation is necessarily imperfect, and can have bugs}
+    \item{The implementation may not fully support constructs specified here, or their capabilities may not be as complete as what is required by the specification}
+    \item{The implementation may support certain constructs that are experimental, deprecated, or are otherwise intentionally unspecified (or even undocumented)}
+\end{itemize}
 
 Where possible, this document will call out known deviations between the language as specified, and the current implementation in the open-source Slang compiler.
 
-Document Conventions
---------------------
+\Section{Document Conventions}{conventions}
 
 The key words **must**, **must not**, **required**, **shall**, **shall not**, **should**, **should not**, **recommended**, **may**, and **optional** in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
 The word "descriptive" in this document is to be interpreted as synonymous with "non-normative."
 
-### Typographical Conventions
+\SubSection{Typographical Conventions}{typographical}
 
 This document makes use of the following conventions to improve readability:
 
@@ -40,11 +36,13 @@ This document makes use of the following conventions to improve readability:
 
 * References to language keywords are in bold. For example: **`if`**.
 
-### Callouts
+\SubSection{Callouts}{callouts}
 
 This document uses a few kinds of *callouts*, which start bold word indicating the kind of callout. For example, the following is a note:
 
-> **Note**: Notes are rendered like this.
+\begin{Note}
+Notes are rendered like this.
+\end{Note}
 
 The kinds of callouts used in this document, are:
 
@@ -64,14 +62,14 @@ The kinds of callouts used in this document, are:
 
 * **Warning**s give non-normative information about language rules or programming practices that may lead to surprising or unwanted behavior.
 
-### Legacy Features
+\SubSection{Legacy Features}{legacy}
 
 Some features of the Slang language are considered *legacy* features.
 The language supports these constructs, syntax, etc. in order to facilitate compatibility with existing code in other GPU languages, such as HLSL.
 
 **Legacy** callouts are used for the description of legacy features. These callouts are normative.
 
-### Grammar Productions
+\SubSection{Grammar Productions}{grammar}
 
 The syntax and lexical structure of the language is described **Syntax** callouts using a notation similar to EBNF.
 
@@ -89,8 +87,7 @@ The syntax and lexical structure of the language is described **Syntax** callout
 
 > **Incomplete**: Also need conventions for how code points are named in productions in the lexical structure.
 
-The Slang Standard Library
---------------------------
+\Section{The Slang Standard Library}{stdlib}
 
 Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the *standard library* for Slang.
 This document may, of neccessity, refer to constructs from the Slang standard library (e.g., the `Texture2D` type) that are not defined herein.
@@ -103,7 +100,6 @@ The normative reference for standard-library constructs *not* defined in this do
 In cases where a language construct is described in *both* this specification and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either source.
 In cases where the two sources disagree, there is a correctness issue in one or the other.
 
-Normative References
---------------------
+\Section{Normative References}{references}
 
 > **Incomplete**: This section should list any external documents/specifications/etc. that are necessary in order to correctly interpret the information in this specification.

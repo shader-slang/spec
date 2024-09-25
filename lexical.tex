@@ -1,13 +1,11 @@
-Lexical Structure
-=================
+\Chapter{Lexical Structure}{lex}
 
 This chapter describes how a source unit is decomposed into a sequence of tokens.
 
-Source Units
-------------
+\Section{Source Units}{source-unit}
 
-A _source unit_ comprises a sequence of zero or more characters.
-For the purposes of this document, a _character_ is defined as a Unicode scalar value.
+A \SpecDefine{source unit} comprises a sequence of zero or more characters.
+For the purposes of this document, a \SpecDefine{character} is defined as a Unicode scalar value.
 
 > **Note**: A Unicode scalar value is a Unicode code point that is not a surrogate code point.
 
@@ -15,17 +13,15 @@ For the purposes of this document, a _character_ is defined as a Unicode scalar 
 
 Implementations *may* accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
-Encoding
---------
+\Section{Encoding}{encoding}
 
 Implementations *must* support source units encoded using UTF-8, if they support any encoding of source units as byte sequences.
 Implementations *should* default to the UTF-8 encoding for all text input/output.
 Implementations *may* support additional implementation-specified encodings.
 
-Phases
-------
+\Section{Phases}{phases}
 
-Lexical processing of a source unit proceeds _as if_ the following steps are executed in order:
+Lexical processing of a source unit proceeds \emph{as if} the following steps are executed in order:
 
 1. Line numbering (for subsequent diagnostic messages) is noted based on the locations of line breaks
 
@@ -33,43 +29,41 @@ Lexical processing of a source unit proceeds _as if_ the following steps are exe
 
 3. Each comment is replaced with a single space (U+0020)
 
-4. The source unit is _lexed_ into a sequence of tokens according to the lexical grammar in this chapter
+4. The source unit is \emph{lexed} into a sequence of tokens according to the lexical grammar in this chapter
 
-5. The lexed sequence of tokens is _preprocessed_ to produce a new sequence of tokens (Chapter 3)
+5. The lexed sequence of tokens is \emph{preprocessed} to produce a new sequence of tokens (Chapter 3)
 
 The final token sequence produced by this process is used as input to subsequent phases of compilation.
 
-Whitespace
-----------
+\Section{Whitespace}{space}
 
-_Whitespace_ consists of horizontal whitespace and line breaks.
+\SpecDefine{Whitespace} consists of horizontal whitespace and line breaks.
 
-_Horizontal whitespace_ consists of space (U+0020) and horizontal tab (U+0009).
+\SpecDefine{Horizontal whitespace} consists of space (U+0020) and horizontal tab (U+0009).
 
-### Line Breaks
+\SubSection{Line Breaks}{line}
 
-A _line break_ consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
+A \SpecDefine{line break} consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
 
 > **Legacy**:
 >
-> An _escaped line break_ is a backslack (`\`, U+005C) follow immediately by a line break.
+> An \SpecDefine{escaped line break} is a backslash (\lstinline{\}, U+005C) follow immediately by a line break.
 >
 > Before subsequent processing described in this chapter, all escaped line breaks are removed from a source unit.
 > If new escaped line breaks are introduced by this step, they are not removed.
 
-A source unit is split into _lines_ separated by line breaks.
+A source unit is split into \SpecDefine{line}s separated by line breaks.
 
 > **Note**: Line breaks are used as line separators rather than terminators; it is not necessary for a source unit to end with a line break.
 
-Comments
---------
+\Section{Comments}{comment}
 
-A _comment_ is either a line comment or a block comment.
+A \SpecDefine{comment} is either a line comment or a block comment.
 
-A _line comment_ comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a line break.
+A \SpecDefine{line comment} comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a line break.
 A line comment extends up to, but does not include, a subsequent line break or the end of the source unit.
 
-A _block comment_ begins with a forward slash (`/`, U+002F) followed by an asterisk (`*`, U+0052). 
+A \SpecDefine{block comment} begins with a forward slash (`/`, U+002F) followed by an asterisk (`*`, U+0052). 
 A block comment is terminated by the next instance of an asterisk followed by a forward slash (`*/`).
 A block comment contains all characters between where it begins and where it terminates, including any line breaks.
 Block comments do not nest.
@@ -82,30 +76,31 @@ It is an error if a block comment that begins in a source unit is not terminated
 > /* a block comment */
 > ```
 
-Identifiers
------------
+\Section{Identifiers}{ident}
 
-An _identifier_ begins with an uppercase or lowercase ASCII letter (`A` through `Z`, `a` through `z`), or an underscore (`_`).
+An \SpecDefine{identifier} begins with an uppercase or lowercase ASCII letter (`A` through `Z`, `a` through `z`), or an underscore (\lstinline{_}).
 After the first character, ASCII digits (`0` through `9`) may also be used in an identifier.
 
+\begin{verbatim}
 > **Syntax**:
 >
 > *Identifer* ::= *IdentifierStart* *IdentiferContinue* *
 >
 > *IdentifierStart* ::= `A`-`Z` | `a` - `z` | `_`
-> *IdentifierContinue* ::= *IdentifierStart* | `0`-`9`
+> *IdentifierContinue* ::= *IdentifierStart* | `0`-`9`        
+\end{verbatim}
 
-The identifier consistent of a single underscore (`_`) is reserved by the language and must not be used by programs as a name in a declaration or binding.
+The identifier consistent of a single underscores (\lstinline|$_$|) is reserved by the language and must not be used by programs as a name in a declaration or binding.
 
-> **Note**:
->
-> There are no other fixed keywords or reserved words recognized by the lexical grammar.
+\begin{Note}
+There are no other fixed keywords or reserved words recognized by the lexical grammar.
+\end{Note}
 
-Literals
---------
+\Section{Literals}{lit}
 
-### Numeric Literals
+\SubSection{Numeric Literals}{numeric}
 
+\begin{verbatim}
 A _numeric literal_ is either an integer literal or a floating-point literal.
 
 A _radix specifier_ is one of:
@@ -135,7 +130,7 @@ A _numeric literal suffix_ consists of any sequence of characters that would be 
 >
 > A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
 
-#### Integer Literals
+\SubSubSection{Integer Literals}{int}
 
 An _integer literal_ consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
 
@@ -145,7 +140,7 @@ The suffix on an integer literal may be used to indicate the desired type of the
 * An `l` or `ll` suffix indicates the `Int64` type
 * A `ul` or `ull` suffix indicates the `UInt64` type
 
-#### Floating-Point Literals
+\SubSubSection{Floating-Point Literals}{float}
 
 A _floating-point literal_ consists of either
 
@@ -157,22 +152,21 @@ A floating-point literal may only use dexicmal or hexadecimal radix.
 
 The _exponent_ of a floating-pointer literal consists of either `e` or `E`, followed by an optional _sign_ of `+` or `-`, followed by decimal digits.
 
-### Text Literals
+\SubSection{Text Literals}{text}
 
 > **Incomplete**: Need to document supported escape sequences.
 
-#### String Literals
+\SubSubSection{String Literals}{string}
 
 A _string literal_ consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
 
-#### Character Literals
+\SubSubSection{Character Literals}{char}
 
 A _character literal_ consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
 
 The sequence of characters within a character literal must represent a single character.
 
-Operators and Punctuation
--------------------------
+\Section{Operators and Punctuation}{punctuation}
 
 The following table defines tokens that are used as operators and punctuation in the syntax.
 When a given sequence of characters could be interpreted as starting with more than one of the following tokens, the longest matching token is used.
@@ -228,3 +222,5 @@ The name or names given to tokens by this table may be used in the rest of this 
 | `...` | ellipsis |
 | `::` | double colon, scope operator |
 | `->` | arrow |
+
+\end{verbatim}

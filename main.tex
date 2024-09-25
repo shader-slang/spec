@@ -1,0 +1,33 @@
+\documentclass[letter]{book}
+
+\usepackage[english]{babel}
+\usepackage{colortbl}
+\usepackage[utf8]{inputenc}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amsmath}
+
+\input{utils}
+
+\title{Slang Language Specification}
+\author{The Slang Project Team}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\tableofcontents
+\mainmatter
+
+\input{introduction}
+\input{preprocessor}
+\input{lexical}
+\input{modules}
+\input{declarations}
+\input{types}
+\input{expressions}
+\input{statements}
+\input{attributes}
+
+\end{document}

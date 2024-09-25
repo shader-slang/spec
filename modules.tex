@@ -1,20 +1,19 @@
-Modules
-=======
+\Chapter{Modules}{module}
 
-A _module_ is a unit of encapsulation for declarations.
+A \SpecDefine{module} is a unit of encapsulation for declarations.
 
-Primary Source Unit
--------------------
+\Section{Primary Source Unit}{source.primary}
 
 One or more source units may be compiled together to form a module.
-Compilation of a module begins with a single source unit that is the _primary_ source unit of the module.
+Compilation of a module begins with a single source unit that is the \SpecDefine{primary source unit} of the module.
 An implementation *should* use the primary source unit as a means to identify a module when resolving references from one module to another.
 
-A primary source unit may start with a **`module`** declaration, which specifies the name of the module.
+A primary source unit may start with a \kw{module} declaration, which specifies the name of the module.
 
-> **Syntax**:
->
-> _ModuleDeclaration_ : `module` _Identifier_ `;`
+\begin{Syntax}
+\SynDefine{ModuleDeclaration}
+    \code{module} \SynRef{Identifier} \code{;}
+\end{Syntax}
 
 If a primary source unit does not start with a **`module`** declaration, the module comprises only a single source unit, and the name of the module must be determined by some implementation-specified method.
 A primary source unit without a **`module`** declaration must not contain any **`include`** declarations.
@@ -22,47 +21,49 @@ A primary source unit without a **`module`** declaration must not contain any **
 > **Note**: An implementation might derive a default module name from a file name/path, command-line arguments, build configuration files, etc.
 
 > **Note**: A module might be defined in a single source unit, but have code spread across multiple files.
-> For example, `#include` directives might be used so that the content of a single source unit comes from multiple files.
+> For example, \code{#include} directives might be used so that the content of a single source unit comes from multiple files.
 
 A **`module`** declaration must always be the first declaration in its source unit.
 A **`module`** declaration must not appear in any source unit that is not a primary source unit.
 
-Seconary Source Units
---------------------
+\Section{Seconary Source Units}{source.secondary}
 
-Any source units in a module other than the primary source unit are _secondary_ source units.
+Any source units in a module other than the primary source unit are \SpecDefine{secondary source units}.
 
-### Include Declarations
+\SubSection{Include Declarations}{include}
 
 Secondary source units are included into a module via **`include`** declarations.
 
-> **Syntax**:
->
-> _IncludeDeclaration_ :
->     `include` _Identifier_ `;`
->   | `include` _StringLiteral_ `;`
+\begin{Syntax}
+    \SynDefine{IncludeDeclaration}
+        \code{include} \SynRef{Identifier} \code{;}
+    \SynOr  \code{include} \SynRef{StringLiteral} \code{;}
+\end{Syntax}
 
 An implementation must use the name (identifier or string) given in an include declaration to identify a source unit via implementation-specified means.
 It is an error if the name given in a source unit matching the given name cannot be identified.
 
-> **Note**: Include declarations should not be confused with preprocessor `#include` directives.
->
-> Each source unit in a module is preprocessed independently, and the preprocessor state at the point where an **`include`** declaration appears does not have any impact on how the source unit identified by that include declaration will be preprocessed.
+\begin{Note}
+Include declarations should not be confused with preprocessor \code{#include} directives.
+
+Each source unit in a module is preprocessed independently, and the preprocessor state at the point where an \code{include} declaration appears does not have any impact on how the source unit identified by that include declaration will be preprocessed.
+\end{Note}
 
 A module comprises the transitive closure of source units referred to via **`include`** declarations.
 An implementation must use an implementation-specified means to determine if multiple **`include`** declarations refer to the same source unit or not.
 
 > **Note**: Circular, and even self-referential, **`include`** declarations are allowed.
 
-### Implementing Declarations
+\SubSection{Implementing Declarations}{implementing}
 
 Secondary source units must start with an **`implementing`** declaration, naming the module that the secondary source unit is part of.
 
+\begin{verbatim}
 > **Syntax**:
 >
 > _ImplementingDeclaration_ :
 >     `implementing` _Identifier_ `;`
-
+\end{verbatim}
 
 > **Note**: It is an error if the name on an **`implementing`** declaration in a secondary source unit does not match the name on the **`module`** declaration of the corresponding primary source unit.
 
@@ -72,16 +73,17 @@ An **`implementing`** declaration must always be the first declaration in its so
 An **`implementing`** declaration must not appear in any source unit that is not a secondary source unit.
 
 
-Import Declarations
--------------------
+\Section{Import Declarations}{import}
 
 Modules may depend on one another via **`import`** declarations.
 
+\begin{verbatim}
 > **Syntax**:
 >
 > _ImportDeclaration_ :
 >     `import` _Identifier_ (`.` _Identifier_)* `;`
 >   | `import` _StringLiteral_ `;`
+\end{verbatim}
 
 An **`import`** declaration names a module, and makes the public declarations in the named module visible to the current source unit.
 
@@ -97,7 +99,7 @@ If an implementation diagnoses erros when compiling a soure unit named via an **
 >
 > * Replacing any dot (`.`) separators in a compound name with path separators (e.g., `/`)
 >
-> * Replacing any underscores (`_`) in the name with hyphens (`-`)
+> * Replacing any underscores (\Char{_}) in the name with hyphens (\Char{-})
 >
 > * Appending the extension `.slang`
 >

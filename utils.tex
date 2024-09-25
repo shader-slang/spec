@@ -1,0 +1,125 @@
+% utils.tex
+%
+% This file defines all the utility commands that are needed to prepare the rest of the document.
+
+
+% \DefineVariable : a helper command for defining a getter and setter pair.
+%
+% Doing `\DefineVariable{Thing}` will allow you to use `\SetThing{...}` to
+% set a variable and `\Thing` to access its current value.
+%
+%\makeatletter
+%\newcommand*\DefineVariable[1]{\@namedef{Set#1}##1{\global\@namedef{#1}{##1}}}
+%\makeatother
+%
+%\DefineVariable{ChapterLabel}
+%\DefineVariable{SectionLabel}
+%\DefineVariable{SubSectionLabel}
+%
+%\newcommand*{ChapterPath}{\ChapterLabel}
+%\newcommand*{SectionPath}{\ChapterPath.\SectionLabel}
+%\newcommand*{SubSectionPath}{\SectionPath.\SubSectionLabel}
+%
+%\setcounter{secnumdepth}{3}
+%
+%\newcommand*{\Chapter}[2]{\SetChapterLabel{#2}\chapter[#1\hfill[\ChapterPath]]\label{\ChapterPath}}
+%\newcommand*{\Section}[2]{\SetSectionLabel{#2}\section[#1\hfill[\SectionPath]]\label{\SectionPath}}
+%\newcommand*{\SubSection}[2]{\SetSubSectionLabel{#2}\subsection[#1\hfill[\SubSectionPath]]\label{\SubSectionPath}}
+%
+\newenvironment{Callout}[2]
+    {\begin{center}
+    \begin{tabular}{p{0.9\textwidth}}
+    \cellcolor{#2}\textbf{#1}:
+    }
+    {
+    \\\\
+    \end{tabular}
+    \end{center}
+    }
+
+\newcommand{\DefineCallout}[3]{\newenvironment{#1}{\begin{Callout}{#2}{#3}}{\end{Callout}}}
+
+\definecolor{NoteColor}{gray}{0.85}
+\definecolor{IncompleteColor}{gray}{0.85}
+\definecolor{SyntaxColor}{gray}{0.85}
+
+\DefineCallout{Note}{Note}{NoteColor}
+\DefineCallout{Incomplete}{Incomplete}{IncompleteColor}
+\DefineCallout{Syntax}{Syntax}{SyntaxColor}
+
+
+
+%
+%\definecolor{ListingKeywordColor}{gray}{0.5}
+%\definecolor{ListingTypeColor}{gray}{0.5}
+%
+%\lstdefinelanguage{slang}{
+%    classoffset=0,morekeywords={class,func,let,struct},\keywordstyle=\color{ListingKeywordColor},
+%    classoffset=1,morekeywords={void,int,float,bool},\keywordstyle=\color{ListingTypeColor},
+%    classoffset=0,
+%    morecomment=[l]{//},
+%    morecomment=[s]{/*}{*/},
+%    morestring=[b]",
+%}
+%
+%\lstnew
+
+\newcommand*{\Chapter}[2]{\chapter{#1}}
+\newcommand*{\Section}[2]{\section{#1}}
+\newcommand*{\SubSection}[2]{\subsection{#1}}
+\newcommand*{\SubSubSection}[2]{\subsection{#1}}
+
+
+
+\definecolor{frequency_color}{RGB}{0,176,80}
+\definecolor{keyword_color}{RGB}{0,32,96}
+\definecolor{comment_color}{RGB}{192,0,0}
+\definecolor{type_color}{RGB}{0,112,192}
+\definecolor{keyword_arg_color}{RGB}{144,155,170}
+
+\lstdefinestyle{SlangCodeStyle}{
+    basicstyle=\mdseries\ttfamily,
+    classoffset=0,
+    morekeywords={record,concrete,pass,override,virtual,input,abstract,void,mixin,primary,struct,implicit,return,where,shader,class,extends,output,true,false,extend,space,type},
+    keywordstyle=\color{keyword_color}\bfseries\ttfamily,
+    classoffset=1,
+    morekeywords={@Constant,@Uniform,@Vertex,@RasterVertex,@Instance,@Fragment,@Pixel,@E,@Patch,@ControlPoint,@ShadedVertex,@AssembledVertex,@RasterVertex,@DomainVertex,@InputControlPoint,@OutputControlPoint,@InputPatch,@OutputPatch,@Sample,@Element,@CoarseVertex,@FineVertex,@Light,@R,@GeometryOutput},
+    keywordstyle=\color{frequency_color}\ttfamily,
+    classoffset=2,
+    morekeywords={Constant,Uniform,Vertex,RasterVertex,Fragment,Pixel,float,int,float4,float3,float2,float4x4,
+        VertexBuffer,SimpleTransform,D3D9DrawPass,D3D11DrawPass,ShadedVertex,AssembledVertex,E,Array,Patch,
+        ControlPoint,D3D11NullTessellator,D3D11NullGeometryShader,VertexColors,SimpleTransformAndVertexColors,
+        DomainVertex,InputControlPoint,OutputControlPoint,InputPatch,OutputPatch,ExtCoarseVertex,
+        D3D11TessellatorPassThrough,D3D11GeometryShaderPassThrough,Displacement,OutputStream,T,U,
+        ID3D11RenderTargetView,Desc,Linear,SimpleTessellation,PointSprites,
+        Color,CoarseVertex,FineVertex,RasterVertex,Simple,VertexStream,
+        Base,SkeletalAnimation,MorphTargetAnimation,CubicGregory,CubicGregoryTris,SurfaceAttributes,PackGBuffer,UnpackGBuffer,GenerateSurfaceAttributes,Light,
+CubicGregoryQuads,Tris,Quads,DisplacementMapping,RenderToCubeMap,PointSprites,Diffuse,Texturing,
+        Phong,EnvMap,PointLight,SpotLight,Transform,Displace,Texture,PNuv,Puv,Texture2D,SamplerState,uint,Composed,Fetch,DirectionalLight,
+        PhongMaterial,EnvMapMaterial,NormalMaterial,D3D11NullTessellation,D3D11Tessellation,D3D11GeometryShader,D3D11TriTessellation,D3D11QuadTessellation,Example,Shade,Point,Normal,Derived,Float,vector,R,Graph,Node,Edge,ColorGraph,WeightedGraph,WeightedColorGraph,A,B,D,VertexTrait_Base,VertexTrait_Derived,Derived_Final,Vector,Transform,Transformation,ColorMixin,Tessellate,float3x3},
+    keywordstyle=\color{type_color}\ttfamily,
+    classoffset=0,
+    moredelim=[is][\color{keyword_arg_color}\ttfamily]{|}{|},
+    moredelim=[is][\color{red}\ttfamily]{^}{^},
+    morecomment=[l]//,
+    commentstyle=\color{comment_color},
+    tabsize=2,
+    mathescape=true}
+
+\lstnewenvironment{codeblock}[1][]
+    {\lstset{
+        style=SlangCodeStyle,
+        basicstyle=\mdseries\ttfamily\small
+        #1}}
+    {}
+
+\newcommand{\code}[1]{\text{\lstinline[style=SlangCodeStyle]{#1}}}
+\newcommand{\kw}[1]{\text{\texttt{\textbf{\textcolor{keyword_color}{#1}}}}}
+
+\newcommand{\SpecDefine}[1]{\text{\emph{#1}}}
+
+\newcommand{\SynDefine}[1]{\text{\emph{#1} ::=}}
+\newcommand{\SynRef}[1]{\text{\emph{#1}}}
+\newcommand{\SynOr}{\text{ | }}
+
+\newcommand{\Char}[1]{\code{#1}}

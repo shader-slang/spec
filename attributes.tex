@@ -1,9 +1,12 @@
-Attributes
-==========
+\Chapter{Attributes}{attributes}
 
 > Note: This section is not yet complete.
 
-## [[vk::spirv_instruction]]
+\Section{ SPIR-V Instruction }{spirv.inst}
+
+\begin{codeblock}
+[[vk::spirv_instruction]]
+\end{codeblock}
 
 ** SPIR-V only **
 
@@ -13,7 +16,7 @@ The attibute allows access to SPIR-V intrinsics, by supplying a function declara
 
 In the example below the add function, uses the mechanism to directly use the SPIR-V integer add 'op' which is 128 in this case.
 
-```HLSL
+\begin{codeblock}
 // 128 is OpIAdd in SPIR-V
 [[vk::spirv_instruction(128)]]
 uint add(uint a, uint b);
@@ -26,5 +29,5 @@ void computeMain(uint3 dispatchThreadID : SV_DispatchThreadID)
     uint threadId = dispatchThreadID.x;
     resultBuffer[threadId] = add(threadId, threadId);
 }
-```
+\end{codeblock}
 

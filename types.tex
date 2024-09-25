@@ -1,30 +1,28 @@
-Types
-=====
+Chapter{types}{type}
 
 This section defines the kinds of types supported by Slang.
 
+\begin{verbatim}
 Types in Slang do not necessarily prescribe a single _layout_ in memory.
 The discussion of each type will specify any guarantees about layout it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
 
-Void Type
----------
+\Section{Void Type}{unit}
 
 The type `void` contains no data and has a single, unnamed, value.
 
 A `void` value takes up no space, and thus does not affect the layout of types.
 Formally, a `void` value behaves as if it has a size of zero bytes, and one-byte alignment.
 
-Scalar Types
-------------
+\Section{Scalar Types}{scalar}
 
-### Boolean Type
+\SubSection{Boolean Type}{bool}
 
 The type `bool` is used to represent Boolean truth values: `true` and `false`.
 
 The size of a `bool` varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use `bool` for in-memory data structures.
 On all platforms, the `bool` type must be _naturally aligned_ (its alignment is its size).
 
-### Integer Types
+\SubSection{Integer Types}{int}
 
 The following integer types are defined:
 
@@ -47,7 +45,7 @@ Specific [target platforms](../target-compatibility.md) may not support the othe
 
 All integer types are stored in memory with their natural size and alignment on all targets that support them.
 
-### Floating-Point Types
+\SubSection{Floating-Point Types}{float}
 
 The following floating-point type are defined:
 
@@ -65,8 +63,7 @@ Specific [targets](../target-compatibility.md) may not support the other floatin
 
 All floating-point types are stored in memory with their natural size and alignment on all targets that support them.
 
-Vector Types
-------------
+\Section{Vector Types}{vector}
 
 A vector type is written as `vector<T, N>` and represents an `N`-element vector with elements of type `T`.
 The _element type_ `T` must be one of the built-in scalar types, and the _element count_ `N` must be a specialization-time constant integer.
@@ -97,7 +94,7 @@ typealias float4 = vector<float, 4>;
 typealias int8_t3 = vector<int8_t, 3>;
 ```
 
-### Legacy Syntax
+\SubSection{Legacy Syntax}{legacy}
 
 For compatibility with older codebases, the generic `vector` type includes default values for `T` and `N`, being declared as:
 
@@ -115,8 +112,7 @@ vector<float> c;
 vector<float, 4> d;
 ```
 
-Matrix Types
-------------
+\Section{Matrix Types}{matrix}
 
 A matrix type is written as `matrix<T, R, C>` and represents a matrix of `R` rows and `C` columns, with elements of type `T`.
 The element type `T` must be one of the built-in scalar types.
@@ -151,7 +147,7 @@ typealias int64_t4x2 = matrix<int64_t, 4, 2>;
 > While it may seem that this choice of convention is confusing, it is necessary to ensure that subscripting with `[]` can be efficiently implemented on all target platforms.
 > This decision in the Slang language is consistent with the compilation of HLSL to SPIR-V performed by other compilers.
 
-### Legacy Syntax
+\SubSection{Legacy Syntax}{legacy}
 
 For compatibility with older codebases, the generic `matrix` type includes default values for `T`, `R`, and `C`, being declared as:
 
@@ -168,8 +164,7 @@ float4x4 b;
 matrix<float, 4, 4> c;
 ```
 
-Structure Types
----------------
+\Section{Structure Types}{struct}
 
 Structure types are introduced with `struct` declarations, and consist of an ordered sequence of named and typed fields:
 
@@ -181,7 +176,7 @@ struct S
 }
 ```
 
-### Standard Layout
+\SubSection{Standard Layout}{layout.standard}
 
 The _standard layout_ for a structure type uses the following algorithm:
 
@@ -197,7 +192,7 @@ When this algorithm completes, `size` and `alignment` will be the size and align
 Most target platforms do not use the standard layout directly, but it provides a baseline for defining other layout algorithms.
 Any layout for structure types must guarantee an alignment at least as large as the standard layout.
 
-### C-Style Layout
+\SubSection{C-Style Layout}{layout.c}
 
 C-style layout for structure types differs from standard layout by adding an additional final step:
 
@@ -205,7 +200,7 @@ C-style layout for structure types differs from standard layout by adding an add
 
 This mirrors the layout rules used by typical C/C++ compilers.
 
-### D3D Constant Buffer Layout
+\SubSection{D3D Constant Buffer Layout}{layout.d3d.cbuffer}
 
 D3D constant buffer layout is similar to standard layout with two differences:
 
@@ -213,8 +208,7 @@ D3D constant buffer layout is similar to standard layout with two differences:
 
 * If a field would have _improper straddle_, where the interval `(fieldOffset, fieldOffset+fieldSize)` (exclusive on both sides) contains any multiple of 16, *and* the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16
 
-Array Types
------------
+\Section{Array Types}{array}
 
 An _array type_ is either a statically-sized or dynamically-sized array type.
 
@@ -226,7 +220,7 @@ This type represents an array of some fixed, but statically unknown, size.
 
 > Note: Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
 
-### Declaration Syntax
+\SubSection{Declaration Syntax}{decl}
 
 For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type `T` as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
 
@@ -257,7 +251,7 @@ var a : int[10];
 > In each case, `a` is a five-element array of three-element arrays of `int`s.
 > However, one declaration orders the element counts as `[3][5]` and the other as `[5][3]`.
 
-### Element Count Inference
+\SubSection{Element Count Inference}{inference}
 
 When a variable is declared with an unknown-size array type, and also includes an initial-value expression:
 
@@ -275,7 +269,7 @@ int a[4] = { 0xA, 0xB, 0xC, 0xD };
 
 A variable declared in this fashion semantically has a known-size array type and not an unknown-size array type; the use of an unknown-size array type for the declaration is just a convenience feature.
 
-### Standard Layout
+\SubSection{Standard Layout}{layout.std}
 
 The _stride_ of a type is the smallest multiple of its alignment not less than its size.
 
@@ -288,23 +282,21 @@ Using the standard layout for an array type `T[]` or `T[N]`:
 * The size of a known-size array with zero elements is zero
 * The size of a known-size array with a nonzero number `N` of elements is the size of `T` plus `N - 1` times the element stride of the array
 
-### C-Style Layout
+\SubSection{C-Style Layout}{layout.c}
 
 The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number `N` of elements is `N` times the element stride of the array.
 
-### D3D Constant Buffer Layout
+\SubSection{D3D Constant Buffer Layout}{layout.d3d.cbuffer}
 
 The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of `T` that is not less than the stride of `T`
 
-This Type
----------
+\Section{This Type}{this}
 
 Within the body of a structure or interface declaration, the keyword `This` may be used to refer to the enclosing type.
 Inside of a structure type declaration, `This` refers to the structure type itself.
 Inside of an interface declaration, `This` refers to the concrete type that is conforming to the interface (that is, the type of `this`).
 
-Opaque Types
-------------
+\Section{Opaque Types}{opaque}
 
 _Opaque_ types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
 Similar languages may refer to these as "resource types" or "object types."
@@ -318,8 +310,7 @@ The full list of opaque types supported by Slang can be found in the standard li
 
 Layout for opaque types depends on the target platform, and no specific guarantees can be made about layout rules across platforms.
 
-Known and Unknown Size
-----------------------
+\Section{Known and Unknown Size}{size}
 
 Every type has either known or unknown size.
 Types with unknown size arise in a few ways:
@@ -335,3 +326,4 @@ The use of types with unknown size is restricted as follows:
 * A type with unknown size can only be used as the last field of a structure type
 
 * A type with unknown size cannot be used as a generic argument to specialize a user-defined type, function, etc. Specific built-in generic types/functions may support unknown-size types, and this will be documented on the specific type/function.
+\end{verbatim}

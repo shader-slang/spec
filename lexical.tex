@@ -1,6 +1,6 @@
 \Chapter{Lexical Structure}{lex}
 
-This chapter describes how a source unit is decomposed into a sequence of tokens.
+This chapter describes how a source unit is decomposed into a sequence of lexemes.
 
 \Section{Source Units}{source-unit}
 
@@ -35,7 +35,40 @@ Lexical processing of a source unit proceeds \emph{as if} the following steps ar
 
 The final token sequence produced by this process is used as input to subsequent phases of compilation.
 
+\Section{Lexemes}{lexeme}
+
+\begin{Lexical}
+    \SynDefine{Lexeme} \\
+        \SynRef{Token} \\
+    \SynOr \SynRef{Trivia}
+\end{Lexical}
+
+A \SpecDefine{lexeme} is a contiguous sequence of characters in a single source unit.
+\SpecDefine{lexing} is the process by which an implementation decomposes a source unit into zero or more non-overlapping lexemes.
+
+Every lexeme is either a token or it is trivia.
+
+\SubSection{Trivia}{trivia}
+
+\begin{Lexical}
+    \SynDefine{Trivia} \\
+        \SynRef{Whitespace} \\
+    \SynOr \SynRef{Comment}
+\end{Lexical}
+
+\SpecDefine{trivia} are lexemes that do not appear in the abstract syntax; they are only part of the lexical grammar.
+The presence or absence of trivia in a sequence of lexemes has no semantic impact, except where specifically noted in this specification.
+
 \Section{Whitespace}{space}
+
+\begin{Lexical}
+    \SynDefine{Whitespace}
+        \SynRef{HorizontalSpace}
+    \SynOr \SynRef{LineBreak}
+
+    \SynDefine{HorizontalSpace}
+        ( \code{' '} \SynOr \code{'\t'} )\SynStar
+\end{Lexical}
 
 \SpecDefine{Whitespace} consists of horizontal whitespace and line breaks.
 
@@ -75,6 +108,18 @@ It is an error if a block comment that begins in a source unit is not terminated
 > // a line comment
 > /* a block comment */
 > ```
+
+\SubSection{Tokens}{token}
+
+\begin{Lexical}
+    \SynDefine{Token} \\
+        \SynRef{Identifier} \\
+    \SynOr \SynRef{Literal} \\
+    \SynOr \SynRef{Operator} \\
+    \SynOr \SynRef{Punctuation} \\
+\end{Lexical}
+
+\SpecDefine{tokens} are lexemes that are significant to the abstract syntax.
 
 \Section{Identifiers}{ident}
 

@@ -27,9 +27,11 @@
 %\newcommand*{\SubSection}[2]{\SetSubSectionLabel{#2}\subsection[#1\hfill[\SubSectionPath]]\label{\SubSectionPath}}
 %
 \newenvironment{Callout}[2]
-    {\begin{center}
+    {
+    \begin{center}
     \begin{tabular}{p{0.9\textwidth}}
-    \cellcolor{#2}\textbf{#1}:
+    \cellcolor{#2}
+    \textbf{#1}: \\
     }
     {
     \\\\
@@ -46,6 +48,7 @@
 \DefineCallout{Note}{Note}{NoteColor}
 \DefineCallout{Incomplete}{Incomplete}{IncompleteColor}
 \DefineCallout{Syntax}{Syntax}{SyntaxColor}
+\DefineCallout{Lexical}{Syntax}{SyntaxColor}
 
 
 
@@ -120,6 +123,6 @@ CubicGregoryQuads,Tris,Quads,DisplacementMapping,RenderToCubeMap,PointSprites,Di
 
 \newcommand{\SynDefine}[1]{\text{\emph{#1} ::=}}
 \newcommand{\SynRef}[1]{\text{\emph{#1}}}
-\newcommand{\SynOr}{\text{ | }}
-
+\newcommand{\SynOr}{\text{ $\vert$ }}
+\newcommand{\SynStar}{\text{*}}
 \newcommand{\Char}[1]{\code{#1}}

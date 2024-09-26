@@ -31,13 +31,17 @@ An implementation that supports \code{#pragma once} may use any implementation-s
 
 The input to the Slang preprocessor is a token sequence produced by the rules in Chapter 2, and does not use the definition of "preprocessor tokens" as they are used by the C/C++ preprocessor.
 
-> **Note**: The key place where this distinction matters is in macros that perform token pasting.
-> The input to the Slang preprocessor must be a valid sequence of tokens *before* any token pasting occurs.
+\begin{Note}
+The key place where this distinction matters is in macros that perform token pasting.
+The input to the Slang preprocessor must be a valid sequence of tokens *before* any token pasting occurs.
+\end{Note}
 
 When tokens are pasted with the \code{##} operator, the resulting concatenated text is decomposed into one or more new tokens.
 It is an error if the concatenated text does not form a valid sequence of tokens.
 
-> **Note**: The C/C++ preprocessor always yields a single token from any token pasting, whether or not that token is valid.
+\begin{Note}
+The C/C++ preprocessor always yields a single token from any token pasting, whether or not that token is valid.
+\end{Note}
 
 \Section{Extensions}{extensions}
 

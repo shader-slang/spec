@@ -70,115 +70,110 @@ A variable declaration using the \kw{var} keyword binds a mutable variable.
 
 Every variable declaration has a type, and the variable it binds is of the same type.
 
-A variable declaration must have either a \SynRef{TypeAscription} or an \SynRef{InitialValue}; a variable declaration may have both.
+A variable declaration must have either a \SynRef{TypeAscriptionClause} or an \SynRef{InitialValueClause}; a variable declaration may have both.
 
 If a variable declaration has a type ascription, then let \MetaVar{T} be the type that results from evaluating the type expression of that type ascription in the input environment of the declaration.
 
-If a variable declaration has a \SynRef{TypeAscription} and no \SynRef{InitialValue}, then the type of that variable declaration is \MetaVar{T}.
+If a variable declaration has a \SynRef{TypeAscriptionClause} and no \SynRef{InitialValueClause}, then the type of that variable declaration is \MetaVar{T}.
 
-If a variable declaration has a \SynRef{TypeAscription} and a \SynRef{InitialValue}, then let \MetaVar(E) be the value that results from evaluating the expression of the initial value caluse
+If a variable declaration has both a \SynRef{TypeAscriptionClause} and an \SynRef{InitialValueClause}, then let \MetaVar(E) be the value that results from evaluating the expression of the initial value clause against the expected type \MetaVar{T} in the input environment of the declaration.
+The type of the variable declaration is the type of \MetaVar{E}, and its initial value is \MetaVar{E}.
 
-If a variable declaration has a \SynRef{InitialValue} but not \SynRef{TypeAscription}, then the
+If a variable declaration has an \SynRef{InitialValueClause} but no \SynRef{TypeAscriptionClause}, then let \MetaVar(E) be the value that results from evaluating the expression of the initial value clause in the input environment of the declaration.
+The type of the variable declaration is the type of \MetaVar{E}, and its initial value is \MetaVar{E}.
 
-no \SynRef{TypeAscription}, then the type of the variable is determined by evaluating its type expression in the current environment.
-If a variable declaration with a \SynRef{TypeAscription} also has an \SynRef{InitialValue}, then 
+\begin{Legacy}
 
-Variables are declared using the keywords `let` and `var`:
+\SubSection{Legacy Variable Declarations}{legacy}
 
-```hlsl
-let x = 7;
-var y = 9.0;
-```
+Variable declaration may also be declared using legacy syntax, which is similar to C:
 
-A `let` declaration introduces an immutable variable, which may not be assigned to or used as the argument for an `in out` or `out` parameter.
-A `var` declaration introduces a mutable variable.
+    \begin{Syntax}
+        \SynDefine{VariableDeclaration} \\
+            \SynRef{LegacyVariableDeclaration} \\
 
-An explicit type may be given for a variable by placing it afte the variable name and a colon (`:`):
+        \SynDefine{LegacyVariableDeclaration} \\
+            \SynRef{TypeSpecifier} \SynRef{InitDeclarator} \SynStar \code{;} \\
 
-```hlsl
-let x : int = 7;
-var y : float = 9.0;
-```
+        \SynDefine{InitDeclarator} \\
+            \SynRef{Declarator} \SynRef{InitialValueClause} \SynOpt
+    \end{Syntax}
 
-If no type is specified for a variable, then a type will be inferred from the initial-value expression.
-It is an error to declare a variable that has neither a type specifier or an initial-value expression.
-It is an error to declare a variable with `let` without an initial-value expression.
+A legacy variable declaration introduces a binding for each \SynRef{InitDeclarator}.
+Let \MetaVar{S} be the type that results from evaluating the \SynRef{TypeSpecifier} in the input environment.
+The type \MetaVar{T} corresponding to each declarator is determined by evaluating the declarator in the input environment, against input type \MetaVar{S}.
 
-A variable declared with `var` may be declared without an initial-value expression if it has an explicit type specifier:
+\begin{Note}
+Slang does not support the equivalent of the \kw{auto} type specifier in C++.
+Variables declared using \kw{let} and \kw{var} can be used to fill a similar role.
+\end{Note}
 
-```
-var y : float;
-```
+The variables introduced by a legacy variable declaration are immutable if the declaration has a \kw{const} modifier; otherwise it is mutable.
 
-In this case the variable is  \emph{uninitialized} at the point of declaration, and must be explicitly initialized by assigning to it.
-Code that uses the value of an uninitialized variable may produce arbitrary results, or even exhibit undefined behavior depending on the type of the variable.
-Implementations *may* issue an error or warning for code that might make use of an uninitialized variable.
+\end{Legacy}
 
-\SubSection{Traditional Syntax}{legacy}
+\SubSection{Variables at Global Scope}{global}
 
-Variables may also be declared with traditional C-style syntax:
-
-```hlsl
-const int x = 7;
-float y = 9.0;
-```
-
-For traditional variable declarations a type must be specified.
-
-> Note: Slang does not support an `auto` type specifier like C++.
-
-Traditional variable declarations are immutable if they are declared with the `const` modifier, and are otherwise mutable.
-
-\SubSubSection{Variables at Global Scope}{globalvar}
+A variable declaration at global scope may be either a global constant, a static global variable, or a global shader parameter.
 
 Variables declared at global scope may be either a global constant, a static global variables, or a global shader parameters.
 
-\SubSubSection{Global Constants}{global.const}
+\SubSubSection{Global Constants}{const}
 
-A variable declared at global scope and marked with `static` and `const` is a \SpecDefine{global constant}.
+A variable declared at global scope and marked with \kw{static} and \kw{const} is a \SpecDefine{global constant}.
 
-A global constant must have an initial-value expression, and that initial-value expression must be a compile-time constant expression.
+A global constant must have an initial-value clause, and the initial-value expression must be a compile-time constant expression.
+
+\begin{Incomplete}
+Need a sectin to define what a "compile-time constant expression" is.
+\end{Incomplete}
 
 \SubSubSection{Static Global Variables}{global.static}
 
-A variable declared at global scope and marked with `static` (but not with `const`) is a \SpecDefine{static global variable}.
+A variable declared at global scope and marked with \kw{static} but not with \kw{const} is a \SpecDefine{static global variable}.
 
 A static global variable provides storage for each invocation executing an entry point.
-Assignments to a static global variable from one invocation do not affect the value seen by other invocations.
+Writes to a static global variable from one invocation do not affect the value seen by other invocations.
 
-> Note: the semantics of static global variable are similar to a "thread-local" variable in other programming models.
+\begin{Note}
+The semantics of static global variable are similar to a "thread-local" variable in other programming models.
+\end{Note}
 
 A static global variable may include an initial-value expression; if an initial-value expression is included it is guaranteed to be evaluated and assigned to the variable before any other expression that references the variable is evaluated.
+If a thread attempts to read from a static global variable during the evaluation of the initial-value expression for that variable, a runtime error is raised.
+
 There is no guarantee that the initial-value expression for a static global variable is evaluated before entry point execution begins, or even that the initial-value expression is evaluated at all (in cases where the variable might not be referenced at runtime).
 
-> Note: the above rules mean that an implementation may perform dead code elimination on static global variables, and may choose between eager and lazy initialization of those variables at its discretion.
+\begin{Note}
+The above rules mean that an implementation may perform dead code elimination on static global variables, and may choose between eager and lazy initialization of those variables at its discretion.
+\end{Note}
 
 \SubSubSection{Global Shader Parameters}{global.param}
 
-\begin{verbatim}
-A variable declared at global scope and not marked with `static` (even if marked with `const`) is a _global shader parameter_.
+A variable declared at global scope and not marked with \kw{static} is a \SpecDef{global shader parameter}.
 
 Global shader parameters are used to pass arguments from application code into invocations of an entry point.
 The mechanisms for parameter passing are specific to each target platform.
 
-> Note: Currently only global shader parameters of opaque types or arrays of opaque types are supported.
+A global shader parameter may include an initial-value expression, but such an expression does not affect the semantics of the compiled program.
 
-A global shader parameter may include an initial-value epxression, but such an expression does not affect the semantics of the compiled program.
-
-> Note: Initial-value expressions on global shader parameters are only useful to set up "default values" that can be read via reflection information and used by application code.
+\begin{Note}
+An implementation may choose to provide ways to query the initial-value expression of a global shader parameter, or to evaluate it to a value.
+Host applications may use such capabilities to establish a default value for global shader parameters.
+\end{Note}
 
 \SubSection{Variables at Function Scope}{func}
 
-Variables declared at _function scope_ (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
+Variables declared at \emph{function scope} (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
 
 \SubSubSection{Function-Scope Constants}{const}
 
-A variable declared at function scope and marked with both `static` and `const` is a _function-scope constant_.
-Semantically, a function-scope constant behaves like a global constant except that is name is only visible in the local scope.
+A variable declared at function scope and marked with both \kw{static} and \kw{const} is a \SpecDef{function-scope constant}.
+Semantically, a function-scope constant behaves like a global constant except that its name is only bound in the local scope.
 
 \SubSubSection{Function-Scope Static Variables}{static}
 
-A variable declared at function scope and marked with `static` (but not `const`) is a _function-scope static variable_.
+A variable declared at function scope and marked with \kw{static} (but not \kw{const}) is a \SpecDef{function-scope static variable}.
 Semantically, a function-scope static variable behaves like a global static variable except that its name is only visible in the local scope.
 
 The initial-value expression for a function-scope static variable may refer to non-static variables in the body of the function.
@@ -186,431 +181,460 @@ In these cases initialization of the variable is guaranteed not to occur until a
 
 \SubSubSection{Local Variables}{local}
 
-A variable declared at function scope and not marked with `static` (even if marked with `const`) is a _local variable_.
-A local variable has unique storage for each _activation_ of a function by an invocation.
+A variable declared at function scope and not marked with \kw{static} (even if marked with \kw{const}) is a \SpecDef{local variable}.
+A local variable has unique storage for each activation of a function.
+
+\begin{Note}
 When a function is called recursively, each call produces a distinct activation with its own copies of local variables.
+\end{Note}
 
 \Section{Functions}{func}
 
-Functions are declared using the `func` keyword:
+A \SpecDef{function declaration} introduces a binding to a function.
 
-```hlsl
-func add(x: int, y: float) -> float { return float(x) + y; }
-```
+\begin{Syntax}
+    \SynDefine{FunctionDeclaration} \\
+        \code{func} \SynRef{Identifier} \\
+            \SynRef{GenericParametersClause}\SynOpt \\
+            \SynRef{ParametersClause} \\
+            \SynRef{GenericWhereClause}\SynOpt \\
+            \SynRef{ResultTypeClause}\SynOpt \\
+            \SynRef{FunctionBodyClause} \\
+\end{Syntax}
 
-\Section{Parameters}{param}
+\SubSection{Parameters}{param}
 
-The parameters of the function are declared as `name: type` pairs.
+The parameters of a function declaration are determined by the \SpecDef{parameter declarations} in its parameters clause.
 
-Parameters may be given a _default value_ by including an initial-value-expression clause:
+\begin{Syntax}
+    \SynDefine{ParametersClause} \\
+        \code{(} (\SynRef{ParameterDeclaration} \code{,}) \SynStar \code{)}
 
-```hlsl
-func add(x: int, y: float = 1.0f) { ... }
-```
+    \SynDefine{ParameterDeclaration} \\
+        \SynRef{Identifier} \code{:} \SynRef{Direction}\SynOpt \SynRef{TypeExpression} \SynRef{DefaultValueClause}\SynOpt
 
-Parameters may be marked with a _direction_ which affects how data is passed between caller and callee:
+    \SynDefine{DefaultValueClause} \\
+        \code{=} \SynRef{Expression}
+\end{Syntax}
 
-```hlsl
-func add(x: in out int, y : float) { x += ... }
-```
+A parameter declaration must include a type expression; the type of the parameter is the result of evaluating that type expression.
 
-The available directions are:
+A parameter declaration may include a default-value clause; it it does, the default value for that parameter is the result of evaluating the expression in that clause with an expected type that is the type of the parameter.
 
-* `in` (the default) indicates typical pass-by-value (copy-in) semantics. The callee receives a *copy* of the argument passed by the caller.
+\SubSubSection{Directions}{dir}
 
-* `out` indicates copy-out semantics. The callee writes to the parameter and then a copy of that value is assigned to the argument of the caller after the call returns.
+Every parameter has a \SpecDef{direction}, which determines how an argument provided at a call site is connected to that parameter.
 
-* `in out` or `inout` indicates pass-by-value-result (copy-in and copy-out) semantics. The callee receives a copy of the argument passed by the caller, it may manipulate the copy, and then when the call returns the final value is copied back to the argument of the caller.
+\begin{Syntax}
+    \SynDefine{Direction} \\
+        \code{in} \\
+        \SynOr \code{out} \\
+        \SynOr \code{take} \\
+        \SynOr \code{borrow} \\
+        \SynOr \code{inout} \SynOr \code{in out}
+        \SynOr \code{ref} \\
+\end{Syntax}
 
-An implementation may assume that at every call site the arguments for `out` or `in out` parameters never alias.
-Under those assumptions, the `out` and `inout` cases may be optimized to use pass-by-refernece instead of copy-in and copy-out.
+If a parameter declaration includes a \SynRef{Direction}, then that determines the direction of the parameter; otherwise the direction of the parameter is \kw{in}.
 
-> Note: Applications that rely on the precise order in which write-back for `out` and `in out` parameters is performed are already on shaky semantic ground.
+\Paragraph{\code{in}}{in}
 
-Body
-----
+The \kw{in} direction indicates typical pass-by-value (copy-in) semantics.
+The parameter in the callee binds to a copy of the argument value passed by the caller.
 
-The _body_ of a function declaration consists of statements enclosed in curly braces `{}`.
+\Paragraph{\code{out}}{out}
 
-In some cases a function declaration does not include a body, and in these cases the declaration must be terminated with a semicolon (`;`):
+The \kw{out} direction indicates copy-out semantics.
+The parameter in the callee binds to a fresh storage location that is uninitialized on entry.
+When the callee returns, the value in that location is moved to the storage location referenced by the argument.
 
-```hlsl
-func getCount() -> int;
-```
+\Paragraph{\code{take}}{take}
 
-> Note: Slang does not require "forward declaration" of functions, although
-> forward declarations are supported as a compatibility feature.
->
-> The only place where a function declaration without a definition should be
-> required is in the body of an `interface` declaration.
+The \kw{take} direction indicates move-in semantics.
+The argument provided by the caller is moved into the parameter of the callee, ending the lifetime of the argument.
 
+\Paragraph{\code{borrow}}{borrow}
 
-The result type of a function mayb be specified after the parameter list using a _result type clause_ consisting of an arrow (`->`) followed by a type.
-If the function result type is `void`, the result type clause may be elided:
+The \kw{borrow} direction indicates immutable borrow semantics.
 
-```hlsl
-func modify(x: in out int) { x++; }
-```
+If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
 
+If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either the storage location referenced by the argument, or a copy of the argument value.
 
-\SubSection{Traditional Syntax}{legacy}
+\Paragraph{\code{inout}}{inout}
 
-Functions can also be declared with traditional C-style syntax:
+The \kw{inout} direction indicates exclusive mutable borrow semantics.
+The syntax \kw{in out} is equivalent to \kw{inout}
 
-```hlsl
-float add(int x, float y) { return float(x) + y; }
+If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
 
-void modify(in out int x) { x ++; }
-```
+If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either:
 
-> Note: Currently traditional syntax must be used for shader entry point functions,
-> because only the traditional syntax currently supports attaching semantics to
-> parameters.
+\begin{itemize}
+\item the storage location referenced by the argument
+\item a fresh storage location, in which case that location is initialized with a copy of the argument value on entry, and the value at that location is written to the argument on return from the function.
+\end{itemize}
+
+\Paragraph{\code{ref}}{ref}
+
+The \kw{ref} direction indicates pass-by-reference semantics.
+The parameter in the callee binds to the storage location referenced by the argument.
+
+\SubSection{Result Type}{result}
+
+\begin{Syntax}
+    \SynDefine{ResultTypeClause} \\
+        \code{->} \SynRef{TypeExpression}
+\end{Syntax}
+
+Every function has a \SpecDef{result type}, which is the type of value that results from calling that function.
+If a function declaration has a result type clause, then the result type of the function is the type that results from evaluating the type expression in that clause.
+If a function declaration does not have a result type clause, then the result type of the function is \code{Unit}.
+
+\SubSection{Body}{body}
+
+\begin{Syntax}
+    \SynDefine{FunctionBodyClause} \\
+        \SynRef{BlockStatement} \\
+        \SynOr \code{;}
+\end{Syntax}
+
+A function declaration may have a \SpecDef{body}.
+A function declaration with a body is a \SpecDef{function definition}.
+
+If the function body clause is a block statement, then that statement is the body of the function declaration.
+If the function body clause is \code{;}, then that function declaration has no body.
+
+\begin{Legacy}
+\SubSection{Traditional Function Declarations}{legacy}
+
+A \SpecDef{traditional function declaration} is a function declaration that uses traditional C-like syntax.
+
+\begin{Syntax}
+    \SynDefine{TraditionalFunctionDeclaration} \\
+        \SynRef{TypeSpecifier} \SynRef{Declarator} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{TraditionalParametersClause}
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \SynRef{FunctionBodyClause} \\
+
+    \SynDefine{TraditionalParametersClause} \\
+        \code{(} (\SynRef{TraditionalParameterDeclaration} \code{,}) \SynStar \code{)}
+
+    \SynDefine{TraditionalParameterDeclaration} \\
+        \SynRef{Direction} \SynRef{TypeSpecifier} \SynRef{Declarator} \SynRef{DefaultValueClause}\SynOpt \\
+\end{Syntax}
+
+\end{Legacy}
 
 \SubSection{Entry Points}{entry}
 
-An _entry point_ is a function that will be used as the starting point of execution for one or more invocations of a shader.
+An \SpecDef{entry point} declaration is a function declaration that can be used as the starting point of execution for a thread.
+
+\Section{Type Declarations}{type}
+
+A \SpecDef{type declaration} introduces a binding to a type.
+
+\begin{Syntax}
+    \SynDefine{TypeDeclaration} \\
+        \SynRef{AggregateTypeDeclaration} \\
+        \SynOr \SynRef{TypeAliasDeclaration} \\
+\end{Syntax}
+
+\SubSection{Aggregate Type Declarations}{struct}
+
+\begin{Syntax}
+    \SynDefine{AggregateTypeDeclaration} \\
+        (\code{struct} \SynOr \code{class} \SynOr \code{interface}) \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{BasesClause}\SynOpt
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \SynRef{DeclarationBodyClause} \code{;}\SynOpt\\
+
+    \SynDefine{DeclarationBodyClause} \\
+        \lstinline|{| Declaration\SynStar \lstinline|}| 
+\end{Syntax}
+
+An \SpecDef{aggregate type declaration} is either a \SpecDef{\kw{struct} declaration}, a \SpecDef{\kw{class} declaration}, or an \SpecDef{\kw{interface} declaration}.
+
+The declarations in the body clause of an aggregate type declaration are referred the \SpecDef{members} of that declaration.
+
+\SubSubSection{Instance and Static Members}{static}
+
+Members of an aggregate type may me marked with a \kw{static} modifier, in which case they are \SpecDef{static members} of the type.
+Members not marked with \kw{static} are \SpecDef{instance members} of the type.
+
+Static members are referenced through the type itself.
+Instance members are referened through values that are instances of the type.
+
+\SubSubSection{Fields}{field}
+
+Variable declarations that are instance members of an aggregate type declaration are also referred to as the \SpecDef{fields} of the aggregate type declaration.
+
+\SubSubSection{Methods}{method}
+
+Function declarations that are instance members of an aggregate type declaration are also referred to as \SpecDef{methods}.
+
+By default, the implicit \kw{this} parameter of a method acts has a direction of \kw{in}.
+A method of a \kw{struct} type declaration may be modified with the \code{[mutating]} attribute, in which case the implicit \kw{this} parameter has a direction of \kw{inout}.
+
+\SubSection{Bases}{bases}
+
+\begin{Syntax}
+    \SynDefine{BasesClause} \\
+        \code{:} \SynRef{Base} (\code{,} \SynRef{Base})\SynStar
+
+    \SynDefine{Base} \\
+        \SynRef{TypeExpression}
+\end{Syntax}
+
+An aggregate type declaration has zero or more \SpecDef{bases}.
+If an aggregate type declaration has no bases clause, then it has zero bases;
+otherwise, the bases of the aggregate type declaration are the types identified by each \SynRef{Base} in that clause.
+
+The list of bases of a \kw{struct} declaration must consist of:
+
+\begin{itemize}
+\item at most one \kw{struct} type
+\item zero or more interface types
+\end{itemize}
 
 
+The list of bases of a \kw{class} declaration must consist of:
 
-\Section{Structure Types}{struct}
+\begin{itemize}
+\item at most one \kw{class} type
+\item zero or more interface types
+\end{itemize}
 
-Structure types are declared using the `struct` keyword:
+The list of bases of an \kw{interface} declaration must consist of:
 
-```hlsl
-struct Person
-{
-    var age : int;
-    float height;
+\begin{itemize}
+\item zero or more interface types
+\end{itemize}
 
-    int getAge() { return age; }
-    func getHeight() -> float { return this.height; }
-    static func getPopulation() -> int { ... }
-}
-```
-
-The body of a structure type declaration may include variable, type, function, and initializer declarations.
-
-\SubSection{Fields}{field}
-
-Variable declarations in the body of a structure type declaration are also referred to as _fields_.
-
-A field that is marked `static` is shared between all instances of the type, and is semantically like a global variable marked `static`.
-
-A non-`static` field is also called an _instance field_.
-
-\SubSection{Methods}{method}
-
-Function declarations in the body of a structure type declaration are also referred to as _methods_.
-
-A method declaration may be marked `static`.
-A `static` method must be invoked on the type itself (e.g., `Person.getPopulation()`).
-
-A non-`static` method is also referred to as an _instance method_.
-Instance methods must be invoked on an instance of the type (e.g., `somePerson.getAge()`).
-The body of an instance method has access to an implicit `this` parameter which refers to the instance on which the method was invoked.
-
-By default the `this` parameter of an instance method acts as an immutable variable.
-An instance method with the `[mutating]` attribute receives a mutable `this` parameter, and can only be invoked on a mutable value of the structure type.
-
-\SubSection{Inheritance}{inherit}
-
-A structure type declaration may include an _inheritance clause_ that consists of a colon (`:`) followed by a comma-separated list of types that the structure type inherits from:
-
-```
-struct Person : IHasAge, IHasName
-{ .... }
-```
-
-When a structure type declares that it inherits from an interface, the programmer asserts that the structure type implements the required members of the interface.
-
+\begin{Legacy}
 \SubSection{Syntax Details}{syntax}
 
-A structure declaration does *not* need to be terminated with a semicolon:
+The body clause of an aggregate type declaration may end with a semicolon (\code{;}).
+The body clause of an aggregate type declaration \emph{must} end with a semicolon if there are any tokens between the closing \lstinline|}| token and the next line break that follows it.
 
-```hlsl
-// A terminating semicolon is allowed
-struct Stuff { ... };
+\begin{Note}
+Put more simply: a closing \code{;} is not required on an aggregate type declaration \emph{so long} as there is nothing but trivia after it on the same line.
+\end{Note}
 
-// The semicolon is not required
-struct Things { ... }
-```
+\end{Legacy}
 
-When a structure declarations ends without a semicolon, the closing curly brace (`}`) must be the last non-comment, non-whitespace token on its line.
+\begin{Legacy}
+\SubSection{Aggregate Type Specifiers}{type-specifier}
 
-For compatiblity with C-style code, a structure type declaration may be used as the type specifier in a traditional-style variable declaration:
+An aggregate type declaration may be used as a type specififer in declarations using traditional syntax.
 
-```hlsl
-struct Association
-{
-    int from;
-    int to;
-} associations[] =
-{
-    { 1, 1 },
-    { 2, 4 },
-    { 3, 9 },
-};
-```
+When an aggregate type declaration is used as a type specififer, the closing \lstinline|}| of its body must be followed by another token on the same line.
 
-If a structure type declaration will be used as part of a variable declaration, then the next token of the variable declaration must appear on the same line as the closing curly brace (`}`) of the structure type declaration.
-The whole variable declaration must be terminated with a semicolon (`;`) as normal.
+\end{Legacy}
 
+\Section{\kw{enum} Declarations}{enum}
 
-\Section{Enumeration Types}{enum}
+\begin{Syntax}
+    \SynDefine{EnumDeclaration} \\
+        \code{enum} \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{BasesClause}\SynOpt
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \SynRef{EnumBody} \code{;}\SynOpt\\
 
-Enumeration type declarations are introduced with the `enum` keyword:
+    \SynDefine{EnumBody} \\
+        \SynRef{TraditionalEnumBody} \\
+        \SynOr \SynRef{DeclarationBody}
+\end{Syntax}
 
-```hlsl
-enum Color
-{
-    Red,
-    Green = 3,
-    Blue,
-}
-```
+An \SpecDef{\kw{enum} declaration} introduces a binding for a type whose instances value into one or more cases.
+
+An \kw{enum} declaration that has a declaration body is a \SpecDef{modern \kw{enum} declaration}.
+A \kw{enum} declaration that has a traditional \kw{enum} body is a \SpecDef{traditional \kw{enum} declaration}.
+
+An \kw{enum} declaration may have a bases clause, in which case the list of bases must consist of:
+
+\begin{itemize}
+\item at most one proper type; if present, this determines an \SpecDef{underlying type} for the \kw{enum} declaration.
+\item zero or more interface types
+\end{itemize}
+
+A traditional \kw{enum} declaration always has an underlying type.
+If an underlying type is not specified in the bases list of a traditional \kw{enum} declaration, then the underlying type of that declaration is \code{Int}.
+The underlying type of a traditional \kw{enum} declaration must be a built-in integer type.
+
+A modern \kw{enum} declaration must not specify an underlying type.
 
 \SubSection{Cases}{case}
 
-The body of an enumeration type declaration consists of a comma-separated list of case declarations.
-An optional trailing comma may terminate the lis of cases.
+\begin{Syntax}
+    \SynDefine{CaseDeclaration} \\
+        \code{case} \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
+        
+    \SynDefine{TraditionalEnumBody} \\
+        \lstinline|{| (TraditionalCaseDeclaration \code{,})\SynStar \lstinline|}| \\
 
-A _case declaration_ consists of the name of the case, along with an optional initial-value expression that specifies the _tag value_ for that case.
-If the first case declaration in the body elides an initial-value expression, the value `0` is used for the tag value.
-If any other case decalration elides an initial-value expresison, its tag value is one greater than the tag value of the immediately preceding case declaration.
+    \SynDefine{TraditionalCaseDeclaration} \\
+        \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
+\end{Syntax}
 
-An enumeration case is referred to as if it were a `static` member of the enumeration type (e.g., `Color.Red`).
+The possible values of an \kw{enum} type are determined by the \SpecDef{case declarations} in its body.
+An \kw{enum} type has one case for each case declaration in its body.
 
-\SubSection{Inheritance}{inherit}
+The case declarations in a modern \kw{enum} declaration are declared using the \kw{case} keyword.
+The case declarations in a traditional \kw{enum} body are \SpecDef{traditional case declarations}.
 
-An enumeration type declaration may include an inheritance clause:
+Each case of a traditional \kw{enum} declaration has an \SpecDef{underlying value}, that is a value of the underlying type of that \kw{enum} declaration.
+When a traditional case declaration includes an initial-value expression, its underlying value is the result of evaluating that expression, with the underlying type of the \kw{enum} declaration as the expected type.
+The underlying value of a traditional case declaration must be an compile-time-constant integer value.
+If a traditional case declaration does not have an initial-value expression, then its underlying value is one greater than the underlying value of the preceding case declaration, or zero if there is no preceding case declaration.
 
-```hlsl
-enum Color : uint
-{ ... }
-```
+Case declarations are implicitly static.
 
-The inheritance clause of an enumeration declaration may currently only be used to specify a single type to be used as the _tag type_ of the enumeration type.
-The tag type of an enumeration must be a built-in scalar integer type.
-The tag value of each enumeration case will be a value of the tag type.
+%
+%\SubSection{Conversions}{conv}
+%
+%A value of an enumeration type can be implicitly converted to a value of its tag %type:
+%
+%```hlsl
+%int r = Color.Red;
+%```
+%
+%Values of the tag type can be explicitly converted to the enumeration type:
+%
+%```hlsl
+%Color red = Color(r);
+%```
 
-If no explicit tag type is specified, the type `int` is used instead.
+\SubSection{Type Aliases}{alias}
 
-> Note: The current Slang implementation has bugs that prevent explicit tag types from working correctly.
+A \SpecDef{type alias declaration} introduces a binding that resolves to some other type.
 
-\SubSection{Conversions}{conv}
+\begin{Syntax}
+    \SynDefine{TypeAliasDeclaration} \\
+        \SynRef{ModernTypeAliasDeclaration}
+        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
 
-A value of an enumeration type can be implicitly converted to a value of its tag type:
+    \SynDefine{ModernTypeAliasDeclaration} \\
+        \code{typealias} \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \code{=} \SynRef{TypeExpr} \code{;}
+\end{Syntax}
 
-```hlsl
-int r = Color.Red;
-```
+\begin{Legacy}
 
-Values of the tag type can be explicitly converted to the enumeration type:
+\SubSubSection{Traditional Syntax}{legacy}
 
-```hlsl
-Color red = Color(r);
-```
+A type alias may also be declared using a \SpecDef{traditional type alias declaration}.
 
-\Section{Type Aliases}{alias}
+\begin{Syntax}
+    \SynDefine{TraditionalTypeAliasDeclaration} \\
+        \code{typedef} \SynRef{TypeSpecifier} \SynRef{Declarator} \code{;}
+        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
+\end{Syntax}
 
-A type alias is declared using the `typealias` keyword:
+\end{Legacy}
 
-```hlsl
-typealias Height  = int;
-```
+\SubSection{Associated Types}{assoc}
 
-A type alias defines a name that will be equivalent to the type to the right of `=`.
+An \SpecDef{associated type declaration} introduces a type requirement to an \kw{interface} declaration.
 
-\SubSection{Traditional Syntax}{legacy}
+\begin{Syntax}
+    \SynDefine{AssociatedTypeDeclaration} \\
+        \code{associatedtype} \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{BasesClause}\SynOpt \\
+        \SynRef{GenericWhereClause}\SynOpt \code{;}
+\end{Syntax}
 
-Type aliases can also be declared with traditional C-style syntax:
+An associated type declaration may only appear as a member declaration of an \kw{interface} declaration.
 
-```hlsl
-typedef int Height;
-```
+%An associated type declaration introduces a type into the signature of an interface, without specifying the exact concrete type to use.
+%An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement:
 
-\Section{Constant Buffers and Texture Buffers}{buffer}
+\Section{Constructors}{init}
 
-As a compatiblity feature, the `cbuffer` and `tbuffer` keywords can be used to introduce variable declarations.
+A \SpecDef{constructor declaration} introduces logic for initializing an instance of the enclosing type declaration.
+A constructor declaration is implicitly static.
 
-A declaration of the form:
+\begin{Syntax}
+    \SynDefine{ConstructorDeclaration} \\
+        \code{init} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{ParametersClause} \\
+        \SynRef{FunctionBodyClause} \\
+\end{Syntax}
 
-```hlsl
-cbuffer Name
-{
-    F field;
-    // ...
-}
-```
+A constructor declaratin has an implicit \kw{this} parameter, with a direction of \kw{out}.
 
-is equivalent to a declaration of the form:
+%An initializer has access to an implicit `this` variable that is the instance being initialized; an initializer must not be marked `static`.
+%The `this` variable of an initializer is always mutable; an initializer need not, and must not, be marked `[mutating]`.
 
-```hlsl
-struct AnonType
-{
-    F field;
-    // ...
-}
-__transparent ConstantBuffer<AnonType> anonVar;
-```
+%> Note: Slang currently does not enforce that a type with an initializer can only be initialized using its initializers.
+%> It is possible for user code to declare a variable of type `MyVector` above, and explicitly write to the `x` and `y` fields to initialize it.
+%> A future version of the language may close up this loophole.
 
-In this expansion, `AnonType` and `anonVar` are fresh names generated for the expansion that cannot collide with any name in user code, and the modifier `__transparent` makes it so that an unqualified reference to `field` can implicitly resolve to `anonVar.field`.
+\begin{Note}
+Slang does not provide any equivalent to C++ \emph{destructors}, which run automatically when an instance goes out of scope.
+\end{Note}
 
-The keyword `tbuffer` uses an equivalent expansion, but with `TextureBuffer<T>` used instead of `ConstantBuffer<T>`.
+\Section{Properties}{property}
 
-\Section{Interfaces}{interface}
+A \SpecDef{property declaration} introduces a binding that can have its behavior for read and write operations customized.
 
-An interface is declared using the `interface` keyword:
+\begin{Syntax}
+    \SynDefine{PropertyDeclaration} \\
+        \code{property} \\
+        \SynRef{Identifier}
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{TypeAscriptionClause} \\
+        \SynRef{GenericWhereClause} \\
+        \SynRef{PropertyBody} \\
 
-```hlsl
-interface IRandom
-{
-    uint next();
-}
-```
+    \SynDefine{PropertyBody} \\
+        \lstinline|{| \SynRef(AccessorDecl)\SynStar \lstinline|}|
+\end{Syntax}
 
-The body of an interface declaration may contain function, initializer, subscript, and associated type declarations.
-Each declaration in the body of an interface introduces a _requirement_ of the interface.
-Types that declare conformance to the interface must provide matching implementations of the requirements.
+\SubSection{Accessors}{accessor}
 
-Functions, initializers, and subscripts declared inside an interface must not have bodies; default implementations of interface requirements are not currently supported.
+\begin{Syntax}
+    \SynDefine{AccessorDecl} \\
+        \SynRef{GetAccessorDecl} \\
+        \SynRef{SetAccessorDecl} \\
 
-An interface declaration may have an inheritance clause:
+    \SynDefine{GetAccessorDecl} \\
+        \code{get} \SynRef{FunctionBodyClause}
 
-```hlsl
-interface IBase
-{
-    int getBase();
-}
-
-interface IDerived : IBase
-{
-    int getDerived();
-}
-```
-
-The inheritance clause for an interface must only list other interfaces.
-If an interface `I` lists another interface `J` in its inheritance clause, then `J` is a _base interface_ of `I`.
-In order to conform to `I`, a type must also conform to `J`.
-
-\Section{Associated Types}{assoc}
-
-An associated type declaration is introduced with `associatedtype`:
-
-```hlsl
-associatedtype Iterator;
-```
-
-An associated type declaration introduces a type into the signature of an interface, without specifying the exact concrete type to use.
-An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement:
-
-```
-interface IContainer
-{
-    associatedtype Iterator;
-    ...
-}
-
-struct MyArray : IContainer
-{
-    typealias Iterator = Int;
-    ...
-}
-
-struct MyLinkedList : IContainer
-{
-    struct Iterator { ... }
-    ...
-}
-```
-
-It is an error to declare an associated type anywhere other than the body of an interface declaration.
-
-An associated type declaration may have an inheritance clause.
-The inheritance clause of an associated type may only list interfaces; these are the _required interfaces_ for the associated type.
-A concrete type that is used to satisfy an associated type requirement must conform to all of the required interaces of the associated type.
-
-\Section{Initializers}{init}
-
-An initializer declaration is introduced with the `__init` keyword:
-
-```hlsl
-struct MyVector
-{
-    float x, float y;
-
-    __init(float s)
-    {
-        x = s;
-        y = s;
-    }
-}
-```
-
-> Note: Initializer declarations are a non-finalized and unstable feature, as indicated by the double-underscore (`__`) prefix on the keyword.
-> Arbitrary changes to the syntax and semantics of initializers may be introduced in future versions of Slang.
-
-An initializer declaration may only appear in the body of an interface or a structure type.
-An initializer defines a method for initializing an instance of the enclosing type.
-
-> Note: A C++ programmer might think of an initializer declaration as similar to a C++ _constructor_.
-
-An initializer has a parameter list and body just like a function declaration.
-An initializer must not include a result type clause; the result type of an initializer is always the enclosing type.
-
-An initializer is invoked by calling the enclosing type as if it were a function.
-E.g., in the example above, the initializer in `MyVector` can be invoked as `MyVector(1.0f)`.
+    \SynDefine{SetAccessorDecl} \\
+        \code{set} \SynRef{ParametersClause}\SynOpt \SynRef{FunctionBodyClause}
+\end{Syntax}
 
 
-An initializer has access to an implicit `this` variable that is the instance being initialized; an initializer must not be marked `static`.
-The `this` variable of an initializer is always mutable; an initializer need not, and must not, be marked `[mutating]`.
-
-> Note: Slang currently does not enforce that a type with an initializer can only be initialized using its initializers.
-> It is possible for user code to declare a variable of type `MyVector` above, and explicitly write to the `x` and `y` fields to initialize it.
-> A future version of the language may close up this loophole.
-
-> Note: Slang does not provide any equivalent to C++ _destructors_ which run automatically when an instance goes out of scope.
 
 \Section{Subscripts}{subscript}
 
-A subscript declaration is introduced with the `__subscript` keyword:
+A \SpecDef{subscript declaration} introduces a way for the enclosing type to be used as the base expression of a subscript expression.
 
-```hlsl
-struct MyVector
-{
-    ...
+\begin{Syntax}
+    \SynDefine{SubscriptDeclaration} \\
+        \code{subscript} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{ParametersClause} \\
+        \SynRef{ResultTypeClause} \\
+        \SynRef{GenericWhereClause} \\
+        \SynRef{PropertyBody} \\
+\end{Syntax}
 
-    __subscript(int index) -> float
-    {
-        get { return index == 0 ? x : y; }
-    }
-}
-```
-
-> Note: subscript declarations are a non-finalized and unstable feature, as indicated by the double-underscore (`__`) prefix on the keyword.
-> Arbitrary changes to the syntax and semantics of subscript declarations may be introduced in future versions of Slang.
-
-A subscript declaration introduces a way for a user-defined type to support subscripting with the `[]` braces:
-
-```hlsl
-MyVector v = ...;
-float f = v[0];
-```
-
-A subscript declaration lists one or more parameters inside parantheses, followed by a result type clause starting with `->`.
-The result type clause of a subscript declaration cannot be elided.
-
-The body of a subscript declaration consists of _accessor declarations_.
-Currently only `get` accessor declarations are supported for user code.
-
-A `get` accessor declaration introduces a _getter_ for the subscript.
-The body of a getter is a code block like a function body, and must return the appropriate value for a subcript operation.
-The body of a getter can access the parameters of the enclosing subscript, as a well as an implicit `this` parameter of the type that encloses the accessor.
-The `this` parameter of a getter is immutable; `[mutating]` getters are not currently supported.
+\begin{Note}
+Unlike a function declaration, a subscript declaration cannot elide the result type clause.
+\end{Note}
 
 \Section{Extensions}{ext}
 
+\begin{verbatim}
 An extension declaration is introduced with the `extension` keyword:
 
 ```hlsl
@@ -767,3 +791,25 @@ interface IGenericInterface<T> : IBase<T>
 > Note: Currently there is no user-exposed syntax for writing a generic extension.
 
 \end{verbatim}
+
+\begin{Legacy}
+
+\Section{Constant Buffers and Texture Buffers}{buffer}
+
+A \SpecDef{traditional buffer declaration} is a shorthand for declaring a global-scope shader parameter.
+
+\begin{Syntax}
+    \SynDefine{TraditionalBufferDeclaration} \\
+        (\code{cbuffer} \SynOr \code{tbuffer}) \SynRef{Identifier} \SynRef{DeclarationBody} \code{;}\SynOpt
+\end{Syntax}
+
+Given a traditional buffer declaration, an implementation shall behave as if the declaration were desugared into:
+
+\begin{itemize}
+\item A \kw{struct} declaration with some unique name \MetaVar{S}, and with the declaration body of the buffer declaration.
+\item A global shader parameter declaration with some unique name \MetaVar{P}, where the type of the parameter is \code{ConstantBuffer<S>} in the case of a \kw{cbuffer} declaration, or \code{TextureBuffer<S>} in the case of a \kw{tbuffer} declaration.
+\end{itemize}
+
+For each member declared in \MetaVar{S}, a traditional buffer declaration introduces a binding that refers to that member accessed through \MetaVar{P}.
+
+\end{Legacy}

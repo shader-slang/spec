@@ -2,6 +2,8 @@
 %
 % This file defines all the utility commands that are needed to prepare the rest of the document.
 
+\setcounter{secnumdepth}{6}
+
 
 % \DefineVariable : a helper command for defining a getter and setter pair.
 %
@@ -20,7 +22,6 @@
 %\newcommand*{SectionPath}{\ChapterPath.\SectionLabel}
 %\newcommand*{SubSectionPath}{\SectionPath.\SubSectionLabel}
 %
-%\setcounter{secnumdepth}{3}
 %
 %\newcommand*{\Chapter}[2]{\SetChapterLabel{#2}\chapter[#1\hfill[\ChapterPath]]\label{\ChapterPath}}
 %\newcommand*{\Section}[2]{\SetSectionLabel{#2}\section[#1\hfill[\SectionPath]]\label{\SectionPath}}
@@ -39,7 +40,13 @@
     \end{center}
     }
 
-\newcommand{\DefineCallout}[3]{\newenvironment{#1}{\begin{Callout}{#2}{#3}}{\end{Callout}}}
+%\newcommand{\DefineCallout}[3]{\newenvironment{#1}{\begin{Callout}{#2}{#3}}{\end{Callout}}}
+
+\newcommand{\DefineCallout}[3]{
+    \newtcolorbox{#1}[1][]{breakable,sharp corners, skin=enhancedmiddle jigsaw,parbox=false,
+boxrule=0mm,leftrule=2mm,boxsep=0mm,arc=0mm,outer arc=0mm,attach title to upper,
+after title={: \\}, coltitle=black,colback=gray!10,colframe=black, title={#2},
+fonttitle=\bfseries,##1}}
 
 \definecolor{NoteColor}{gray}{0.85}
 \definecolor{IncompleteColor}{gray}{0.85}
@@ -50,7 +57,6 @@
 \DefineCallout{Syntax}{Syntax}{SyntaxColor}
 \DefineCallout{Lexical}{Syntax}{SyntaxColor}
 \DefineCallout{Legacy}{Legacy}{SyntaxColor}
-
 
 
 %
@@ -72,11 +78,13 @@
 \newcommand*{\Section}[2]{\section{#1}}
 \newcommand*{\SubSection}[2]{\subsection{#1}}
 \newcommand*{\SubSubSection}[2]{\subsubsection{#1}}
+\newcommand*{\Paragraph}[2]{\paragraph{#1}}
+\newcommand*{\SubParagraph}[2]{\subparagraph{#1}}
 
 
 
 \definecolor{frequency_color}{RGB}{0,176,80}
-\definecolor{keyword_color}{RGB}{0,32,96}
+\definecolor{KEYWORDCOLOR}{RGB}{0,32,96}
 \definecolor{comment_color}{RGB}{192,0,0}
 \definecolor{type_color}{RGB}{0,112,192}
 \definecolor{keyword_arg_color}{RGB}{144,155,170}
@@ -85,7 +93,7 @@
     basicstyle=\mdseries\ttfamily,
     classoffset=0,
     morekeywords={record,concrete,pass,override,virtual,input,abstract,void,mixin,primary,struct,implicit,return,where,shader,class,extends,output,true,false,extend,space,type},
-    keywordstyle=\color{keyword_color}\bfseries\ttfamily,
+    keywordstyle=\color{KEYWORDCOLOR}\bfseries\ttfamily,
     classoffset=1,
     morekeywords={@Constant,@Uniform,@Vertex,@RasterVertex,@Instance,@Fragment,@Pixel,@E,@Patch,@ControlPoint,@ShadedVertex,@AssembledVertex,@RasterVertex,@DomainVertex,@InputControlPoint,@OutputControlPoint,@InputPatch,@OutputPatch,@Sample,@Element,@CoarseVertex,@FineVertex,@Light,@R,@GeometryOutput},
     keywordstyle=\color{frequency_color}\ttfamily,
@@ -118,7 +126,7 @@ CubicGregoryQuads,Tris,Quads,DisplacementMapping,RenderToCubeMap,PointSprites,Di
     {}
 
 \newcommand{\code}[1]{\text{\lstinline[style=SlangCodeStyle]{#1}}}
-\newcommand{\kw}[1]{\text{\texttt{\textbf{\textcolor{keyword_color}{#1}}}}}
+\newcommand{\kw}[1]{\text{\texttt{\textbf{\textcolor{KEYWORDCOLOR}{#1}}}}}
 
 \newcommand{\SpecDefine}[1]{\text{\emph{#1}}}
 \newcommand{\SpecDef}[1]{\text{\emph{#1}}}

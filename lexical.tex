@@ -7,17 +7,21 @@ This chapter describes how a source unit is decomposed into a sequence of lexeme
 A \SpecDefine{source unit} comprises a sequence of zero or more characters.
 For the purposes of this document, a \SpecDefine{character} is defined as a Unicode scalar value.
 
-> **Note**: A Unicode scalar value is a Unicode code point that is not a surrogate code point.
+\begin{Note}
+A Unicode scalar value is a Unicode code point that is not a surrogate code point.
+\end{Note}
 
-> **TODO**: Need normative reference to the Unicode standard.
+\begin{Incomplete}
+Need normative reference to the Unicode standard.    
+\end{Incomplete} 
 
-Implementations *may* accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
+Implementations \emph{may} accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
 \Section{Encoding}{encoding}
 
-Implementations *must* support source units encoded using UTF-8, if they support any encoding of source units as byte sequences.
-Implementations *should* default to the UTF-8 encoding for all text input/output.
-Implementations *may* support additional implementation-specified encodings.
+Implementations \emph{must} support source units encoded using UTF-8, if they support any encoding of source units as byte sequences.
+Implementations \emph{should} default to the UTF-8 encoding for all text input/output.
+Implementations \emph{may} support additional implementation-specified encodings.
 
 \Section{Phases}{phases}
 
@@ -78,36 +82,36 @@ The presence or absence of trivia in a sequence of lexemes has no semantic impac
 
 A \SpecDefine{line break} consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
 
-> **Legacy**:
->
-> An \SpecDefine{escaped line break} is a backslash (\lstinline{\}, U+005C) follow immediately by a line break.
->
-> Before subsequent processing described in this chapter, all escaped line breaks are removed from a source unit.
-> If new escaped line breaks are introduced by this step, they are not removed.
+\begin{Legacy}
+ An \SpecDefine{escaped line break} is a backslash (\Char{\\}, U+005C) follow immediately by a line break.
+
+ Before subsequent processing described in this chapter, all escaped line breaks are removed from a source unit.
+ If new escaped line breaks are introduced by this step, they are not removed.
+\end{Legacy}
 
 A source unit is split into \SpecDefine{line}s separated by line breaks.
 
-> **Note**: Line breaks are used as line separators rather than terminators; it is not necessary for a source unit to end with a line break.
+\begin{Note}
+Line breaks are used as line separators rather than terminators; it is not necessary for a source unit to end with a line break.
+\end{Note}
 
 \Section{Comments}{comment}
 
 A \SpecDefine{comment} is either a line comment or a block comment.
 
-A \SpecDefine{line comment} comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a line break.
+A \SpecDefine{line comment} comprises two forward slashes (\Char{/}, U+002F) followed by zero or more characters that do not contain a line break.
 A line comment extends up to, but does not include, a subsequent line break or the end of the source unit.
 
-A \SpecDefine{block comment} begins with a forward slash (\Char{/}, U+002F) followed by an asterisk (`*`, U+0052). 
-A block comment is terminated by the next instance of an asterisk followed by a forward slash (`*/`).
+A \SpecDefine{block comment} begins with a forward slash (\Char{/}, U+002F) followed by an asterisk (\Char{*}, U+0052). 
+A block comment is terminated by the next instance of an asterisk followed by a forward slash (\Char{*/}).
 A block comment contains all characters between where it begins and where it terminates, including any line breaks.
 Block comments do not nest.
 It is an error if a block comment that begins in a source unit is not terminated in that source unit.
 
-> **Example**:
->
-> ```hlsl
-> // a line comment
-> /* a block comment */
-> ```
+/begin{Example}
+ // a line comment
+ /* a block comment */
+/end{Example}
 
 \SubSection{Tokens}{token}
 
@@ -123,19 +127,25 @@ It is an error if a block comment that begins in a source unit is not terminated
 
 \Section{Identifiers}{ident}
 
-An \SpecDefine{identifier} begins with an uppercase or lowercase ASCII letter (`A` through `Z`, `a` through `z`), or an underscore (\lstinline{_}).
-After the first character, ASCII digits (`0` through `9`) may also be used in an identifier.
+An \SpecDefine{identifier} begins with an uppercase or lowercase ASCII letter (\Char{A} through \Char{Z}, \Char{a} through \Char{z}), or an underscore (\lstinline{_}).
+After the first character, ASCII digits (\Char{0} through \Char{9}) may also be used in an identifier.
 
-\begin{verbatim}
-> **Syntax**:
->
-> *Identifer* ::= *IdentifierStart* *IdentiferContinue* *
->
-> *IdentifierStart* ::= `A`-`Z` | `a` - `z` | `_`
-> *IdentifierContinue* ::= *IdentifierStart* | `0`-`9`        
-\end{verbatim}
+\begin{Lexical}
+    \SynDefine{Identifer} \\
+        \SynRef{IdentifierStart} \\
+        \SynOr \SynRef{IdentiferContinue}*
 
-The identifier consistent of a single underscores (\lstinline|$_$|) is reserved by the language and must not be used by programs as a name in a declaration or binding.
+    \SynDefine{IdentifierStart} \\
+        \SynRef{ \Char{A}-\Char{Z} } \\
+        \SynOr \SynRef{\Char{a}-\Char{z}} \\
+        \SynOr \SynRef{\lstinline{_}}
+
+    \SynDefine{IdentifierContinue} \\
+        \SynRef{IdentifierStart}
+        \SynOr \SynRef{\Char{0}-\Char{9}}        
+\end{Lexical}
+
+The identifier consistent of a single underscores (\lstinline{_}) is reserved by the language and must not be used by programs as a name in a declaration or binding.
 
 \begin{Note}
 There are no other fixed keywords or reserved words recognized by the lexical grammar.
@@ -145,69 +155,77 @@ There are no other fixed keywords or reserved words recognized by the lexical gr
 
 \SubSection{Numeric Literals}{numeric}
 
-\begin{verbatim}
-A _numeric literal_ is either an integer literal or a floating-point literal.
+A \SpecDef{numeric literal} is either an integer literal or a floating-point literal.
 
-A _radix specifier_ is one of:
+A \SpecDef{radix specifier} is one of:
 
-* `0x` or `0X` to specify a _hexadecimal literal_ (radix 16)
-* `0b` or `0B` to specify a _binary literal_ (radix 2)
+\begin{enumerate}
+    \item{\Char{0x} or \Char{0X} to specify a \SpecDef{hexadecimal literal} (radix 16)}
+    \item{\Char{0b} or \Char{0B} to specify a \SpecDef{binary literal} (radix 2)}
+\end{enumerate}
+When no radix specifier is present, a numeric literal is a \SpecDef{decimal literal} (radix 10).
 
-When no radix specifier is present, a numeric literal is a _decimal literal_ (radix 10).
+/begin{Note}
+Octal literals (radix 8) are not supported.
+A \Char{0} prefix on an integer literal does *not* specify an octal literal as it does in C.
+Implementations \emph{may} warn on integer literals with a \Char{0} prefix in case users expect C behavior.
+/end{Note}
 
-> Note:
->
-> Octal literals (radix 8) are not supported.
-> A `0` prefix on an integer literal does *not* specify an octal literal as it does in C.
-> Implementations *may* warn on integer literals with a `0` prefix in case users expect C behavior.
+The grammar of the \SpecDef{digits} for a numeric level depend on its radix, as follows:
 
-The grammar of the _digits_ for a numeric level depend on its radix, as follows:
+\begin{enumerate}
+    \item{The digits of a decimal literal may include \Char{0} through \Char{9}}
+    \item{The digits of a hexadecimal literal may include \Char{0} through \Char{9}, the letters \Char{A} through \Char{F} and \Char{a} through \Char{f}. The letters represent digit values 10 through 15.}
+    \item{The digits of a binary literal may include \Char{0} and \Char{1}}
+\end{enumerate}
 
-* The digits of a decimal literal may include `0` through `9`
-* The digits of a hexadecimal literal may include `0` through `9`, the letters `A` through `F` and `a` through `f`. The letters represent digit values 10 through 15.
-* The digits of a binary literal may include `0` and `1`
+Digits for all numeric literals may also include \lstinline{_}, which are ignored and have no semantic impact.
 
-Digits for all numeric literals may also include `_`, which are ignored and have no semantic impact.
+A \SpecDef{numeric literal suffix} consists of any sequence of characters that would be a valid identifier, that does not start with \Char{e} or \Char{E}.
 
-A _numeric literal suffix_ consists of any sequence of characters that would be a valid identifier, that does not start with `e` or `E`.
-
-> **Note**:
->
-> A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
+\begin{Note}
+A leading \Char{-} (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
+\end{Note}
 
 \SubSubSection{Integer Literals}{int}
 
-An _integer literal_ consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
+An \SpecDef{integer literal} consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
 
 The suffix on an integer literal may be used to indicate the desired type of the literal:
 
-* A `u` suffix indicates the `UInt` type
-* An `l` or `ll` suffix indicates the `Int64` type
-* A `ul` or `ull` suffix indicates the `UInt64` type
+\begin{enumerate}
+    \item{A \Char{u} suffix indicates the \code{UInt} type}
+    \item{An \Char{l} or \Char{ll} suffix indicates the \code{Int64} type}
+    \item{A `ul` or `ull` suffix indicates the \code{UInt64} type}
+\end{enumerate}
 
 \SubSubSection{Floating-Point Literals}{float}
 
-A _floating-point literal_ consists of either
+A \SpecDef{floating-point literal} consists of either
 
-* An optional radix specifier, followed by digits, followed by a `.` (U+002E), followed by optional digits, an optional exponent, and an optional numeric literal suffix.
-* An optional radix specifier, followed by digits, an exponent, and an optional numeric literal suffix.
-* A `.` (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.
+\begin{enumerate}
+    \item{An optional radix specifier, followed by digits, followed by a \Char{.} (U+002E), followed by optional digits, an optional exponent, and an optional numeric literal suffix.}
+    \item{An optional radix specifier, followed by digits, an exponent, and an optional numeric literal suffix.}
+    \item{A \Char{.} (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.}
+\end{enumerate}
 
 A floating-point literal may only use dexicmal or hexadecimal radix.
 
-The _exponent_ of a floating-pointer literal consists of either `e` or `E`, followed by an optional _sign_ of `+` or `-`, followed by decimal digits.
+The \SpecDef{exponent} of a floating-pointer literal consists of either \Char{e} or \Char{E}, followed by an optional \SpecDef{sign} of \Char{+} or \Char{-}, followed by decimal digits.
 
 \SubSection{Text Literals}{text}
 
-> **Incomplete**: Need to document supported escape sequences.
+\begin{Incomplete}
+Need to document supported escape sequences.
+\end{Incomplete}
 
 \SubSubSection{String Literals}{string}
 
-A _string literal_ consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
+A \SpecDef{string literal} consists of a sequence of characters enclosed between two \Char{"}, with the constraint that any \Char{"} within the sequence must be escaped with \Char{\\}.
 
 \SubSubSection{Character Literals}{char}
 
-A _character literal_ consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
+A \SpecDef{character literal} consists of a sequence of characters enclosed between two \Char{'}, with the constraint that any \Char{'} within the sequence must be escaped with \Char{\\}.
 
 The sequence of characters within a character literal must represent a single character.
 
@@ -217,55 +235,57 @@ The following table defines tokens that are used as operators and punctuation in
 When a given sequence of characters could be interpreted as starting with more than one of the following tokens, the longest matching token is used.
 The name or names given to tokens by this table may be used in the rest of this document to refer to those tokens.
 
-| Token | Name(s) |
-|-------|------|
-|   `` ` `` | backtick |
-| `~` | tilde |
-| `!` | exclamation mark |
-| `@` | at sign |
-| `$` | dollar sign |
-| `%` | percent sign |
-| `^` | caret |
-| `&` | ampersand |
-| `*` | asterisk, multiplication operator |
-| `(` | left parenthesis |
-| `)` | right parenthesis |
-| `-` | minus sign, subtraction operator |
-| `=` | equals sign, assignment operator |
-| `+` | plus sign, addition operator |
-| `[` | left square bracket, opening square bracket |
-| `]` | right square bracket, closing square bracket |
-| `{` | left curly brace, opening curly brace |
-| `}` | right curly brace, closing curly brace |
-| `|` | pipe |
-| `;` | semicolon |
-| `:` | colon |
-| `,` | comma |
-| `.` | dot |
-| `<` | less-than sign, less-than operator |
-| `>` | greater-than sign, greater-than operator |
-| `/` | slash, division operator |
-| `?` | question mark |
-| `==` | double-equals, equal-to operator |
-| `!=` | not-equal operator |
-| `%=` | modulo-assign operator |
-| `+=` | add-assign operator |
-| `^=` | xor-assign operator |
-| `&=` | and-assign operator |
-| `*=` | multiply-assign operator |
-| `-=` | subtract-assign operator |
-| `|=` | or-assign operator |
-| `<=` | less-than-or-equal-to operator |
-| `>=` | greater-than-or-equal-to operator |
-| `/=` | divide-assign operator |
-| `&&` | and-and operator |
-| `--` | decrement operator |
-| `++` | increment operator |
-| `||` | or-or operator |
-| `<<` | left shift operator |
-| `>>` | right shift operator |
-| `...` | ellipsis |
-| `::` | double colon, scope operator |
-| `->` | arrow |
-
-\end{verbatim}
+\begin{tabular}{ |c|c| }
+  \hline
+  Token & Name(s) \\
+  \hline
+  \Char{`} & backtick \\
+  \textasciitilde & tilde \\
+  \Char{!} & exclamation mark \\
+  \Char{@} & at sign \\
+  \$ & dollar sign \\
+  \Char{\%} & percent sign \\
+  \^{} & caret \\
+  \Char{&} & ampersand \\
+  \Char{*} & asterisk, multiplication operator \\
+  \Char{(} & left parenthesis \\
+  \Char{)} & right parenthesis \\
+  \Char{-} & minus sign, subtraction operator \\
+  \Char{=} & equals sign, assignment operator \\
+  \Char{+} & plus sign, addition operator \\
+  \Char{[} & left square bracket, opening square bracket \\
+  \Char{]} & right square bracket, closing square bracket \\
+  \Char{\{} & left curly brace, opening curly brace \\
+  \Char{\}} & right curly brace, closing curly brace \\
+  \textbar & pipe \\
+  \Char{;} & semicolon \\
+  \Char{:} & colon \\
+  \Char{,} & comma \\
+  \Char{.} & dot \\
+  \Char{<} & less-than sign, less-than operator \\
+  \Char{>} & greater-than sign, greater-than operator \\
+  \Char{/} & slash, division operator \\
+  \Char{?} & question mark \\
+  \Char{==} & double-equals, equal-to operator \\
+  \Char{!=} & not-equal operator \\
+  \Char{\%=} & modulo-assign operator \\
+  \Char{+=} & add-assign operator \\
+  \^{}\Char{=} & xor-assign operator \\
+  \Char{&=} & and-assign operator \\
+  \Char{*=} & multiply-assign operator \\
+  \Char{-=} & subtract-assign operator \\
+  \textbar\Char{=} & or-assign operator \\
+  \Char{<=} & less-than-or-equal-to operator \\
+  \Char{>=} & greater-than-or-equal-to operator \\
+  \Char{/=} & divide-assign operator \\
+  \Char{&&} & and-and operator \\
+  \Char{--} & decrement operator \\
+  \Char{++} & increment operator \\
+  \textbar\textbar & or-or operator \\
+  \Char{<<} & left shift operator \\
+  \Char{>>} & right shift operator \\
+  \Char{...} & ellipsis \\
+  \Char{::} & double colon, scope operator \\
+  \Char{->} & arrow \\
+  \hline
+\end{tabular}

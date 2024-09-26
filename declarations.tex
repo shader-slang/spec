@@ -45,6 +45,241 @@ The output environment of an empty production is its input environment.
 
 When we say that a declaration \SpecDefine{introduces} a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
+
+\Section{Shared Concepts}{shared}
+
+\SubSection{Bodies}
+\SubSection{Bases}
+\SubSection{Parameters}
+\SubSection{Accessors}
+
+\Section{Generics}{generic}
+
+\Section{Type Declarations}{type}
+
+A \SpecDef{type declaration} introduces a binding to a type.
+
+\begin{Syntax}
+    \SynDefine{TypeDeclaration} \\
+        \SynRef{AggregateTypeDeclaration} \\
+        \SynOr \SynRef{EnumDeclaration} \\
+        \SynOr \SynRef{TypeAliasDeclaration} \\
+\end{Syntax}
+
+\SubSection{Aggregate Types}{struct}
+
+\begin{Syntax}
+    \SynDefine{AggregateTypeDeclaration} \\
+        (\code{struct} \SynOr \code{class} \SynOr \code{interface}) \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{BasesClause}\SynOpt
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \SynRef{DeclarationBodyClause} \code{;}\SynOpt\\
+
+    \SynDefine{DeclarationBodyClause} \\
+        \lstinline|{| Declaration\SynStar \lstinline|}| 
+\end{Syntax}
+
+An \SpecDef{aggregate type declaration} is either a \SpecDef{\kw{struct} declaration}, a \SpecDef{\kw{class} declaration}, or an \SpecDef{\kw{interface} declaration}.
+
+The declarations in the body clause of an aggregate type declaration are referred the \SpecDef{members} of that declaration.
+
+\SubSubSection{Instance and Static Members}{static}
+
+Members of an aggregate type may me marked with a \kw{static} modifier, in which case they are \SpecDef{static members} of the type.
+Members not marked with \kw{static} are \SpecDef{instance members} of the type.
+
+Static members are referenced through the type itself.
+Instance members are referened through values that are instances of the type.
+
+\SubSubSection{Fields}{field}
+
+Variable declarations that are instance members of an aggregate type declaration are also referred to as the \SpecDef{fields} of the aggregate type declaration.
+
+\SubSubSection{Methods}{method}
+
+Function declarations that are instance members of an aggregate type declaration are also referred to as \SpecDef{methods}.
+
+By default, the implicit \kw{this} parameter of a method acts has a direction of \kw{in}.
+A method of a \kw{struct} type declaration may be modified with the \code{[mutating]} attribute, in which case the implicit \kw{this} parameter has a direction of \kw{inout}.
+
+\SubSection{Bases}{bases}
+
+\begin{Syntax}
+    \SynDefine{BasesClause} \\
+        \code{:} \SynRef{Base} (\code{,} \SynRef{Base})\SynStar
+
+    \SynDefine{Base} \\
+        \SynRef{TypeExpression}
+\end{Syntax}
+
+An aggregate type declaration has zero or more \SpecDef{bases}.
+If an aggregate type declaration has no bases clause, then it has zero bases;
+otherwise, the bases of the aggregate type declaration are the types identified by each \SynRef{Base} in that clause.
+
+The list of bases of a \kw{struct} declaration must consist of:
+
+\begin{itemize}
+\item at most one \kw{struct} type
+\item zero or more interface types
+\end{itemize}
+
+
+The list of bases of a \kw{class} declaration must consist of:
+
+\begin{itemize}
+\item at most one \kw{class} type
+\item zero or more interface types
+\end{itemize}
+
+The list of bases of an \kw{interface} declaration must consist of:
+
+\begin{itemize}
+\item zero or more interface types
+\end{itemize}
+
+\begin{Legacy}
+\SubSection{Syntax Details}{syntax}
+
+The body clause of an aggregate type declaration may end with a semicolon (\code{;}).
+The body clause of an aggregate type declaration \emph{must} end with a semicolon if there are any tokens between the closing \lstinline|}| token and the next line break that follows it.
+
+\begin{Note}
+Put more simply: a closing \code{;} is not required on an aggregate type declaration \emph{so long} as there is nothing but trivia after it on the same line.
+\end{Note}
+
+\end{Legacy}
+
+\begin{Legacy}
+\SubSection{Aggregate Type Specifiers}{type-specifier}
+
+An aggregate type declaration may be used as a type specififer in declarations using traditional syntax.
+
+When an aggregate type declaration is used as a type specififer, the closing \lstinline|}| of its body must be followed by another token on the same line.
+
+\end{Legacy}
+
+\SubSection{\kw{enum} Declarations}{enum}
+
+\begin{Syntax}
+    \SynDefine{EnumDeclaration} \\
+        \code{enum} \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{BasesClause}\SynOpt
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \SynRef{EnumBody} \code{;}\SynOpt\\
+
+    \SynDefine{EnumBody} \\
+        \SynRef{TraditionalEnumBody} \\
+        \SynOr \SynRef{DeclarationBody}
+\end{Syntax}
+
+An \SpecDef{\kw{enum} declaration} introduces a binding for a type whose instances value into one or more cases.
+
+An \kw{enum} declaration that has a declaration body is a \SpecDef{modern \kw{enum} declaration}.
+A \kw{enum} declaration that has a traditional \kw{enum} body is a \SpecDef{traditional \kw{enum} declaration}.
+
+An \kw{enum} declaration may have a bases clause, in which case the list of bases must consist of:
+
+\begin{itemize}
+\item at most one proper type; if present, this determines an \SpecDef{underlying type} for the \kw{enum} declaration.
+\item zero or more interface types
+\end{itemize}
+
+A traditional \kw{enum} declaration always has an underlying type.
+If an underlying type is not specified in the bases list of a traditional \kw{enum} declaration, then the underlying type of that declaration is \code{Int}.
+The underlying type of a traditional \kw{enum} declaration must be a built-in integer type.
+
+A modern \kw{enum} declaration must not specify an underlying type.
+
+\SubSubSection{Cases}{case}
+
+\begin{Syntax}
+    \SynDefine{CaseDeclaration} \\
+        \code{case} \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
+        
+    \SynDefine{TraditionalEnumBody} \\
+        \lstinline|{| (TraditionalCaseDeclaration \code{,})\SynStar \lstinline|}| \\
+
+    \SynDefine{TraditionalCaseDeclaration} \\
+        \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
+\end{Syntax}
+
+The possible values of an \kw{enum} type are determined by the \SpecDef{case declarations} in its body.
+An \kw{enum} type has one case for each case declaration in its body.
+
+The case declarations in a modern \kw{enum} declaration are declared using the \kw{case} keyword.
+The case declarations in a traditional \kw{enum} body are \SpecDef{traditional case declarations}.
+
+Each case of a traditional \kw{enum} declaration has an \SpecDef{underlying value}, that is a value of the underlying type of that \kw{enum} declaration.
+When a traditional case declaration includes an initial-value expression, its underlying value is the result of evaluating that expression, with the underlying type of the \kw{enum} declaration as the expected type.
+The underlying value of a traditional case declaration must be an compile-time-constant integer value.
+If a traditional case declaration does not have an initial-value expression, then its underlying value is one greater than the underlying value of the preceding case declaration, or zero if there is no preceding case declaration.
+
+Case declarations are implicitly static.
+
+%
+%\SubSection{Conversions}{conv}
+%
+%A value of an enumeration type can be implicitly converted to a value of its tag %type:
+%
+%```hlsl
+%int r = Color.Red;
+%```
+%
+%Values of the tag type can be explicitly converted to the enumeration type:
+%
+%```hlsl
+%Color red = Color(r);
+%```
+
+\SubSection{Type Aliases}{alias}
+
+A \SpecDef{type alias declaration} introduces a binding that resolves to some other type.
+
+\begin{Syntax}
+    \SynDefine{TypeAliasDeclaration} \\
+        \SynRef{ModernTypeAliasDeclaration}
+        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
+
+    \SynDefine{ModernTypeAliasDeclaration} \\
+        \code{typealias} \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{GenericWhereClause}\SynOpt \\
+        \code{=} \SynRef{TypeExpr} \code{;}
+\end{Syntax}
+
+\begin{Legacy}
+
+\SubSubSection{Traditional Syntax}{legacy}
+
+A type alias may also be declared using a \SpecDef{traditional type alias declaration}.
+
+\begin{Syntax}
+    \SynDefine{TraditionalTypeAliasDeclaration} \\
+        \code{typedef} \SynRef{TypeSpecifier} \SynRef{Declarator} \code{;}
+        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
+\end{Syntax}
+
+\end{Legacy}
+
+\SubSection{Associated Types}{assoc}
+
+An \SpecDef{associated type declaration} introduces a type requirement to an \kw{interface} declaration.
+
+\begin{Syntax}
+    \SynDefine{AssociatedTypeDeclaration} \\
+        \code{associatedtype} \SynRef{Identifier} \\
+        \SynRef{GenericParametersClause}\SynOpt \\
+        \SynRef{BasesClause}\SynOpt \\
+        \SynRef{GenericWhereClause}\SynOpt \code{;}
+\end{Syntax}
+
+An associated type declaration may only appear as a member declaration of an \kw{interface} declaration.
+
+%An associated type declaration introduces a type into the signature of an interface, without specifying the exact concrete type to use.
+%An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement:
+
 \Section{Variables}{var}
 
 \begin{Syntax}
@@ -330,230 +565,6 @@ A \SpecDef{traditional function declaration} is a function declaration that uses
 \SubSection{Entry Points}{entry}
 
 An \SpecDef{entry point} declaration is a function declaration that can be used as the starting point of execution for a thread.
-
-\Section{Type Declarations}{type}
-
-A \SpecDef{type declaration} introduces a binding to a type.
-
-\begin{Syntax}
-    \SynDefine{TypeDeclaration} \\
-        \SynRef{AggregateTypeDeclaration} \\
-        \SynOr \SynRef{TypeAliasDeclaration} \\
-\end{Syntax}
-
-\SubSection{Aggregate Type Declarations}{struct}
-
-\begin{Syntax}
-    \SynDefine{AggregateTypeDeclaration} \\
-        (\code{struct} \SynOr \code{class} \SynOr \code{interface}) \SynRef{Identifier} \\
-        \SynRef{GenericParametersClause}\SynOpt \\
-        \SynRef{BasesClause}\SynOpt
-        \SynRef{GenericWhereClause}\SynOpt \\
-        \SynRef{DeclarationBodyClause} \code{;}\SynOpt\\
-
-    \SynDefine{DeclarationBodyClause} \\
-        \lstinline|{| Declaration\SynStar \lstinline|}| 
-\end{Syntax}
-
-An \SpecDef{aggregate type declaration} is either a \SpecDef{\kw{struct} declaration}, a \SpecDef{\kw{class} declaration}, or an \SpecDef{\kw{interface} declaration}.
-
-The declarations in the body clause of an aggregate type declaration are referred the \SpecDef{members} of that declaration.
-
-\SubSubSection{Instance and Static Members}{static}
-
-Members of an aggregate type may me marked with a \kw{static} modifier, in which case they are \SpecDef{static members} of the type.
-Members not marked with \kw{static} are \SpecDef{instance members} of the type.
-
-Static members are referenced through the type itself.
-Instance members are referened through values that are instances of the type.
-
-\SubSubSection{Fields}{field}
-
-Variable declarations that are instance members of an aggregate type declaration are also referred to as the \SpecDef{fields} of the aggregate type declaration.
-
-\SubSubSection{Methods}{method}
-
-Function declarations that are instance members of an aggregate type declaration are also referred to as \SpecDef{methods}.
-
-By default, the implicit \kw{this} parameter of a method acts has a direction of \kw{in}.
-A method of a \kw{struct} type declaration may be modified with the \code{[mutating]} attribute, in which case the implicit \kw{this} parameter has a direction of \kw{inout}.
-
-\SubSection{Bases}{bases}
-
-\begin{Syntax}
-    \SynDefine{BasesClause} \\
-        \code{:} \SynRef{Base} (\code{,} \SynRef{Base})\SynStar
-
-    \SynDefine{Base} \\
-        \SynRef{TypeExpression}
-\end{Syntax}
-
-An aggregate type declaration has zero or more \SpecDef{bases}.
-If an aggregate type declaration has no bases clause, then it has zero bases;
-otherwise, the bases of the aggregate type declaration are the types identified by each \SynRef{Base} in that clause.
-
-The list of bases of a \kw{struct} declaration must consist of:
-
-\begin{itemize}
-\item at most one \kw{struct} type
-\item zero or more interface types
-\end{itemize}
-
-
-The list of bases of a \kw{class} declaration must consist of:
-
-\begin{itemize}
-\item at most one \kw{class} type
-\item zero or more interface types
-\end{itemize}
-
-The list of bases of an \kw{interface} declaration must consist of:
-
-\begin{itemize}
-\item zero or more interface types
-\end{itemize}
-
-\begin{Legacy}
-\SubSection{Syntax Details}{syntax}
-
-The body clause of an aggregate type declaration may end with a semicolon (\code{;}).
-The body clause of an aggregate type declaration \emph{must} end with a semicolon if there are any tokens between the closing \lstinline|}| token and the next line break that follows it.
-
-\begin{Note}
-Put more simply: a closing \code{;} is not required on an aggregate type declaration \emph{so long} as there is nothing but trivia after it on the same line.
-\end{Note}
-
-\end{Legacy}
-
-\begin{Legacy}
-\SubSection{Aggregate Type Specifiers}{type-specifier}
-
-An aggregate type declaration may be used as a type specififer in declarations using traditional syntax.
-
-When an aggregate type declaration is used as a type specififer, the closing \lstinline|}| of its body must be followed by another token on the same line.
-
-\end{Legacy}
-
-\Section{\kw{enum} Declarations}{enum}
-
-\begin{Syntax}
-    \SynDefine{EnumDeclaration} \\
-        \code{enum} \SynRef{Identifier} \\
-        \SynRef{GenericParametersClause}\SynOpt \\
-        \SynRef{BasesClause}\SynOpt
-        \SynRef{GenericWhereClause}\SynOpt \\
-        \SynRef{EnumBody} \code{;}\SynOpt\\
-
-    \SynDefine{EnumBody} \\
-        \SynRef{TraditionalEnumBody} \\
-        \SynOr \SynRef{DeclarationBody}
-\end{Syntax}
-
-An \SpecDef{\kw{enum} declaration} introduces a binding for a type whose instances value into one or more cases.
-
-An \kw{enum} declaration that has a declaration body is a \SpecDef{modern \kw{enum} declaration}.
-A \kw{enum} declaration that has a traditional \kw{enum} body is a \SpecDef{traditional \kw{enum} declaration}.
-
-An \kw{enum} declaration may have a bases clause, in which case the list of bases must consist of:
-
-\begin{itemize}
-\item at most one proper type; if present, this determines an \SpecDef{underlying type} for the \kw{enum} declaration.
-\item zero or more interface types
-\end{itemize}
-
-A traditional \kw{enum} declaration always has an underlying type.
-If an underlying type is not specified in the bases list of a traditional \kw{enum} declaration, then the underlying type of that declaration is \code{Int}.
-The underlying type of a traditional \kw{enum} declaration must be a built-in integer type.
-
-A modern \kw{enum} declaration must not specify an underlying type.
-
-\SubSection{Cases}{case}
-
-\begin{Syntax}
-    \SynDefine{CaseDeclaration} \\
-        \code{case} \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
-        
-    \SynDefine{TraditionalEnumBody} \\
-        \lstinline|{| (TraditionalCaseDeclaration \code{,})\SynStar \lstinline|}| \\
-
-    \SynDefine{TraditionalCaseDeclaration} \\
-        \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
-\end{Syntax}
-
-The possible values of an \kw{enum} type are determined by the \SpecDef{case declarations} in its body.
-An \kw{enum} type has one case for each case declaration in its body.
-
-The case declarations in a modern \kw{enum} declaration are declared using the \kw{case} keyword.
-The case declarations in a traditional \kw{enum} body are \SpecDef{traditional case declarations}.
-
-Each case of a traditional \kw{enum} declaration has an \SpecDef{underlying value}, that is a value of the underlying type of that \kw{enum} declaration.
-When a traditional case declaration includes an initial-value expression, its underlying value is the result of evaluating that expression, with the underlying type of the \kw{enum} declaration as the expected type.
-The underlying value of a traditional case declaration must be an compile-time-constant integer value.
-If a traditional case declaration does not have an initial-value expression, then its underlying value is one greater than the underlying value of the preceding case declaration, or zero if there is no preceding case declaration.
-
-Case declarations are implicitly static.
-
-%
-%\SubSection{Conversions}{conv}
-%
-%A value of an enumeration type can be implicitly converted to a value of its tag %type:
-%
-%```hlsl
-%int r = Color.Red;
-%```
-%
-%Values of the tag type can be explicitly converted to the enumeration type:
-%
-%```hlsl
-%Color red = Color(r);
-%```
-
-\SubSection{Type Aliases}{alias}
-
-A \SpecDef{type alias declaration} introduces a binding that resolves to some other type.
-
-\begin{Syntax}
-    \SynDefine{TypeAliasDeclaration} \\
-        \SynRef{ModernTypeAliasDeclaration}
-        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
-
-    \SynDefine{ModernTypeAliasDeclaration} \\
-        \code{typealias} \SynRef{Identifier} \\
-        \SynRef{GenericParametersClause}\SynOpt \\
-        \SynRef{GenericWhereClause}\SynOpt \\
-        \code{=} \SynRef{TypeExpr} \code{;}
-\end{Syntax}
-
-\begin{Legacy}
-
-\SubSubSection{Traditional Syntax}{legacy}
-
-A type alias may also be declared using a \SpecDef{traditional type alias declaration}.
-
-\begin{Syntax}
-    \SynDefine{TraditionalTypeAliasDeclaration} \\
-        \code{typedef} \SynRef{TypeSpecifier} \SynRef{Declarator} \code{;}
-        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
-\end{Syntax}
-
-\end{Legacy}
-
-\SubSection{Associated Types}{assoc}
-
-An \SpecDef{associated type declaration} introduces a type requirement to an \kw{interface} declaration.
-
-\begin{Syntax}
-    \SynDefine{AssociatedTypeDeclaration} \\
-        \code{associatedtype} \SynRef{Identifier} \\
-        \SynRef{GenericParametersClause}\SynOpt \\
-        \SynRef{BasesClause}\SynOpt \\
-        \SynRef{GenericWhereClause}\SynOpt \code{;}
-\end{Syntax}
-
-An associated type declaration may only appear as a member declaration of an \kw{interface} declaration.
-
-%An associated type declaration introduces a type into the signature of an interface, without specifying the exact concrete type to use.
-%An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement:
 
 \Section{Constructors}{init}
 

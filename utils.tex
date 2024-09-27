@@ -58,6 +58,9 @@ fonttitle=\bfseries,##1}}
 \DefineCallout{Lexical}{Syntax}{SyntaxColor}
 \DefineCallout{Legacy}{Legacy}{SyntaxColor}
 \DefineCallout{Rationale}{Rationale}{SyntaxColor}
+\DefineCallout{Example}{Example}{SyntaxColor}
+\DefineCallout{Semantics}{Semantics}{SyntaxColor}
+\DefineCallout{Checking}{Checking}{SyntaxColor}
 
 %
 %\definecolor{ListingKeywordColor}{gray}{0.5}
@@ -135,8 +138,21 @@ CubicGregoryQuads,Tris,Quads,DisplacementMapping,RenderToCubeMap,PointSprites,Di
 \newcommand{\SynRef}[1]{\text{\emph{#1}}}
 \newcommand{\SynOr}{\text{ $\vert$ }}
 \newcommand{\SynStar}{\text{*}}
+\newcommand{\SynPlus}{\text{+}}
 \newcommand{\SynOpt}{\text{?}}
 
-\newcommand{\MetaVar}[1]{\textbf{#1}}
+\newcommand{\MetaDef}[1]{\textbf{$\mathbb{#1}$}}
+\newcommand{\SynComment}[1]{\small{// #1}}
+
+\newcommand{\MetaVar}[1]{\textbf{$\mathbb{#1}$}}
+
+\newcommand{\ContextVarA}{$\Gamma$}
+\newcommand{\ContextVarB}{$\Delta$}
+\newcommand{\ContextVarC}{$\Theta$}
+\newcommand{\ContextVarD}{$\Phi$}
+
+\newcommand{\BindingVarX}{$\alpha$}
+\newcommand{\ContextVarY}{$\beta$}
 
 \newcommand{\Char}[1]{\code{#1}}
+

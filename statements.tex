@@ -1,57 +1,114 @@
 \Chapter{Statements}{stmt}
 
-Statements are used to define the bodies of functions and deterine order of evaluation and control flow for an entire program.
-Statements are distinct from expressions in that statements do not yield results and do not have types.
+A \SpecDef{statement} is an entity in the abstract syntax that describes actions to be taken by a thread.
+Statements are executed for their effect, rather than evaluated to produce a value.
 
-This section lists the kinds of statements supported by Slang.
+\begin{Syntax}
+	\SynDefine{Statement} \\
+		\SynRef{ExpressionStatement} \\
+		\SynOr \SynRef{DeclarationStatement} \\
+		\SynOr \SynRef{BlockStatement} \\
+		\SynOr \SynRef{EmptyStatement} \\
+		\SynOr \SynRef{IfStatement} \\
+		\SynOr \SynRef{SwitchStatement} \\
+		\SynOr \SynRef{CaseStmt} \\
+		\SynOr \SynRef{ForStatement} \\
+		\SynOr \SynRef{WhileStatement} \\
+		\SynOr \SynRef{DoWhileStatement} \\
+		\SynOr \SynRef{BreakStatement} \\
+		\SynOr \SynRef{ContinueStatement} \\
+		\SynOr \SynRef{ReturnStatement} \\
+		\SynOr \SynRef{DiscardStatement} \\
+		\SynOr \SynRef{LabeledStatement} \\
+\end{Syntax}
 
 \Section{Expression Statement}{expr}
 
-An expression statement consists of an expression followed by a semicolon:
+\begin{Syntax}
+	\SynDefine{ExpressionStatement} \\
+		\SynRef{Expression} \code{;}
+\end{Syntax}
 
-\begin{codeblock}
-doSomething();
-a[10] = b + 1;
-\end{codeblock}
+An \SpecDef{expression statement} evaluates an expression, and then ignores the resulting value.
+An implementation may diagnose a warning when evaluating the expression of an expression statement cannot have side effects.
 
-An implementation may warn on an expression statement that has to effect on the results of execution.
+\begin{Checking}
+
+\SynthJudgement{\ContextVarA}{\MetaVar{E}}{\code{T}}{\ContextVarB} \\
+\CheckStmt{\ContextVarA}{\MetaVar{E} \code{;}}{\ContextVarB}
+
+\end{Checking}
 
 \Section{Declaration Statement}{decl}
 
-A declaration may be used as a statement:
+\begin{Syntax}
+	\SynDefine{DeclarationStatement} \\
+		\SynRef{Declaration}
+\end{Syntax}
 
-\begin{codeblock}
-let x = 10;
-var y = x + 1;
-int z = y - x;
-\end{codeblock}
+A \SpecDef{declaration statement} introduces whatever bindings the \SynRef{Declaration} declares into the current scope.
 
-\begin{Note}
-Currently only variable declarations are allowed in statement contexts, but other kinds of declarations may be enabled in the future.
-\end{Note}
+The following types of declarations may be used in a declaration statement:
+
+\begin{itemize}
+\item \SynRef{VariableDeclaration}
+\end{itemize}
+
+\begin{Checking}
+
+\CheckDecl{\ContextVarA}{\MetaVar{D}}{\ContextVarB} \\
+\CheckStmt{\ContextVarA}{\MetaVar{D} \code{;}}{\ContextVarB}
+
+\end{Checking}
 
 \Section{Block Statement}{block}
 
-A block statement consists of zero or more statements wrapped in curly braces \Char{\{}\Char{\}}:
+\begin{Syntax}
+	\SynDefine{BlockStatement} \\
+		\lstinline|{| \SynRef{Statement}\SynStar \lstinline|}|
+\end{Syntax}
 
-\begin{codeblock}
-{
-	int x = 10;
-	doSomething(x);
-}
-\end{codeblock}
+A block statement extends the current environment with a fresh scope,
+and then executes each of its constituent statements in order.
+The output environment is the input environment.
 
-A block statement provides local scoping to declarations.
-Declarations in a block are visible to later statements in the same block, but not to statements or expressions outside of the block.
+\begin{Note}
+Declarations in a block statement are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.
+\end{Note}
+
+\begin{Checking}
+
+	\CheckStmt{\ContextVarA}{ \MetaVar{S}... }{\ContextVarB} \\
+	\CheckStmt{\ContextVarA}{ \lstinline|lcurly| \MetaVar{S}... \lstinline|rcurly| }{\ContextVarA} \\
+
+	.\\
+
+	\CheckStmt{\ContextVarA}{ \MetaVar{S} }{\ContextVarB} \\
+	\CheckStmt{\ContextVarB}{ \MetaVar{T}... }{\ContextVarC} \\
+	\CheckStmt{\ContextVarA}{ \MetaVar{S} \MetaVar{T}... }{\ContextVarC} \\
+
+\end{Checking}
 
 \Section{Empty Statement}{empty}
 
 A single semicolon (\Char{;}) may be used as an empty statement equivalent to an empty block statement \Char{\{}\Char{\}}.
 
+\begin{Syntax}
+	\SynDefine{EmptyStatement} \\
+		\code{;}
+\end{Syntax}
+
+Executing an empty statement has no effect.
+
+\begin{Checking}
+
+	\CheckStmt{\ContextVarA}{ \code{;} }{\ContextVarA}
+
+\end{Checking}
+
 \Section{Conditional Statements}{cond}
 
 \SubSection{If Statement}{if}
-
 
 An \SpecDef{if statement} consists of the \code{if} keyword and a conditional expression in parentheses, followed by a statement to execute if the condition is true:
 
@@ -69,37 +126,67 @@ else
 	doNothing();
 \end{codeblock}
 
+\begin{Syntax}
+	\SynDefine{IfStatement} \\
+		\code{if} \code{(} \code{Condition} \code{)} \\
+		\SynRef{ThenClause} \\
+		\SynRef{ElseClause}\SynOpt
+
+	\SynDefine{Condition} \\
+		\SynRef{Expression}
+		\SynOr \SynRef{LetDeclaration}
+		
+	\SynDefine{ThenClause} \\
+		\SynRef{Statement}
+
+	\SynDefine{ElseClause} \\
+		\code{else} \SynRef{Statement}
+\end{Syntax}
+
+An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
+
+If the condition of an \kw{if} statement is an expression, then it is evaluated against an expected type of \code{Bool} to yield a value \MetaVar{C}.
+If \MetaVar{C} is \code{true}, then the \SynRef{ThenClause} is executed.
+If \MetaVar{C} is \code{false} and there is a \SynRef{ElseClause}, then it is executed.
+
+If the condition of an \kw{if} statement is a \kw{let} declaration, then that declaration must have an initial-value expression.
+That initial-value expression is evaluated against an expected type of \lstinline[style=SlangCodeStyle]|Optional<$\MetaVar{T}$>|, where \MetaVar{T} is a fresh type variable, to yield a value \MetaVar{D}.
+If \MetaVar{D} is \lstinline[style=SlangCodeStyle]|Some($\MetaVar{C}$)|, then the \SynRef{ThenClause} is executed, in an environment where the name of the \kw{let} declaration is bound to \MetaVar{C}.
+If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is executed.
+
+\begin{Checking}
+
+\CheckJudgement{\ContextVarA}{\code{c}}{\code{Bool}}{\ContextVarB} \\
+\CheckStmt{\ContextVarB}{\MetaVar{T}}{\ContextVarC} \\
+\CheckStmt{\ContextVarB}{\MetaVar{E}}{\ContextVarD} \\
+\CheckStmt{\ContextVarA}{\code{if(c)} \MetaVar{T} \code{else} \MetaVar{E}}{\ContextVarA}
+
+\end{Checking}
+
 \SubSection{Switch Statement}{switch}
 
 A \SpecDef{switch statement} consists of the \code{switch} keyword followed by an expression wrapped in parentheses and a \SpecDef{body statement}:
 
-\begin{codeblock}
-switch(someValue)
-{
-	...
-}
-\end{codeblock}
+\begin{Syntax}
+	\SynDefine{SwitchStatement} \\
+		\code{switch} \code{(} \code{Expression} \code{)} \\
+		\lstinline|{| \SynRef{SwitchAlternative} \lstinline|}|
 
-The body of a switch statement must be a block statement, and its body must consist of switch case clauses.
-A \SpecDef{switch case clause} consists of one or more case labels or default labels, followed by one or more statements:
+	\SynDefine{SwitchAlternative} \\
+		\SynRef{SwitchAlternativeLabel}\SynPlus \SynRef{Statement}\SynPlus
 
-\begin{codeblock}
-// this is a switch case clause
-case 0:
-case 1:
-    doBasicThing();
-    break;
+	\SynDefine{SwitchAlternativeLabel} \\
+		\SynRef{CaseClause}
+		\SynOr{DefaultClause}
+	
+	\SynDefine{CaseClause} \\
+		\code{case} \SynRef{Expression} \code{:}
+	
+	\SynDefine{DefaultClause} \\
+		\code{default} \code{;}
+\end{Syntax}
 
-// this is another switch case clause
-default:
-    doAnotherThing();
-    break;
-\end{codeblock}
-
-A \SpecDef{case label} consists of the keyword \code{case} followed by an expresison and a colon (\Char{:}).
-The expression must evaluate to a compile-time constant integer.
-
-A \SpecDef{default label} consists of the keyword \code{default} followed by a colon (\Char{:}).
+A \SpecDef{\kw{switch} statement} conditionally executes up to one of its \SpecDef{alternatives}, based on the value of an expression.
 
 It is an error for a case label or default label to appear anywhere other than the body of a \code{switch} statement.
 It is an error for a statement to appear inside the body of a \code{switch} statement that is no part of a switch case clause.
@@ -199,31 +286,3 @@ The value returned must be able to coerce to the result type of the lexically en
 A \code{discard} statement can only be used in the context of a fragment shader, in which case it causes the current invocation to terminate and the graphics system to discard the corresponding fragment so that it does not get combined with the framebuffer pixel at its coordinates.
 
 Operations with side effects that were executed by the invocation before a \code{discard} will still be performed and their results will become visible according to the rules of the platform.
-
-\Section{Compile-Time For Statement}{for.compile-time}
-
-A \SpecDef{compile-time for statement} is used as an alternative to preprocessor techniques for loop unrolling.
-It looks like:
-
-\begin{codeblock}
-$\mbox{\textdollar}$for( <name> in Range(<initial-value>, <upper-bound>)) <body statement>
-\end{codeblock}
-
-The \SpecDef{initial value} and \SpecDef{upper bound} expressions must be compile-time constant integers.
-The semantics of a compile-time for statement are as if it were expanded into:
-
-\begin{codeblock}
-{
-	let <name> = <initial-value>;
-	<body statement>
-}
-{
-	let <name> = <initial-value> + 1;
-	<body statement>
-}
-...
-{
-	let <name> = <upper-bound> - 1;
-	<body statement>
-}
-\end{codeblock}

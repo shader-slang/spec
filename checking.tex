@@ -1,0 +1,23 @@
+\Chapter{Semantic Checking}{check}
+
+\newcommand{\SynthJudgement}[4]{#1 $\vdash$ #2 $\Rightarrow$ #3 $\vdash$ #4}
+\newcommand{\CheckJudgement}[4]{#1 $\vdash$ #2 $\Leftarrow$ #3 $\vdash$ #4}
+
+\newcommand{\CheckType}[3]{#1 $\vdash$ \code{type} #2 $\vdash$ #3}
+
+\newcommand{\CheckStmt}[3]{#1 $\vdash$ #2 OK $\vdash$ #3}
+\newcommand{\CheckDecl}[3]{#1 $\vdash$ #2 OK $\vdash$ #3}
+
+\begin{Checking}
+
+\SynthJudgement{\ContextVarA}{\code{t}}{\code{T}}{\ContextVarB}
+\SynComment{under context \ContextVarA, term \code{t} synthesizes type \code{T}, with output context \ContextVarB} \\
+
+\CheckJudgement{\ContextVarA}{\code{t}}{\code{T}}{\ContextVarB}
+\SynComment{under context \ContextVarA, term \code{t} checks against type \code{T}, with output context \ContextVarB} \\
+
+\CheckStmt{\ContextVarA}{\MetaVar{S}}{\ContextVarB}
+\SynComment{under context \ContextVarA, statement \MetaVar{S} checks, with output context \ContextVarB} \\
+
+\end{Checking}
+

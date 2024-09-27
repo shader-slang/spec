@@ -249,6 +249,14 @@ A \SpecDef{type alias declaration} introduces a binding that resolves to some ot
         \code{=} \SynRef{TypeExpr} \code{;}
 \end{Syntax}
 
+\begin{Checking}
+
+\CheckType{\ContextVarA}{\MetaVar{T}}{\ContextVarB} \\
+\CheckDecl{\ContextVarA}{\code{typealias} \MetaVar{A} = \MetaVar{T}\code{;}}{\ContextVarA,\code{type}\MetaVar{A}\code{=}\MetaVar{T}}
+
+\end{Checking}
+    
+
 \begin{Legacy}
 
 \SubSubSection{Traditional Syntax}{legacy}

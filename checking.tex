@@ -1,12 +1,23 @@
 \Chapter{Semantic Checking}{check}
 
-\newcommand{\SynthJudgement}[4]{#1 $\vdash$ #2 $\Rightarrow$ #3 $\vdash$ #4}
-\newcommand{\CheckJudgement}[4]{#1 $\vdash$ #2 $\Leftarrow$ #3 $\vdash$ #4}
+\newcommand{\SynthJudgement}[4]{\ensuremath{#1 \vdash #2 \Rightarrow #3 \vdash #4}}
+\newcommand{\CheckJudgement}[4]{\ensuremath{#1 \vdash #2 \Leftarrow #3 \vdash #4}}
 
-\newcommand{\CheckType}[3]{#1 $\vdash$ \code{type} #2 $\vdash$ #3}
+\newcommand{\CheckType}[3]{\ensuremath{#1 \vdash \textsc{type}\ #2\ \textsc{ok} \vdash #3}}
 
-\newcommand{\CheckStmt}[3]{#1 $\vdash$ #2 OK $\vdash$ #3}
-\newcommand{\CheckDecl}[3]{#1 $\vdash$ #2 OK $\vdash$ #3}
+\newcommand{\CheckStmt}[3]{\ensuremath{#1 \vdash \textsc{stmt}\ #2\ \textsc{ok} \vdash #3}}
+\newcommand{\CheckStmts}[3]{\ensuremath{#1 \vdash \textsc{stmts}\ #2\ \textsc{ok} \vdash #3}}
+\newcommand{\CheckDecl}[3]{\ensuremath{#1 \vdash \textsc{decl}\ #2\ \textsc{ok} \vdash #3}}
+
+\newcommand{\CheckCases}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternatives}(#2, #3)}}
+\newcommand{\CheckCase}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternative}(#2, #3)}}
+\newcommand{\CheckCaseLabel}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternativeLabel}(#2, #3)}}
+
+% Check that the given context contains an entry of the given form.
+\newcommand{\ContextContains}[2]{\ensuremath{#1 \vdash #2}}
+
+% Check that lookup up the given symbol in the context yields the given value/type/whatever.
+\newcommand{\ContextLookup}[3]{\ensuremath{#1 ( #2 ) = #3}}
 
 \begin{Checking}
 

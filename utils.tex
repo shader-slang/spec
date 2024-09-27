@@ -48,19 +48,20 @@ boxrule=0mm,leftrule=2mm,boxsep=0mm,arc=0mm,outer arc=0mm,attach title to upper,
 after title={: \\}, coltitle=black,colback=gray!10,colframe=black, title={#2},
 fonttitle=\bfseries,##1}}
 
-\definecolor{NoteColor}{gray}{0.85}
-\definecolor{IncompleteColor}{gray}{0.85}
-\definecolor{SyntaxColor}{gray}{0.85}
+\definecolor{NoteColor}{gray}{0.98}
+\definecolor{IncompleteColor}{gray}{0.98}
+\definecolor{SyntaxColor}{gray}{0.98}
 
 \DefineCallout{Note}{Note}{NoteColor}
 \DefineCallout{Incomplete}{Incomplete}{IncompleteColor}
-\DefineCallout{Syntax}{Syntax}{SyntaxColor}
+\DefineCallout{SyntaxCallout}{Syntax}{SyntaxColor}
 \DefineCallout{Lexical}{Syntax}{SyntaxColor}
 \DefineCallout{Legacy}{Legacy}{SyntaxColor}
 \DefineCallout{Rationale}{Rationale}{SyntaxColor}
 \DefineCallout{Example}{Example}{SyntaxColor}
 \DefineCallout{Semantics}{Semantics}{SyntaxColor}
 \DefineCallout{Checking}{Checking}{SyntaxColor}
+\DefineCallout{Description}{Description}{SyntaxColor}
 
 %
 %\definecolor{ListingKeywordColor}{gray}{0.5}
@@ -86,50 +87,56 @@ fonttitle=\bfseries,##1}}
 
 
 
-\definecolor{frequency_color}{RGB}{0,176,80}
+\definecolor{FREQUENCYCOLOR}{RGB}{0,176,80}
 \definecolor{KEYWORDCOLOR}{RGB}{0,32,96}
-\definecolor{comment_color}{RGB}{192,0,0}
-\definecolor{type_color}{RGB}{0,112,192}
-\definecolor{keyword_arg_color}{RGB}{144,155,170}
+\definecolor{COMMENTCOLOR}{RGB}{192,0,0}
+\definecolor{TYPECOLOR}{RGB}{0,112,192}
+\definecolor{KEYWORDARGCOLOR}{RGB}{144,155,170}
+
+\definecolor{CodeBackgroundColor}{gray}{0.85}
 
 \lstdefinestyle{SlangCodeStyle}{
     basicstyle=\mdseries\ttfamily,
     classoffset=0,
-    morekeywords={record,concrete,pass,override,virtual,input,abstract,void,mixin,primary,struct,implicit,return,where,shader,class,extends,output,true,false,extend,space,type},
+    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface},
     keywordstyle=\color{KEYWORDCOLOR}\bfseries\ttfamily,
     classoffset=1,
-    morekeywords={@Constant,@Uniform,@Vertex,@RasterVertex,@Instance,@Fragment,@Pixel,@E,@Patch,@ControlPoint,@ShadedVertex,@AssembledVertex,@RasterVertex,@DomainVertex,@InputControlPoint,@OutputControlPoint,@InputPatch,@OutputPatch,@Sample,@Element,@CoarseVertex,@FineVertex,@Light,@R,@GeometryOutput},
-    keywordstyle=\color{frequency_color}\ttfamily,
+    morekeywords={@GroupShared},
+    keywordstyle=\color{FREQUENCYCOLOR}\ttfamily,
     classoffset=2,
-    morekeywords={Constant,Uniform,Vertex,RasterVertex,Fragment,Pixel,float,int,float4,float3,float2,float4x4,
-        VertexBuffer,SimpleTransform,D3D9DrawPass,D3D11DrawPass,ShadedVertex,AssembledVertex,E,Array,Patch,
-        ControlPoint,D3D11NullTessellator,D3D11NullGeometryShader,VertexColors,SimpleTransformAndVertexColors,
-        DomainVertex,InputControlPoint,OutputControlPoint,InputPatch,OutputPatch,ExtCoarseVertex,
-        D3D11TessellatorPassThrough,D3D11GeometryShaderPassThrough,Displacement,OutputStream,T,U,
-        ID3D11RenderTargetView,Desc,Linear,SimpleTessellation,PointSprites,
-        Color,CoarseVertex,FineVertex,RasterVertex,Simple,VertexStream,
-        Base,SkeletalAnimation,MorphTargetAnimation,CubicGregory,CubicGregoryTris,SurfaceAttributes,PackGBuffer,UnpackGBuffer,GenerateSurfaceAttributes,Light,
-CubicGregoryQuads,Tris,Quads,DisplacementMapping,RenderToCubeMap,PointSprites,Diffuse,Texturing,
-        Phong,EnvMap,PointLight,SpotLight,Transform,Displace,Texture,PNuv,Puv,Texture2D,SamplerState,uint,Composed,Fetch,DirectionalLight,
-        PhongMaterial,EnvMapMaterial,NormalMaterial,D3D11NullTessellation,D3D11Tessellation,D3D11GeometryShader,D3D11TriTessellation,D3D11QuadTessellation,Example,Shade,Point,Normal,Derived,Float,vector,R,Graph,Node,Edge,ColorGraph,WeightedGraph,WeightedColorGraph,A,B,D,VertexTrait_Base,VertexTrait_Derived,Derived_Final,Vector,Transform,Transformation,ColorMixin,Tessellate,float3x3},
-    keywordstyle=\color{type_color}\ttfamily,
+    morekeywords={void,int,float,Int,Float,Unit,bool,Bool},
+    keywordstyle=\color{TYPECOLOR}\ttfamily,
     classoffset=0,
-    moredelim=[is][\color{keyword_arg_color}\ttfamily]{|}{|},
+    moredelim=[is][\color{KEYWORDARGCOLOR}\ttfamily]{|}{|},
     moredelim=[is][\color{red}\ttfamily]{^}{^},
     morecomment=[l]//,
-    commentstyle=\color{comment_color},
+    commentstyle=\color{COMMENTCOLOR},
     tabsize=2,
     mathescape=true}
+
+\lstset{
+    style=SlangCodeStyle,
+    basicstyle=\text\mdseries\ttfamily\small}
 
 \lstnewenvironment{codeblock}[1][]
     {\lstset{
         style=SlangCodeStyle,
-        basicstyle=\mdseries\ttfamily\small
+        basicstyle=\text\mdseries\ttfamily\small
         #1}}
     {}
 
-\newcommand{\code}[1]{\text{\lstinline[style=SlangCodeStyle]{#1}}}
+\newcommand{\InlineCodeStyle}[1]{
+    \fboxsep2pt
+    \text{\ttfamily\mdseries\colorbox{CodeBackgroundColor}{#1}}
+}
+
+\newcommand{\code}[1]{\InlineCodeStyle{\lstinline[style=SlangCodeStyle]{#1}}}
+
+%\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{\lstinline[style=SlangCodeStyle]{#1}}}}
 \newcommand{\kw}[1]{\text{\texttt{\textbf{\textcolor{KEYWORDCOLOR}{#1}}}}}
+
+\newcommand{\lcurly}{\text{\InlineCodeStyle{\lstinline{\{}}}}
+\newcommand{\rcurly}{\text{\InlineCodeStyle{\lstinline{\}}}}}
 
 \newcommand{\SpecDefine}[1]{\text{\emph{#1}}}
 \newcommand{\SpecDef}[1]{\text{\emph{#1}}}
@@ -141,18 +148,56 @@ CubicGregoryQuads,Tris,Quads,DisplacementMapping,RenderToCubeMap,PointSprites,Di
 \newcommand{\SynPlus}{\text{+}}
 \newcommand{\SynOpt}{\text{?}}
 
+\newcommand{\SynVar}[2][]{\text{\emph{#1:#2}}}
+
+
+\newlist{SynEnvList}{itemize}{1}
+\setlist[SynEnvList]{
+  parsep=1ex, partopsep=0pt, itemsep=0pt, topsep=0pt, label={},
+  leftmargin=2\leftmargin, listparindent=-\leftmargin,
+  itemindent=\listparindent
+}
+\newenvironment{Syntax} {
+    \begin{SyntaxCallout}
+    \begin{SynEnvList}
+    \item\relax
+}{
+    \end{SynEnvList}
+    \end{SyntaxCallout}
+}
+
+
 \newcommand{\MetaDef}[1]{\textbf{$\mathbb{#1}$}}
 \newcommand{\SynComment}[1]{\small{// #1}}
 
-\newcommand{\MetaVar}[1]{\textbf{$\mathbb{#1}$}}
+\newcommand{\MetaVar}[1]{\text{\textbf{$\mathbb{#1}$}}}
 
-\newcommand{\ContextVarA}{$\Gamma$}
-\newcommand{\ContextVarB}{$\Delta$}
-\newcommand{\ContextVarC}{$\Theta$}
-\newcommand{\ContextVarD}{$\Phi$}
+\newcommand{\ContextVarA}{\ensuremath{\Gamma_0}}
+\newcommand{\ContextVarB}{\ensuremath{\Gamma_1}}
+\newcommand{\ContextVarC}{\ensuremath{\Gamma_2}}
+\newcommand{\ContextVarD}{\ensuremath{\Gamma_3}}
+\newcommand{\ContextVarE}{\ensuremath{\Gamma_4}}
+\newcommand{\ContextVarF}{\ensuremath{\Gamma_5}}
 
-\newcommand{\BindingVarX}{$\alpha$}
-\newcommand{\ContextVarY}{$\beta$}
+\newcommand{\ExprVarE}{\ensuremath{e}}
+\newcommand{\ExprVarF}{\ensuremath{f}}
+
+\newcommand{\StmtVarS}{\ensuremath{s}}
+\newcommand{\StmtVarT}{\ensuremath{t}}
+
+\newcommand{\TypeVarT}{\ensuremath{T}}
+\newcommand{\TypeVarU}{\ensuremath{U}}
+
+\newcommand{\BindingVarX}{\ensuremath{\alpha}}
+\newcommand{\BindingVarY}{\ensuremath{\beta}}
 
 \newcommand{\Char}[1]{\code{#1}}
 
+\newcommand{\ResultType}{\text{\textsc{Return}}}
+\newcommand{\BreakLabel}{\text{\textsc{Break}}}
+\newcommand{\ContinueLabel}{\text{\textsc{Continue}}}
+
+\newcommand{\RequireCap}[1]{\text{\textsc{Require} \textsc{#1}}}
+
+
+\newcommand{\DerivationRule}[3][]{\ensuremath{\trfrac[#1]{#2}{#3}}}

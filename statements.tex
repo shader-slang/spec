@@ -35,7 +35,7 @@ An \SpecDef{expression statement} evaluates an expression, and then ignores the 
 
 \begin{Checking}
 \DerivationRule{
-	\SynthJudgement{\ContextVarA}{\ExprVarE}{\TypeVarT}{\ContextVarB}
+	\SynthExpr{\ContextVarA}{\ExprVarE}{\TypeVarT}{\ContextVarB}
 }{
 	\CheckStmt{\ContextVarA}{\ExprVarE \code{;}}{\ContextVarB}
 }
@@ -147,7 +147,7 @@ An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
 
 	\DerivationRule{
 		\begin{trgather}
-		\CheckJudgement{\ContextVarA}{\ExprVarE}{\code{Bool}}{\ContextVarB} \\
+		\CheckExpr{\ContextVarA}{\ExprVarE}{\code{Bool}}{\ContextVarB} \\
 		\CheckStmt{\ContextVarB}{\MetaVar{T}}{\ContextVarC} \\
 		\end{trgather}	
 	}{
@@ -156,7 +156,7 @@ An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
 
 	\DerivationRule{
 		\begin{trgather}
-		\CheckJudgement{\ContextVarA}{\ExprVarE}{\code{Bool}}{\ContextVarB} \\
+		\CheckExpr{\ContextVarA}{\ExprVarE}{\code{Bool}}{\ContextVarB} \\
 		\CheckStmt{\ContextVarB}{\MetaVar{T}}{\ContextVarC} \\
 		\CheckStmt{\ContextVarB}{\MetaVar{E}}{\ContextVarD}
 		\end{trgather}	
@@ -203,7 +203,7 @@ If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is exe
 \begin{Checking}
 	\DerivationRule{
 		\begin{trgather}
-		\SynthJudgement{\ContextVarA}{\ExprVarE}{\TypeVarT}{\ContextVarB} \\
+		\SynthExpr{\ContextVarA}{\ExprVarE}{\TypeVarT}{\ContextVarB} \\
 		\CheckCase{\ContextVarB}{\bar{\MetaVar{C}}}{\TypeVarT} \\
 		\end{trgather}	
 	}{
@@ -231,7 +231,7 @@ A \kw{switch} statement is checked by first checking the expression, and then ch
 	}\vspace{1em}
 
 	\DerivationRule{
-		\CheckJudgement{\ContextVarA}{expr}{\TypeVarT}{\ContextVarB}
+		\CheckExpr{\ContextVarA}{expr}{\TypeVarT}{\ContextVarB}
 	}{
 		\CheckCaseLabel{\ContextVarA}{\code{case}\ expr\ \code{:}}{\TypeVarT} \\
 	}\vspace{1em}
@@ -276,8 +276,8 @@ Semantically, a \kw{switch} statement is equivalent to an ``\kw{if} cascade'' th
 	\DerivationRule{
 		\begin{trgather}
 		\CheckStmt{\ContextVarA}{init}{\ContextVarB} \\
-		\CheckJudgement{\ContextVarB}{cond}{\code{Bool}}{\ContextVarC} \\
-		\SynthJudgement{\ContextVarC}{iter}{T}{\ContextVarD} \\
+		\CheckExpr{\ContextVarB}{cond}{\code{Bool}}{\ContextVarC} \\
+		\SynthExpr{\ContextVarC}{iter}{T}{\ContextVarD} \\
 		\CheckStmt{\ContextVarD}{body}{\ContextVarE} \\
 		\end{trgather}	
 	}{
@@ -303,7 +303,7 @@ The checking judgements above aren't complete because they don't handle the case
 \begin{Checking}
 	\DerivationRule{
 		\begin{trgather}
-		\CheckJudgement{\ContextVarA}{cond}{\code{Bool}}{\ContextVarB} \\
+		\CheckExpr{\ContextVarA}{cond}{\code{Bool}}{\ContextVarB} \\
 		\CheckStmt{\ContextVarB}{body}{\ContextVarC} \\
 		\end{trgather}	
 	}{
@@ -326,7 +326,7 @@ A \SpecDef{do-while statement} uses the following form:
 	\DerivationRule{
 		\begin{trgather}
 			\CheckStmt{\ContextVarA}{body}{\ContextVarB} \\
-			\CheckJudgement{\ContextVarA}{cond}{\code{Bool}}{\ContextVarC} \\
+			\CheckExpr{\ContextVarA}{cond}{\code{Bool}}{\ContextVarC} \\
 		\end{trgather}	
 	}{
 		\CheckStmt{\ContextVarA}{\code{do} body \code{while(}\ cond \code{);}}{\ContextVarA} 
@@ -409,7 +409,7 @@ In a for statement with a side effect expression, the side effect expression is 
 	\DerivationRule{
 		\begin{trgather}
 		\ContextLookup{\ContextVarA}{\ResultType}{type} \\
-		\CheckJudgement{\ContextVarA}{expr}{type}{\ContextVarB} \\
+		\CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB} \\
 		\end{trgather}
 	}{
 		\CheckStmt{\ContextVarA}{\code{return} expr \code{;}}{\ContextVarB} 

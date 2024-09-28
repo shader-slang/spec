@@ -14,331 +14,637 @@ Literal expressions are never l-values.
 
 \SubSection{Integer Literal Expressions}{int}
 
-An integer literal expression consists of a single integer literal token:
+An \SpecDef{integer literal expression} consists of a single \SynRef{IntegerLiteral} token.
 
-\begin{codeblock}
-123
-\end{codeblock}
+\begin{Checking}
+	\DerivationRule{
+		\begin{trgather}
+        \CheckConforms{\ContextVarA,\alpha}{\alpha}{\code{IFromIntegerLiteral}}{\ContextVarB}
+		\end{trgather}	
+	}{
+		\SynthExpr{\ContextVarA}{i}{\alpha}{\ContextVarB}
+	}
+\end{Checking}
 
-\begin{verbatim}
+\begin{Description}
+An unsuffixed integer literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromIntegerLiteral}.
+\end{Description}
 
-An unsuffixed integer literal expression always has type `int`.
+\begin{Incomplete}
+We need a description of how suffixed integer literals have their type derived from their suffix.
+\end{Incomplete}
 
 \SubSection{Floating-Point Literal Expressions}{float}
 
-A floating-point literal expression consists of a single floating-point literal token:
+A \SpecDef{floating-point literal expression} consists of a single \SynRef{FloatingPointLiteral} token.
 
-```hlsl
-1.23
-```
+\begin{Checking}
+	\DerivationRule{
+		\begin{trgather}
+        \CheckConforms{\ContextVarA,\alpha}{\alpha}{\code{IFromFloatingPointLiteral}}{\ContextVarB}
+		\end{trgather}	
+	}{
+		\SynthExpr{\ContextVarA}{f}{\alpha}{\ContextVarB}
+	}
+\end{Checking}
 
-A unsuffixed floating-point literal expression always has type `float`.
+\begin{Description}
+An unsuffixed floating-point literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromFloatingPointLiteral}.
+\end{Description}
 
+\begin{Incomplete}
+We need a description of how suffixed floating-point literals have their type derived from their suffix.
+\end{Incomplete}
+    
 \SubSection{Boolean Literal Expressions}{bool}
 
-Boolean literal expressions use the keywords `true` and `false`.
+\begin{Description}
+    Boolean literal expressions use the keywords `true` and `false`.
+\end{Description}
+    
+\begin{Syntax}
+	\SynDefine{BooleanLiteralExpression}
+        \code{true} \SynOr \code{false}
+\end{Syntax}
+
+\begin{Checking}
+	\DerivationRule{
+	}{
+		\SynthExpr{\ContextVarA}{\code{true}}{\code{Bool}}{\ContextVarA}
+	}\\
+	\DerivationRule{
+	}{
+		\SynthExpr{\ContextVarA}{\code{false}}{\code{Bool}}{\ContextVarA}
+	}\\
+\end{Checking}
+
 
 \SubSection{String Literal Expressions}{string}
 
-A string literal expressions consists of one or more string literal tokens in a row:
+\begin{Description}
+A string literal expressions consists of one or more string literal tokens in a row.
+\end{Description}
 
-```hlsl
-"This" "is one" "string"
-```
+\begin{Syntax}
+	\SynDefine{StringLiteralExpression}
+        \SynRef{StirngLiteral}\SynPlus
+\end{Syntax}
+
+\begin{Checking}
+	\DerivationRule{
+	}{
+		\SynthExpr{\ContextVarA}{\overline{s}}{\code{String}}{\ContextVarA}
+	}\\
+\end{Checking}
 
 \Section{Identifier Expression}{ident}
 
-An _identifier expression_ consists of a single identifier:
+\begin{Syntax}
+	\SynDefine{IdentifierExpression} \\
+        \SynRef{Identifier} \\
+        \SynOr \code{operator} \SynRef{Operator} \\
+\end{Syntax}
 
-```hlsl
-someName
-```
+\begin{Checking}
+	\DerivationRule{
+        \SynthLookup{\ContextVarA}{name}{type}
+	}{
+		\SynthExpr{\ContextVarA}{name}{type}{\ContextVarA}
+	}\vspace{1em}
 
-When evaluated, this expression looks up `someName` in the environment of the expression and yields the value of a declaration with a matching name.
+	\DerivationRule{
+        \CheckLookup{\ContextVarA}{name}{type}{\ContextVarB}
+	}{
+		\CheckExpr{\ContextVarA}{name}{type}{\ContextVarB}
+	}\\
+\end{Checking}
 
-An identifier expression is an l-value if the declaration it refers to is mutable.
+\begin{Incomplete}
+This presentation delegates the actual semantics of identifier expressions to the \textsc{Lookup} judgement, which needs to be explained in detail.
+\end{Incomplete}
 
-\SubSection{Overloading}{overload}
-
-It is possible for an identifier expression to be _overloaded_, such that it refers to one or more candidate declarations with the same name.
-If the expression appears in a context where the correct declaration to use can be disambiguated, then that declaration is used as the result of  the name expression; otherwise use of an overloaded name is an error at the use site.
-
-\SubSection{Implicit Lookup}{lookup.implicit}
-
-It is possible for a name expression to refer to nested declarations in two ways:
-
-* In the body of a method, a reference to `someName` may resolve to `this.someName`, using the implicit `this` parameter of the method
-
-* When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may refer to a field declared inside the `cbuffer` or `tbuffer`
+%\begin{verbatim}
+%When evaluated, this expression looks up `someName` in the environment of the %expression and yields the value of a declaration with a matching name.
+%
+%An identifier expression is an l-value if the declaration it refers to is mutable.
+%
+%\SubSection{Overloading}{overload}
+%
+%It is possible for an identifier expression to be _overloaded_, such that it %refers to one or more candidate declarations with the same name.
+%If the expression appears in a context where the correct declaration to use can be %disambiguated, then that declaration is used as the result of  the name %expression; otherwise use of an overloaded name is an error at the use site.
+%
+%\SubSection{Implicit Lookup}{lookup.implicit}
+%
+%It is possible for a name expression to refer to nested declarations in two ways:
+%
+%* In the body of a method, a reference to `someName` may resolve to `this.%someName`, using the implicit `this` parameter of the method
+%
+%* When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may %refer to a field declared inside the `cbuffer` or `tbuffer`
+%\end{verbatim}
 
 \Section{Member Expression}{member}
 
-A _member expression_ consists of a base expression followed by a dot (`.`) and an identifier naming a member to be accessed:
+\begin{Syntax}
+	\SynDefine{MemberExpression}
+        \SynRef{Expression} \code{.} \SynRef{Identifier} \\
+\end{Syntax}
 
-```hlsl
-base.m
-```
+\begin{Incomplete}
+The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
+In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
+\begin{itemize}
+\item Implicit dereference of pointer-like types.
+\item Swizzles (vector or matrix).
+\item Static vs. instance members.
+\end{itemize}
 
-When `base` is a structure type, this expression looks up the field or other member named by `m`.
-Just as for an identifier expression, the result of a member expression may be overloaded, and might be disambiguated based on how it is used.
+In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
+\end{Incomplete}
 
-A member expression is an l-value if the base expression is an l-value and the member it refers to is mutable.
-
-\SubSection{Implicit Dereference}{dereference.implicit}
-
-If the base expression of a member reference is a _pointer-like type_ such as `ConstantBuffer<T>`, then a member reference expression will implicitly dereference the base expression to refer to the pointed-to value (e.g., in the case of `ConstantBuffer<T>` this is the buffer contents of type `T`).
-
-\SubSection{Vector Swizzles}{swizzle.vector}
-
-When the base expression of a member expression is of a vector type `vector<T,N>` then a member expression is a _vector swizzle expression_.
-The member name must conform to these constraints:
-
-* The member name must comprise between one and four ASCII characters
-* The characters must be come either from the set (`x`, `y`, `z`, `w`) or (`r`, `g`, `b`, `a`), corresponding to element indics of (0, 1, 2, 3)
-* The element index corresponding to each character must be less than `N`
-
-If the member name of a swizzle consists of a single character, then the expression has type `T` and is equivalent to a subscript expression with the corresponding element index.
-
-If the member name of a swizzle consists of `M` characters, then the result is a `vector<T,M>` built from the elements of the base vector with the corresponding indices.
-
-A vector swizzle expression is an l-value if the base expression was an l-value and the list of indices corresponding to the characeters of the member name contains no duplicates.
-
-\SubSection{Matrix Swizzles}{swizzle.matrix}
-
-> Note: The Slang implementation currently doesn't support matrix swizzles.
-
-\SubSection{Static Member Expressions}{member.static}
-
-When the base expression of a member expression is a type instead of a value, the result is a _static member expression_.
-A static member expression can refer to a static field or static method of a structure type.
-A static member expression can also refer to a case of an enumeration type.
-
-A static member expression (but not a member expression in general) may use the token `::` instead of `.` to separate the base and member name:
-
-```hlsl
-// These are equivalent
-Color.Red
-Color::Red
-```
+%\begin{verbatim}
+%When `base` is a structure type, this expression looks up the field or other %member named by `m`.
+%Just as for an identifier expression, the result of a member expression may be %overloaded, and might be disambiguated based on how it is used.
+%
+%A member expression is an l-value if the base expression is an l-value and the %member it refers to is mutable.
+%
+%\SubSection{Implicit Dereference}{dereference.implicit}
+%
+%If the base expression of a member reference is a _pointer-like type_ such as %`ConstantBuffer<T>`, then a member reference expression will implicitly %dereference the base expression to refer to the pointed-to value (e.g., in the %case of `ConstantBuffer<T>` this is the buffer contents of type `T`).
+%
+%\SubSection{Vector Swizzles}{swizzle.vector}
+%
+%When the base expression of a member expression is of a vector type `vector<T,N>` %then a member expression is a _vector swizzle expression_.
+%The member name must conform to these constraints:
+%
+%* The member name must comprise between one and four ASCII characters
+%* The characters must be come either from the set (`x`, `y`, `z`, `w`) or (`r`, %`g`, `b`, `a`), corresponding to element indics of (0, 1, 2, 3)
+%* The element index corresponding to each character must be less than `N`
+%
+%If the member name of a swizzle consists of a single character, then the %expression has type `T` and is equivalent to a subscript expression with the %corresponding element index.
+%
+%If the member name of a swizzle consists of `M` characters, then the result is a %`vector<T,M>` built from the elements of the base vector with the corresponding %indices.
+%
+%A vector swizzle expression is an l-value if the base expression was an l-value %and the list of indices corresponding to the characeters of the member name %contains no duplicates.
+%
+%\SubSection{Matrix Swizzles}{swizzle.matrix}
+%
+%> Note: The Slang implementation currently doesn't support matrix swizzles.
+%
+%\SubSection{Static Member Expressions}{member.static}
+%
+%When the base expression of a member expression is a type instead of a value, the %result is a _static member expression_.
+%A static member expression can refer to a static field or static method of a %structure type.
+%A static member expression can also refer to a case of an enumeration type.
+%
+%A static member expression (but not a member expression in general) may use the %token `::` instead of `.` to separate the base and member name:
+%
+%```hlsl
+%// These are equivalent
+%Color.Red
+%Color::Red
+%```
+%\end{verbatim}
 
 \Section{This Expression}{this}
 
-A _this expression_ consists of the keyword `this` and refers to the implicit instance of the enclosing type that is being operated on in instance methods, subscripts, and initializers.
+\begin{Syntax}
+	\SynDefine{ThisExpression} 
+        \code{this} \\
+\end{Syntax}
 
-The type of `this` is `This`.
+\begin{Checking}
+	\DerivationRule{
+	}{
+		\SynthExpr{\ContextVarA}{\code{this}}{\code{This}}{\ContextVarB}
+	}	
+\end{Checking}
+
+
+\begin{Description}
+In contexts where a \kw{this} expression is valid, it refers to the implicit instance of the closest enclosing type declaration.
+The type of a \kw{this} expression is always \code{This}.
+\end{Description}
+
+\begin{Incomplete}
+This section needs to deal with the rules for when \kw{this} is mutable vs. immutable.
+\end{Incomplete}
 
 \Section{Parenthesized Expression}{paren}
 
-An expression wrapped in parentheses `()` is a _parenthesized expression_ and evaluates to the same value as the wrapped expression.
+\begin{Description}
+An expression wrapped in parentheses \code{()} is a \SpecDef{parenthesized expression} and evaluates to the same value as the wrapped expression.
+\end{Description}
+
+\begin{Syntax}
+	\SynDefine{ParenthesizedExpression} 
+        \code{(} \SynRef{Expression} \code{)} \\
+\end{Syntax}
+
+\begin{Checking}
+	\DerivationRule{
+		\CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB}
+	}{
+		\CheckExpr{\ContextVarA}{\code{(} expr \code{)}}{type}{\ContextVarB}
+	}\vspace{1em}
+
+	\DerivationRule{
+		\SynthExpr{\ContextVarA}{expr}{type}{\ContextVarB}
+	}{
+		\SynthExpr{\ContextVarA}{\code{(} expr \code{)}}{type}{\ContextVarB}
+	}	
+\end{Checking}
+
 
 \Section{Call Expression}{call}
 
-A _call expression_ consists of a base expression and a list of argument expressions, separated by commas and enclosed in `()`:
+\begin{Syntax}
+	\SynDefine{CallExpression} \\
+        \SynRef{Expression} \code{(} (\SynRef{Argument} \code{,})\SynStar \code{)} \\
 
-```hlsl
-myFunction( 1.0f, 20 )
-```
+    \SynDefine{Argument} \\
+        \SynRef{Expression} \\
+        \SynOr \SynRef{NamedArgument} \\
 
-When the base expression (e.g., `myFunction`) is overloaded, a call expression can disambiguate the overloaded expression based on the number and type or arguments present.
+    \SynDefine{NamedArgument} \\
+        \SynRef{Identifier} \code{:} \SynRef{Expression}
+\end{Syntax}
 
-The base expression of a call may be a member reference expression:
+\begin{Checking}
+	\DerivationRule{
+        \CheckCall{\ContextVarA}{f}{\overline{args}}{type}{\ContextVarB}
+	}{
+		\CheckExpr{\ContextVarA}{f \code{(} \overline{args} \code{)}}{type}{\ContextVarB}
+	}\vspace{1em}
 
-```hlsl
-myObject.myFunc( 1.0f )
-```
+	\DerivationRule{
+        \SynthCall{\ContextVarA}{f}{\overline{args}}{type}{\ContextVarB}
+	}{
+		\SynthExpr{\ContextVarA}{f \code{(} \overline{args} \code{)}}{type}{\ContextVarB}
+	}	
+\end{Checking}
 
-In this case the base expression of the member reference (e.g., `myObject` in this case) is used as the argument for the implicit `this` parameter of the callee.
+\begin{Incomplete}
+These rules just kick the can down the road and say that synthesis/checking for call expressions bottlenecks through the \textsc{Call} judgements.
+\end{Incomplete}
 
-\SubSection{Mutability}{mutable}
-
-If a `[mutating]` instance is being called, the argument for the implicit `this` parameter must be an l-value.
-
-The argument expressions corresponding to any `out` or `in out` parameters of the callee must be l-values.
-
-A call expression is never an l-value.
-
-\SubSection{Initializer Expressions}{init}
-
-When the base expression of a call is a type instead of a value, the expression is an initializer expression:
-
-```hlsl
-float2(1.0f, 2.0f)
-```
-
-An initializer expression initialized an instance of the specified type using the given arguments.
-
-An initializer expression with only a single argument is treated as a cast expression:
-
-```hlsl
-// these are equivalent
-int(1.0f)
-(int) 1.0f
-```
+%\begin{verbatim}
+%A _call expression_ consists of a base expression and a list of argument %expressions, separated by commas and enclosed in `()`:
+%
+%```hlsl
+%myFunction( 1.0f, 20 )
+%```
+%
+%When the base expression (e.g., `myFunction`) is overloaded, a call expression can %disambiguate the overloaded expression based on the number and type or arguments %present.
+%
+%The base expression of a call may be a member reference expression:
+%
+%```hlsl
+%myObject.myFunc( 1.0f )
+%```
+%
+%In this case the base expression of the member reference (e.g., `myObject` in this %case) is used as the argument for the implicit `this` parameter of the callee.
+%
+%\SubSection{Mutability}{mutable}
+%
+%If a `[mutating]` instance is being called, the argument for the implicit `this` %parameter must be an l-value.
+%
+%The argument expressions corresponding to any `out` or `in out` parameters of the %callee must be l-values.
+%\end{verbatim}
 
 \Section{Subscript Expression}{subscript}
 
-A _subscript expression_ consists of a base expression and a list of argument expressions, separated by commas and enclosed in `[]`:
+\begin{Syntax}
+	\SynDefine{SubscriptExpression} \\
+		\code{Expression} \code{[} (\SynRef{Argument} \code{,})\SynStar \code{]}
+\end{Syntax}
 
-```hlsl
-myVector[someIndex]
-```
+\begin{Incomplete}
+To a first approximation, a subscript expression like \code{base[a0, a1]} is equivalent to something like \code{base.subscript(a0, a1)}.
+That is, we look up the \kw{subscript} members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
 
-A subscript expression invokes one of the subscript declarations in the type of the base expression. Which subscript declaration is invoked is resolved based on the number and types of the arguments.
+Unlike simple function calls, a subscript expression can result in an l-value, based on what accessors the \kw{subscript} declaration that is selected by overload resolution has.
+\end{Incomplete}
 
-A subscript expression is an l-value if the base expression is an l-value and if the subscript declaration it refers to has a setter or by-reference accessor.
-
-Subscripts may be formed on the built-in vector, matrix, and array types.
-
+%A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
+%
+%A subscript expression is an l-value if the base expression is an l-value and if %the subscript declaration it refers to has a setter or by-reference accessor.
+%
+%Subscripts may be formed on the built-in vector, matrix, and array types.
 
 \Section{Initializer List Expression}{init-list}
 
-An _initializer list expression_ comprises zero or more expressions, separated by commas, enclosed in `{}`:
+\begin{Syntax}
+	\SynDefine{InitializerListExpression} \\
+		\code{\{} (\SynRef{Argument} \code{,})\SynStar \code{\}}
+\end{Syntax}
 
-```
-{ 1, "hello", 2.0f }
-```
+\begin{Description}
+An initializer-list expression may only appear in contexts where it will be checked against an expected type.
+There are no synthesis rules for initializer-list expressions.
 
-An initialier list expression may only be used directly as the initial-value expression of a variable or parameter declaration; initializer lists are not allowed as arbitrary sub-expressions.
+An initializer-list expression is equivalent to constructing an instance of the expected type using the arguments.
+\end{Description}
 
-> Note: This section will need to be updated with the detailed rules for how expressions in the initializer list are used to initialize values of each kind of type.
+\begin{Checking}
+	\DerivationRule{
+        \CheckConstruct{\ContextVarA}{type}{\overline{args}}{\ContextVarB} \\
+	}{
+		\CheckExpr{\ContextVarA}{\code{\{} \overline{args} \code{\}}}{type}{\ContextVarB}
+	}
+\end{Checking}
 
 \Section{Cast Expression}{cast}
 
-A _cast expression_ attempt to coerce a single value (the base expression) to a desired type (the target type):
+\begin{Syntax}
+	\SynDefine{CastExpression} \\
+		\code{(} \SynRef{TypeExpression} \code{)} \SynRef{Expression}
+\end{Syntax}
 
-```hlsl
-(int) 1.0f
-```
+\begin{Description}
+A \SpecDef{cast expression} attempts to coerce an expression to a desired type.
+\end{Description}
 
-A cast expression can perform both built-in type conversions and invoke any single-argument initializers of the target type.
+\begin{Checking}
+	\DerivationRule{
+        \CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB}
+	}{
+		\SynthExpr{\ContextVarA}{\code{(} type \code{)} expr}{type}{\ContextVarB}
+	}
+\end{Checking}
 
+\begin{Description}
+A cast expression always synthesizes a type, since the type it produces is manifest in the expression.
+\end{Description}
+
+\begin{Incomplete}
+The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
+
+In contrast, we want a cast expression to be able to invoke \emph{explicit} conversions as well, which are currently not something the formalism encodes.
+\end{Incomplete}
+
+\begin{Legacy}
 \SubSection{Compatibility Feature}{compatiblity}
 
 As a compatiblity feature for older code, Slang supports using a cast where the base expression is an integer literal zero and the target type is a user-defined structure type:
 
-```hlsl
-MyStruct s = (MyStruct) 0;
-```
+\begin{codeblock}
+MyStruct s = (MyStruct) 0;    
+\end{codeblock}
 
 The semantics of such a cast are equivalent to initialization from an empty initializer list:
 
-```hlsl
+\begin{codeblock}
 MyStruct s = {};
-```
+\end{codeblock}
+
+\end{Legacy}
 
 \Section{Assignment Expression}{assign}
 
-An _assignment expression_ consists of a left-hand side expression, an equals sign (`=`), and a right-hand-side expressions:
+\begin{Syntax}
+	\SynDefine{AssignmentExpression} \\
+        \SynVar[destination]{Expression} \code{=} \SynVar[source]{Expression}
+\end{Syntax}
 
-```hlsl
-myVar = someValue
-```
+\begin{Checking}
+	\DerivationRule{
+        \begin{trgather}
+        \SynthExpr{\ContextVarA}{dst}{\code{out} type}{\ContextVarB} \\
+        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\SynthExpr{\ContextVarA}{dst \code{=} src}{\code{out} type}{\ContextVarB}
+	}
 
-The semantics of an assignment expression are to:
+	\DerivationRule{
+        \begin{trgather}
+        \CheckExpr{\ContextVarA}{dst}{\code{out} type}{\ContextVarB} \\
+        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\CheckExpr{\ContextVarA}{dst \code{=} src}{type}{\ContextVarB}
+	}
+\end{Checking}
 
-* Evaluate the left-hand side to produce an l-value,
-* Evaluate the right-hand side to produce a value
-* Store the value of the right-hand side to the l-value of the left-hand side
-* Yield the l-value of the left-hand-side
+\begin{Description}
+Assignment expressions support both synthesis and checking judgements.
+
+In each case, the \SynRef{destination} expression is validated first, and then the \SynRef{source} expression.
+\end{Description}
+
+\begin{Incomplete}
+The above rules pretend that we can write \code{out} before a type to indicate that we mean an l-value of that type.
+We will need to expand the formalism to include \emph{qualified} types.
+\end{Incomplete}
 
 \Section{Operator Expressions}{op}
 
 \SubSection{Prefix Operator Expressions}{prefix}
 
-The following prefix operators are supported:
+\begin{Syntax}
+	\SynDefine{PrefixOperatorExpression} \\
+        \SynRef{PrefixOperator} \SynRef{Expression}
 
-| Operator 	| Description |
-|-----------|-------------|
-| `+`		| identity |
-| `-`		| arithmetic negation |
-| `~` 		| bit-wise Boolean negation |
-| `!`		| Boolean negation |
-| `++`		| increment in place |
-| `--`		| decrement in place |
+    \SynDefine{PrefixOperator} \\
+        \code{+} \SynComment{identity} \\
+        \SynOr \code{-} \SynComment{arithmetic negation} \\
+        \SynOr \code{\~} \SynComment{bit\-wise Boolean negation} \\
+        \SynOr \code{!} \SynComment{Boolean negation} \\
+        \SynOr \code{++} \SynComment{increment in place} \\
+        \SynOr \code{--} \SynComment{decrement in place} \\
+\end{Syntax}
 
-A prefix operator expression like `+val` is equivalent to a call expression to a function of the matching name `operator+(val)`, except that lookup for the function only considers functions marked with the `__prefix` keyword.
+\begin{Checking}
+	\DerivationRule{
+        \begin{trgather}
+        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\SynthExpr{\ContextVarA}{op expr}{type}{\ContextVarB}
+	}
 
-The built-in prefix `++` and `--` operators require that their operand is an l-value, and work as follows:
+	\DerivationRule{
+        \begin{trgather}
+            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\CheckExpr{\ContextVarA}{op expr}{type}{\ContextVarB}
+	}
+\end{Checking}
 
-* Evaluate the operand to produce an l-value
-* Read from the l-value to yield an _old value_
-* Increment or decrement the value to yield a _new value_
-* Write the new value to the l-value
-* Yield the new value
+\begin{Description}
+A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the \kw{prefix} modifier.
+\end{Description}
+
+\begin{Incomplete}
+The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
+\end{Incomplete}
 
 \SubSection{Postfix Operator Expressions}{postfix}
 
-The following postfix operators are supported:
+\begin{Syntax}
+	\SynDefine{PostfixOperatorExprssion} \\
+        \SynRef{Expression} \SynRef{PostfixOperator}
 
-| Operator 	| Description |
-|-----------|-------------|
-| `++`		| increment in place |
-| `--`		| decrement in place |
+    \SynDefine{PostfixOperator} \\
+        \SynOr \code{++} \SynComment{increment in place} \\
+        \SynOr \code{--} \SynComment{decrement in place} \\
+\end{Syntax}
 
-A postfix operator expression like `val++` is equivalent to a call expression to a function of the matching name `operator++(val)`, except that lookup for the function only considers functions marked with the `__postfix` keyword.
+\begin{Checking}
+	\DerivationRule{
+        \begin{trgather}
+        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\SynthExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
+	}
 
-The built-in prefix `++` and `--` operators require that their operand is an l-value, and work as follows:
+	\DerivationRule{
+        \begin{trgather}
+            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\CheckExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
+	}
+\end{Checking}
 
-* Evaluate the operand to produce an l-value
-* Read from the l-value to yield an _old value_
-* Increment or decrement the value to yield a _new value_
-* Write the new value to the l-value
-* Yield the old value
+\begin{Description}
+Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \kw{postfix} modifier.
+\end{Description}
 
 \SubSection{Infix Operator Expressions}{infix}
 
-The follow infix binary operators are supported:
+\begin{Syntax}
+	\SynDefine{InfixOperatorExpression} \\
+        \SynRef{Expression} \SynRef{InfixOperator} \SynRef{Expression}
 
-| Operator 	| Kind        | Description |
-|-----------|-------------|-------------|
-| `*`		| Multiplicative 	| multiplication |
-| `/`		| Multiplicative 	| division |
-| `%`		| Multiplicative 	| remainder of division |
-| `+`		| Additive 			| addition |
-| `-`		| Additive 			| subtraction |
-| `<<`		| Shift 			| left shift |
-| `>>`		| Shift 			| right shift |
-| `<` 		| Relational 		| less than |
-| `>`		| Relational 		| greater than |
-| `<=`		| Relational 		| less than or equal to |
-| `>=`		| Relational 		| greater than or equal to |
-| `==`		| Equality 			| equal to |
-| `!=`		| Equality 			| not equal to |
-| `&`		| BitAnd 			| bitwise and |
-| `^`		| BitXor			| bitwise exclusive or |
-| `\|`		| BitOr 			| bitwise or |
-| `&&`		| And 				| logical and |
-| `\|\|`	| Or 				| logical or |
-| `+=`		| Assignment  		| compound add/assign |
-| `-=`      | Assignment  		| compound subtract/assign |
-| `*=`      | Assignment  		| compound multiply/assign |
-| `/=`      | Assignment  		| compound divide/assign |
-| `%=`      | Assignment  		| compound remainder/assign |
-| `<<=`     | Assignment  		| compound left shift/assign |
-| `>>=`     | Assignment  		| compound right shift/assign |
-| `&=`      | Assignment  		| compound bitwise and/assign |
-| `\|=`     | Assignment  		| compound bitwise or/assign |
-| `^=`      | Assignment  		| compound bitwise xor/assign |
-| `=`       | Assignment  		| assignment |
-| `,`		| Sequencing  		| sequence |
+    \SynDefine{InfixOperator} \\
+        \SynOr \code{*} \SynComment{multiplication} \\
+        \SynOr \code{/} \SynComment{division} \\
+        \SynOr \code{\%} \SynComment{remainder of division} \\
+        \SynOr \code{+} \SynComment{addition} \\
+        \SynOr \code{-} \SynComment{subtraction} \\
+        \SynOr \code{<<} \SynComment{left shift} \\
+        \SynOr \code{>>} \SynComment{right shift} \\
+        \SynOr \code{<} \SynComment{less than} \\
+        \SynOr \code{>} \SynComment{greater than} \\
+        \SynOr \code{<=} \SynComment{less than or equal to} \\
+        \SynOr \code{>=} \SynComment{greater than or equal to} \\
+        \SynOr \code{==} \SynComment{equal to} \\
+        \SynOr \code{!=} \SynComment{not equal to} \\
+        \SynOr \code{&} \SynComment{bitwise and} \\
+        \SynOr \code{^} \SynComment{bitwise exclusive or} \\
+        \SynOr \code{|} \SynComment{bitwise or} \\
+        \SynOr \code{&&} \SynComment{logical and} \\
+        \SynOr \code{||} \SynComment{logical or} \\
+        \SynOr \code{+=}		\SynComment{compound add/assign} \\
+        \SynOr \code{-=}    	\SynComment{compound subtract/assign} \\
+        \SynOr \code{*=}    	\SynComment{compound multiply/assign} \\
+        \SynOr \code{/=}    	\SynComment{compound divide/assign} \\
+        \SynOr \code{\%=}    	\SynComment{compound remainder/assign} \\
+        \SynOr \code{<<=}   	\SynComment{compound left shift/assign} \\
+        \SynOr \code{>>=}   	\SynComment{compound right shift/assign} \\
+        \SynOr \code{&=}    	\SynComment{compound bitwise and/assign} \\
+        \SynOr \code{\|=}   	\SynComment{compound bitwise or/assign} \\
+        \SynOr \code{^=}    	\SynComment{compound bitwise xor/assign} \\
+%        \SynOr \code{=}    	\SynComment{assignment} \\
+%        \SynOr \code{,}		\SynComment{sequence} \\
+
+\end{Syntax}
+
+
+%TODO: need to get the precedence groups from this table into the grammar rules.
+%
+%| Operator 	| Kind        | Description |
+%|-----------|-------------|-------------|
+%| `*`		| Multiplicative 	| multiplication |
+%| `/`		| Multiplicative 	| division |
+%| `%`		| Multiplicative 	| remainder of division |
+%| `+`		| Additive 			| addition |
+%| `-`		| Additive 			| subtraction |
+%| `<<`		| Shift 			| left shift |
+%| `>>`		| Shift 			| right shift |
+%| `<` 		| Relational 		| less than |
+%| `>`		| Relational 		| greater than |
+%| `<=`		| Relational 		| less than or equal to |
+%| `>=`		| Relational 		| greater than or equal to |
+%| `==`		| Equality 			| equal to |
+%| `!=`		| Equality 			| not equal to |
+%| `&`		| BitAnd 			| bitwise and |
+%| `^`		| BitXor			| bitwise exclusive or |
+%| `\|`		| BitOr 			| bitwise or |
+%| `&&`		| And 				| logical and |
+%| `\|\|`	| Or 				| logical or |
+%| `+=`		| Assignment  		| compound add/assign |
+%| `-=`      | Assignment  		| compound subtract/assign |
+%| `*=`      | Assignment  		| compound multiply/assign |
+%| `/=`      | Assignment  		| compound divide/assign |
+%| `%=`      | Assignment  		| compound remainder/assign |
+%| `<<=`     | Assignment  		| compound left shift/assign |
+%| `>>=`     | Assignment  		| compound right shift/assign |
+%| `&=`      | Assignment  		| compound bitwise and/assign |
+%| `\|=`     | Assignment  		| compound bitwise or/assign |
+%| `^=`      | Assignment  		| compound bitwise xor/assign |
+%| `=`       | Assignment  		| assignment |
+%| `,`		| Sequencing  		| sequence |
+
+\begin{Checking}
+	\DerivationRule{
+        \begin{trgather}
+        \SynthCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\SynthExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
+	}
+
+	\DerivationRule{
+        \begin{trgather}
+            \CheckCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\CheckExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
+	}
+\end{Checking}
 
 With the exception of the assignment operator (`=`), an infix operator expression like `left + right` is equivalent to a call expression to a function of the matching name `operator+(left, right)`.
 
 \SubSection{Conditional Expression}{cond}
 
-The conditonal operator, `?:`, is used to select between two expressions based on the value of a condition:
+\begin{Syntax}
+	\SynDefine{ConditionalExpression} \\
+        \SynVar[condition]{Expression} \code{?} \SynVar[then]{Expression} \code{:} \SynVar[else]{Expression}
+\end{Syntax}
 
-```hlsl
-useNegative ? -1.0f : 1.0f
-```
-\end{verbatim}
+\begin{Checking}
+	\DerivationRule{
+        \begin{trgather}
+        \CheckExpr{\ContextVarA}{cond}{\code{Bool}}{\ContextVarB} \\
+        \CheckExpr{\ContextVarB,\code{type} \alpha}{t}{type}{\ContextVarC} \\
+        \CheckExpr{\ContextVarC,\code{type} \alpha}{e}{type}{\ContextVarD} \\
+        \end{trgather}
+	}{
+		\CheckExpr{\ContextVarA}{cond \code{?} t \code{:} e}{type}{\ContextVarD}
+	}\vspace{1em}
+\end{Checking}
 
-The condition may be either a single value of type \code{bool}, or a vector of \code{bool}.
-When a vector of `bool` is used, the two values being selected between must be vectors, and selection is performed component-wise.
+\begin{Description}
+In both checking and synthesis judgements, the \SynRef{condition} of a conditional expression is checked against the \code{Bool} type.
 
-\begin{Note}
-Unlike C, C++, GLSL, and most other C-family languages, Slang currently follows the precedent of HLSL where `?:` does not short-circuit.
+In the checking judgement, the \SynRef{then} and \SynRef{else} expressions are both checked against the expected type.
+\end{Description}
 
-This decision may change (for the scalar case) in a future version of the language.
-Programmer are encouraged to write code that does not depend on whether or not `?:` short-circuits.
-\end{Note}
+\begin{Checking}
+	\DerivationRule{
+        \begin{trgather}
+		\CheckExpr{\ContextVarA, \code{type} \alpha}{cond \code{?} t \code{:} e}{\alpha}{\ContextVarB} \\
+        \end{trgather}
+	}{
+		\SynthExpr{\ContextVarA}{cond \code{?} t \code{:} e}{\alpha}{\ContextVarB}
+	}
+\end{Checking}
+
+\begin{Description}
+In the synthesis direction, a fresh type variable $\alpha$ is introduced, and the expression is checked against that type.
+The output context \ContextVarB of the checking step may include constraints on $\alpha$ introduced by checking the \SynRef{then} and \SynRef{else} expressions.
+\end{Description}

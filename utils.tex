@@ -98,7 +98,7 @@ fonttitle=\bfseries,##1}}
 \lstdefinestyle{SlangCodeStyle}{
     basicstyle=\mdseries\ttfamily,
     classoffset=0,
-    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface},
+    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface,in,out,inout,ref,take,borrow},
     keywordstyle=\color{KEYWORDCOLOR}\bfseries\ttfamily,
     classoffset=1,
     morekeywords={@GroupShared},
@@ -201,3 +201,43 @@ fonttitle=\bfseries,##1}}
 
 
 \newcommand{\DerivationRule}[3][]{\ensuremath{\trfrac[#1]{#2}{#3}}}
+
+%
+% Utilities for use in `Checking` callouts:
+%
+
+\newcommand{\SynthExpr}[4]{\ensuremath{#1 \vdash #2 \Rightarrow #3 \vdash #4}}
+\newcommand{\CheckExpr}[4]{\ensuremath{#1 \vdash #2 \Leftarrow #3 \vdash #4}}
+
+\newcommand{\CheckType}[3]{\ensuremath{#1 \vdash \textsc{type}\ #2\ \textsc{ok} \vdash #3}}
+
+\newcommand{\CheckStmt}[3]{\ensuremath{#1 \vdash \textsc{stmt}\ #2\ \textsc{ok} \vdash #3}}
+\newcommand{\CheckStmts}[3]{\ensuremath{#1 \vdash \textsc{stmts}\ #2\ \textsc{ok} \vdash #3}}
+\newcommand{\CheckDecl}[3]{\ensuremath{#1 \vdash \textsc{decl}\ #2\ \textsc{ok} \vdash #3}}
+
+\newcommand{\CheckCases}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternatives}(#2, #3)}}
+\newcommand{\CheckCase}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternative}(#2, #3)}}
+\newcommand{\CheckCaseLabel}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternativeLabel}(#2, #3)}}
+
+% Check that the given context contains an entry of the given form.
+\newcommand{\ContextContains}[2]{\ensuremath{#1 \vdash #2}}
+
+% Check that lookup up the given symbol in the context yields the given value/type/whatever.
+\newcommand{\ContextLookup}[3]{\ensuremath{#1 ( #2 ) = #3}}
+
+% Check that a type conforms to a given interface in the input context.
+% Yields an output context (which may include additional constraints).
+\newcommand{\CheckConforms}[4]{\ensuremath{#1 \vdash #2\ \textsc{ConformsTo} #3 \vdash #4}}
+
+
+% Check that an attempt to construct an instance of the given type
+% with the given argument list is valid.
+\newcommand{\CheckConstruct}[4]{\ensuremath{#1 \vdash \textsc{Construct}(#2, #3) \vdash #4}}
+
+% Check/synthesize a call to an expression with arguments.
+\newcommand{\CheckCall}[5]{\ensuremath{#1 \vdash \textsc{Call}(#2, #3) \Leftarrow #4 \vdash #5}}
+\newcommand{\SynthCall}[5]{\ensuremath{#1 \vdash \textsc{Call}(#2, #3) \Rightarrow #4 \vdash #5}}
+
+% Check/synthesize lookup of a name
+\newcommand{\CheckLookup}[4]{\ensuremath{#1 \vdash \textsc{Lookup}(#2) \Leftarrow #3 \vdash #4}}
+\newcommand{\SynthLookup}[3]{\ensuremath{#1 \vdash \textsc{Lookup}(#2) \Rightarrow #3}}

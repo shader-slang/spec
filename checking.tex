@@ -1,34 +1,67 @@
 \Chapter{Semantic Checking}{check}
 
-\newcommand{\SynthJudgement}[4]{\ensuremath{#1 \vdash #2 \Rightarrow #3 \vdash #4}}
-\newcommand{\CheckJudgement}[4]{\ensuremath{#1 \vdash #2 \Leftarrow #3 \vdash #4}}
+\Section{Contexts}{context}
 
-\newcommand{\CheckType}[3]{\ensuremath{#1 \vdash \textsc{type}\ #2\ \textsc{ok} \vdash #3}}
+A \SpecDef{context} is an ordered sequence of zero or more \SpecDef{context entries}.
+Context entries include \SpecDef{bindings} of the name of a variable (an identifier) to its type.
 
-\newcommand{\CheckStmt}[3]{\ensuremath{#1 \vdash \textsc{stmt}\ #2\ \textsc{ok} \vdash #3}}
-\newcommand{\CheckStmts}[3]{\ensuremath{#1 \vdash \textsc{stmts}\ #2\ \textsc{ok} \vdash #3}}
-\newcommand{\CheckDecl}[3]{\ensuremath{#1 \vdash \textsc{decl}\ #2\ \textsc{ok} \vdash #3}}
+The notation:
+\begin{center}
+\ContextContains{\ContextVarA}{E}
+\end{center}
+indicates that the context \ContextVarA\ contains an entry matching $E$.
 
-\newcommand{\CheckCases}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternatives}(#2, #3)}}
-\newcommand{\CheckCase}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternative}(#2, #3)}}
-\newcommand{\CheckCaseLabel}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternativeLabel}(#2, #3)}}
+The notation:
+\begin{center}
+\ContextLookup{\ContextVarA}{k}{v}
+\end{center}
+indicates that the right-most entry in context \ContextVarA\ that has key $k$ maps to $v$.
 
-% Check that the given context contains an entry of the given form.
-\newcommand{\ContextContains}[2]{\ensuremath{#1 \vdash #2}}
+\Section{Expressions}{expr}
 
-% Check that lookup up the given symbol in the context yields the given value/type/whatever.
-\newcommand{\ContextLookup}[3]{\ensuremath{#1 ( #2 ) = #3}}
+Slang use a bidirectional type-checking algorithm.
+There are two different judgements used when checking expressions.
 
-\begin{Checking}
+\SubSection{Synthesis}{synth}
 
-\SynthJudgement{\ContextVarA}{\code{t}}{\code{T}}{\ContextVarB}
-\SynComment{under context \ContextVarA, term \code{t} synthesizes type \code{T}, with output context \ContextVarB} \\
+The notation:
+\begin{center}
+\SynthExpr{\ContextVarA}{e}{t}{\ContextVarB}
+\end{center}
+means that under input context \ContextVarA, the expression $e$ \SpecDef{synthesizes} the type $t$, an yields output context \ContextVarB.
 
-\CheckJudgement{\ContextVarA}{\code{t}}{\code{T}}{\ContextVarB}
-\SynComment{under context \ContextVarA, term \code{t} checks against type \code{T}, with output context \ContextVarB} \\
+\begin{Description}
+Synthesis judgements are used in places where an expression needs to be checked, but the expected type of the expression is not known.
+In terms of implementation, \ContextVarA and $e$ are inputs, while $t$ and \ContextVarB are outputs.
+\end{Description}
 
-\CheckStmt{\ContextVarA}{\MetaVar{S}}{\ContextVarB}
-\SynComment{under context \ContextVarA, statement \MetaVar{S} checks, with output context \ContextVarB} \\
+\SubSection{Checking}{check}
 
-\end{Checking}
+The notation:
+\begin{center}
+\CheckExpr{\ContextVarA}{e}{t}{\ContextVarB}
+\end{center}
+means that under input context \ContextVarA, the expression $e$ \SpecDef{checks} against the type $t$, and yields output context \ContextVarB.
+
+\begin{Description}
+Checking judgements are used in places where the type that an expression is expected to have is known.
+In terms of implementation, \ContextVarA, $e$, and $t$ are all inputs, and \ContextVarB is the only output.
+\end{Description}
+
+
+\Section{Statements}{stmt}
+
+The notation:
+\begin{center}
+\CheckStmt{\ContextVarA}{s}{\ContextVarB}
+\end{center}
+means that under input context \ContextVarA, checking of statement $s$ is successful, and yields output context \ContextVarB.
+
+\Section{Declaration}{decl}
+
+The notation:
+\begin{center}
+\CheckDecl{\ContextVarA}{d}{\ContextVarB}
+\end{center}
+means that under input context \ContextVarA, checking of declaration $d$ is successful, and yields output context \ContextVarB.
 

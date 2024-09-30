@@ -45,7 +45,6 @@ The output environment of an empty production is its input environment.
 
 When we say that a declaration \SpecDefine{introduces} a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
-
 \Section{Shared Concepts}{shared}
 
 \SubSection{Bodies}
@@ -713,7 +712,7 @@ In order to avoid problems with conflicting conformances, when a module \Char{M}
     \item{the type \Char{I} is declared in module \Char{M}}
 \end{enumerate}
 
-Any conformance that does not follow these rules (that is, where both \Char{T} and \ChVar{I} are imported into module \Char{M}) is called a \SpecDef{retroactive} conformance, and there is no way to guarantee that another module \Char{N} will not introduce the same conformance.
+Any conformance that does not follow these rules (that is, where both \Char{T} and \Char{I} are imported into module \Char{M}) is called a \SpecDef{retroactive} conformance, and there is no way to guarantee that another module \Char{N} will not introduce the same conformance.
 The runtime behavior of programs that include overlapping retroactive conformances is currently undefined.
 
 Currently, extension declarations can only apply to structure types; extensions cannot apply to enumeration types or interfaces.

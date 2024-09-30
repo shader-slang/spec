@@ -653,48 +653,50 @@ Unlike a function declaration, a subscript declaration cannot elide the result t
 
 \Section{Extensions}{ext}
 
-\begin{verbatim}
-An extension declaration is introduced with the `extension` keyword:
 
-```hlsl
+An extension declaration is introduced with the \kw{extension} keyword:
+
+\begin{codeblock}
 extension MyVector
 {
     float getLength() { return sqrt(x*x + y*y); }
     static int getDimensionality() { return 2; }
 }
-```
+\end{codeblock}
 
 An extension declaration adds behavior to an existing type.
-In the example above, the `MyVector` type is extended with an instance method `getLength()`, and a static method `getDimensionality()`.
+In the example above, the \code{MyVector} type is extended with an instance method `getLength()`, and a static method `getDimensionality()`.
 
 An extension declaration names the type being extended after the `extension` keyword.
 The body of an extension declaration may include type declarations, functions, initializers, and subscripts.
 
-> Note: The body of an extension may *not* include variable declarations.
-> An extension cannot introduce members that would change the in-memory layout of the type being extended.
+\begin{Note}
+The body of an extension may *not* include variable declarations.
+An extension cannot introduce members that would change the in-memory layout of the type being extended.
+\end{Note}
 
 The members of an extension are accessed through the type that is being extended.
-For example, for the above extension of `MyVector`, the introduced methods are accessed as follows:
+For example, for the above extension of \code{MyVector}, the introduced methods are accessed as follows:
 
-```hlsl
+\begin{codeblock}
 MyVector v = ...;
 
 float f = v.getLength();
 int n = MyVector.getDimensionality();
-```
+\end{codeblock}
 
 An extension declaration need not be placed in the same module as the type being extended; it is possible to extend a type from third-party or standard-library code.
-The members of an extension are only visible inside of modules that `import` the module declaring the extension;
-extension members are *not* automatically visible wherever the type being extended is visible.
+The members of an extension are only visible inside of modules that \kw{import} the module declaring the extension;
+extension members are \emph{not} automatically visible wherever the type being extended is visible.
 
 An extension declaration may include an inheritance clause:
 
-```hlsl
+\begin{codeblock}
 extension MyVector : IPrintable
 {
     ...
 }
-```
+\end{codeblock}
 
 The inheritance clause of an extension declaration may only include interfaces.
 When an extension declaration lists an interface in its inheritance clause, it asserts that the extension introduces a new conformance, such that the type being extended now conforms to the given interface.
@@ -705,58 +707,60 @@ It is an error for overlapping conformances (that is, of the same type to the sa
 This includes cases where two extensions declare the same conformance, as well as those where the original type and an extension both declare the same conformance.
 The conflicting conformances may come from the same module or difference modules.
 
-In order to avoid problems with conflicting conformances, when a module `M` introduces a conformance of type `T` to interface `I`, one of the following should be true:
+In order to avoid problems with conflicting conformances, when a module \Char{M} introduces a conformance of type \Char{T} to interface \Char{I}, one of the following should be true:
+\begin{enumerate}
+    \item{the type \Char{T} is declared in module \Char{M}, or}
+    \item{the type \Char{I} is declared in module \Char{M}}
+\end{enumerate}
 
-* the type `T` is declared in module `M`, or
-* the type `I` is declared in module `M`
-
-Any conformance that does not follow these rules (that is, where both `T` and `I` are imported into module `M`) is called a _retroactive_ conformance, and there is no way to guarantee that another module `N` will not introduce the same conformance.
+Any conformance that does not follow these rules (that is, where both \Char{T} and \ChVar{I} are imported into module \Char{M}) is called a \SpecDef{retroactive} conformance, and there is no way to guarantee that another module \Char{N} will not introduce the same conformance.
 The runtime behavior of programs that include overlapping retroactive conformances is currently undefined.
 
 Currently, extension declarations can only apply to structure types; extensions cannot apply to enumeration types or interfaces.
 
 \Section{Generics}{generic}
 
-Many kinds of declarations can be made _generic_: structure types, interfaces, extensions, functions, initializers, and subscripts.
+Many kinds of declarations can be made \SpecDef{generic}: structure types, interfaces, extensions, functions, initializers, and subscripts.
 
-A generic declaration introduces a _generic parameter list_ enclosed in angle brackets `<>`:
+A generic declaration introduces a \SpecDef{generic parameter list} enclosed in angle brackets \Char{<>}:
 
-```hlsl
+\begin{codeblock}
 T myFunction<T>(T left, T right, bool condition)
 {
     return condition ? left : right;
 }
-```
+\end{codeblock}
 
 \SubSection{Generic Parameters}{param}
 
 A generic parameter list can include one or more parameters separated by commas.
 The allowed forms for generic parameters are:
+\begin{enumerate}
+    \item{A single identifier like \Char{T} is used to declare a \SpecDef{generic type parameter} with no constraints.}
+    \item{A clause like \code{T : IFoo} is used to introduce a generic type parameter \Char{T} where the parameter is \SpecDef{constrained} so that it must conform to the \code{IFoo} interface.}
+    \item{A clause like \code{let N : int} is used to introduce a generic value parameter \Char{N}, which takes on values of type \code{int}.}
+\end{enumerate}
 
-* A single identifier like `T` is used to declare a _generic type parameter_ with no constraints.
+\begin{Note}
+The syntax for generic value parameters is provisional and subject to possible change in the future.
+\end{Note}
 
-* A clause like `T : IFoo` is used to introduce a generic type parameter `T` where the parameter is _constrained_ so that it must conform to the `IFoo` interface.
+Generic parameters may declare a default value with \Char{=}:
 
-* A clause like `let N : int` is used to introduce a generic value parameter `N`, which takes on values of type `int`.
-
-> Note: The syntax for generic value parameters is provisional and subject to possible change in the future.
-
-Generic parameters may declare a default value with `=`:
-
-```hlsl
+\begin{codeblock}
 T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
-```
+\end{codeblock}
 
 For generic type parameters, the default value is a type to use if no argument is specified.
 For generic value parameters, the default value is a value of the same type to use if no argument is specified.
 
 \SubSection{Explicit Specialization}{specialize}
 
-A generic is _specialized_ by applying it to _generic arguments_ listed inside angle brackets `<>`:
+A generic is \SpecDef{specialized} by applying it to \SpecDef{generic arguments} listed inside angle brackets \Char{<>}:
 
-```hlsl
+\begin{codeblock}
 anotherFunction<int, 3>
-```
+\end{codeblock}
 
 Specialization produces a reference to the declaration with all generic parameters bound to concrete arguments.
 
@@ -765,31 +769,33 @@ Generic value parameters must be matched with value arguments of the appropriate
 
 An explicitly specialized function, type, etc. may be used wherever a non-generic function, type, etc. is expected:
 
-```hlsl
+\begin{codeblock}
 int i = anotherFunction<int,3>( int3(99) );
-```
+\end{codeblock}
 
 \SubSection{Implicit Specialization}{specialization.implicit}
 
-If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts _implicit specialization_.
+If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts \SpecDef{implicit specialization}.
 Implicit specialization infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.
 
 For example, if a programmer writes:
 
-```hlsl
+\begin{codeblock}
 int i = anotherFunction( int3(99) );
-```
+\end{codeblock}
 
-The compiler will infer the generic arguments `<int, 3>` from the way that `anotherFunction` was applied to a value of type `int3`.
+The compiler will infer the generic arguments \code{<int, 3>} from the way that \code{anotherFunction} was applied to a value of type \code{int3}.
 
-> Note: Inference for generic arguments currently only takes the types of value arguments into account.
-> The expected result type does not currently affect inference.
+\begin{Note}
+Inference for generic arguments currently only takes the types of value arguments into account.
+The expected result type does not currently affect inference.
+\end{Note}
 
 \SubSection{Syntax Details}{syntax}
 
 The following examples show how generic declarations of different kinds are written:
 
-```
+\begin{codeblock}
 T genericFunction<T>(T value);
 funct genericFunction<T>(value: T) -> T;
 
@@ -805,11 +811,11 @@ struct GenericType<T>
 interface IGenericInterface<T> : IBase<T>
 {
 }
-```
+\end{codeblock}
 
-> Note: Currently there is no user-exposed syntax for writing a generic extension.
-
-\end{verbatim}
+\begin{Note}
+Currently there is no user-exposed syntax for writing a generic extension.
+\end{Note}
 
 \begin{Legacy}
 

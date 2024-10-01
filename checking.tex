@@ -1,9 +1,31 @@
 \Chapter{Semantic Checking}{check}
 
+\begin{TODO}
+The intention of this chapter is to establish the formalisms and notations that will be used for expressing typing judgements and other semantic-checking rules in this specification.
+
+The notation being used here is aligned with how papers in the PLT world on type theory, semantics, etc. present a language.
+
+
+
+
+\end{TODO}
+
 \Section{Contexts}{context}
 
 A \SpecDef{context} is an ordered sequence of zero or more \SpecDef{context entries}.
 Context entries include \SpecDef{bindings} of the name of a variable (an identifier) to its type.
+
+\begin{Syntax}
+    \SynDefine{context}
+        \ContextVarA, \ContextVarB, ... \SynComment{context variable} \\
+        \SynOr $null$ \SynComment{empty context} \\
+        \SynOr \SynRef{context}, \SynRef{binding}
+
+    \SynDefine{binding}
+        $name$ : $type$ \SynComment{variable} \\
+        \SynOr $name$ :  \textsc{Exactly}($value$) \SynComment{alias}
+\end{Syntax}
+
 
 The notation:
 \begin{center}

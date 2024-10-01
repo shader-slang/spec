@@ -1,19 +1,17 @@
 \Chapter{Parsing}{parse}
 
+\begin{TODO}
+The intention of this chapter is to establish the overall rules for the recursive-descent parsing strategy needed for Slang's grammar.
+
+Slang attempts to thread the needle by supporting the familiar C-like syntax of existing shading languages, while \emph{also} support out-of-order declarations.
+The parsing strategy is necessarily complicated as a result, but we hope to isolate most of the details to this chapter so that the grammar for each construct can be presented in its simplest possible fashion.
+\end{TODO}
+
 \SpecDef{Parsing} is the process of matching a sequence of tokens from the lexical grammar with a rule of the abstract syntax grammar.
 
 \Section{Contexts}{context}
 
-Parsing is always performed with respect to a \SpecDef{context}, which determines which identifiers are bound, and what they are bound to.
-
-\begin{Syntax}
-    contexts ::=
-        \ContextVarA, \ContextVarB, ... \SynComment{context variable} \\
-        \SynOr $null$ \SynComment{empty context} \\
-        \SynOr \ContextVarA, \code{T} \SynComment{type} \\
-        \SynOr \ContextVarA, \code{v : T} \SynComment{value} \\
-        \SynOr \ContextVarA, \code{k} = \MetaVar{S} \SynComment{syntax rule}
-\end{Syntax}
+Parsing is always performed with respect to a \SpecRef{context}, which determines which identifiers are bound, and what they are bound to.
 
 The \SpecDef{initial context} for parsing includes bindings for syntax rules corresponding to each declaration, statement, and expression keyword defined in this specification.
 
@@ -59,9 +57,9 @@ When the parser is in unordered mode and attempts to match the \SynRef{Declarati
     \SynRef{BalancedToken}\SynStar
 
 \SynDefine{BalancedToken} \\
-    \lstinline|{| \SynRef{BalancedTokens} \lstinline|}|
-    \SynOr \lstinline|(| \SynRef{BalancedTokens} \lstinline|)|
-    \SynOr \lstinline|[| \SynRef{BalancedTokens} \lstinline|]|
+    \lstinline|{| \SynRef{BalancedTokens} \lstinline|}| \\
+    \SynOr \lstinline|(| \SynRef{BalancedTokens} \lstinline|)| \\
+    \SynOr \lstinline|[| \SynRef{BalancedTokens} \lstinline|]| \\
     \SynOr \SynComment(any token other than \lstinline|{|, \lstinline|}|, \lstinline|(|, \lstinline|)|, \lstinline|[|, \lstinline|]|)
 \end{Syntax}
 

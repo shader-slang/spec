@@ -15,8 +15,8 @@ A primary source unit may start with a \kw{module} declaration, which specifies 
     \code{module} \SynRef{Identifier} \code{;}
 \end{Syntax}
 
-If a primary source unit does not start with a **`module`** declaration, the module comprises only a single source unit, and the name of the module must be determined by some implementation-specified method.
-A primary source unit without a **`module`** declaration must not contain any **`include`** declarations.
+If a primary source unit does not start with a \kw{module} declaration, the module comprises only a single source unit, and the name of the module must be determined by some implementation-specified method.
+A primary source unit without a \kw{module} declaration must not contain any \kw{include} declarations.
 
 \begin{Note}
 An implementation might derive a default module name from a file name/path, command-line arguments, build configuration files, etc.

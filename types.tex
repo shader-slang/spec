@@ -1,5 +1,34 @@
 \Chapter{Types}{type}
 
+\begin{TODO}
+The text of this chapter is largely still written in a more guide/reference style than in anything formal.
+
+It is important to have the specification include a list of the major built-in types that this chapter currently documents, but those are not the only things relevant to types that need to be discussed.
+
+A key concept that this chapter needs to discuss is that there are a few distinct \emph{kinds} of types that Slang traffics in:
+
+\begin{itemize}
+\item \emph{Proper} types, such as \code{Int} and \code{RWStructuredBuffer<Float>}, which can be used for local variables, function parameters, etc.
+
+\item \emph{Interface} types, which include both references to \kw{interface} declarations, but also conjunctions of interface types. Interface types are distinct from proper types. Interfaces can be used as constraints on generic type parameters, but proper types cannot. Similarly, an interface type is not semantically valid as a local variable or function parameter (the current Slang compiler simply translates such invalid usages to existential types, which are proper).
+
+\item \emph{Generic} types, which are the types of references to generic declarations. The current Slang language rules do not allow developers to utter generic types, and the semantics do not treat them as proper types. However, intermediate expressions of generic type can easily appear when checking Slang expressions.
+\end{itemize}
+
+The type-checking rules will likely need to be able to refer to certain other types that are not part of the user-exposed Slang type system.
+From the judgements that have been sketched so far, it seems clear that we at least need:
+
+\begin{itemize}
+\item Some kind of ``type type'' or other way to refer to the logical ``type'' of an expression that itself names a (specific) type. This might be spelled $\textsc{Exactly}(...)$. So, for example, if the name \code{I} is bound as an alias for \code{Int} in a certain context, the typing judgements would determine $\code{I} : \textsc{Exactly}(\code{Int})$.
+
+\item Some kind of ``overload group'' type, which represents that a given expression resolves only to a group of candidates, such that further disambiguation is needed. Such a type might be spelled $\textsc{Overloaded}(...)$, where the arguments are the types of the candidates.
+
+\item A set of ``reference'' types, such as \code{inout Int}, that can be used to represent the value category (e.g., l-value vs. r-value) of an expression. Subtyping/coercion rules would then need to support, e.g., passing a \code{ref Int} where an \code{inout Int} is expected, etc.
+\end{itemize}
+
+\end{TODO}
+
+
 This section defines the kinds of types supported by Slang.
 
 

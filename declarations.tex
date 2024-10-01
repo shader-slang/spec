@@ -249,9 +249,13 @@ A \SpecDef{type alias declaration} introduces a binding that resolves to some ot
 \end{Syntax}
 
 \begin{Checking}
-
-\CheckType{\ContextVarA}{\MetaVar{T}}{\ContextVarB} \\
-\CheckDecl{\ContextVarA}{\code{typealias} \MetaVar{A} = \MetaVar{T}\code{;}}{\ContextVarA,\code{type}\MetaVar{A}\code{=}\MetaVar{T}}
+    \DerivationRule{
+        \begin{trgather}
+        \CheckType{\ContextVarA}{type}{\ContextVarB} \\
+        \end{trgather}	
+    }{
+        \CheckDecl{\ContextVarA}{\code{typealias} name = type\code{;}}{\ContextVarB,\code{type} name = type}
+    }
 
 \end{Checking}
     
@@ -265,7 +269,6 @@ A type alias may also be declared using a \SpecDef{traditional type alias declar
 \begin{Syntax}
     \SynDefine{TraditionalTypeAliasDeclaration} \\
         \code{typedef} \SynRef{TypeSpecifier} \SynRef{Declarator} \code{;}
-        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
 \end{Syntax}
 
 \end{Legacy}
@@ -473,7 +476,7 @@ Every parameter has a \SpecDef{direction}, which determines how an argument prov
         \SynOr \code{out} \\
         \SynOr \code{take} \\
         \SynOr \code{borrow} \\
-        \SynOr \code{inout} \SynOr \code{in out}
+        \SynOr \code{inout} \SynOr \code{in out} \\
         \SynOr \code{ref} \\
 \end{Syntax}
 

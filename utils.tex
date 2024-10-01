@@ -51,6 +51,7 @@ fonttitle=\bfseries,##1}}
 \definecolor{NoteColor}{gray}{0.98}
 \definecolor{IncompleteColor}{gray}{0.98}
 \definecolor{SyntaxColor}{gray}{0.98}
+\definecolor{TODOCOLOR}{rgb}{0.8,0.3,0.3}
 
 \DefineCallout{Note}{Note}{NoteColor}
 \DefineCallout{Incomplete}{Incomplete}{IncompleteColor}
@@ -62,7 +63,7 @@ fonttitle=\bfseries,##1}}
 \DefineCallout{Semantics}{Semantics}{SyntaxColor}
 \DefineCallout{Checking}{Checking}{SyntaxColor}
 \DefineCallout{Description}{Description}{SyntaxColor}
-\DefineCallout{TODO}{TODO}{SyntaxColor}
+\DefineCallout{TODO}{TODO}{TODOCOLOR}
 
 %
 %\definecolor{ListingKeywordColor}{gray}{0.5}
@@ -99,7 +100,7 @@ fonttitle=\bfseries,##1}}
 \lstdefinestyle{SlangCodeStyle}{
     basicstyle=\mdseries\ttfamily,
     classoffset=0,
-    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface,in,out,inout,ref,take,borrow},
+    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface,in,out,inout,ref,take,borrow,module,include,implements,extension,static,return,import,public,internal,private},
     keywordstyle=\color{KEYWORDCOLOR}\bfseries\ttfamily,
     classoffset=1,
     morekeywords={@GroupShared},
@@ -128,19 +129,20 @@ fonttitle=\bfseries,##1}}
 
 \newcommand{\InlineCodeStyle}[1]{
     \fboxsep2pt
-    \text{\ttfamily\mdseries\colorbox{CodeBackgroundColor}{#1}}
+    \text{\ttfamily\colorbox{CodeBackgroundColor}{#1}}
 }
 
 \newcommand{\code}[1]{\InlineCodeStyle{\lstinline[style=SlangCodeStyle]{#1}}}
 
 %\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{\lstinline[style=SlangCodeStyle]{#1}}}}
-\newcommand{\kw}[1]{\text{\texttt{\textbf{\textcolor{KEYWORDCOLOR}{#1}}}}}
+\newcommand{\kw}[1]{\code{#1}}
 
 \newcommand{\lcurly}{\text{\InlineCodeStyle{\lstinline{\{}}}}
 \newcommand{\rcurly}{\text{\InlineCodeStyle{\lstinline{\}}}}}
 
 \newcommand{\SpecDefine}[1]{\text{\emph{#1}}}
 \newcommand{\SpecDef}[1]{\text{\emph{#1}}}
+\newcommand{\SpecRef}[1]{#1}
 
 \newcommand{\SynDefine}[1]{\text{\emph{#1} ::=}}
 \newcommand{\SynRef}[1]{\text{\emph{#1}}}

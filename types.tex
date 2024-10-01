@@ -209,9 +209,7 @@ The \SpecDef{standard layout} for a structure type uses the following algorithm:
   \end{enumerate}
 \end{enumerate}
 
-\begin{verbatim}
-
-When this algorithm completes, `size` and `alignment` will be the size and alignment of the structure type.
+When this algorithm completes, \code{size} and \code{alignment} will be the size and alignment of the structure type.
 
 Most target platforms do not use the standard layout directly, but it provides a baseline for defining other layout algorithms.
 Any layout for structure types must guarantee an alignment at least as large as the standard layout.
@@ -220,7 +218,9 @@ Any layout for structure types must guarantee an alignment at least as large as 
 
 C-style layout for structure types differs from standard layout by adding an additional final step:
 
-* Set `size` the smallest multiple of `alignment` not less than `size`
+\begin{enumerate}
+  \item {Set `size` the smallest multiple of `alignment` not less than `size`} 
+\end{enumerate}
 
 This mirrors the layout rules used by typical C/C++ compilers.
 
@@ -228,109 +228,120 @@ This mirrors the layout rules used by typical C/C++ compilers.
 
 D3D constant buffer layout is similar to standard layout with two differences:
 
-* The initial alignment is 16 instead of one
-
-* If a field would have _improper straddle_, where the interval `(fieldOffset, fieldOffset+fieldSize)` (exclusive on both sides) contains any multiple of 16, *and* the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16
+\begin{enumerate}
+\item{The initial alignment is 16 instead of one}
+\item{If a field would have \SpecDef{improper straddle}, where the interval \\
+\code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16}
+\end{enumerate}
 
 \Section{Array Types}{array}
 
-An _array type_ is either a statically-sized or dynamically-sized array type.
+An \SpecDef{array type} is either a statically-sized or dynamically-sized array type.
 
-A known-size array type is written `T[N]` where `T` is a type and `N` is a specialization-time constant integer.
-This type represents an array of exactly `N` values of type `T`.
+A known-size array type is written \code{T[N]} where \Char{T} is a type and \Char{N} is a specialization-time constant integer.
+This type represents an array of exactly \Char{N} values of type \Char{T}.
 
-An unknown-size array type is written `T[]` where `T` is a type.
+An unknown-size array type is written \Char{T[]} where \Char{T} is a type.
 This type represents an array of some fixed, but statically unknown, size.
 
-> Note: Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
+\begin{Note}
+Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
+\end{Note}
 
 \SubSection{Declaration Syntax}{decl}
 
-For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type `T` as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
+For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \Char{T} as a type specifier (before the variable name) and the \Char{[N]} to specify the element count after the variable name:
 
-```hlsl
+\begin{codeblock}
 int a[10];
-```
+\end{codeblock}
 
 Alternatively, the array type itself may be used as the type specifier:
 
-```hlsl
+\begin{codeblock}
 int[10] a;
-```
+\end{codeblock}
 
-When using the `var` or `let` keyword to declare a variable, the array type must not be split:
+When using the \kw{var} or \kw{let} keyword to declare a variable, the array type must not be split:
 
-```hlsl
+\begin{codeblock}
 var a : int[10];
-```
+\end{codeblock}
 
-> Note: when declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer must be careful about the difference between the two declaration syntaxes.
-> The following two declarations are equivalent:
->
-> ```hlsl
-> int[3][5] a;
-> int a[5][3];
-> ```
->
-> In each case, `a` is a five-element array of three-element arrays of `int`s.
-> However, one declaration orders the element counts as `[3][5]` and the other as `[5][3]`.
+\begin{Note}
+When declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer must be careful about the difference between the two declaration syntaxes.
+The following two declarations are equivalent:
+\begin{codeblock}
+int[3][5] a;
+int a[5][3];
+\end{codeblock}
+In each case, \Char{a} is a five-element array of three-element arrays of \kw{int}s.
+However, one declaration orders the element counts as \Char{[3][5]} and the other as \Char{[5][3]}.
+\end{Note}
 
 \SubSection{Element Count Inference}{inference}
 
 When a variable is declared with an unknown-size array type, and also includes an initial-value expression:
 
-```hlsl
+\begin{codeblock}
 int a[] = { 0xA, 0xB, 0xC, 0xD };
-```
+\end{codeblock}
 
 The compiler will attempt to infer an element count based on the type and/or structure of the initial-value expression.
 In the above case, the compiler will infer an element count of 4 from the structure of the initializer-list expression.
 Thus the preceding declaration is equivalent to:
 
-```hlsl
+\begin{codeblock}
 int a[4] = { 0xA, 0xB, 0xC, 0xD };
-```
+\end{codeblock}
 
 A variable declared in this fashion semantically has a known-size array type and not an unknown-size array type; the use of an unknown-size array type for the declaration is just a convenience feature.
 
 \SubSection{Standard Layout}{layout.std}
 
-The _stride_ of a type is the smallest multiple of its alignment not less than its size.
+The \SpecDef{stride} of a type is the smallest multiple of its alignment not less than its size.
 
-Using the standard layout for an array type `T[]` or `T[N]`:
+Using the standard layout for an array type \Char{T[]} or \Char{T[N]}:
 
-* The _element stride_ of the array type is the stride of its element type `T`
-* Element `i` of the array starts at an offset that is `i` times the element stride of the array
-* The alignment of the array type is the alignment of `T`
-* The size of an unknown-size array type is unknown
-* The size of a known-size array with zero elements is zero
-* The size of a known-size array with a nonzero number `N` of elements is the size of `T` plus `N - 1` times the element stride of the array
+\begin{enumerate}
+  \item{The \SpecDef{element stride} of the array type is the stride of its element type \Char{T}}
+  \item{Element \Char{i} of the array starts at an offset that is \Char{i} times the element stride of the array}
+  \item{The alignment of the array type is the alignment of \Char{T}}
+  \item{The size of an unknown-size array type is unknown}
+  \item{The size of a known-size array with zero elements is zero}
+  \item{The size of a known-size array with a nonzero number \Char{N} of elements is the size of \Char{T} plus \Char{N - 1} times the element stride of the array}
+\end{enumerate}
 
 \SubSection{C-Style Layout}{layout.c}
 
-The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number `N` of elements is `N` times the element stride of the array.
+The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number \Char{N} of elements is \Char{N} times the element stride of the array.
 
 \SubSection{D3D Constant Buffer Layout}{layout.d3d.cbuffer}
 
-The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of `T` that is not less than the stride of `T`
+The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \Char{T} that is not less than the stride of \Char{T}
 
 \Section{This Type}{this}
 
-Within the body of a structure or interface declaration, the keyword `This` may be used to refer to the enclosing type.
-Inside of a structure type declaration, `This` refers to the structure type itself.
-Inside of an interface declaration, `This` refers to the concrete type that is conforming to the interface (that is, the type of `this`).
+Within the body of a structure or interface declaration, the keyword \kw{This} may be used to refer to the enclosing type.
+Inside of a structure type declaration, \kw{This} refers to the structure type itself.
+Inside of an interface declaration, \kw{This} refers to the concrete type that is conforming to the interface (that is, the type of \kw{this}).
+\begin{TODO}
+This vs this capitalization inconsistency in above paragraph-- intentional or no?
+\end{TODO}
 
 \Section{Opaque Types}{opaque}
 
-_Opaque_ types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
+\SpecDef{Opaque} types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
 Similar languages may refer to these as "resource types" or "object types."
 
 The full list of opaque types supported by Slang can be found in the standard library reference, but important examples are:
 
-* Texture types such as `Texture2D<T>`, `TextureCubeArray<T>`, and `RWTexture2DMS<T>`
-* Sampler state types: `SamplerState` and `SamplerComparisonState`
-* Buffer types like `ConstantBuffer<T>` and  `StructuredBuffer<T>`
-* Parameter blocks: `ParameterBlock<T>`
+\begin{enumerate}
+  \item{Texture types such as \code{Texture2D<T>}, \code{TextureCubeArray<T>}, and \code{RWTexture2DMS<T>}}
+  \item{Sampler state types: \code{SamplerState} and \code{SamplerComparisonState}}
+  \item{Buffer types like \code{ConstantBuffer<T>} and  \code{StructuredBuffer<T>}}
+  \item{Parameter blocks: \code{ParameterBlock<T>}}
+\end{enumerate}
 
 Layout for opaque types depends on the target platform, and no specific guarantees can be made about layout rules across platforms.
 
@@ -339,15 +350,14 @@ Layout for opaque types depends on the target platform, and no specific guarante
 Every type has either known or unknown size.
 Types with unknown size arise in a few ways:
 
-* An unknown-size array type has unknown size
-
-* A structure type has unknown size if any field type has unknown size
+\begin{enumerate}
+  \item{An unknown-size array type has unknown size}
+  \item{A structure type has unknown size if any field type has unknown size}
+\end{enumerate}
 
 The use of types with unknown size is restricted as follows:
-
-* A type with unknown size cannot be used as the element type of an array
-
-* A type with unknown size can only be used as the last field of a structure type
-
-* A type with unknown size cannot be used as a generic argument to specialize a user-defined type, function, etc. Specific built-in generic types/functions may support unknown-size types, and this will be documented on the specific type/function.
-\end{verbatim}
+\begin{enumerate}
+  \item{A type with unknown size cannot be used as the element type of an array}
+  \item{A type with unknown size can only be used as the last field of a structure type}
+  \item{A type with unknown size cannot be used as a generic argument to specialize a user-defined type, function, etc. Specific built-in generic types/functions may support unknown-size types, and this will be documented on the specific type/function.}
+\end{enumerate}

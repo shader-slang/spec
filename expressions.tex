@@ -315,7 +315,7 @@ These rules just kick the can down the road and say that synthesis/checking for 
 
 \begin{Syntax}
 	\SynDefine{SubscriptExpression} \\
-		\code{Expression} \code{[} (\SynRef{Argument} \code{,})\SynStar \code{]}
+		\SynRef{Expression} \code{[} (\SynRef{Argument} \code{,})\SynStar \code{]}
 \end{Syntax}
 
 \begin{Incomplete}
@@ -460,7 +460,7 @@ We will need to expand the formalism to include \emph{qualified} types.
         \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
         \end{trgather}
 	}{
-		\SynthExpr{\ContextVarA}{op expr}{type}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
 	}
 
 	\DerivationRule{
@@ -468,7 +468,7 @@ We will need to expand the formalism to include \emph{qualified} types.
             \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
         \end{trgather}
 	}{
-		\CheckExpr{\ContextVarA}{op expr}{type}{\ContextVarB}
+		\CheckExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
 	}
 \end{Checking}
 

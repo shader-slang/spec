@@ -33,7 +33,7 @@ This document makes use of the following conventions to improve readability:
 \begin{itemize}
     \item{When a term is introduced and defined, it will be in italics. For example: a \SpecDef{duck} is something that looks like a duck and quacks like a duck.}
     \item{Code fragments in Slang or other programming languages use a fixed-width font. For example: \code{a + b}.}
-    \subitem{References to language keywords are additionally rendered in bold. [TODO: fix kw typeface description]. For example: \kw{if}}
+    \subitem{References to language keywords are additionally rendered in bold. For example: \kw{if}}
 \end{itemize}
 
 \SubSection{Callouts}{callouts}
@@ -47,14 +47,14 @@ Notes are rendered like this.
 The kinds of callouts used in this document are:
 
 \begin{itemize}
-    \item{\textbf{Example}s provide non-normative examples of how to use language constructs, or of their semantics.}
-    \item{\textbf{Incomplete} callouts are non-normative markers of places where this document is lacking important information, or may be inaccurate.}
-    \item{\textbf{Legacy} callouts are described below.}
-    \item{\textbf{Limitation} callouts are used to provide non-normative discussion of how the Slang compiler implementation may deviate from the language as specified here.}
-    \item{\textbf{Note}s give non-normative information that may help readers to understand and apply the normative information in the document.}
-    \item{\textbf{Rationale} callouts provide non-normative explanations about *why* certain constructs, constraints, or rules are part of the language.}
-    \item{\textbf{Syntax} callouts are described below.}
-    \item{\textbf{Warning}s give non-normative information about language rules or programming practices that may lead to surprising or unwanted behavior.}
+    \item{\CalloutName{Example}s provide non-normative examples of how to use language constructs, or of their semantics.}
+    \item{\CalloutName{Incomplete} callouts are non-normative markers of places where this document is lacking important information, or may be inaccurate.}
+    \item{\CalloutName{Legacy} callouts are described below.}
+    \item{\CalloutName{Limitation} callouts are used to provide non-normative discussion of how the Slang compiler implementation may deviate from the language as specified here.}
+    \item{\CalloutName{Note}s give non-normative information that may help readers to understand and apply the normative information in the document.}
+    \item{\CalloutName{Rationale} callouts provide non-normative explanations about *why* certain constructs, constraints, or rules are part of the language.}
+    \item{\CalloutName{Syntax} callouts are described below.}
+    \item{\CalloutName{Warning}s give non-normative information about language rules or programming practices that may lead to surprising or unwanted behavior.}
 \end{itemize}
 
 \SubSection{Legacy Features}{legacy}
@@ -62,15 +62,15 @@ The kinds of callouts used in this document are:
 Some features of the Slang language are considered \SpecDef{legacy} features.
 The language supports these constructs, syntax, etc. in order to facilitate compatibility with existing code in other GPU languages, such as HLSL.
 
-\textbf{Legacy} callouts are used for the description of legacy features. These callouts are normative.
+\CalloutName{Legacy} callouts are used for the description of legacy features. These callouts are normative.
 
 \SubSection{Grammar Productions}{grammar}
 
 The syntax and lexical structure of the language is described \textbf{Syntax} callouts using a notation similar to EBNF.
 
 \begin{itemize}
-    \item{\SynRef{Nonterminals} have names in camel case, and are rendered in italics. E.g., \SynRef{CallExpression}.}
-    \item{\SynRef{Terminals} in the syntax, both punctiation and keywords are rendered in a fixed-width font. E.g., \code{func}.}
+    \item{Nonterminals have names in camel case, and are rendered in italics. E.g., \SynRef{CallExpression}.}
+    \item{Terminals in the syntax, both punctiation and keywords are rendered in a fixed-width font. E.g., \code{func}.}
     \item{A question mark as a suffix indicates that the given element is optional. E.g., \SynRef{Expression}\SynOpt}
     \item{An asterisk as a suffix indicates that a given element may be repeated zero or more times. E.g., \SynRef{Modifier}\SynStar}
     \item{A plus as a suffix indicates that a given element may be repeated one or more times. E.g., \SynRef{AccessorDeclaration}\SynPlus}

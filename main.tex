@@ -15,6 +15,15 @@
 \usepackage{trfrac}
 \usepackage{enumitem}
 %\usepackage{underscore}
+\usepackage{fancyhdr}
+\usepackage{sectsty}
+\usepackage[explicit]{titlesec}
+
+\usepackage{courier}
+\usepackage{helvet}
+\usepackage{mathptm}
+
+\allsectionsfont{\sffamily}
 
 \input{utils}
 
@@ -27,6 +36,12 @@
 \maketitle
 \tableofcontents
 \mainmatter
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\texttt{WORK IN PROGRESS - NOT FOR DISTRIBUTION}}
+\fancyfoot[L]{\texttt{Generated: \today}}
+\fancyfoot[R]{\textsf{\thepage}}
 
 \input{introduction}
 % Part 1: Lexical Structure

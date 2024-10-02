@@ -10,60 +10,85 @@
 % Doing `\DefineVariable{Thing}` will allow you to use `\SetThing{...}` to
 % set a variable and `\Thing` to access its current value.
 %
-%\makeatletter
-%\newcommand*\DefineVariable[1]{\@namedef{Set#1}##1{\global\@namedef{#1}{##1}}}
-%\makeatother
+\makeatletter
+\newcommand*\DefineVariable[1]{\@namedef{Set#1}##1{\global\@namedef{#1}{##1}}}
+\makeatother
 %
-%\DefineVariable{ChapterLabel}
-%\DefineVariable{SectionLabel}
-%\DefineVariable{SubSectionLabel}
-%
-%\newcommand*{ChapterPath}{\ChapterLabel}
-%\newcommand*{SectionPath}{\ChapterPath.\SectionLabel}
-%\newcommand*{SubSectionPath}{\SectionPath.\SubSectionLabel}
-%
-%
-%\newcommand*{\Chapter}[2]{\SetChapterLabel{#2}\chapter[#1\hfill[\ChapterPath]]\label{\ChapterPath}}
-%\newcommand*{\Section}[2]{\SetSectionLabel{#2}\section[#1\hfill[\SectionPath]]\label{\SectionPath}}
-%\newcommand*{\SubSection}[2]{\SetSubSectionLabel{#2}\subsection[#1\hfill[\SubSectionPath]]\label{\SubSectionPath}}
-%
-\newenvironment{Callout}[2]
-    {
-    \begin{center}
-    \begin{tabular}{p{0.9\textwidth}}
-    \cellcolor{#2}
-    \textbf{#1}: \\
-    }
-    {
-    \\\\
-    \end{tabular}
-    \end{center}
-    }
 
-%\newcommand{\DefineCallout}[3]{\newenvironment{#1}{\begin{Callout}{#2}{#3}}{\end{Callout}}}
+\DefineVariable{ChapterLabel}
+\DefineVariable{SectionLabel}
+\DefineVariable{SubSectionLabel}
+\DefineVariable{SubSubSectionLabel}
+\DefineVariable{ParagraphLabel}
+\DefineVariable{SubParagraphLabel}
+
+\SetChapterLabel{}
+\SetSectionLabel{}
+\SetSubSectionLabel{}
+\SetSubSubSectionLabel{}
+\SetParagraphLabel{}
+\SetSubParagraphLabel{}
+
+%
+\newcommand*{\ChapterPath}{\ChapterLabel}
+\newcommand*{\SectionPath}{\ChapterPath.\SectionLabel}
+\newcommand*{\SubSectionPath}{\SectionPath.\SubSectionLabel}
+\newcommand*{\SubSubSectionPath}{\SubSectionPath.\SubSubSectionLabel}
+\newcommand*{\ParagraphPath}{\SubSubSectionPath.\ParagraphLabel}
+\newcommand*{\SubParagraphPath}{\ParagraphPath.\SubParagraphLabel}
+%
+\newcommand*{\HeadingPath}[1]{\texorpdfstring{TEX}{PDF}}
+%
+\newcommand*{\Chapter}[2]{\SetChapterLabel{#2}\chapter{#1}\label{\ChapterPath}}
+\newcommand*{\Section}[2]{\SetSectionLabel{#2}\section{#1}\label{\SectionPath}}
+\newcommand*{\SubSection}[2]{\SetSubSectionLabel{#2}\subsection{#1}\label{\SubSectionPath}}
+\newcommand*{\SubSubSection}[2]{\SetSubSubSectionLabel{#2}\subsubsection{#1}\label{\SubSubSectionPath}}
+\newcommand*{\Paragraph}[2]{\SetParagraphLabel{#2}\paragraph{#1}\label{\ParagraphPath}}
+\newcommand*{\SubParagraph}[2]{\SetSubParagraphLabel{#2}\subparagraph{#1}\label{\SubParagraphPath}}
+%
+
+\titleformat{\chapter}{\sffamily\huge\bfseries}{\thechapter}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\ChapterPath]}}
+
+\titleformat{\section}{\sffamily\Large\bfseries}{\thesection}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SectionPath]}}
+
+\titleformat{\subsection}{\sffamily\large\bfseries}{\thesubsection}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SubSectionPath]}}
+
+\titleformat{\subsubsection}{\sffamily\normalsize\bfseries}{\thesubsubsection}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SubSubSectionPath]}}
+
+\titleformat{\paragraph}{\sffamily\normalsize\bfseries}{\theparagraph}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\ParagraphPath]}}
+
+\titleformat{\subparagraph}{\sffamily\normalsize\bfseries}{\thesubparagraph}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SubParagraphPath]}}
+
+%\newcommand*{\Chapter}[2]{\chapter{#1}}
+%\newcommand*{\Section}[2]{\section{#1}}
+%\newcommand*{\SubSection}[2]{\subsection{#1}}
+%\newcommand*{\SubSubSection}[2]{\subsubsection{#1}}
+%\newcommand*{\Paragraph}[2]{\paragraph{#1}}
+%\newcommand*{\SubParagraph}[2]{\subparagraph{#1}}
+
+\newcommand*{\CalloutStyle}{\sffamily\bfseries}
+\newcommand*{\CalloutName}[1]{\text{\CalloutStyle{#1}}}
 
 \newcommand{\DefineCallout}[3]{
     \newtcolorbox{#1}[1][]{breakable,sharp corners, skin=enhancedmiddle jigsaw,parbox=false,
-boxrule=0mm,leftrule=2mm,boxsep=0mm,arc=0mm,outer arc=0mm,attach title to upper,
-after title={: \\}, coltitle=black,colback=gray!10,colframe=black, title={#2},
-fonttitle=\bfseries,##1}}
+boxrule=0mm,leftrule=1mm,boxsep=0mm,arc=0mm,outer arc=0mm,attach title to upper,
+after title={: \\}, coltitle=black,colback=#3,colframe=black, title={#2},
+fonttitle=\CalloutStyle,##1}}
 
-\definecolor{NoteColor}{gray}{0.98}
-\definecolor{IncompleteColor}{gray}{0.98}
-\definecolor{SyntaxColor}{gray}{0.98}
-\definecolor{TODOCOLOR}{rgb}{0.8,0.3,0.3}
+\definecolor{DescriptiveCalloutColor}{gray}{0.9}
+\definecolor{NormativeCalloutColor}{gray}{0.9}
 
-\DefineCallout{Note}{Note}{NoteColor}
-\DefineCallout{Incomplete}{Incomplete}{IncompleteColor}
-\DefineCallout{SyntaxCallout}{Syntax}{SyntaxColor}
-\DefineCallout{Lexical}{Syntax}{SyntaxColor}
-\DefineCallout{Legacy}{Legacy}{SyntaxColor}
-\DefineCallout{Rationale}{Rationale}{SyntaxColor}
-\DefineCallout{Example}{Example}{SyntaxColor}
-\DefineCallout{Semantics}{Semantics}{SyntaxColor}
-\DefineCallout{Checking}{Checking}{SyntaxColor}
-\DefineCallout{Description}{Description}{SyntaxColor}
-\DefineCallout{TODO}{TODO}{TODOCOLOR}
+\DefineCallout{Note}{Note}{DescriptiveCalloutColor}
+\DefineCallout{Incomplete}{Incomplete}{DescriptiveCalloutColor}
+\DefineCallout{SyntaxCallout}{Syntax}{NormativeCalloutColor}
+\DefineCallout{LexicalCallout}{Syntax}{NormativeCalloutColor}
+\DefineCallout{Legacy}{Legacy}{NormativeCalloutColor}
+\DefineCallout{Rationale}{Rationale}{DescriptiveCalloutColor}
+\DefineCallout{Example}{Example}{DescriptiveCalloutColor}
+\DefineCallout{Semantics}{Semantics}{NormativeCalloutColor}
+\DefineCallout{Checking}{Checking}{NormativeCalloutColor}
+\DefineCallout{Description}{Description}{DescriptiveCalloutColor}
+\DefineCallout{TODO}{TODO}{DescriptiveCalloutColor}
 
 %
 %\definecolor{ListingKeywordColor}{gray}{0.5}
@@ -80,13 +105,6 @@ fonttitle=\bfseries,##1}}
 %
 %\lstnew
 
-\newcommand*{\Chapter}[2]{\chapter{#1}}
-\newcommand*{\Section}[2]{\section{#1}}
-\newcommand*{\SubSection}[2]{\subsection{#1}}
-\newcommand*{\SubSubSection}[2]{\subsubsection{#1}}
-\newcommand*{\Paragraph}[2]{\paragraph{#1}}
-\newcommand*{\SubParagraph}[2]{\subparagraph{#1}}
-
 
 
 \definecolor{FREQUENCYCOLOR}{RGB}{0,176,80}
@@ -94,36 +112,44 @@ fonttitle=\bfseries,##1}}
 \definecolor{COMMENTCOLOR}{RGB}{192,0,0}
 \definecolor{TYPECOLOR}{RGB}{0,112,192}
 \definecolor{KEYWORDARGCOLOR}{RGB}{144,155,170}
+\definecolor{PREPROCOLOR}{RGB}{170,64,32}
+\definecolor{ATTRCOLOR}{RGB}{0,112,32}
 
 \definecolor{CodeBackgroundColor}{gray}{0.85}
 
 \lstdefinestyle{SlangCodeStyle}{
-    basicstyle=\mdseries\ttfamily,
+    basicstyle=\ttfamily\mdseries\upshape,
     classoffset=0,
-    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface,in,out,inout,ref,take,borrow,module,include,implements,extension,static,return,import,public,internal,private},
-    keywordstyle=\color{KEYWORDCOLOR}\bfseries\ttfamily,
+    morekeywords={once},
+    otherkeywords={\#include,\#define,\#undef,\#if,\#ifdef\#ifndef,\#else,\#elif,\#endif,\#error,\#warning,\#line,\#pragma,\#version},
+    keywordstyle=\color{PREPROCOLOR}\ttfamily\bfseries\upshape,
     classoffset=1,
-    morekeywords={@GroupShared},
-    keywordstyle=\color{FREQUENCYCOLOR}\ttfamily,
+    morekeywords={if,else,struct,class,discard,while,for,do,func,let,var,property,break,continue,yield,interface,in,out,inout,ref,take,borrow,module,include,implements,extension,static,return,import,public,internal,private,implementing,this,enum,is,case,typealias,typedef,associatedtype,auto,const,init,get,set,subscript,cbuffer,tbuffer,switch,true,false,default,operator,prefix,postfix,throws,row\_major,column\_major,fwd\_diff,bwd\_diff},
+    keywordstyle=\color{KEYWORDCOLOR}\ttfamily\bfseries\upshape,
     classoffset=2,
-    morekeywords={void,int,float,Int,Float,Unit,bool,Bool},
-    keywordstyle=\color{TYPECOLOR}\ttfamily,
+    morekeywords={@GroupShared},
+    keywordstyle=\color{FREQUENCYCOLOR}\ttfamily\mdseries\upshape,
+    classoffset=3,
+    morekeywords={void,int,float,Int,Float,Unit,bool,Bool,Texture2D,T,S,IFoo,vector,matrix,int3,ConstantBuffer,TextureBuffer,ParameterBlock,String,IFromIntegerLiteral,IFromFloatingPointLiteral,This,RWStructuredBuffer,float4,float4x4,float2,RWTexture2DMS,TextureCubeArray,SamplerState,SamplerComparisonState,StructuredBuffer,IDifferentiable},
+    keywordstyle=\color{TYPECOLOR}\ttfamily\mdseries\upshape,
+    classoffset=4,
+    morekeywords={mutating,Differentiable},
+    keywordstyle=\color{ATTRCOLOR}\ttfamily\mdseries\upshape,
     classoffset=0,
-    moredelim=[is][\color{KEYWORDARGCOLOR}\ttfamily]{|}{|},
-    moredelim=[is][\color{red}\ttfamily]{^}{^},
+    moredelim=[is][\color{KEYWORDARGCOLOR}\ttfamily\mdseries\upshape]{|}{|},
+    moredelim=[is][\color{red}\ttfamily\mdseries\upshape]{^}{^},
     morecomment=[l]//,
-    commentstyle=\color{COMMENTCOLOR},
+    commentstyle=\color{COMMENTCOLOR}\ttfamily\mdseries\upshape,
     tabsize=2,
     mathescape=true}
 
 \lstset{
     style=SlangCodeStyle,
-    basicstyle=\text\mdseries\ttfamily\small}
+    basicstyle=\text\ttfamily\small}
 
 \lstnewenvironment{codeblock}[1][]
     {\lstset{
         style=SlangCodeStyle,
-        basicstyle=\text\mdseries\ttfamily\small
         #1}}
     {}
 
@@ -137,15 +163,16 @@ fonttitle=\bfseries,##1}}
 %\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{\lstinline[style=SlangCodeStyle]{#1}}}}
 \newcommand{\kw}[1]{\code{#1}}
 
-\newcommand{\lcurly}{\text{\InlineCodeStyle{\lstinline{\{}}}}
-\newcommand{\rcurly}{\text{\InlineCodeStyle{\lstinline{\}}}}}
+\newcommand{\lcurly}{\code{\{}}
+\newcommand{\rcurly}{\code{\}}}
 
-\newcommand{\SpecDefine}[1]{\text{\emph{#1}}}
+% TODO: should make `\SpecRef` link to the definition point.
 \newcommand{\SpecDef}[1]{\text{\emph{#1}}}
 \newcommand{\SpecRef}[1]{#1}
+\newcommand{\SpecDefine}[1]{\SpecDef{#1}}
 
-\newcommand{\SynDefine}[1]{\text{\emph{#1} ::=}}
-\newcommand{\SynRef}[1]{\text{\emph{#1}}}
+\newcommand{\SynDefine}[1]{\label{syntax:#1}\text{\emph{#1} ::=}}
+\newcommand{\SynRef}[1]{\hyperref[syntax:#1]{\text{\emph{#1}}}}
 \newcommand{\SynOr}{\text{ $\vert$ }}
 \newcommand{\SynStar}{\text{*}}
 \newcommand{\SynPlus}{\text{+}}
@@ -168,10 +195,18 @@ fonttitle=\bfseries,##1}}
     \end{SynEnvList}
     \end{SyntaxCallout}
 }
+\newenvironment{Lexical} {
+    \begin{LexicalCallout}
+    \begin{SynEnvList}
+    \item\relax
+}{
+    \end{SynEnvList}
+    \end{LexicalCallout}
+}
 
 
 \newcommand{\MetaDef}[1]{\textbf{$\mathbb{#1}$}}
-\newcommand{\SynComment}[1]{\small{// #1}}
+\newcommand{\SynComment}[1]{\text{\small{// #1}}}
 
 \newcommand{\MetaVar}[1]{\text{\textbf{$\mathbb{#1}$}}}
 

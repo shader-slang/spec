@@ -11,9 +11,9 @@ For the purposes of this document, a \SpecDefine{character} is defined as a Unic
 A Unicode scalar value is a Unicode code point that is not a surrogate code point.
 \end{Note}
 
-\begin{Incomplete}
+\begin{TODO}
 Need normative reference to the Unicode standard.    
-\end{Incomplete} 
+\end{TODO} 
 
 Implementations \emph{may} accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
@@ -136,13 +136,13 @@ After the first character, ASCII digits (\Char{0} through \Char{9}) may also be 
         \SynOr \SynRef{IdentiferContinue}*
 
     \SynDefine{IdentifierStart} \\
-        \SynRef{ \Char{A}-\Char{Z} } \\
-        \SynOr \SynRef{\Char{a}-\Char{z}} \\
-        \SynOr \SynRef{\lstinline{\_}}
+        \Char{A}-\Char{Z} \\
+        \SynOr \Char{a}-\Char{z} \\
+        \SynOr \lstinline{\_}
 
     \SynDefine{IdentifierContinue} \\
         \SynRef{IdentifierStart}
-        \SynOr \SynRef{\Char{0}-\Char{9}}        
+        \SynOr \Char{0}-\Char{9}        
 \end{Lexical}
 
 The identifier consistent of a single underscores (\lstinline{_}) is reserved by the language and must not be used by programs as a name in a declaration or binding.

@@ -39,9 +39,15 @@ Any source units in a module other than the primary source unit are \SpecDefine{
 Secondary source units are included into a module via **`include`** declarations.
 
 \begin{Syntax}
-    \SynDefine{IncludeDeclaration}
-        \code{include} \SynRef{Identifier} \code{;}
-    \SynOr  \code{include} \SynRef{StringLiteral} \code{;}
+    \SynDefine{IncludeDeclaration} \\
+        \code{include} \SynRef{PathSpecifier} \code{;}
+
+    \SynDefine{PathSpecifier} \\
+        \SynRef{PathElement} ( \code{.} \SynRef{PathElement} )\SynStar
+
+    \SynDefine{PathElement} \\
+        \SynRef{Identifier}
+        \SynOr \SynRef{StringLiteral}
 \end{Syntax}
 
 An implementation must use the name (identifier or string) given in an include declaration to identify a source unit via implementation-specified means.
@@ -66,7 +72,7 @@ Secondary source units must start with an \code{implementing} declaration, namin
 
 \begin{Syntax}
 \SynDefine{ImplementingDeclaration}
-    \code{implementing} \SynRef{Identifier} \code{;}
+    \code{implementing} \SynRef{PathSpecifier} \code{;}
 \end{Syntax}
 
 \begin{Note}
@@ -86,9 +92,8 @@ An \code{implementing} declaration must not appear in any source unit that is no
 Modules may depend on one another via \code{import} declarations.
 
 \begin{Syntax}
-  \SynDefine{ImportDeclaration}
-    \code{import} \SynRef{Identifier} (\Char{.} \SynRef{Identifier})\Char{*} \Char{;} \\
-  \SynOr  \code{import} \SynRef{StringLiteral} \Char{;}
+  \SynDefine{ImportDeclaration} \\
+    \code{import} \SynRef{PathSpecifier} \code{;}
 \end{Syntax}
 
 An \code{import} declaration names a module, and makes the public declarations in the named module visible to the current source unit.

@@ -1,4 +1,5 @@
-\Chapter{Execution Model}{exec}
+Execution Model {#exec}
+===============
 
 \begin{TODO}
 Even if we don't define a completely formal runtime semantics, we need sufficient terminology to be able to explain the intended semantics of language constructs, including things like \kw{discard}, shared memory, wave-level ops, etc.

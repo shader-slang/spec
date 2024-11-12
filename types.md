@@ -1,4 +1,5 @@
-\Chapter{Types}{type}
+Types {#type}
+=====
 
 \begin{TODO}
 The text of this chapter is largely still written in a more guide/reference style than in anything formal.
@@ -108,14 +109,14 @@ All floating-point types are stored in memory with their natural size and alignm
 
 \Section{Vector Types}{vector}
 
-A vector type is written as \kw{vector<T, N>} and represents an \Char{N}-element vector with elements of type \Char{T}.
+A vector type is written as `vector<T, N>` and represents an \Char{N}-element vector with elements of type \Char{T}.
 The \SpecDef{element type} \Char{T} must be one of the built-in scalar types, and the \SpecDef{element count} \Char{N} must be a specialization-time constant integer.
 The element count must be between 2 and 4, inclusive.
 
 A vector type allows subscripting of its elements like an array, but also supports element-wise arithmetic on its elements.
 \SpecDef{Element-wise arithmetic} means mapping unary and binary operators over the elements of a vector to produce a vector of results:
 
-\begin{codeblock}
+```
 vector<int,4> a = { 1, 2, 30, 40 };
 vector<int,4> b = { 10, 20, 3, 4 };
 
@@ -123,46 +124,46 @@ vector<int,4> b = { 10, 20, 3, 4 };
 a + b; // yields { 11, 22, 33, 44 }
 b / a; // yields { 10, 10, 0, 0 }
 a > b; // yields { false, false, true, true }
-\end{codeblock}
+```
 
 A vector type is laid out in memory as \Char{N} contiguous values of type \Char{T} with no padding.
 The alignment of a vector type may vary by target platforms.
-The alignment of \kw{vector<T,N>} will be at least the alignment of \Char{T} and may be at most \Char{N} times the alignment of \Char{T}.
+The alignment of `vector<T,N>` will be at least the alignment of \Char{T} and may be at most \Char{N} times the alignment of \Char{T}.
 
 As a convenience, Slang defines built-in type aliases for vectors of the built-in scalar types.
 E.g., declarations equivalent to the following are provided by the Slang standard library:
 
-\begin{codeblock}
+```
 typealias float4 = vector<float, 4>;
 typealias int8_t3 = vector<int8_t, 3>;
-\end{codeblock}
+```
 
 \SubSection{Legacy Syntax}{legacy}
 
 For compatibility with older codebases, the generic \kw{vector} type includes default values for \Char{T} and \Char{N}, being declared as:
 
-\begin{codeblock}
+```
 struct vector<T = float, let N : int = 4> { ... }
-\end{codeblock}
+```
 
 This means that the bare name \kw{vector} may be used as a type equivalent to \kw{float4}:
 
-\begin{codeblock}
+```
 // All of these variables have the same type
 vector a;
 float4 b;
 vector<float> c;
 vector<float, 4> d;
-\end{codeblock}
+```
 
 \Section{Matrix Types}{matrix}
 
-A matrix type is written as \kw{matrix<T, R, C>} and represents a matrix of \Char{R} rows and \Char{C} columns, with elements of type \Char{T}.
+A matrix type is written as `matrix<T, R, C>` and represents a matrix of \Char{R} rows and \Char{C} columns, with elements of type \Char{T}.
 The element type \Char{T} must be one of the built-in scalar types.
 The \SpecDef{row count} \Char{R} and \SpecDef{column count} \Char{C} must be specialization-time constant integers.
 The row count and column count must each be between 2 and 4, respectively.
 
-A matrix type allows subscripting of its rows, similar to an \Char{R}-element array of \kw{vector<T,C>} elements.
+A matrix type allows subscripting of its rows, similar to an \Char{R}-element array of `vector<T,C>` elements.
 A matrix type also supports element-wise arithmetic.
 
 Matrix types support both \SpecDef{row-major} and \SpecDef{column-major} memory layout.
@@ -172,18 +173,18 @@ Implementations may support command-line flags or API options to control the def
 Slang currently does \emph{not} support the HLSL \kw{row\_major} and \kw{column\_major} modifiers to set the layout used for specific declarations.
 \end{Note}
 
-Under row-major layout, a matrix is laid out in memory equivalently to an \Char{R}-element array of \kw{vector<T,C>} elements.
+Under row-major layout, a matrix is laid out in memory equivalently to an \Char{R}-element array of `vector<T,C>` elements.
 
 Under column-major layout, a matrix is laid out in memory equivalent to the row-major layout of its transpose.
-This means it will be laid out equivalently to a \Char{C}-element array of \kw{vector<T,R>} elements.
+This means it will be laid out equivalently to a \Char{C}-element array of `vector<T,R>` elements.
 
 As a convenience, Slang defines built-in type aliases for matrices of the built-in scalar types.
 E.g., declarations equivalent to the following are provided by the Slang standard library:
 
-\begin{codeblock}
+```
 typealias float3x4 = matrix<float, 3, 4>;
 typealias int64_t4x2 = matrix<int64_t, 4, 2>;
-\end{codeblock}
+```
 
 \begin{Note}
 For programmers using OpenGL or Vulkan as their graphics API, and/or who are used to the GLSL language,
@@ -198,30 +199,30 @@ This decision in the Slang language is consistent with the compilation of HLSL t
 
 For compatibility with older codebases, the generic \kw{matrix} type includes default values for \Char{T}, \Char{R}, and \Char{C}, being declared as:
 
-\begin{codeblock}
+```
 struct matrix<T = float, let R : int = 4, let C : int = 4> { ... }
-\end{codeblock}
+```
 
 This means that the bare name \kw{matrix} may be used as a type equivalent to \kw{float4x4}:
 
-\begin{codeblock}
+```
 // All of these variables have the same type
 matrix a;
 float4x4 b;
 matrix<float, 4, 4> c;
-\end{codeblock}
+```
 
 \Section{Structure Types}{struct}
 
 Structure types are introduced with \kw{struct} declarations, and consist of an ordered sequence of named and typed fields:
 
-\begin{codeblock}
+```
 struct S
 {
     float2 f;
     int3 i;
 }
-\end{codeblock}
+```
 
 \SubSection{Standard Layout}{layout.standard}
 
@@ -267,7 +268,7 @@ D3D constant buffer layout is similar to standard layout with two differences:
 
 An \SpecDef{array type} is either a statically-sized or dynamically-sized array type.
 
-A known-size array type is written \code{T[N]} where \Char{T} is a type and \Char{N} is a specialization-time constant integer.
+A known-size array type is written `T[N]` where \Char{T} is a type and \Char{N} is a specialization-time constant integer.
 This type represents an array of exactly \Char{N} values of type \Char{T}.
 
 An unknown-size array type is written \Char{T[]} where \Char{T} is a type.
@@ -279,31 +280,31 @@ Unlike in C and C++, arrays in Slang are always value types, meaning that assign
 
 \SubSection{Declaration Syntax}{decl}
 
-For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \Char{T} as a type specifier (before the variable name) and the \Char{[N]} to specify the element count after the variable name:
+For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \Char{T} as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
 
-\begin{codeblock}
+```
 int a[10];
-\end{codeblock}
+```
 
 Alternatively, the array type itself may be used as the type specifier:
 
-\begin{codeblock}
+```
 int[10] a;
-\end{codeblock}
+```
 
 When using the \kw{var} or \kw{let} keyword to declare a variable, the array type must not be split:
 
-\begin{codeblock}
+```
 var a : int[10];
-\end{codeblock}
+```
 
 \begin{Note}
 When declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer must be careful about the difference between the two declaration syntaxes.
 The following two declarations are equivalent:
-\begin{codeblock}
+```
 int[3][5] a;
 int a[5][3];
-\end{codeblock}
+```
 In each case, \Char{a} is a five-element array of three-element arrays of \kw{int}s.
 However, one declaration orders the element counts as \Char{[3][5]} and the other as \Char{[5][3]}.
 \end{Note}
@@ -312,17 +313,17 @@ However, one declaration orders the element counts as \Char{[3][5]} and the othe
 
 When a variable is declared with an unknown-size array type, and also includes an initial-value expression:
 
-\begin{codeblock}
+```
 int a[] = { 0xA, 0xB, 0xC, 0xD };
-\end{codeblock}
+```
 
 The compiler will attempt to infer an element count based on the type and/or structure of the initial-value expression.
 In the above case, the compiler will infer an element count of 4 from the structure of the initializer-list expression.
 Thus the preceding declaration is equivalent to:
 
-\begin{codeblock}
+```
 int a[4] = { 0xA, 0xB, 0xC, 0xD };
-\end{codeblock}
+```
 
 A variable declared in this fashion semantically has a known-size array type and not an unknown-size array type; the use of an unknown-size array type for the declaration is just a convenience feature.
 
@@ -330,7 +331,7 @@ A variable declared in this fashion semantically has a known-size array type and
 
 The \SpecDef{stride} of a type is the smallest multiple of its alignment not less than its size.
 
-Using the standard layout for an array type \Char{T[]} or \Char{T[N]}:
+Using the standard layout for an array type \Char{T[]} or `T[N]`:
 
 \begin{enumerate}
   \item{The \SpecDef{element stride} of the array type is the stride of its element type \Char{T}}

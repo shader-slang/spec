@@ -1,4 +1,5 @@
-\Chapter{Statements}{stmt}
+Statements {#stmt}
+==========
 
 A \SpecDef{statement} is an entity in the abstract syntax that describes actions to be taken by a thread.
 Statements are executed for their effect, rather than evaluated to produce a value.

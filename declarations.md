@@ -1,4 +1,5 @@
-\Chapter{Declarations}{decl}
+Declarations {#decl}
+============
 
 A \SpecDefine{declaration} is a unit of syntax that typically affects what names are visibile in a scope, and how those names are interpreted.
 In the abstract syntax, a source unit comprises a sequence of declarations.
@@ -658,13 +659,13 @@ Unlike a function declaration, a subscript declaration cannot elide the result t
 
 An extension declaration is introduced with the \kw{extension} keyword:
 
-\begin{codeblock}
+```
 extension MyVector
 {
     float getLength() { return sqrt(x*x + y*y); }
     static int getDimensionality() { return 2; }
 }
-\end{codeblock}
+```
 
 An extension declaration adds behavior to an existing type.
 In the example above, the \code{MyVector} type is extended with an instance method `getLength()`, and a static method `getDimensionality()`.
@@ -680,12 +681,12 @@ An extension cannot introduce members that would change the in-memory layout of 
 The members of an extension are accessed through the type that is being extended.
 For example, for the above extension of \code{MyVector}, the introduced methods are accessed as follows:
 
-\begin{codeblock}
+```
 MyVector v = ...;
 
 float f = v.getLength();
 int n = MyVector.getDimensionality();
-\end{codeblock}
+```
 
 An extension declaration need not be placed in the same module as the type being extended; it is possible to extend a type from third-party or standard-library code.
 The members of an extension are only visible inside of modules that \kw{import} the module declaring the extension;
@@ -693,12 +694,12 @@ extension members are \emph{not} automatically visible wherever the type being e
 
 An extension declaration may include an inheritance clause:
 
-\begin{codeblock}
+```
 extension MyVector : IPrintable
 {
     ...
 }
-\end{codeblock}
+```
 
 The inheritance clause of an extension declaration may only include interfaces.
 When an extension declaration lists an interface in its inheritance clause, it asserts that the extension introduces a new conformance, such that the type being extended now conforms to the given interface.
@@ -726,12 +727,12 @@ Many kinds of declarations can be made \SpecDef{generic}: structure types, inter
 
 A generic declaration introduces a \SpecDef{generic parameter list} enclosed in angle brackets \Char{<>}:
 
-\begin{codeblock}
+```
 T myFunction<T>(T left, T right, bool condition)
 {
     return condition ? left : right;
 }
-\end{codeblock}
+```
 
 \SubSection{Generic Parameters}{param}
 
@@ -749,9 +750,9 @@ The syntax for generic value parameters is provisional and subject to possible c
 
 Generic parameters may declare a default value with \Char{=}:
 
-\begin{codeblock}
+```
 T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
-\end{codeblock}
+```
 
 For generic type parameters, the default value is a type to use if no argument is specified.
 For generic value parameters, the default value is a value of the same type to use if no argument is specified.
@@ -760,9 +761,9 @@ For generic value parameters, the default value is a value of the same type to u
 
 A generic is \SpecDef{specialized} by applying it to \SpecDef{generic arguments} listed inside angle brackets \Char{<>}:
 
-\begin{codeblock}
+```
 anotherFunction<int, 3>
-\end{codeblock}
+```
 
 Specialization produces a reference to the declaration with all generic parameters bound to concrete arguments.
 
@@ -771,9 +772,9 @@ Generic value parameters must be matched with value arguments of the appropriate
 
 An explicitly specialized function, type, etc. may be used wherever a non-generic function, type, etc. is expected:
 
-\begin{codeblock}
+```
 int i = anotherFunction<int,3>( int3(99) );
-\end{codeblock}
+```
 
 \SubSection{Implicit Specialization}{specialization.implicit}
 
@@ -782,11 +783,11 @@ Implicit specialization infers generic arguments from the context at the use sit
 
 For example, if a programmer writes:
 
-\begin{codeblock}
+```
 int i = anotherFunction( int3(99) );
-\end{codeblock}
+```
 
-The compiler will infer the generic arguments \code{<int, 3>} from the way that \code{anotherFunction} was applied to a value of type \code{int3}.
+The compiler will infer the generic arguments `<int, 3>` from the way that \code{anotherFunction} was applied to a value of type \code{int3}.
 
 \begin{Note}
 Inference for generic arguments currently only takes the types of value arguments into account.
@@ -797,7 +798,7 @@ The expected result type does not currently affect inference.
 
 The following examples show how generic declarations of different kinds are written:
 
-\begin{codeblock}
+```
 T genericFunction<T>(T value);
 funct genericFunction<T>(value: T) -> T;
 
@@ -813,7 +814,7 @@ struct GenericType<T>
 interface IGenericInterface<T> : IBase<T>
 {
 }
-\end{codeblock}
+```
 
 \begin{Note}
 Currently there is no user-exposed syntax for writing a generic extension.

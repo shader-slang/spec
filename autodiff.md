@@ -1,6 +1,7 @@
-\Chapter{Automatic Differentiation}{autodiff}
+Automatic Differentiation {#autodiff}
+=========================
 
-\begin{TODO}
+<div class=issue>
 This chapter needs to specify:
 
 
@@ -10,4 +11,4 @@ This chapter needs to specify:
 \item The semantics of the \code{fwd_diff} and \code{bwd_diff} operators, including how to determine the signature of the function they return.
 \item The requirements of the \code{IDifferentiable} interface, and also the rules used to automatically synthesize conformance for it.
 \end{itemize}
-\end{TODO}
+</div>

@@ -1,4 +1,5 @@
-\Chapter{Type Linearization}{linearization}
+Type Linearization {#linearization}
+==================
 
 \begin{TODO}
 

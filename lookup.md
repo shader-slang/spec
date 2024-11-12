@@ -1,4 +1,5 @@
-\Chapter{Lookup}{lookup}
+Lookup {#lookup}
+======
 
 \begin{TODO}
 

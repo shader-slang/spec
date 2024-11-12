@@ -1,4 +1,5 @@
-\Chapter{Type Conversions}{conv}
+Type Conversions {#conv}
+================
 
 \begin{TODO}
 

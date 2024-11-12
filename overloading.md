@@ -1,4 +1,5 @@
-\Chapter{Overload Resolution}{overload}
+Overload Resolution {#overload}
+===================
 
 \begin{TODO}
 
@@ -10,7 +11,7 @@ Overload resolution comes up primarily in two places:
 \item When attempting to call an overloaded expression as a function.
 \end{itemize}
 
-(Hypothetically it can also arise for a generic specialization \code{F<A,B,...>} as well, so the rules need to be ready for that case)
+(Hypothetically it can also arise for a generic specialization `F<A,B,...>` as well, so the rules need to be ready for that case)
 
 The first of the two cases is the easier one by far, with an outline of it's semantics being:
 

@@ -1,33 +1,40 @@
-\Chapter{Introduction}{intro}
+Introduction {#intro}
+=====================
 
-\Section{Scope}{scope}
+Scope {#intro.scope}
+-----
 
 This document is a specification for the Slang programming language.
 
-Slang is language primarily designed for use in \SpecDef{shader programming}: performance oriented GPU programming for real-time graphics.
+Slang is language primarily designed for use in *shader programming*: performance oriented GPU programming for real-time graphics.
 
-\Section{Conformance}{conformance}
+Conformance {#intro.conformance}
+-----------
 
 This document aspires to specify the Slang language, and the behaviors expected of conforming implementations, with a high level of rigor.
 
-The open-source Slang compiler \emph{implementation} may deviate from the language as specified here, in a few key ways:
+The open-source Slang compiler *implementation* may deviate from the language as specified here, in a few key ways:
 
-\begin{itemize}
-    \item{The implementation is necessarily imperfect, and can have bugs}
-    \item{The implementation may not fully support constructs specified here, or their capabilities may not be as complete as what is required by the specification}
-    \item{The implementation may support certain constructs that are experimental, deprecated, or are otherwise intentionally unspecified (or even undocumented)}
-\end{itemize}
+* The implementation is necessarily imperfect, and can have bugs.
+* The implementation may not fully support constructs specified here, or their capabilities may not be as complete as what is required by the specification.
+* The implementation may support certain constructs that are experimental, deprecated, or are otherwise intentionally unspecified (or even undocumented).
 
-Where possible, this document will call out known deviations between the language as specified, and the current implementation in the open-source Slang compiler.
+Where practical, this document will call out known deviations between the language as specified, and the current implementation in the open-source Slang compiler.
 
-\Section{Document Conventions}{conventions}
+Document Conventions {#intro.conventions}
+--------------------
+
+
+```
 
 The key words \textbf{must}, \textbf{must not}, \textbf{required}, \textbf{shall}, \textbf{shall not}, \textbf{should}, \textbf{should not}, \textbf{recommended}, \textbf{may}, and \textbf{optional} in this document are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
 
 The word "descriptive" in this document is to be interpreted as synonymous with "non-normative."
+```
 
-\SubSection{Typographical Conventions}{typographical}
+### Typographical Conventions ### {#intro.conventions.typographical}
 
+```
 This document makes use of the following conventions to improve readability:
 
 \begin{itemize}
@@ -35,7 +42,11 @@ This document makes use of the following conventions to improve readability:
     \item{Code fragments in Slang or other programming languages use a fixed-width font. For example: \code{a + b}.}
     \subitem{References to language keywords are additionally rendered in bold. For example: \kw{if}}
 \end{itemize}
+```
 
+### Callouts ### {#intro.conventions.callouts}
+
+```
 \SubSection{Callouts}{callouts}
 
 This document uses a few kinds of \SpecDef{callouts}, which start bold word indicating the kind of callout. For example, the following is a note:
@@ -56,15 +67,22 @@ The kinds of callouts used in this document are:
     \item{\CalloutName{Syntax} callouts are described below.}
     \item{\CalloutName{Warning}s give non-normative information about language rules or programming practices that may lead to surprising or unwanted behavior.}
 \end{itemize}
+```
 
+### Legacy Features ### {#intro.conventions.legacy}
+
+```
 \SubSection{Legacy Features}{legacy}
 
 Some features of the Slang language are considered \SpecDef{legacy} features.
 The language supports these constructs, syntax, etc. in order to facilitate compatibility with existing code in other GPU languages, such as HLSL.
 
 \CalloutName{Legacy} callouts are used for the description of legacy features. These callouts are normative.
+```
 
-\SubSection{Grammar Productions}{grammar}
+### Grammar Productions ### {#intro.conventions.grammar}
+
+```
 
 The syntax and lexical structure of the language is described \textbf{Syntax} callouts using a notation similar to EBNF.
 
@@ -80,10 +98,12 @@ The syntax and lexical structure of the language is described \textbf{Syntax} ca
 \begin{Incomplete}
 Also need conventions for how code points are named in productions in the lexical structure.    
 \end{Incomplete}
+```
 
+The Slang Standard Library {#intro.stdlib}
+--------------------------
 
-\Section{The Slang Standard Library}{stdlib}
-
+```
 Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the \SpecDef{standard library} for Slang.
 This document may, of neccessity, refer to constructs from the Slang standard library (e.g., the \code{Texture2D} type) that are not defined herein.
 
@@ -102,3 +122,4 @@ In cases where the two sources disagree, there is a correctness issue in one or 
 \begin{TODO}
 This section should list any external documents/specifications/etc. that are necessary in order to correctly interpret the information in this specification.
 \end{TODO}
+```

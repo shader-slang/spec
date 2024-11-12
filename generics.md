@@ -1,4 +1,5 @@
-\Chapter{Generics}{generic}
+Generics {#generic}
+========
 
 \begin{TODO}
 This chapter needs to define the key semantic-checking operations that relate to generics, including:
@@ -8,7 +9,7 @@ This chapter needs to define the key semantic-checking operations that relate to
 
 \item Validation and canonicalization of constraints on generic declarations.
 
-\item Validation of explicit specialization of a generic (e.g., \code{G<A,B>}), which includes validating that the constraints on the generic are satisfied by the parameters.
+\item Validation of explicit specialization of a generic (e.g., `G<A,B>`), which includes validating that the constraints on the generic are satisfied by the parameters.
 
 \item Inference of generic arguments in contexts where a generic function is called on value arguments (without first specializing it).
 \end{itemize}

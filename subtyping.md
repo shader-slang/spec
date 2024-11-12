@@ -1,4 +1,5 @@
-\Chapter{Subtyping}{subtype}
+Subtyping {#subtype}
+=========
 
 \begin{TODO}
 

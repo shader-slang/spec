@@ -1,4 +1,5 @@
-\Chapter{Modules}{module}
+Modules {#module}
+=======
 
 A \SpecDefine{module} is a unit of encapsulation for declarations.
 

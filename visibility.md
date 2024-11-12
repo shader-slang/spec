@@ -1,4 +1,5 @@
-\Chapter{Visibility Control}{vis}
+Visibility Control {#vis}
+==================
 
 \begin{TODO}
 This chapter needs to explain the rules for:

@@ -1,4 +1,5 @@
-\Chapter{Interfaces}{interfaces}
+Interfaces {#interface}
+==========
 
 \begin{TODO}
 This chapter needs to document the rules for what it means for a type to \emph{conform} to an interface, and how the compiler should check for conformance.

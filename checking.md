@@ -1,4 +1,5 @@
-\Chapter{Semantic Checking}{check}
+Semantic Checking {#check}
+=================
 
 \begin{TODO}
 The intention of this chapter is to establish the formalisms and notations that will be used for expressing typing judgements and other semantic-checking rules in this specification.

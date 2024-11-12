@@ -1,162 +1,173 @@
-\Chapter{Lexical Structure}{lex}
+Lexical Structure {#lex}
+=================
 
 This chapter describes how a source unit is decomposed into a sequence of lexemes.
 
-\Section{Source Units}{source-unit}
+Source Units {#lex.source-unit}
+------------
 
-A \SpecDefine{source unit} comprises a sequence of zero or more characters.
-For the purposes of this document, a \SpecDefine{character} is defined as a Unicode scalar value.
+A <dfn>source unit</dfn> comprises a sequence of zero or more [[=characters=]].
+For the purposes of this document, a <dfn>character</dfn> is defined as a [[!Unicode]] scalar value.
 
-\begin{Note}
-A Unicode scalar value is a Unicode code point that is not a surrogate code point.
-\end{Note}
+Note: A Unicode scalar value is a Unicode code point that is not a surrogate code point.
 
-\begin{TODO}
-Need normative reference to the Unicode standard.    
-\end{TODO} 
+Implementations may accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
-Implementations \emph{may} accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
+Encoding {#lex.encoding}
+--------
 
-\Section{Encoding}{encoding}
+Implementations must support source units encoded using UTF-8, if they support any encoding of source units as byte sequences.
 
-Implementations \emph{must} support source units encoded using UTF-8, if they support any encoding of source units as byte sequences.
-Implementations \emph{should} default to the UTF-8 encoding for all text input/output.
-Implementations \emph{may} support additional implementation-specified encodings.
+Implementations should default to the UTF-8 encoding for all text input/output.
 
-\Section{Phases}{phases}
+Implementations may support additional implementation-specified encodings.
 
-Lexical processing of a source unit proceeds \emph{as if} the following steps are executed in order:
+Phases {#lex.phase}
+------
 
-1. Line numbering (for subsequent diagnostic messages) is noted based on the locations of line breaks
+Lexical processing of a [[=source unit=]] proceeds *as if* the following steps are executed in order:
 
-2. Escaped line breaks are eliminated. No new characters are inserted to replace them. Any new escaped line breaks introduced by this step are not eliminated.
+1. Line numbering (for subsequent diagnostic messages) is noted based on the locations of [[=line breaks=]]
+
+2. [[=Escaped line breaks=]] are eliminated. No new [[=characters=]] are inserted to replace them. Any new [[=escaped line breaks=]] introduced by this step are not eliminated.
 
 3. Each comment is replaced with a single space (U+0020)
 
-4. The source unit is \emph{lexed} into a sequence of tokens according to the lexical grammar in this chapter
+4. The source unit is *lexed* into a sequence of [[=tokens=]] according to the lexical grammar in this chapter
 
-5. The lexed sequence of tokens is \emph{preprocessed} to produce a new sequence of tokens (Chapter 3)
+5. The lexed sequence of tokens is [[=preprocessed=]] to produce a new sequence of tokens
 
-The final token sequence produced by this process is used as input to subsequent phases of compilation.
+The final [[=token=]] sequence produced by this process is used as input to subsequent phases of compilation.
 
-\Section{Lexemes}{lexeme}
+Lexemes {#lex.lexeme}
+-------
 
-\begin{Lexical}
-    \SynDefine{Lexeme} \\
-        \SynRef{Token} \\
-    \SynOr \SynRef{Trivia}
-\end{Lexical}
+A <dfn>lexeme</dfn> is a contiguous sequence of characters in a single [[=source unit=]].
 
-A \SpecDefine{lexeme} is a contiguous sequence of characters in a single source unit.
-\SpecDefine{lexing} is the process by which an implementation decomposes a source unit into zero or more non-overlapping lexemes.
+<dfn>Lexing</dfn> is the process by which an implementation decomposes a [[=source unit=]] into zero or more non-overlapping [[=lexemes=]].
 
-Every lexeme is either a token or it is trivia.
+Every [[=lexeme=]] is either a [[=token=]] or it is [[=trivia=]].
 
-\SubSection{Trivia}{trivia}
+```.lexical
+Lexeme :
+  Token
+  | Trivia
+  ;
+```
 
-\begin{Lexical}
-    \SynDefine{Trivia} \\
-        \SynRef{Whitespace} \\
-    \SynOr \SynRef{Comment}
-\end{Lexical}
+### Trivia ### {#trivia}
 
-\SpecDefine{trivia} are lexemes that do not appear in the abstract syntax; they are only part of the lexical grammar.
-The presence or absence of trivia in a sequence of lexemes has no semantic impact, except where specifically noted in this specification.
+<dfn>Trivia</dfn> are [[=lexemes=]] that do not appear in the abstract syntax; they are only part of the lexical grammar.
+The presence or absence of [[=trivia=]] in a sequence of [[=lexemes=]] has no semantic impact, except where specifically noted in this specification.
 
-\Section{Whitespace}{space}
+```.lexical
+Trivia :
+  Whitespace
+  | Comment
+  ;
+```
 
-\begin{Lexical}
-    \SynDefine{Whitespace}
-        \SynRef{HorizontalSpace}
-    \SynOr \SynRef{LineBreak}
+#### Whitespace #### {#whitespace}
 
-    \SynDefine{HorizontalSpace}
-        ( \code{' '} \SynOr \code{'\t'} )\SynStar
-\end{Lexical}
+<dfn>Whitespace</dfn> consists of [[=horizontal whitespace=]] and [[=line breaks=]].
 
-\SpecDefine{Whitespace} consists of horizontal whitespace and line breaks.
+```.lexical
+Whitespace :
+  HorizontalSpace
+  | LineBreak
+  ;
+```
 
-\SpecDefine{Horizontal whitespace} consists of space (U+0020) and horizontal tab (U+0009).
+<dfn>Horizontal whitespace</dfn> consists of any sequence of space (U+0020) and horizontal tab (U+0009).
 
-\SubSection{Line Breaks}{line}
+```.lexical
+HorizontalSpace : (' ' | '\t')+ ;
+```
 
-A \SpecDefine{line break} consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
+##### Line Breaks ##### {#line}
 
-\begin{Legacy}
- An \SpecDefine{escaped line break} is a backslash (\Char{\\}, U+005C) follow immediately by a line break.
+A <dfn>line break</dfn> consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
 
- Before subsequent processing described in this chapter, all escaped line breaks are removed from a source unit.
- If new escaped line breaks are introduced by this step, they are not removed.
-\end{Legacy}
+An <dfn>escaped line break</dfn> is a backslash (`\`, U+005C) follow immediately by a [[=line break=]].
 
-A source unit is split into \SpecDefine{line}s separated by line breaks.
+A source unit is split into <dfn>lines</dfn>: non-empty sequences of [[=characters=]] separated by [[=line breaks=]].
 
-\begin{Note}
-Line breaks are used as line separators rather than terminators; it is not necessary for a source unit to end with a line break.
-\end{Note}
+Note: Line breaks are used as line separators rather than terminators; it is not necessary for a source unit to end with a line break.
 
-\Section{Comments}{comment}
+#### Comments #### {#comment}
 
-A \SpecDefine{comment} is either a line comment or a block comment.
+A <dfn>comment</dfn> is either a [[=line comment=]] or a [[=block comment=]].
 
-A \SpecDefine{line comment} comprises two forward slashes (\Char{/}, U+002F) followed by zero or more characters that do not contain a line break.
-A line comment extends up to, but does not include, a subsequent line break or the end of the source unit.
+A <dfn>line comment</dfn> comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a [[=line break=]].
+A [[=line comment=]] extends up to, but does not include, a subsequent [[=line break=]] or the end of the source unit.
 
-A \SpecDefine{block comment} begins with a forward slash (\Char{/}, U+002F) followed by an asterisk (\Char{*}, U+0052). 
-A block comment is terminated by the next instance of an asterisk followed by a forward slash (\Char{*/}).
-A block comment contains all characters between where it begins and where it terminates, including any line breaks.
-Block comments do not nest.
-It is an error if a block comment that begins in a source unit is not terminated in that source unit.
+A <dfn>block comment</dfn> begins with a forward slash (`/`, U+002F) followed by an asterisk (`*`, U+0052). 
+A [[=block comment=]] is terminated by the next instance of an asterisk followed by a forward slash (`*/`).
+A [[=block comment=]] contains all [[=characters=]] between where it begins and where it terminates, including any [[=line breaks=]].
 
-/begin{Example}
- // a line comment
- /* a block comment */
-/end{Example}
+Note: [[=Block comments=]] do not nest.
 
-\SubSection{Tokens}{token}
+It is an error if a [[=block comment=]] that begins in a [[=source unit=]] is not terminated in that [[=source unit=]].
 
-\begin{Lexical}
-    \SynDefine{Token} \\
-        \SynRef{Identifier} \\
-    \SynOr \SynRef{Literal} \\
-    \SynOr \SynRef{Operator} \\
-    \SynOr \SynRef{Punctuation} \\
-\end{Lexical}
+### Tokens ### {#token}
 
-\SpecDefine{tokens} are lexemes that are significant to the abstract syntax.
+<dfn>Tokens</dfn> are lexemes that are significant to the abstract syntax.
 
-\Section{Identifiers}{ident}
+```.lexical
+Token :
+    Identifier
+    | Literal
+    | Operator
+    | Puncutation
+;
+```
 
-An \SpecDefine{identifier} begins with an uppercase or lowercase ASCII letter (\Char{A} through \Char{Z}, \Char{a} through \Char{z}), or an underscore (\lstinline{_}).
-After the first character, ASCII digits (\Char{0} through \Char{9}) may also be used in an identifier.
+#### Identifiers #### {#ident}
 
-\begin{Lexical}
-    \SynDefine{Identifer} \\
-        \SynRef{IdentifierStart} \\
-        \SynOr \SynRef{IdentiferContinue}*
+```.lexical
+Identifier :
+    IdentifierStart IdentifierContinue*
+    ;
 
-    \SynDefine{IdentifierStart} \\
-        \Char{A}-\Char{Z} \\
-        \SynOr \Char{a}-\Char{z} \\
-        \SynOr \lstinline{\_}
+IdentifierStart :
+    [A-Z]
+    | [a-z]
+    | '_'
+    ;
 
-    \SynDefine{IdentifierContinue} \\
-        \SynRef{IdentifierStart}
-        \SynOr \Char{0}-\Char{9}        
-\end{Lexical}
+IdentifierContinue :
+    IdentifierStart
+    | [0-9]
+    ;
+```
 
-The identifier consistent of a single underscores (\lstinline{_}) is reserved by the language and must not be used by programs as a name in a declaration or binding.
+The identifier consisting of a single underscore (`_`) is reserved by the language and must not be used by programs as a name in a declaration or binding.
 
-\begin{Note}
-There are no other fixed keywords or reserved words recognized by the lexical grammar.
-\end{Note}
+Note: There are no other fixed keywords or reserved words recognized by the lexical grammar.
 
-\Section{Literals}{lit}
+#### Literals #### {#literal}
 
-\SubSection{Numeric Literals}{numeric}
+```.lexical
+Literal :
+    NumericLiteral
+    | TextLiteral
+    ;
+```
 
-A \SpecDef{numeric literal} is either an integer literal or a floating-point literal.
+##### Numeric Literals ##### {#literal.numeric}
 
+A <dfn>numeric literal</dfn> is either an [[=integer literal=]] or a [[=floating-point literal=]].
+
+```.lexical
+NumericLiteral :
+    IntegerLiteral
+    | FloatingPointLiteral
+    ;
+```
+
+
+
+```
 A \SpecDef{radix specifier} is one of:
 
 \begin{enumerate}
@@ -289,3 +300,4 @@ The name or names given to tokens by this table may be used in the rest of this 
   \Char{->} & arrow \\
   \hline
 \end{tabular}
+```

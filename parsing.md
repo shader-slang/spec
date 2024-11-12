@@ -1,4 +1,5 @@
-\Chapter{Parsing}{parse}
+Parsing {#parse}
+=======
 
 \begin{TODO}
 The intention of this chapter is to establish the overall rules for the recursive-descent parsing strategy needed for Slang's grammar.

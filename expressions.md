@@ -1,4 +1,5 @@
-\Chapter{Expressions}{expr}
+Expressions {#expr}
+===========
 
 Expressions are terms that can be \SpecDef{evaluated} to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
@@ -387,15 +388,15 @@ In contrast, we want a cast expression to be able to invoke \emph{explicit} conv
 
 As a compatiblity feature for older code, Slang supports using a cast where the base expression is an integer literal zero and the target type is a user-defined structure type:
 
-\begin{codeblock}
+```
 MyStruct s = (MyStruct) 0;    
-\end{codeblock}
+```
 
 The semantics of such a cast are equivalent to initialization from an empty initializer list:
 
-\begin{codeblock}
+```
 MyStruct s = {};
-\end{codeblock}
+```
 
 \end{Legacy}
 

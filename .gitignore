@@ -8,3 +8,6 @@
 *.pdf
 *.toc
 *.synctex*
+
+# Ignore output file from bikeshed
+*.html

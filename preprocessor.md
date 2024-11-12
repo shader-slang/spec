@@ -1,4 +1,5 @@
-\Chapter{Preprocessor}{prepro}
+Preprocessor {#prepro}
+============
 
 As the last phase of lexical processing the token sequence of a source unit is preprocessed to produce a new token stream.
 

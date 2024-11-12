@@ -46,16 +46,19 @@ The output environment of an empty production is its input environment.
 
 When we say that a declaration \SpecDefine{introduces} a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
-\Section{Shared Concepts}{shared}
+Shared Concepts {#decl.shared}
+---------------
 
-\SubSection{Bodies}{body}
-\SubSection{Bases}{base}
-\SubSection{Parameters}{param}
-\SubSection{Accessors}{accessor}
+### Bodies ### {#decl.body}
+### Bases ### {#decl.base}
+### Parameters ### {#decl.param}
+### Accessors ### {#decl.accessor}
 
-\Section{Generics}{generic}
+Generics {#decl.generic}
+--------
 
-\Section{Type Declarations}{type}
+Type Declarations {#decl.type}
+-----------------
 
 A \SpecDef{type declaration} introduces a binding to a type.
 
@@ -66,7 +69,7 @@ A \SpecDef{type declaration} introduces a binding to a type.
         \SynOr \SynRef{TypeAliasDeclaration} \\
 \end{Syntax}
 
-\SubSection{Aggregate Types}{struct}
+### Aggregate Types ### {#decl.agg}
 
 \begin{Syntax}
     \SynDefine{AggregateTypeDeclaration} \\
@@ -103,7 +106,7 @@ Function declarations that are instance members of an aggregate type declaration
 By default, the implicit \kw{this} parameter of a method acts has a direction of \kw{in}.
 A method of a \kw{struct} type declaration may be modified with the \code{[mutating]} attribute, in which case the implicit \kw{this} parameter has a direction of \kw{inout}.
 
-\SubSection{Bases}{bases}
+### Bases ### {#decl.agg.bases}
 
 \begin{Syntax}
     \SynDefine{BasesClause} \\
@@ -139,7 +142,8 @@ The list of bases of an \kw{interface} declaration must consist of:
 \end{itemize}
 
 \begin{Legacy}
-\SubSection{Syntax Details}{syntax}
+
+### Syntax Details ### {#decl.agg.syntax}
 
 The body clause of an aggregate type declaration may end with a semicolon (\code{;}).
 The body clause of an aggregate type declaration \emph{must} end with a semicolon if there are any tokens between the closing \lstinline|}| token and the next line break that follows it.
@@ -151,7 +155,7 @@ Put more simply: a closing \code{;} is not required on an aggregate type declara
 \end{Legacy}
 
 \begin{Legacy}
-\SubSection{Aggregate Type Specifiers}{type-specifier}
+### Legacy: Aggregate Type Specifiers ### {#decl.agg.type-specifier}
 
 An aggregate type declaration may be used as a type specififer in declarations using traditional syntax.
 
@@ -159,7 +163,7 @@ When an aggregate type declaration is used as a type specififer, the closing \ls
 
 \end{Legacy}
 
-\SubSection{\kw{enum} Declarations}{enum}
+### `enum` Declarations ### {#decl.enum}
 
 \begin{Syntax}
     \SynDefine{EnumDeclaration} \\
@@ -218,8 +222,9 @@ If a traditional case declaration does not have an initial-value expression, the
 
 Case declarations are implicitly static.
 
+<!-->
 %
-%\SubSection{Conversions}{conv}
+%### Conversions ### {#decl.enum.conv}
 %
 %A value of an enumeration type can be implicitly converted to a value of its tag %type:
 %
@@ -232,8 +237,9 @@ Case declarations are implicitly static.
 %```hlsl
 %Color red = Color(r);
 %```
+</-->
 
-\SubSection{Type Aliases}{alias}
+### Type Aliases ### {#decl.type.alias}
 
 A \SpecDef{type alias declaration} introduces a binding that resolves to some other type.
 
@@ -274,7 +280,7 @@ A type alias may also be declared using a \SpecDef{traditional type alias declar
 
 \end{Legacy}
 
-\SubSection{Associated Types}{assoc}
+### Associated Types ### {#decl.type.associated}
 
 An \SpecDef{associated type declaration} introduces a type requirement to an \kw{interface} declaration.
 
@@ -291,7 +297,8 @@ An associated type declaration may only appear as a member declaration of an \kw
 %An associated type declaration introduces a type into the signature of an interface, without specifying the exact concrete type to use.
 %An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement:
 
-\Section{Variables}{var}
+Variables {#decl.var}
+---------
 
 \begin{Syntax}
     \SynDefine{VariableDeclaration} \\
@@ -330,7 +337,7 @@ The type of the variable declaration is the type of \MetaVar{E}, and its initial
 
 \begin{Legacy}
 
-\SubSection{Legacy Variable Declarations}{legacy}
+### Traditional Variable Declarations ### {#decl.var.traditional}
 
 Variable declaration may also be declared using legacy syntax, which is similar to C:
 
@@ -358,7 +365,7 @@ The variables introduced by a legacy variable declaration are immutable if the d
 
 \end{Legacy}
 
-\SubSection{Variables at Global Scope}{global}
+### Variables at Global Scope ### {#decl.var.global}
 
 A variable declaration at global scope may be either a global constant, a static global variable, or a global shader parameter.
 
@@ -408,7 +415,7 @@ An implementation may choose to provide ways to query the initial-value expressi
 Host applications may use such capabilities to establish a default value for global shader parameters.
 \end{Note}
 
-\SubSection{Variables at Function Scope}{func}
+### Variables at Function Scope ### {#decl.var.func}
 
 Variables declared at \emph{function scope} (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
 
@@ -434,7 +441,8 @@ A local variable has unique storage for each activation of a function.
 When a function is called recursively, each call produces a distinct activation with its own copies of local variables.
 \end{Note}
 
-\Section{Functions}{func}
+Functions {#decl.func}
+---------
 
 A \SpecDef{function declaration} introduces a binding to a function.
 
@@ -448,7 +456,7 @@ A \SpecDef{function declaration} introduces a binding to a function.
             \SynRef{FunctionBodyClause} \\
 \end{Syntax}
 
-\SubSection{Parameters}{param}
+### Parameters ### {#decl.param}
 
 The parameters of a function declaration are determined by the \SpecDef{parameter declarations} in its parameters clause.
 
@@ -526,7 +534,7 @@ If the parameter has a copyable type, then the parameter in the callee may, at t
 The \kw{ref} direction indicates pass-by-reference semantics.
 The parameter in the callee binds to the storage location referenced by the argument.
 
-\SubSection{Result Type}{result}
+### Result Type ### {#decl.func.result}
 
 \begin{Syntax}
     \SynDefine{ResultTypeClause} \\
@@ -537,7 +545,7 @@ Every function has a \SpecDef{result type}, which is the type of value that resu
 If a function declaration has a result type clause, then the result type of the function is the type that results from evaluating the type expression in that clause.
 If a function declaration does not have a result type clause, then the result type of the function is \code{Unit}.
 
-\SubSection{Body}{body}
+### Body ### {#decl.func.body}
 
 \begin{Syntax}
     \SynDefine{FunctionBodyClause} \\
@@ -552,7 +560,8 @@ If the function body clause is a block statement, then that statement is the bod
 If the function body clause is \code{;}, then that function declaration has no body.
 
 \begin{Legacy}
-\SubSection{Traditional Function Declarations}{legacy}
+
+### Traditional Function Declarations ### {#decl.func.traditional}
 
 A \SpecDef{traditional function declaration} is a function declaration that uses traditional C-like syntax.
 
@@ -573,11 +582,12 @@ A \SpecDef{traditional function declaration} is a function declaration that uses
 
 \end{Legacy}
 
-\SubSection{Entry Points}{entry}
+### Entry Points ### {#decl.func.entry}
 
 An \SpecDef{entry point} declaration is a function declaration that can be used as the starting point of execution for a thread.
 
-\Section{Constructors}{init}
+Constructors {#decl.init}
+------------
 
 A \SpecDef{constructor declaration} introduces logic for initializing an instance of the enclosing type declaration.
 A constructor declaration is implicitly static.
@@ -603,7 +613,8 @@ A constructor declaratin has an implicit \kw{this} parameter, with a direction o
 Slang does not provide any equivalent to C++ \emph{destructors}, which run automatically when an instance goes out of scope.
 \end{Note}
 
-\Section{Properties}{property}
+Properties {#decl.prop}
+----------
 
 A \SpecDef{property declaration} introduces a binding that can have its behavior for read and write operations customized.
 
@@ -620,7 +631,7 @@ A \SpecDef{property declaration} introduces a binding that can have its behavior
         \lstinline|{| \SynRef(AccessorDecl)\SynStar \lstinline|}|
 \end{Syntax}
 
-\SubSection{Accessors}{accessor}
+### Accessors ### {#decl.accessor}
 
 \begin{Syntax}
     \SynDefine{AccessorDecl} \\
@@ -636,7 +647,8 @@ A \SpecDef{property declaration} introduces a binding that can have its behavior
 
 
 
-\Section{Subscripts}{subscript}
+Subscripts {#decl.subscript}
+----------
 
 A \SpecDef{subscript declaration} introduces a way for the enclosing type to be used as the base expression of a subscript expression.
 
@@ -654,8 +666,8 @@ A \SpecDef{subscript declaration} introduces a way for the enclosing type to be 
 Unlike a function declaration, a subscript declaration cannot elide the result type clause.
 \end{Note}
 
-\Section{Extensions}{ext}
-
+Extensions {#decl.extension}
+----------
 
 An extension declaration is introduced with the \kw{extension} keyword:
 
@@ -721,7 +733,8 @@ The runtime behavior of programs that include overlapping retroactive conformanc
 
 Currently, extension declarations can only apply to structure types; extensions cannot apply to enumeration types or interfaces.
 
-\Section{Generics}{generic}
+Generics {#decl.generic}
+--------
 
 Many kinds of declarations can be made \SpecDef{generic}: structure types, interfaces, extensions, functions, initializers, and subscripts.
 
@@ -734,7 +747,7 @@ T myFunction<T>(T left, T right, bool condition)
 }
 ```
 
-\SubSection{Generic Parameters}{param}
+### Generic Parameters ### {#decl.generic.param}
 
 A generic parameter list can include one or more parameters separated by commas.
 The allowed forms for generic parameters are:
@@ -757,7 +770,7 @@ T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
 For generic type parameters, the default value is a type to use if no argument is specified.
 For generic value parameters, the default value is a value of the same type to use if no argument is specified.
 
-\SubSection{Explicit Specialization}{specialize}
+### Explicit Specialization ### {#decl.generic.specialize.explicit}
 
 A generic is \SpecDef{specialized} by applying it to \SpecDef{generic arguments} listed inside angle brackets \Char{<>}:
 
@@ -776,7 +789,7 @@ An explicitly specialized function, type, etc. may be used wherever a non-generi
 int i = anotherFunction<int,3>( int3(99) );
 ```
 
-\SubSection{Implicit Specialization}{specialization.implicit}
+### Implicit Specialization ### {#decl.generic.specialize.implicit}
 
 If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts \SpecDef{implicit specialization}.
 Implicit specialization infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.
@@ -794,7 +807,7 @@ Inference for generic arguments currently only takes the types of value argument
 The expected result type does not currently affect inference.
 \end{Note}
 
-\SubSection{Syntax Details}{syntax}
+### Syntax Details ### {#decl.generic.syntax}
 
 The following examples show how generic declarations of different kinds are written:
 
@@ -822,7 +835,8 @@ Currently there is no user-exposed syntax for writing a generic extension.
 
 \begin{Legacy}
 
-\Section{Constant Buffers and Texture Buffers}{buffer}
+Constant Buffers and Texture Buffers {#decl.buffer}
+------------------------------------
 
 A \SpecDef{traditional buffer declaration} is a shorthand for declaring a global-scope shader parameter.
 

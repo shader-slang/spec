@@ -9,11 +9,12 @@ Where specific expressions do not follow this order of evaluation, it will be no
 
 Some expressions can yield \SpecDef{l-values}, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
-\Section{Literal Expressions}{lit}
+Literal Expressions {#expr.lit}
+-------------------
 
 Literal expressions are never l-values.
 
-\SubSection{Integer Literal Expressions}{int}
+### Integer Literal Expressions ### {#expr.lit.int}
 
 An \SpecDef{integer literal expression} consists of a single \SynRef{IntegerLiteral} token.
 
@@ -35,7 +36,7 @@ An unsuffixed integer literal synthesizes a type that is a fresh type variable $
 We need a description of how suffixed integer literals have their type derived from their suffix.
 \end{Incomplete}
 
-\SubSection{Floating-Point Literal Expressions}{float}
+### Floating-Point Literal Expressions ### {#expr.lit.float}
 
 A \SpecDef{floating-point literal expression} consists of a single \SynRef{FloatingPointLiteral} token.
 
@@ -57,7 +58,7 @@ An unsuffixed floating-point literal synthesizes a type that is a fresh type var
 We need a description of how suffixed floating-point literals have their type derived from their suffix.
 \end{Incomplete}
     
-\SubSection{Boolean Literal Expressions}{bool}
+### Boolean Literal Expressions ### {#expr.lit.bool}
 
 \begin{Description}
     Boolean literal expressions use the keywords `true` and `false`.
@@ -80,7 +81,7 @@ We need a description of how suffixed floating-point literals have their type de
 \end{Checking}
 
 
-\SubSection{String Literal Expressions}{string}
+### String Literal Expressions ### {#expr.lit.string}
 
 \begin{Description}
 A string literal expressions consists of one or more string literal tokens in a row.
@@ -98,7 +99,8 @@ A string literal expressions consists of one or more string literal tokens in a 
 	}\\
 \end{Checking}
 
-\Section{Identifier Expression}{ident}
+Identifier Expressions {#expr.ident}
+----------------------
 
 \begin{Syntax}
 	\SynDefine{IdentifierExpression} \\
@@ -129,12 +131,12 @@ This presentation delegates the actual semantics of identifier expressions to th
 %
 %An identifier expression is an l-value if the declaration it refers to is mutable.
 %
-%\SubSection{Overloading}{overload}
+% ### Overloading ### {overload}
 %
 %It is possible for an identifier expression to be _overloaded_, such that it %refers to one or more candidate declarations with the same name.
 %If the expression appears in a context where the correct declaration to use can be %disambiguated, then that declaration is used as the result of  the name %expression; otherwise use of an overloaded name is an error at the use site.
 %
-%\SubSection{Implicit Lookup}{lookup.implicit}
+% ### Implicit Lookup ### {lookup.implicit}
 %
 %It is possible for a name expression to refer to nested declarations in two ways:
 %
@@ -143,7 +145,8 @@ This presentation delegates the actual semantics of identifier expressions to th
 %* When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may %refer to a field declared inside the `cbuffer` or `tbuffer`
 %\end{verbatim}
 
-\Section{Member Expression}{member}
+Member Expression {#expr.member}
+-----------------
 
 \begin{Syntax}
 	\SynDefine{MemberExpression}
@@ -168,11 +171,11 @@ In both synthesis and checking modes, the base expression should first synthesiz
 %
 %A member expression is an l-value if the base expression is an l-value and the %member it refers to is mutable.
 %
-%\SubSection{Implicit Dereference}{dereference.implicit}
+% ### Implicit Dereference ### {dereference.implicit}
 %
 %If the base expression of a member reference is a _pointer-like type_ such as %`ConstantBuffer<T>`, then a member reference expression will implicitly %dereference the base expression to refer to the pointed-to value (e.g., in the %case of `ConstantBuffer<T>` this is the buffer contents of type `T`).
 %
-%\SubSection{Vector Swizzles}{swizzle.vector}
+% ### Vector Swizzles ### {swizzle.vector}
 %
 %When the base expression of a member expression is of a vector type `vector<T,N>` %then a member expression is a _vector swizzle expression_.
 %The member name must conform to these constraints:
@@ -187,11 +190,11 @@ In both synthesis and checking modes, the base expression should first synthesiz
 %
 %A vector swizzle expression is an l-value if the base expression was an l-value %and the list of indices corresponding to the characeters of the member name %contains no duplicates.
 %
-%\SubSection{Matrix Swizzles}{swizzle.matrix}
+% ### Matrix Swizzles ### {swizzle.matrix}
 %
 %> Note: The Slang implementation currently doesn't support matrix swizzles.
 %
-%\SubSection{Static Member Expressions}{member.static}
+% ### Static Member Expressions ### {member.static}
 %
 %When the base expression of a member expression is a type instead of a value, the %result is a _static member expression_.
 %A static member expression can refer to a static field or static method of a %structure type.
@@ -206,7 +209,8 @@ In both synthesis and checking modes, the base expression should first synthesiz
 %```
 %\end{verbatim}
 
-\Section{This Expression}{this}
+This Expression {#expr.this}
+---------------
 
 \begin{Syntax}
 	\SynDefine{ThisExpression} 
@@ -230,7 +234,8 @@ The type of a \kw{this} expression is always \code{This}.
 This section needs to deal with the rules for when \kw{this} is mutable vs. immutable.
 \end{Incomplete}
 
-\Section{Parenthesized Expression}{paren}
+Parenthesized Expression {#expr.paren}
+-------------
 
 \begin{Description}
 An expression wrapped in parentheses \code{()} is a \SpecDef{parenthesized expression} and evaluates to the same value as the wrapped expression.
@@ -256,7 +261,8 @@ An expression wrapped in parentheses \code{()} is a \SpecDef{parenthesized expre
 \end{Checking}
 
 
-\Section{Call Expression}{call}
+Call Expression {#expr.call}
+---------------
 
 \begin{Syntax}
 	\SynDefine{CallExpression} \\
@@ -305,14 +311,15 @@ These rules just kick the can down the road and say that synthesis/checking for 
 %
 %In this case the base expression of the member reference (e.g., `myObject` in this %case) is used as the argument for the implicit `this` parameter of the callee.
 %
-%\SubSection{Mutability}{mutable}
+% ### Mutability ### {#expr.call.mutable}
 %
 %If a `[mutating]` instance is being called, the argument for the implicit `this` %parameter must be an l-value.
 %
 %The argument expressions corresponding to any `out` or `in out` parameters of the %callee must be l-values.
 %\end{verbatim}
 
-\Section{Subscript Expression}{subscript}
+Subscript Expression {#expr.subscript}
+--------------------
 
 \begin{Syntax}
 	\SynDefine{SubscriptExpression} \\
@@ -332,7 +339,8 @@ Unlike simple function calls, a subscript expression can result in an l-value, b
 %
 %Subscripts may be formed on the built-in vector, matrix, and array types.
 
-\Section{Initializer List Expression}{init-list}
+Initializer List Expression {#expr.init-list}
+---------------------------
 
 \begin{Syntax}
 	\SynDefine{InitializerListExpression} \\
@@ -354,7 +362,8 @@ An initializer-list expression is equivalent to constructing an instance of the 
 	}
 \end{Checking}
 
-\Section{Cast Expression}{cast}
+Cast Expression {#expr.cast}
+---------------
 
 \begin{Syntax}
 	\SynDefine{CastExpression} \\
@@ -384,7 +393,7 @@ In contrast, we want a cast expression to be able to invoke \emph{explicit} conv
 \end{Incomplete}
 
 \begin{Legacy}
-\SubSection{Compatibility Feature}{compatiblity}
+### Legacy: Compatibility Feature ### {#expr.cast.compatiblity}
 
 As a compatiblity feature for older code, Slang supports using a cast where the base expression is an integer literal zero and the target type is a user-defined structure type:
 
@@ -400,7 +409,8 @@ MyStruct s = {};
 
 \end{Legacy}
 
-\Section{Assignment Expression}{assign}
+Assignment Expression {#expr.assign}
+----------
 
 \begin{Syntax}
 	\SynDefine{AssignmentExpression} \\
@@ -438,9 +448,10 @@ The above rules pretend that we can write \code{out} before a type to indicate t
 We will need to expand the formalism to include \emph{qualified} types.
 \end{Incomplete}
 
-\Section{Operator Expressions}{op}
+Operator Expressions {#expr.op}
+--------------------
 
-\SubSection{Prefix Operator Expressions}{prefix}
+### Prefix Operator Expressions ### {#expr.op.prefix}
 
 \begin{Syntax}
 	\SynDefine{PrefixOperatorExpression} \\
@@ -481,7 +492,7 @@ A prefix operator expression is semantically equivalent to a call expression to 
 The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
 \end{Incomplete}
 
-\SubSection{Postfix Operator Expressions}{postfix}
+### Postfix Operator Expressions ### {#expr.op.postfix}
 
 \begin{Syntax}
 	\SynDefine{PostfixOperatorExprssion} \\
@@ -514,7 +525,7 @@ The notation here needs a way to express the restrictions on lookup that are use
 Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \kw{postfix} modifier.
 \end{Description}
 
-\SubSection{Infix Operator Expressions}{infix}
+### Infix Operator Expressions ### {#expr.op.infix}
 
 \begin{Syntax}
 	\SynDefine{InfixOperatorExpression} \\
@@ -610,7 +621,7 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
 
 With the exception of the assignment operator (`=`), an infix operator expression like `left + right` is equivalent to a call expression to a function of the matching name `operator+(left, right)`.
 
-\SubSection{Conditional Expression}{cond}
+### Conditional Expression ### {#expr.op.cond}
 
 \begin{Syntax}
 	\SynDefine{ConditionalExpression} \\

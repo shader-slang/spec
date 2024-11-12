@@ -165,9 +165,6 @@ NumericLiteral :
     ;
 ```
 
-
-
-```
 A \SpecDef{radix specifier} is one of:
 
 \begin{enumerate}
@@ -224,7 +221,7 @@ A floating-point literal may only use dexicmal or hexadecimal radix.
 
 The \SpecDef{exponent} of a floating-pointer literal consists of either \Char{e} or \Char{E}, followed by an optional \SpecDef{sign} of \Char{+} or \Char{-}, followed by decimal digits.
 
-\SubSection{Text Literals}{text}
+### Text Literals ### {#lex.lit.text}
 
 \begin{Incomplete}
 Need to document supported escape sequences.
@@ -240,7 +237,8 @@ A \SpecDef{character literal} consists of a sequence of characters enclosed betw
 
 The sequence of characters within a character literal must represent a single character.
 
-\Section{Operators and Punctuation}{punctuation}
+Operators and Punctuation {#lex.punctuation}
+-------------------------
 
 The following table defines tokens that are used as operators and punctuation in the syntax.
 When a given sequence of characters could be interpreted as starting with more than one of the following tokens, the longest matching token is used.
@@ -300,4 +298,3 @@ The name or names given to tokens by this table may be used in the rest of this 
   \Char{->} & arrow \\
   \hline
 \end{tabular}
-```

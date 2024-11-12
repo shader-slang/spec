@@ -10,7 +10,8 @@ The parsing strategy is necessarily complicated as a result, but we hope to isol
 
 \SpecDef{Parsing} is the process of matching a sequence of tokens from the lexical grammar with a rule of the abstract syntax grammar.
 
-\Section{Contexts}{context}
+Contexts {#parse.context}
+--------
 
 Parsing is always performed with respect to a \SpecRef{context}, which determines which identifiers are bound, and what they are bound to.
 
@@ -24,13 +25,13 @@ The initial context also includes bindings for the declarations in the Slang sta
 Implementations may include additional bindings in the initial context.
 
 
-
-\Section{Strategies}{strat}
+Strategies {#parse.strat}
+----------
 
 Parsing is always performed in one of two modes: unordered or ordered.
 Unless otherwise specified, each grammar rule matches its sub-rules in the same mode.
 
-\SubSection{Ordered}{ordered}
+### Ordered ### {#parse.strat.ordered}
 
 Parsing in \SpecDef{ordered} mode interleaves parsing and semantic analysis.
 When the parser is in ordered mode and attempts to match the \SynRef{Declaration}, \SynRef{Statement}, or \SynRef{Expression} rules, and the lookahead is an \SynRef{Identifier}, it first looks up that identifier in the context.
@@ -42,7 +43,7 @@ When the parser is in ordered mode and attempts to match the \SynRef{Declaration
 
 If the parser is in ordered mode and is about to match the \SynRef{DeclarationBody} rule, it switches to unordered mode before matching that rule, and switches back to ordered mode afterward.
 
-\SubSection{Unordered}{unordered}
+### Unordered ### {#parse.strat.unordered}
 
 In \SpecDef{unordered} mode, semantic analysis is deferred.
 
@@ -74,9 +75,10 @@ A \SpecDef{balanced} rule in the grammar is one that meets one of the following 
 Whenever the parser is in ordered mode and would attempt to match a balanced rule \MetaVar{R}, it instead matches the \SynRef{BalancedToken} rule and saves the token sequence that was matched.
 Those tokens are then matched against \MetaVar{R} as part of semantic analysis, using the context that the checking rules specify.
 
-\Section{Angle Brackets}{angle}
+Angle Brackets {#parse.angle}
+--------------
 
-\SubSection{Opening Angle Brackets}{opening}
+### Opening Angle Brackets ### {#parse.angle.open}
 
 \SubSubSection{Ordered Mode}{ordered}
 
@@ -96,6 +98,6 @@ If the parser is in ordered mode with a lookahead of \code{<}, and it could matc
 \item Otherwise, use the generic arguments already matched as part of matching the \SynRef{SpecializeExpession} rule.
 \end{itemize}
 
-\SubSection{Closing Angle Brackets}{closing}
+### Closing Angle Brackets ### {#parse.angle.close}
 
 If the parser is attempting to match the closing \code{>} in the \SynRef{GenericParameters} or \SynRef{GenericArguments} rules, and the lookahead is any token other than \code{>} that starts with a greater-than character (\code{>=}, \code{>>}, or \code{>>=}), then it splits the opening \code{>} off and matches it, replacing the lookahead with a token comprised of the remaining characters (\code{=}, \code{>}, or \code{>=}).

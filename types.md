@@ -36,23 +36,25 @@ This section defines the kinds of types supported by Slang.
 Types in Slang do not necessarily prescribe a single \SpecDef{layout} in memory.
 The discussion of each type will specify any guarantees about layout it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
 
-\Section{Void Type}{unit}
+Void Type {#type.unit}
+---------
 
 The type \kw{void} contains no data and has a single, unnamed, value.
 
 A \kw{void} value takes up no space, and thus does not affect the layout of types.
 Formally, a \kw{void} value behaves as if it has a size of zero bytes, and one-byte alignment.
 
-\Section{Scalar Types}{scalar}
+Scalar Types {#type.scalar}
+------------
 
-\SubSection{Boolean Type}{bool}
+### Boolean Type ### {#type.bool}
 
 The type \kw{bool} is used to represent Boolean truth values: \kw{true} and \kw{false}.
 
 The size of a \kw{bool} varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use \kw{bool} for in-memory data structures.
 On all platforms, the \kw{bool} type must be \SpecDef{naturally aligned} (its alignment is its size).
 
-\SubSection{Integer Types}{int}
+### Integer Types ### {#type.int}
 
 The following integer types are defined:
 
@@ -82,7 +84,7 @@ Specific target platforms may not support the other integer types.
 
 All integer types are stored in memory with their natural size and alignment on all targets that support them.
 
-\SubSection{Floating-Point Types}{float}
+### Floating-Point Types ### {#type.float}
 
 The following floating-point type are defined:
 
@@ -107,7 +109,8 @@ Specific targets may not support the other floating-point types.
 
 All floating-point types are stored in memory with their natural size and alignment on all targets that support them.
 
-\Section{Vector Types}{vector}
+Vector Types {#type.vector}
+------------
 
 A vector type is written as `vector<T, N>` and represents an \Char{N}-element vector with elements of type \Char{T}.
 The \SpecDef{element type} \Char{T} must be one of the built-in scalar types, and the \SpecDef{element count} \Char{N} must be a specialization-time constant integer.
@@ -138,7 +141,7 @@ typealias float4 = vector<float, 4>;
 typealias int8_t3 = vector<int8_t, 3>;
 ```
 
-\SubSection{Legacy Syntax}{legacy}
+### Legacy Syntax ### {legacy}
 
 For compatibility with older codebases, the generic \kw{vector} type includes default values for \Char{T} and \Char{N}, being declared as:
 
@@ -156,7 +159,8 @@ vector<float> c;
 vector<float, 4> d;
 ```
 
-\Section{Matrix Types}{matrix}
+Matrix Types {#type.matrix}
+------------
 
 A matrix type is written as `matrix<T, R, C>` and represents a matrix of \Char{R} rows and \Char{C} columns, with elements of type \Char{T}.
 The element type \Char{T} must be one of the built-in scalar types.
@@ -195,7 +199,7 @@ While it may seem that this choice of convention is confusing, it is necessary t
 This decision in the Slang language is consistent with the compilation of HLSL to SPIR-V performed by other compilers.
 \end{Note}
 
-\SubSection{Legacy Syntax}{legacy}
+### Legacy Syntax ### {legacy}
 
 For compatibility with older codebases, the generic \kw{matrix} type includes default values for \Char{T}, \Char{R}, and \Char{C}, being declared as:
 
@@ -212,7 +216,8 @@ float4x4 b;
 matrix<float, 4, 4> c;
 ```
 
-\Section{Structure Types}{struct}
+Structure Types {#type.struct}
+---------------
 
 Structure types are introduced with \kw{struct} declarations, and consist of an ordered sequence of named and typed fields:
 
@@ -224,7 +229,7 @@ struct S
 }
 ```
 
-\SubSection{Standard Layout}{layout.standard}
+### Standard Layout ### {#type.struct.layout.standard}
 
 The \SpecDef{standard layout} for a structure type uses the following algorithm:
 
@@ -244,7 +249,7 @@ When this algorithm completes, \code{size} and \code{alignment} will be the size
 Most target platforms do not use the standard layout directly, but it provides a baseline for defining other layout algorithms.
 Any layout for structure types must guarantee an alignment at least as large as the standard layout.
 
-\SubSection{C-Style Layout}{layout.c}
+### C-Style Layout ### {#type.struct.layout.c}
 
 C-style layout for structure types differs from standard layout by adding an additional final step:
 
@@ -254,7 +259,7 @@ C-style layout for structure types differs from standard layout by adding an add
 
 This mirrors the layout rules used by typical C/C++ compilers.
 
-\SubSection{D3D Constant Buffer Layout}{layout.d3d.cbuffer}
+### D3D Constant Buffer Layout ### {#type.struct.layout.d3d.cbuffer}
 
 D3D constant buffer layout is similar to standard layout with two differences:
 
@@ -264,7 +269,8 @@ D3D constant buffer layout is similar to standard layout with two differences:
 \code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16}
 \end{enumerate}
 
-\Section{Array Types}{array}
+Array Types {#type.array}
+-----------
 
 An \SpecDef{array type} is either a statically-sized or dynamically-sized array type.
 
@@ -278,7 +284,7 @@ This type represents an array of some fixed, but statically unknown, size.
 Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
 \end{Note}
 
-\SubSection{Declaration Syntax}{decl}
+### Declaration Syntax ### {#type.array.decl}
 
 For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \Char{T} as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
 
@@ -309,7 +315,7 @@ In each case, \Char{a} is a five-element array of three-element arrays of \kw{in
 However, one declaration orders the element counts as \Char{[3][5]} and the other as \Char{[5][3]}.
 \end{Note}
 
-\SubSection{Element Count Inference}{inference}
+### Element Count Inference ### {#type.array.inference}
 
 When a variable is declared with an unknown-size array type, and also includes an initial-value expression:
 
@@ -327,7 +333,7 @@ int a[4] = { 0xA, 0xB, 0xC, 0xD };
 
 A variable declared in this fashion semantically has a known-size array type and not an unknown-size array type; the use of an unknown-size array type for the declaration is just a convenience feature.
 
-\SubSection{Standard Layout}{layout.std}
+### Standard Layout ### {#type.array.layout.std}
 
 The \SpecDef{stride} of a type is the smallest multiple of its alignment not less than its size.
 
@@ -342,15 +348,16 @@ Using the standard layout for an array type \Char{T[]} or `T[N]`:
   \item{The size of a known-size array with a nonzero number \Char{N} of elements is the size of \Char{T} plus \Char{N - 1} times the element stride of the array}
 \end{enumerate}
 
-\SubSection{C-Style Layout}{layout.c}
+### C-Style Layout ### {#type.array.layout.c}
 
 The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number \Char{N} of elements is \Char{N} times the element stride of the array.
 
-\SubSection{D3D Constant Buffer Layout}{layout.d3d.cbuffer}
+### D3D Constant Buffer Layout ### {#type.array.layout.d3d.cbuffer}
 
 The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \Char{T} that is not less than the stride of \Char{T}
 
-\Section{This Type}{this}
+This Type {#type.this}
+---------
 
 Within the body of a structure or interface declaration, the keyword \kw{This} may be used to refer to the enclosing type.
 Inside of a structure type declaration, \kw{This} refers to the structure type itself.
@@ -359,7 +366,8 @@ Inside of an interface declaration, \kw{This} refers to the concrete type that i
 This vs this capitalization inconsistency in above paragraph-- intentional or no?
 \end{TODO}
 
-\Section{Opaque Types}{opaque}
+Opaque Types {#type.opaque}
+------------
 
 \SpecDef{Opaque} types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
 Similar languages may refer to these as "resource types" or "object types."
@@ -375,7 +383,8 @@ The full list of opaque types supported by Slang can be found in the standard li
 
 Layout for opaque types depends on the target platform, and no specific guarantees can be made about layout rules across platforms.
 
-\Section{Known and Unknown Size}{size}
+Known and Unknown Size {#type.size}
+----------------------
 
 Every type has either known or unknown size.
 Types with unknown size arise in a few ways:

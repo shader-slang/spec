@@ -3,7 +3,8 @@ Modules {#module}
 
 A \SpecDefine{module} is a unit of encapsulation for declarations.
 
-\Section{Primary Source Unit}{source.primary}
+Primary Source Unit {#module.source.primary}
+-------------------
 
 One or more source units may be compiled together to form a module.
 Compilation of a module begins with a single source unit that is the \SpecDefine{primary source unit} of the module.
@@ -31,11 +32,12 @@ For example, \code{#include} directives might be used so that the content of a s
 A \code{module} declaration must always be the first declaration in its source unit.
 A \code{module} declaration must not appear in any source unit that is not a primary source unit.
 
-\Section{Seconary Source Units}{source.secondary}
+Seconary Source Units {#module.source.secondary}
+---------------------
 
 Any source units in a module other than the primary source unit are \SpecDefine{secondary source units}.
 
-\SubSection{Include Declarations}{include}
+### Include Declarations ### {#module.include}
 
 Secondary source units are included into a module via **`include`** declarations.
 
@@ -67,7 +69,7 @@ An implementation must use an implementation-specified means to determine if mul
 Circular, and even self-referential, \code{include} declarations are allowed.
 \end{Note}
 
-\SubSection{Implementing Declarations}{implementing}
+### Implementing Declarations ### {#module.implementing}
 
 Secondary source units must start with an \code{implementing} declaration, naming the module that the secondary source unit is part of.
 
@@ -88,7 +90,8 @@ An \code{implementing} declaration must always be the first declaration in its s
 An \code{implementing} declaration must not appear in any source unit that is not a secondary source unit.
 
 
-\Section{Import Declarations}{import}
+Import Declarations {#module.import}
+-------------------
 
 Modules may depend on one another via \code{import} declarations.
 

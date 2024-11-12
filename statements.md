@@ -23,7 +23,8 @@ Statements are executed for their effect, rather than evaluated to produce a val
 		\SynOr \SynRef{LabeledStatement} \\
 \end{Syntax}
 
-\Section{Expression Statement}{expr}
+Expression Statement {#stmt.expr}
+--------------------
 
 \begin{Description}
 An \SpecDef{expression statement} evaluates an expression, and then ignores the resulting value.
@@ -44,7 +45,8 @@ An \SpecDef{expression statement} evaluates an expression, and then ignores the 
 
 An implementation may diagnose a warning when execution of an expression statement cannot have side effects.
 
-\Section{Declaration Statement}{decl}
+Declaration Statement {#expr.decl}
+---------------------
 
 \begin{Description}
 	A \SpecDef{declaration statement} introduces a declaration into the current scope.
@@ -69,7 +71,8 @@ Only the following types of declarations may be used in a declaration statement:
 \item \SynRef{VariableDeclaration}
 \end{itemize}
 
-\Section{Block Statement}{block}
+Block Statement {#stmt.block}
+---------------
 
 \begin{Description}
 A \SpecDef{block statement} extends the current environment with a fresh scope,
@@ -106,7 +109,8 @@ and then executes each of its constituent statements in order.
 \end{Note}
 	
 
-\Section{Empty Statement}{empty}
+Empty Statement {#stmt.empty}
+---------------
 
 \begin{Description}
 	Executing an empty statement has no effect.
@@ -121,9 +125,10 @@ and then executes each of its constituent statements in order.
 	\CheckStmt{\ContextVarA}{ \code{;} }{\ContextVarA}
 \end{Checking}
 
-\Section{Conditional Statements}{cond}
+Conditional Statements {#stmt.cond}
+----------------------
 
-\SubSection{If Statement}{if}
+### If Statement ### {#stmt.if}
 
 \begin{Description}
 An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
@@ -176,7 +181,7 @@ That initial-value expression is evaluated against an expected type of \lstinlin
 If \MetaVar{D} is \lstinline[style=SlangCodeStyle]|Some($\MetaVar{C}$)|, then the \SynRef{ThenClause} is executed, in an environment where the name of the \kw{let} declaration is bound to \MetaVar{C}.
 If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is executed.
 
-\SubSection{Switch Statement}{switch}
+### Switch Statement ### {#stmt.switch}
 
 \begin{Description}
 	A \SpecDef{\kw{switch} statement} conditionally executes up to one of its \SpecDef{alternatives}, based on the value of an expression.
@@ -259,9 +264,10 @@ Each alternative of a \kw{switch} statement must exit the \code{switch} statemen
 Semantically, a \kw{switch} statement is equivalent to an ``\kw{if} cascade'' that compares the value of the conditional expression against each \kw{case} clause,
 \end{Description}
 
-\Section{Loop Statements}{loop}
+Loop Statements {#stmt.loop}
+---------------
 
-\SubSection{For Statement}{for}
+### For Statement ### {#stmt.for}
 
 \begin{Syntax}
 	\SynDefine{ForStatement} \\
@@ -290,7 +296,7 @@ Semantically, a \kw{switch} statement is equivalent to an ``\kw{if} cascade'' th
 The checking judgements above aren't complete because they don't handle the case where \emph{cond} is absent, in which case it should be treated like it was \code{true}.
 \end{Incomplete}
 
-\SubSection{While Statement}{while}
+### While Statement ### {#stmt.while}
 
 
 \begin{Syntax}
@@ -312,7 +318,7 @@ The checking judgements above aren't complete because they don't handle the case
 	}
 \end{Checking}
 
-\SubSection{Do-While Statement}{dowhile}
+### Do-While Statement ### {#stmt.do-while}
 
 A \SpecDef{do-while statement} uses the following form:
 
@@ -334,9 +340,10 @@ A \SpecDef{do-while statement} uses the following form:
 	}
 \end{Checking}
 
-\Section{Control Transfer Statements}{control}
+Control Transfer Statements {#stmt.control}
+---------------------------
 
-\SubSection{Break Statement}{break}
+### Break Statement ### {#stmt.break}
 
 \begin{Syntax}
 	\SynDefine{BreakStatement}
@@ -369,7 +376,7 @@ The checking rules for \kw{break}-able statements should add a suitable item to 
 We also need to define the context-containment rule that is being used to look up the \kw{break} item in the context.
 \end{Incomplete}
 
-\SubSection{Continue Statement}{continue}
+### Continue Statement ### {#stmt.continue}
 
 \begin{Syntax}
 	\SynDefine{ContinueStatement}
@@ -395,7 +402,7 @@ In a for statement with a side effect expression, the side effect expression is 
 	}
 \end{Checking}
 
-\SubSection{Return Statement}{continue}
+### Return Statement ### {#stmt.continue}
 
 \begin{Description}
 	A \code{return} statement transfers control out of the current function.
@@ -429,7 +436,7 @@ In a for statement with a side effect expression, the side effect expression is 
 	A \code{return} statement without an expression is equivalent to a \code{return} of a value of type \code{Unit}.
 \end{Description}
 
-\SubSection{Discard Statement}{discard}
+### Discard Statement ### {#stmt.discard}
 
 \begin{Syntax}
 	\SynDefine{DiscardStatement}

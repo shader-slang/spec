@@ -28,7 +28,8 @@ An implementation may use any implementation-specified means to resolve paths pr
 
 An implementation that supports \code{#pragma  once} may use any implementation-specified means to determine if two source units are identical.
 
-\Section{Changes}{changes}
+Changes {#prepro.changes}
+-------
 
 The input to the Slang preprocessor is a token sequence produced by the rules in Chapter 2, and does not use the definition of "preprocessor tokens" as they are used by the C/C++ preprocessor.
 
@@ -44,7 +45,8 @@ It is an error if the concatenated text does not form a valid sequence of tokens
 The C/C++ preprocessor always yields a single token from any token pasting, whether or not that token is valid.
 \end{Note}
 
-\Section{Extensions}{extensions}
+Extensions {#prepro.extensions}
+----------
 
 \begin{Incomplete}
 At the very least we need to document support for the \code{#version} directive, if we intend to keep it.

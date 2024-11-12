@@ -21,6 +21,8 @@ The open-source Slang compiler *implementation* may deviate from the language as
 
 Where practical, this document will call out known deviations between the language as specified, and the current implementation in the open-source Slang compiler.
 
+<!-->
+
 Document Conventions {#intro.conventions}
 --------------------
 
@@ -47,7 +49,6 @@ This document makes use of the following conventions to improve readability:
 ### Callouts ### {#intro.conventions.callouts}
 
 ```
-\SubSection{Callouts}{callouts}
 
 This document uses a few kinds of \SpecDef{callouts}, which start bold word indicating the kind of callout. For example, the following is a note:
 
@@ -72,7 +73,6 @@ The kinds of callouts used in this document are:
 ### Legacy Features ### {#intro.conventions.legacy}
 
 ```
-\SubSection{Legacy Features}{legacy}
 
 Some features of the Slang language are considered \SpecDef{legacy} features.
 The language supports these constructs, syntax, etc. in order to facilitate compatibility with existing code in other GPU languages, such as HLSL.
@@ -100,6 +100,8 @@ Also need conventions for how code points are named in productions in the lexica
 \end{Incomplete}
 ```
 
+</-->
+
 The Slang Standard Library {#intro.stdlib}
 --------------------------
 
@@ -116,10 +118,4 @@ Need to turn that into a link.
 
 In cases where a language construct is described in \emph{both} this specification and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either source.
 In cases where the two sources disagree, there is a correctness issue in one or the other.
-
-\Section{Normative References}{references}
-
-\begin{TODO}
-This section should list any external documents/specifications/etc. that are necessary in order to correctly interpret the information in this specification.
-\end{TODO}
 ```

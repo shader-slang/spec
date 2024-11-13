@@ -40,9 +40,9 @@ The word "descriptive" in this document is to be interpreted as synonymous with 
 This document makes use of the following conventions to improve readability:
 
 \begin{itemize}
-    \item{When a term is introduced and defined, it will be in italics. For example: a \SpecDef{duck} is something that looks like a duck and quacks like a duck.}
+    \item{When a term is introduced and defined, it will be in italics. For example: a <dfn>duck</dfn> is something that looks like a duck and quacks like a duck.}
     \item{Code fragments in Slang or other programming languages use a fixed-width font. For example: \code{a + b}.}
-    \subitem{References to language keywords are additionally rendered in bold. For example: \kw{if}}
+    \subitem{References to language keywords are additionally rendered in bold. For example: \code{if}}
 \end{itemize}
 ```
 
@@ -50,11 +50,9 @@ This document makes use of the following conventions to improve readability:
 
 ```
 
-This document uses a few kinds of \SpecDef{callouts}, which start bold word indicating the kind of callout. For example, the following is a note:
+This document uses a few kinds of <dfn>callouts</dfn>, which start bold word indicating the kind of callout. For example, the following is a note:
 
-\begin{Note}
-Notes are rendered like this.
-\end{Note}
+Note: Notes are rendered like this.
 
 The kinds of callouts used in this document are:
 
@@ -74,7 +72,7 @@ The kinds of callouts used in this document are:
 
 ```
 
-Some features of the Slang language are considered \SpecDef{legacy} features.
+Some features of the Slang language are considered <dfn>legacy</dfn> features.
 The language supports these constructs, syntax, etc. in order to facilitate compatibility with existing code in other GPU languages, such as HLSL.
 
 \CalloutName{Legacy} callouts are used for the description of legacy features. These callouts are normative.
@@ -95,9 +93,7 @@ The syntax and lexical structure of the language is described \textbf{Syntax} ca
     \item{Parentheses in plain text (not fixed-width) are used for grouping. E.g., \SynRef{Expression} (\code{,} \SynRef{Expression})}
 \end{itemize}
 
-\begin{Incomplete}
-Also need conventions for how code points are named in productions in the lexical structure.    
-\end{Incomplete}
+Issue: Also need conventions for how code points are named in productions in the lexical structure.    
 ```
 
 </-->
@@ -105,17 +101,13 @@ Also need conventions for how code points are named in productions in the lexica
 The Slang Standard Library {#intro.stdlib}
 --------------------------
 
-```
-Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the \SpecDef{standard library} for Slang.
+Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the <dfn>standard library</dfn> for Slang.
 This document may, of neccessity, refer to constructs from the Slang standard library (e.g., the \code{Texture2D} type) that are not defined herein.
 
 This document does not provide a normative definition of all of the types, functions, attributes, modifiers, capabilities, etc. that are defined in the Slang standard library.
 The normative reference for standard-library constructs not defined in this document is the Slang Standard Library Reference.
 
-\begin{TODO}
-Need to turn that into a link.
-\end{TODO}
+Issue: Need to turn that into a link.
 
-In cases where a language construct is described in \emph{both} this specification and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either source.
+In cases where a language construct is described in *both* this specification and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either source.
 In cases where the two sources disagree, there is a correctness issue in one or the other.
-```

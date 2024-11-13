@@ -1,7 +1,7 @@
 Subtyping {#subtype}
 =========
 
-\begin{TODO}
+<div class=issue>
 
 This chapter needs to define what the subtyping rules are, as something distinct from the conversion/coercion rules (which need their own chapter).
 
@@ -15,4 +15,4 @@ The ``conforms-to'' relationship might need to be documented in this chapter as 
 
 (In fact, it may be best to have a judgement that is parameterized over the type relationship that is being checked: conformance, subtyping, implicit coercion, explicit conversion.)
 
-\end{TODO}
+</div>

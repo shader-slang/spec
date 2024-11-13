@@ -5,9 +5,7 @@ As the last phase of lexical processing the token sequence of a source unit is p
 
 The preprocessor supported by Slang is derived from the C/C++ preprocessor with a few changes and extensions.
 
-\begin{Incomplete}
-We \emph{either} need to pick a normative reference here for some existing preprocessor (and thus bind ourselves to eventually supporting the semantics of that normative reference), \emph{or} we need to take the time to fully document what the semantics of our current preprocessor are.
-\end{Incomplete}
+Issue: We \emph{either} need to pick a normative reference here for some existing preprocessor (and thus bind ourselves to eventually supporting the semantics of that normative reference), \emph{or} we need to take the time to fully document what the semantics of our current preprocessor are.
 
 Slang programs may use the following preprocessor directives, with the same semantics as their C/C++ equivalent:
 
@@ -33,22 +31,16 @@ Changes {#prepro.changes}
 
 The input to the Slang preprocessor is a token sequence produced by the rules in Chapter 2, and does not use the definition of "preprocessor tokens" as they are used by the C/C++ preprocessor.
 
-\begin{Note}
-The key place where this distinction matters is in macros that perform token pasting.
+Note: The key place where this distinction matters is in macros that perform token pasting.
 The input to the Slang preprocessor must be a valid sequence of tokens *before* any token pasting occurs.
-\end{Note}
 
 When tokens are pasted with the \code{##} operator, the resulting concatenated text is decomposed into one or more new tokens.
 It is an error if the concatenated text does not form a valid sequence of tokens.
 
-\begin{Note}
-The C/C++ preprocessor always yields a single token from any token pasting, whether or not that token is valid.
-\end{Note}
+Note: The C/C++ preprocessor always yields a single token from any token pasting, whether or not that token is valid.
 
 Extensions {#prepro.extensions}
 ----------
 
-\begin{Incomplete}
-At the very least we need to document support for the \code{#version} directive, if we intend to keep it.
-\end{Incomplete}
+Issue: At the very least we need to document support for the \code{#version} directive, if we intend to keep it.
 

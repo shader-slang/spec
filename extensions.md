@@ -1,7 +1,7 @@
 Type Linearization {#linearization}
 ==================
 
-\begin{TODO}
+<div class=issue>
 
 This chapter needs to explain how, given a type, an implementation should derive the \emph{linearization} of that type into an ordered list of \emph{facets}.
 Each facet corresponds to some \SynRef{DeclBody}, and thus has a set of declarations in it that may bind certain names.
@@ -11,12 +11,12 @@ The linearization of a type should include:
 \begin{itemize}
 \item A facet for the type itself, which will include the declarations explicitly written inside the body of that type's \SynRef{DeclBody}.
 
-\item One facet for each transitive base of the type, including both concrete types it inherits from and \kw{interface}s it conforms to.
+\item One facet for each transitive base of the type, including both concrete types it inherits from and `interface`s it conforms to.
 
-\item One facet for each \kw{extension} that is both visible in the context where linearization is being performed \emph{and} applicable to the type.
+\item One facet for each \code{extension} that is both visible in the context where linearization is being performed \emph{and} applicable to the type.
 \end{itemize}
 
-Note that base facets are included even for bases that are introduced via an \kw{extension}.
+Note that base facets are included even for bases that are introduced via an \code{extension}.
 Similarly, extension facets are included for extensions that might apply to the type through one of its bases.
 
 The set of facets for a type will always be a subset of those for each of its bases.
@@ -30,4 +30,4 @@ In general, facets for extensions should appear after the facet for the type dec
 
 There is good precedent in the PL world for this kind of linearization, which is sometimes referred to as the \emph{method resolution order} (MRO).
 A particular solution, known as the \emph{C3 linearization algorithm} is often recommended as the one to use, and it is what the Slang compiler currently implements.
-\end{TODO}
+</div>

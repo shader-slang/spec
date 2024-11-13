@@ -1,34 +1,32 @@
 Statements {#stmt}
 ==========
 
-A \SpecDef{statement} is an entity in the abstract syntax that describes actions to be taken by a thread.
+A <dfn>statement</dfn> is an entity in the abstract syntax that describes actions to be taken by a thread.
 Statements are executed for their effect, rather than evaluated to produce a value.
 
 \begin{Syntax}
 	\SynDefine{Statement} \\
 		\SynRef{ExpressionStatement} \\
-		\SynOr \SynRef{DeclarationStatement} \\
-		\SynOr \SynRef{BlockStatement} \\
-		\SynOr \SynRef{EmptyStatement} \\
-		\SynOr \SynRef{IfStatement} \\
-		\SynOr \SynRef{SwitchStatement} \\
-		\SynOr \SynRef{CaseStmt} \\
-		\SynOr \SynRef{ForStatement} \\
-		\SynOr \SynRef{WhileStatement} \\
-		\SynOr \SynRef{DoWhileStatement} \\
-		\SynOr \SynRef{BreakStatement} \\
-		\SynOr \SynRef{ContinueStatement} \\
-		\SynOr \SynRef{ReturnStatement} \\
-		\SynOr \SynRef{DiscardStatement} \\
-		\SynOr \SynRef{LabeledStatement} \\
+		| \SynRef{DeclarationStatement} \\
+		| \SynRef{BlockStatement} \\
+		| \SynRef{EmptyStatement} \\
+		| \SynRef{IfStatement} \\
+		| \SynRef{SwitchStatement} \\
+		| \SynRef{CaseStmt} \\
+		| \SynRef{ForStatement} \\
+		| \SynRef{WhileStatement} \\
+		| \SynRef{DoWhileStatement} \\
+		| \SynRef{BreakStatement} \\
+		| \SynRef{ContinueStatement} \\
+		| \SynRef{ReturnStatement} \\
+		| \SynRef{DiscardStatement} \\
+		| \SynRef{LabeledStatement} \\
 \end{Syntax}
 
 Expression Statement {#stmt.expr}
 --------------------
 
-\begin{Description}
-An \SpecDef{expression statement} evaluates an expression, and then ignores the resulting value.
-\end{Description}
+An <dfn>expression statement</dfn> evaluates an expression, and then ignores the resulting value.
 
 \begin{Syntax}
 	\SynDefine{ExpressionStatement} \\
@@ -48,9 +46,7 @@ An implementation may diagnose a warning when execution of an expression stateme
 Declaration Statement {#expr.decl}
 ---------------------
 
-\begin{Description}
-	A \SpecDef{declaration statement} introduces a declaration into the current scope.
-	\end{Description}
+A <dfn>declaration statement</dfn> introduces a declaration into the current scope.
 	
 \begin{Syntax}
 	\SynDefine{DeclarationStatement} \\
@@ -74,10 +70,7 @@ Only the following types of declarations may be used in a declaration statement:
 Block Statement {#stmt.block}
 ---------------
 
-\begin{Description}
-A \SpecDef{block statement} extends the current environment with a fresh scope,
-and then executes each of its constituent statements in order.
-\end{Description}
+A <dfn>block statement</dfn> executes each of its constituent statements in order.
 
 \begin{Syntax}
 	\SynDefine{BlockStatement} \\
@@ -104,10 +97,7 @@ and then executes each of its constituent statements in order.
 
 \end{Checking}
 
-\begin{Note}
-	Declarations in a block statement are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.
-\end{Note}
-	
+Note: Declarations in a block statement are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
 
 Empty Statement {#stmt.empty}
 ---------------
@@ -130,9 +120,7 @@ Conditional Statements {#stmt.cond}
 
 ### If Statement ### {#stmt.if}
 
-\begin{Description}
-An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
-\end{Description}
+An <dfn>\code{if} statement</dfn> executes a sub-statement conditionally.
 
 \begin{Syntax}
 	\SynDefine{IfStatement} \\
@@ -142,7 +130,7 @@ An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
 
 	\SynDefine{Condition}
 		\SynRef{Expression}
-		\SynOr \SynRef{LetDeclaration} \\
+		| \SynRef{LetDeclaration} \\
 
 	\SynDefine{ElseClause}
 		\code{else} \SynRef{Statement} \\
@@ -172,20 +160,18 @@ An \SpecDef{\kw{if} statement} executes a sub-statement conditionally.
 	
 \end{Checking}
 
-If the condition of an \kw{if} statement is an expression, then it is evaluated against an expected type of \code{Bool} to yield a value \MetaVar{C}.
+If the condition of an \code{if} statement is an expression, then it is evaluated against an expected type of \code{Bool} to yield a value \MetaVar{C}.
 If \MetaVar{C} is \code{true}, then the \SynRef{ThenClause} is executed.
 If \MetaVar{C} is \code{false} and there is a \SynRef{ElseClause}, then it is executed.
 
-If the condition of an \kw{if} statement is a \kw{let} declaration, then that declaration must have an initial-value expression.
+If the condition of an \code{if} statement is a \code{let} declaration, then that declaration must have an initial-value expression.
 That initial-value expression is evaluated against an expected type of \lstinline[style=SlangCodeStyle]|Optional<$\MetaVar{T}$>|, where \MetaVar{T} is a fresh type variable, to yield a value \MetaVar{D}.
-If \MetaVar{D} is \lstinline[style=SlangCodeStyle]|Some($\MetaVar{C}$)|, then the \SynRef{ThenClause} is executed, in an environment where the name of the \kw{let} declaration is bound to \MetaVar{C}.
+If \MetaVar{D} is \lstinline[style=SlangCodeStyle]|Some($\MetaVar{C}$)|, then the \SynRef{ThenClause} is executed, in an environment where the name of the \code{let} declaration is bound to \MetaVar{C}.
 If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is executed.
 
 ### Switch Statement ### {#stmt.switch}
 
-\begin{Description}
-	A \SpecDef{\kw{switch} statement} conditionally executes up to one of its \SpecDef{alternatives}, based on the value of an expression.
-\end{Description}
+A <dfn>\code{switch} statement</dfn> conditionally executes up to one of its <dfn>alternatives</dfn>, based on the value of an expression.
 	
 \begin{Syntax}
 	\SynDefine{SwitchStatement} \\
@@ -197,7 +183,7 @@ If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is exe
 
 	\SynDefine{SwitchAlternativeLabel}
 		\SynRef{CaseClause}
-		\SynOr \SynRef{DefaultClause} \\
+		| \SynRef{DefaultClause} \\
 	
 	\SynDefine{CaseClause}
 		\code{case} \SynRef{Expression} \code{:} \\
@@ -218,7 +204,7 @@ If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is exe
 \end{Checking}
 
 \begin{Description}
-A \kw{switch} statement is checked by first checking the expression, and then checking each of the alternatives against the type of that expression.
+A \code{switch} statement is checked by first checking the expression, and then checking each of the alternatives against the type of that expression.
 \end{Description}
 
 \begin{Checking}
@@ -245,23 +231,23 @@ A \kw{switch} statement is checked by first checking the expression, and then ch
 \end{Checking}
 
 \begin{Description}
-A \kw{case} clause is valid if its expression checks against the type of the control expressio nof the \kw{switch} statement.
+A \code{case} clause is valid if its expression checks against the type of the control expressio nof the \code{switch} statement.
 \end{Description}
 
-A \kw{switch} statement may have at most one \kw{default} clause.
+A \code{switch} statement may have at most one \code{default} clause.
 
-If the type of the controlling expression of a \kw{switch} statement is a built-in integer type, then:
+If the type of the controlling expression of a \code{switch} statement is a built-in integer type, then:
 
 \begin{itemize}
-\item The expression of each \kw{case} clause must be a compile-time constant expression.
-\item The constant value of the expression for each \kw{case} clause must not be equal to that of any other \kw{case} clause in the same \kw{switch}.
+\item The expression of each \code{case} clause must be a compile-time constant expression.
+\item The constant value of the expression for each \code{case} clause must not be equal to that of any other \code{case} clause in the same \code{switch}.
 \end{itemize}
 
-Each alternative of a \kw{switch} statement must exit the \code{switch} statement via a \code{break} or other control transfer statement.
+Each alternative of a \code{switch} statement must exit the \code{switch} statement via a `break` or other control transfer statement.
 "Fall-through" from one switch case clause to another is not allowed.
 
 \begin{Description}
-Semantically, a \kw{switch} statement is equivalent to an ``\kw{if} cascade'' that compares the value of the conditional expression against each \kw{case} clause,
+Semantically, a \code{switch} statement is equivalent to an ``\code{if} cascade'' that compares the value of the conditional expression against each \code{case} clause,
 \end{Description}
 
 Loop Statements {#stmt.loop}
@@ -292,9 +278,7 @@ Loop Statements {#stmt.loop}
 	}
 \end{Checking}
 
-\begin{Incomplete}
-The checking judgements above aren't complete because they don't handle the case where \emph{cond} is absent, in which case it should be treated like it was \code{true}.
-\end{Incomplete}
+Issue: The checking judgements above aren't complete because they don't handle the case where \emph{cond} is absent, in which case it should be treated like it was \code{true}.
 
 ### While Statement ### {#stmt.while}
 
@@ -320,7 +304,7 @@ The checking judgements above aren't complete because they don't handle the case
 
 ### Do-While Statement ### {#stmt.do-while}
 
-A \SpecDef{do-while statement} uses the following form:
+A <dfn>do-while statement</dfn> uses the following form:
 
 \begin{Syntax}
 	\SynDefine{DoWhileStatement} \\
@@ -347,34 +331,34 @@ Control Transfer Statements {#stmt.control}
 
 \begin{Syntax}
 	\SynDefine{BreakStatement}
-		\code{break} \SynVar[label]{Identifier}\SynOpt \code{;} \\
+		`break` \SynVar[label]{Identifier}\SynOpt \code{;} \\
 \end{Syntax}
 
 \begin{Description}
-A \code{break} statement without a \SynRef{label} transfers control to after the end of the closest lexically enclosing switch statement or loop statement.
+A `break` statement without a \SynRef{label} transfers control to after the end of the closest lexically enclosing switch statement or loop statement.
 
-A \code{break} statement with a \SynRef{label} transfers control to after the end of the lexically enclosing switch or loop statement labeled with a matching \SynRef{label}.
+A `break` statement with a \SynRef{label} transfers control to after the end of the lexically enclosing switch or loop statement labeled with a matching \SynRef{label}.
 \end{Description}
 
 \begin{Checking}
 	\DerivationRule{
 		\ContextLookup{\ContextVarA}{\BreakLabel}{\textunderscore}
 	}{
-		\CheckStmt{\ContextVarA}{\code{break}\code{;}}{\ContextVarA} 
+		\CheckStmt{\ContextVarA}{`break`\code{;}}{\ContextVarA} 
 	} \\
 
 	\DerivationRule{
 		\ContextContains{\ContextVarA}{\BreakLabel: label}
 	}{
-		\CheckStmt{\ContextVarA}{\code{break} label\code{;}}{\ContextVarA} 
+		\CheckStmt{\ContextVarA}{`break` label\code{;}}{\ContextVarA} 
 	}
 \end{Checking}
 
-\begin{Incomplete}
-The checking rules for \kw{break}-able statements should add a suitable item to the context used for checking their body statements, which will be matched by the rules above.
+<div class=issue>
+Issue: The checking rules for `break`-able statements should add a suitable item to the context used for checking their body statements, which will be matched by the rules above.
 
-We also need to define the context-containment rule that is being used to look up the \kw{break} item in the context.
-\end{Incomplete}
+We also need to define the context-containment rule that is being used to look up the `break` item in the context.
+</div>
 
 ### Continue Statement ### {#stmt.continue}
 
@@ -457,7 +441,7 @@ Operations with side effects that were executed by the invocation before a \code
 \end{Checking}
 
 \begin{Incomplete}
-The intent of the above rule is that checking a \kw{discard} statement will add the \code{fragment} capability to the context, so that it can be checked against the capabilities of the surrounding function/context.
+The intent of the above rule is that checking a \code{discard} statement will add the \code{fragment} capability to the context, so that it can be checked against the capabilities of the surrounding function/context.
 However, the way the other statement rules handle the context, they do not allow for anything in the context to flow upward/outward in that fashion.
 It may be simplest to have the process of collecting the capabilities required by a function body be a different judgement than the type checking rules.
 \end{Incomplete}

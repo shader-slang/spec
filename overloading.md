@@ -1,8 +1,7 @@
 Overload Resolution {#overload}
 ===================
 
-\begin{TODO}
-
+<div class=issue>
 This chapter needs to describe how to disambiguate an overloaded lookup result.
 Overload resolution comes up primarily in two places:
 
@@ -41,4 +40,4 @@ Generally, a function $f$ is ``more general'' than another function $g$ if for e
 
 Also: it doesn't exactly belong in this chapter, but something needs to document the rules for when two function declarations are considered to have the same signature (or at least conflicting signatures), so that errors can be diagnosed when trying to redefine a function.
 
-\end{TODO}
+</div>

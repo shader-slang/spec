@@ -1,7 +1,7 @@
 Types {#type}
 =====
 
-\begin{TODO}
+<div class=issue>
 The text of this chapter is largely still written in a more guide/reference style than in anything formal.
 
 It is important to have the specification include a list of the major built-in types that this chapter currently documents, but those are not the only things relevant to types that need to be discussed.
@@ -11,7 +11,7 @@ A key concept that this chapter needs to discuss is that there are a few distinc
 \begin{itemize}
 \item \emph{Proper} types, such as \code{Int} and \code{RWStructuredBuffer<Float>}, which can be used for local variables, function parameters, etc.
 
-\item \emph{Interface} types, which include both references to \kw{interface} declarations, but also conjunctions of interface types. Interface types are distinct from proper types. Interfaces can be used as constraints on generic type parameters, but proper types cannot. Similarly, an interface type is not semantically valid as a local variable or function parameter (the current Slang compiler simply translates such invalid usages to existential types, which are proper).
+\item \emph{Interface} types, which include both references to `interface` declarations, but also conjunctions of interface types. Interface types are distinct from proper types. Interfaces can be used as constraints on generic type parameters, but proper types cannot. Similarly, an interface type is not semantically valid as a local variable or function parameter (the current Slang compiler simply translates such invalid usages to existential types, which are proper).
 
 \item \emph{Generic} types, which are the types of references to generic declarations. The current Slang language rules do not allow developers to utter generic types, and the semantics do not treat them as proper types. However, intermediate expressions of generic type can easily appear when checking Slang expressions.
 \end{itemize}
@@ -27,32 +27,31 @@ From the judgements that have been sketched so far, it seems clear that we at le
 \item A set of ``reference'' types, such as \code{inout Int}, that can be used to represent the value category (e.g., l-value vs. r-value) of an expression. Subtyping/coercion rules would then need to support, e.g., passing a \code{ref Int} where an \code{inout Int} is expected, etc.
 \end{itemize}
 
-\end{TODO}
-
+</div>
 
 This section defines the kinds of types supported by Slang.
 
 
-Types in Slang do not necessarily prescribe a single \SpecDef{layout} in memory.
+Types in Slang do not necessarily prescribe a single <dfn>layout</dfn> in memory.
 The discussion of each type will specify any guarantees about layout it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
 
 Void Type {#type.unit}
 ---------
 
-The type \kw{void} contains no data and has a single, unnamed, value.
+The type \code{void} contains no data and has a single, unnamed, value.
 
-A \kw{void} value takes up no space, and thus does not affect the layout of types.
-Formally, a \kw{void} value behaves as if it has a size of zero bytes, and one-byte alignment.
+A \code{void} value takes up no space, and thus does not affect the layout of types.
+Formally, a \code{void} value behaves as if it has a size of zero bytes, and one-byte alignment.
 
 Scalar Types {#type.scalar}
 ------------
 
 ### Boolean Type ### {#type.bool}
 
-The type \kw{bool} is used to represent Boolean truth values: \kw{true} and \kw{false}.
+The type \code{bool} is used to represent Boolean truth values: \code{true} and \code{false}.
 
-The size of a \kw{bool} varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use \kw{bool} for in-memory data structures.
-On all platforms, the \kw{bool} type must be \SpecDef{naturally aligned} (its alignment is its size).
+The size of a \code{bool} varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use \code{bool} for in-memory data structures.
+On all platforms, the \code{bool} type must be <dfn>naturally aligned</dfn> (its alignment is its size).
 
 ### Integer Types ### {#type.int}
 
@@ -62,25 +61,24 @@ The following integer types are defined:
   \hline
   Name & Description \\
   \hline
-  \kw{int8\_t} & 8-bit signed integer \\
-  \kw{int16\_t} & 16-bit signed integer \\
-  \kw{int} & 32-bit signed integer \\
-  \kw{int64\_t} & 64-bit signed integer \\
-  \kw{uint8\_t} & 8-bit unsigned integer \\
-  \kw{uint16\_t} & 16-bit unsigned integer \\
-  \kw{uint} & 32-bit unsigned integer \\
-  \kw{uint64\_t} & 64-bit unsigned integer \\
+  \code{int8\_t} & 8-bit signed integer \\
+  \code{int16\_t} & 16-bit signed integer \\
+  \code{int} & 32-bit signed integer \\
+  \code{int64\_t} & 64-bit signed integer \\
+  \code{uint8\_t} & 8-bit unsigned integer \\
+  \code{uint16\_t} & 16-bit unsigned integer \\
+  \code{uint} & 32-bit unsigned integer \\
+  \code{uint64\_t} & 64-bit unsigned integer \\
   \hline
 \end{tabular}
 
 All signed integers use two's complement representation.
 All arithmetic operations on integers (both signed and unsigned) wrap on overflow/underflow.
 
-All target platforms must support the \kw{int} and \kw{uint} types.
+All target platforms must support the \code{int} and \code{uint} types.
 Specific target platforms may not support the other integer types.
-\begin{TODO}
-"target platforms" links outside the specification to target-compatibility.md
-\end{TODO}
+
+Issue: "target platforms" links outside the specification to target-compatibility.md
 
 All integer types are stored in memory with their natural size and alignment on all targets that support them.
 
@@ -92,20 +90,19 @@ The following floating-point type are defined:
   \hline
   Name & Description \\
   \hline
-  \kw{half} & 16-bit floating-point number (1 sign bit, 5 exponent bits, 10 fraction bits) \\
-  \kw{float} & 32-bit floating-point number (1 sign bit, 8 exponent bits, 23 fraction bits) \\
-  \kw{double} & 64-bit floating-point number (1 sign bit, 11 exponent bits, 52 fraction bits) \\
+  \code{half} & 16-bit floating-point number (1 sign bit, 5 exponent bits, 10 fraction bits) \\
+  \code{float} & 32-bit floating-point number (1 sign bit, 8 exponent bits, 23 fraction bits) \\
+  \code{double} & 64-bit floating-point number (1 sign bit, 11 exponent bits, 52 fraction bits) \\
   \hline
 \end{tabular}
 
-All floating-point types are laid out in memory using the matching IEEE 754 standard format (\kw{binary16}, \kw{binary32}, \kw{binary64}).
+All floating-point types are laid out in memory using the matching IEEE 754 standard format (\code{binary16}, \code{binary32}, \code{binary64}).
 Target platforms may define their own rules for rounding, precision, denormals, infinities, and not-a-number values.
 
-All target platforms must support the \kw{float} type.
+All target platforms must support the \code{float} type.
 Specific targets may not support the other floating-point types.
-\begin{TODO}
-"targets" links outside the specification to target-compatibility.md
-\end{TODO}
+
+Issue: "targets" links outside the specification to target-compatibility.md
 
 All floating-point types are stored in memory with their natural size and alignment on all targets that support them.
 
@@ -113,11 +110,11 @@ Vector Types {#type.vector}
 ------------
 
 A vector type is written as `vector<T, N>` and represents an \Char{N}-element vector with elements of type \Char{T}.
-The \SpecDef{element type} \Char{T} must be one of the built-in scalar types, and the \SpecDef{element count} \Char{N} must be a specialization-time constant integer.
+The <dfn>element type</dfn> \Char{T} must be one of the built-in scalar types, and the <dfn>element count</dfn> \Char{N} must be a specialization-time constant integer.
 The element count must be between 2 and 4, inclusive.
 
 A vector type allows subscripting of its elements like an array, but also supports element-wise arithmetic on its elements.
-\SpecDef{Element-wise arithmetic} means mapping unary and binary operators over the elements of a vector to produce a vector of results:
+<dfn>Element-wise arithmetic</dfn> means mapping unary and binary operators over the elements of a vector to produce a vector of results:
 
 ```
 vector<int,4> a = { 1, 2, 30, 40 };
@@ -141,15 +138,15 @@ typealias float4 = vector<float, 4>;
 typealias int8_t3 = vector<int8_t, 3>;
 ```
 
-### Legacy Syntax ### {legacy}
+### Legacy Syntax ### {#type.vector.legacy}
 
-For compatibility with older codebases, the generic \kw{vector} type includes default values for \Char{T} and \Char{N}, being declared as:
+For compatibility with older codebases, the generic \code{vector} type includes default values for \Char{T} and \Char{N}, being declared as:
 
 ```
 struct vector<T = float, let N : int = 4> { ... }
 ```
 
-This means that the bare name \kw{vector} may be used as a type equivalent to \kw{float4}:
+This means that the bare name \code{vector} may be used as a type equivalent to \code{float4}:
 
 ```
 // All of these variables have the same type
@@ -164,18 +161,16 @@ Matrix Types {#type.matrix}
 
 A matrix type is written as `matrix<T, R, C>` and represents a matrix of \Char{R} rows and \Char{C} columns, with elements of type \Char{T}.
 The element type \Char{T} must be one of the built-in scalar types.
-The \SpecDef{row count} \Char{R} and \SpecDef{column count} \Char{C} must be specialization-time constant integers.
+The <dfn>row count</dfn> \Char{R} and <dfn>column count</dfn> \Char{C} must be specialization-time constant integers.
 The row count and column count must each be between 2 and 4, respectively.
 
 A matrix type allows subscripting of its rows, similar to an \Char{R}-element array of `vector<T,C>` elements.
 A matrix type also supports element-wise arithmetic.
 
-Matrix types support both \SpecDef{row-major} and \SpecDef{column-major} memory layout.
+Matrix types support both <dfn>row-major</dfn> and <dfn>column-major</dfn> memory layout.
 Implementations may support command-line flags or API options to control the default layout to use for matrices.
 
-\begin{Note}
-Slang currently does \emph{not} support the HLSL \kw{row\_major} and \kw{column\_major} modifiers to set the layout used for specific declarations.
-\end{Note}
+Note: Slang currently does \emph{not} support the HLSL \code{row\_major} and \code{column\_major} modifiers to set the layout used for specific declarations.
 
 Under row-major layout, a matrix is laid out in memory equivalently to an \Char{R}-element array of `vector<T,C>` elements.
 
@@ -190,24 +185,22 @@ typealias float3x4 = matrix<float, 3, 4>;
 typealias int64_t4x2 = matrix<int64_t, 4, 2>;
 ```
 
-\begin{Note}
-For programmers using OpenGL or Vulkan as their graphics API, and/or who are used to the GLSL language,
-it is important to recognize that the equivalent of a GLSL \kw{mat3x4} is a Slang \kw{float3x4}.
-This is despite the fact that GLSL defines a \kw{mat3x4} as having 3 \emph{columns} and 4 \emph{rows}, while a Slang \kw{float3x4} is defined as having 3 rows and 4 columns.
+Note: For programmers using OpenGL or Vulkan as their graphics API, and/or who are used to the GLSL language,
+it is important to recognize that the equivalent of a GLSL \code{mat3x4} is a Slang \code{float3x4}.
+This is despite the fact that GLSL defines a \code{mat3x4} as having 3 \emph{columns} and 4 \emph{rows}, while a Slang \code{float3x4} is defined as having 3 rows and 4 columns.
 This convention means that wherever Slang refers to "rows" or "columns" of a matrix, the equivalent terms in the GLSL, SPIR-V, OpenGL, and Vulkan specifications are "column" and "row" respectively (\emph{including} in the compound terms of "row-major" and "column-major")
 While it may seem that this choice of convention is confusing, it is necessary to ensure that subscripting with \Char{[]} can be efficiently implemented on all target platforms.
 This decision in the Slang language is consistent with the compilation of HLSL to SPIR-V performed by other compilers.
-\end{Note}
 
-### Legacy Syntax ### {legacy}
+### Legacy Syntax ### {#type.matrix.legacy}
 
-For compatibility with older codebases, the generic \kw{matrix} type includes default values for \Char{T}, \Char{R}, and \Char{C}, being declared as:
+For compatibility with older codebases, the generic \code{matrix} type includes default values for \Char{T}, \Char{R}, and \Char{C}, being declared as:
 
 ```
 struct matrix<T = float, let R : int = 4, let C : int = 4> { ... }
 ```
 
-This means that the bare name \kw{matrix} may be used as a type equivalent to \kw{float4x4}:
+This means that the bare name \code{matrix} may be used as a type equivalent to \code{float4x4}:
 
 ```
 // All of these variables have the same type
@@ -219,7 +212,7 @@ matrix<float, 4, 4> c;
 Structure Types {#type.struct}
 ---------------
 
-Structure types are introduced with \kw{struct} declarations, and consist of an ordered sequence of named and typed fields:
+Structure types are introduced with `struct` declarations, and consist of an ordered sequence of named and typed fields:
 
 ```
 struct S
@@ -231,18 +224,14 @@ struct S
 
 ### Standard Layout ### {#type.struct.layout.standard}
 
-The \SpecDef{standard layout} for a structure type uses the following algorithm:
+The <dfn>standard layout</dfn> for a structure type uses the following algorithm:
 
-\begin{enumerate}
-  \item{Initialize variables \code{size} and \code{alignment} to zero and one, respectively}
-  \item{For each field \Char{f} of the structure type:}
-  \begin{enumerate}
-    \item {Update \code{alignment} to be the maximum of \code{alignment} and the alignment of \Char{f}}
-    \item {Set \code{size} to the smallest multiple of \code{alignment} not less than \code{size}}
-    \item {Set the offset of field \Char{f} to \code{size}}
-    \item {Add the size of \Char{f} to \code{size}}
-  \end{enumerate}
-\end{enumerate}
+* Initialize variables \code{size} and \code{alignment} to zero and one, respectively
+* For each field \Char{f} of the structure type:
+  * Update \code{alignment} to be the maximum of \code{alignment} and the alignment of \Char{f}
+  * Set \code{size} to the smallest multiple of \code{alignment} not less than \code{size}
+  * Set the offset of field \Char{f} to \code{size}
+  * Add the size of \Char{f} to \code{size}
 
 When this algorithm completes, \code{size} and \code{alignment} will be the size and alignment of the structure type.
 
@@ -253,9 +242,7 @@ Any layout for structure types must guarantee an alignment at least as large as 
 
 C-style layout for structure types differs from standard layout by adding an additional final step:
 
-\begin{enumerate}
-  \item {Set `size` the smallest multiple of `alignment` not less than `size`} 
-\end{enumerate}
+* Set `size` to the smallest multiple of `alignment` not less than `size`
 
 This mirrors the layout rules used by typical C/C++ compilers.
 
@@ -263,16 +250,13 @@ This mirrors the layout rules used by typical C/C++ compilers.
 
 D3D constant buffer layout is similar to standard layout with two differences:
 
-\begin{enumerate}
-\item{The initial alignment is 16 instead of one}
-\item{If a field would have \SpecDef{improper straddle}, where the interval \\
-\code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16}
-\end{enumerate}
+* The initial alignment is 16 instead of one}
+* If a field would have <dfn>improper straddle</dfn>, where the interval \code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16
 
 Array Types {#type.array}
 -----------
 
-An \SpecDef{array type} is either a statically-sized or dynamically-sized array type.
+An <dfn>array type</dfn> is either a statically-sized or dynamically-sized array type.
 
 A known-size array type is written `T[N]` where \Char{T} is a type and \Char{N} is a specialization-time constant integer.
 This type represents an array of exactly \Char{N} values of type \Char{T}.
@@ -280,9 +264,7 @@ This type represents an array of exactly \Char{N} values of type \Char{T}.
 An unknown-size array type is written \Char{T[]} where \Char{T} is a type.
 This type represents an array of some fixed, but statically unknown, size.
 
-\begin{Note}
-Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
-\end{Note}
+Note: Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
 
 ### Declaration Syntax ### {#type.array.decl}
 
@@ -298,22 +280,22 @@ Alternatively, the array type itself may be used as the type specifier:
 int[10] a;
 ```
 
-When using the \kw{var} or \kw{let} keyword to declare a variable, the array type must not be split:
+When using the \code{var} or \code{let} keyword to declare a variable, the array type must not be split:
 
 ```
 var a : int[10];
 ```
 
-\begin{Note}
+<div class=note>
 When declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer must be careful about the difference between the two declaration syntaxes.
 The following two declarations are equivalent:
 ```
 int[3][5] a;
 int a[5][3];
 ```
-In each case, \Char{a} is a five-element array of three-element arrays of \kw{int}s.
+In each case, \Char{a} is a five-element array of three-element arrays of \code{int}s.
 However, one declaration orders the element counts as \Char{[3][5]} and the other as \Char{[5][3]}.
-\end{Note}
+</div>
 
 ### Element Count Inference ### {#type.array.inference}
 
@@ -335,18 +317,16 @@ A variable declared in this fashion semantically has a known-size array type and
 
 ### Standard Layout ### {#type.array.layout.std}
 
-The \SpecDef{stride} of a type is the smallest multiple of its alignment not less than its size.
+The <dfn>stride</dfn> of a type is the smallest multiple of its alignment not less than its size.
 
 Using the standard layout for an array type \Char{T[]} or `T[N]`:
 
-\begin{enumerate}
-  \item{The \SpecDef{element stride} of the array type is the stride of its element type \Char{T}}
-  \item{Element \Char{i} of the array starts at an offset that is \Char{i} times the element stride of the array}
-  \item{The alignment of the array type is the alignment of \Char{T}}
-  \item{The size of an unknown-size array type is unknown}
-  \item{The size of a known-size array with zero elements is zero}
-  \item{The size of a known-size array with a nonzero number \Char{N} of elements is the size of \Char{T} plus \Char{N - 1} times the element stride of the array}
-\end{enumerate}
+* The <dfn>element stride</dfn> of the array type is the stride of its element type \Char{T}
+* Element \Char{i} of the array starts at an offset that is \Char{i} times the element stride of the array
+* The alignment of the array type is the alignment of \Char{T}
+* The size of an unknown-size array type is unknown
+* The size of a known-size array with zero elements is zero
+* The size of a known-size array with a nonzero number \Char{N} of elements is the size of \Char{T} plus \Char{N - 1} times the element stride of the array
 
 ### C-Style Layout ### {#type.array.layout.c}
 
@@ -359,27 +339,22 @@ The D3D constant buffer layout of an array differs from the standard layout in t
 This Type {#type.this}
 ---------
 
-Within the body of a structure or interface declaration, the keyword \kw{This} may be used to refer to the enclosing type.
-Inside of a structure type declaration, \kw{This} refers to the structure type itself.
-Inside of an interface declaration, \kw{This} refers to the concrete type that is conforming to the interface (that is, the type of \kw{this}).
-\begin{TODO}
-This vs this capitalization inconsistency in above paragraph-- intentional or no?
-\end{TODO}
+Within the body of a structure or interface declaration, the keyword \code{This} may be used to refer to the enclosing type.
+Inside of a structure type declaration, \code{This} refers to the structure type itself.
+Inside of an interface declaration, \code{This} refers to the concrete type that is conforming to the interface (that is, the type of `this`).
 
 Opaque Types {#type.opaque}
 ------------
 
-\SpecDef{Opaque} types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
+<dfn>Opaque</dfn> types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
 Similar languages may refer to these as "resource types" or "object types."
 
 The full list of opaque types supported by Slang can be found in the standard library reference, but important examples are:
 
-\begin{enumerate}
-  \item{Texture types such as \code{Texture2D<T>}, \code{TextureCubeArray<T>}, and \code{RWTexture2DMS<T>}}
-  \item{Sampler state types: \code{SamplerState} and \code{SamplerComparisonState}}
-  \item{Buffer types like \code{ConstantBuffer<T>} and  \code{StructuredBuffer<T>}}
-  \item{Parameter blocks: \code{ParameterBlock<T>}}
-\end{enumerate}
+* Texture types such as \code{Texture2D<T>}, \code{TextureCubeArray<T>}, and \code{RWTexture2DMS<T>}
+* Sampler state types: \code{SamplerState} and \code{SamplerComparisonState}
+* Buffer types like \code{ConstantBuffer<T>} and  \code{StructuredBuffer<T>}
+* Parameter blocks: \code{ParameterBlock<T>}
 
 Layout for opaque types depends on the target platform, and no specific guarantees can be made about layout rules across platforms.
 
@@ -389,14 +364,11 @@ Known and Unknown Size {#type.size}
 Every type has either known or unknown size.
 Types with unknown size arise in a few ways:
 
-\begin{enumerate}
-  \item{An unknown-size array type has unknown size}
-  \item{A structure type has unknown size if any field type has unknown size}
-\end{enumerate}
+* An unknown-size array type has unknown size
+* A structure type has unknown size if any field type has unknown size
 
 The use of types with unknown size is restricted as follows:
-\begin{enumerate}
-  \item{A type with unknown size cannot be used as the element type of an array}
-  \item{A type with unknown size can only be used as the last field of a structure type}
-  \item{A type with unknown size cannot be used as a generic argument to specialize a user-defined type, function, etc. Specific built-in generic types/functions may support unknown-size types, and this will be documented on the specific type/function.}
-\end{enumerate}
+
+* A type with unknown size cannot be used as the element type of an array
+* A type with unknown size can only be used as the last field of a structure type
+* A type with unknown size cannot be used as a generic argument to specialize a user-defined type, function, etc. Specific built-in generic types/functions may support unknown-size types, and this will be documented on the specific type/function.

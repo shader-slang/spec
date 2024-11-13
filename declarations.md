@@ -1,12 +1,12 @@
 Declarations {#decl}
 ============
 
-A \SpecDefine{declaration} is a unit of syntax that typically affects what names are visibile in a scope, and how those names are interpreted.
+A <dfn>declaration</dfn> is a unit of syntax that typically affects what names are visibile in a scope, and how those names are interpreted.
 In the abstract syntax, a source unit comprises a sequence of declarations.
 
 \begin{Syntax}
     \SynDefine{SourceUnit} \\
-        ( \SynRef{ModuleDeclaration} \SynOr \SynRef{ImplementingDeclaration} ) \SynOpt \\
+        ( \SynRef{ModuleDeclaration} | \SynRef{ImplementingDeclaration} ) \SynOpt \\
         \SynRef{IncludeDeclaration} \SynStar \\
         \SynRef{ImportDeclaration} \SynStar \\
         ( \SynRef{Declaration} ) \SynStar
@@ -17,21 +17,19 @@ A declaration may be preceded by zero or more modifiers.
 \begin{Syntax}
     \SynDefine{Declaration} \\
         \SynRef{Modifier} \SynRef{Declaration} \\
-    \SynOr \SynRef{VariableDeclaration} \\
-    \SynOr \SynRef{FunctionDeclaration} \\
-    \SynOr \SynRef{TypeDeclaration} \\
+    | \SynRef{VariableDeclaration} \\
+    | \SynRef{FunctionDeclaration} \\
+    | \SynRef{TypeDeclaration} \\
 \end{Syntax}
 
-A \SpecDefine{binding} is an association of an identifier with a specific entity, such as a declaration.
-A \SpecDefine{scope} is a set of bindings.
+A <dfn>binding</dfn> is an association of an identifier with a specific entity, such as a declaration.
+A <dfn>scope</dfn> is a set of bindings.
 
-\begin{Note}
-A scope may include more than one binding for the same identifier.
-\end{Note}
+Note: A scope may include more than one binding for the same identifier.
 
-An \SpecDefine{environment} is either the unique \SpecDefine{empty environment}, or it comprises a scope that is the \SpecDefine{local scope} of that environment, and a \SpecDefine{parent environment}.
+An <dfn>environment</dfn> is either the unique <dfn>empty environment</dfn>, or it comprises a scope that is the <dfn>local scope</dfn> of that environment, and a <dfn>parent environment</dfn>.
 
-For each production in the abtract syntax, there is a \SpecDefine{input environment} in effect at the start of that production, and an \SpecDefine{output environment} in effect after that production.
+For each production in the abtract syntax, there is a <dfn>input environment</dfn> in effect at the start of that production, and an <dfn>output environment</dfn> in effect after that production.
 Each production determines the input environment used by its sub-terms.
 When the description of a production does not say otherwise:
 
@@ -44,7 +42,7 @@ When the description of a production does not say otherwise:
 The output environment of a token is its input environment.
 The output environment of an empty production is its input environment.
 
-When we say that a declaration \SpecDefine{introduces} a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
+When we say that a declaration <dfn>introduces</dfn> a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
 Shared Concepts {#decl.shared}
 ---------------
@@ -60,20 +58,20 @@ Generics {#decl.generic}
 Type Declarations {#decl.type}
 -----------------
 
-A \SpecDef{type declaration} introduces a binding to a type.
+A <dfn>type declaration</dfn> introduces a binding to a type.
 
 \begin{Syntax}
     \SynDefine{TypeDeclaration} \\
         \SynRef{AggregateTypeDeclaration} \\
-        \SynOr \SynRef{EnumDeclaration} \\
-        \SynOr \SynRef{TypeAliasDeclaration} \\
+        | \SynRef{EnumDeclaration} \\
+        | \SynRef{TypeAliasDeclaration} \\
 \end{Syntax}
 
 ### Aggregate Types ### {#decl.agg}
 
 \begin{Syntax}
     \SynDefine{AggregateTypeDeclaration} \\
-        (\code{struct} \SynOr \code{class} \SynOr \code{interface}) \SynRef{Identifier} \\
+        (\code{struct} | \code{class} | `interface`) \SynRef{Identifier} \\
         \SynRef{GenericParametersClause}\SynOpt \\
         \SynRef{BasesClause}\SynOpt
         \SynRef{GenericWhereClause}\SynOpt \\
@@ -83,28 +81,28 @@ A \SpecDef{type declaration} introduces a binding to a type.
         \lstinline|{| Declaration\SynStar \lstinline|}| 
 \end{Syntax}
 
-An \SpecDef{aggregate type declaration} is either a \SpecDef{\kw{struct} declaration}, a \SpecDef{\kw{class} declaration}, or an \SpecDef{\kw{interface} declaration}.
+An <dfn>aggregate type declaration</dfn> is either a <dfn>`struct` declaration</dfn>, a <dfn>`class` declaration</dfn>, or an <dfn>`interface` declaration</dfn>.
 
-The declarations in the body clause of an aggregate type declaration are referred the \SpecDef{members} of that declaration.
+The declarations in the body clause of an aggregate type declaration are referred the <dfn>direct members</dfn> of that declaration.
 
 \SubSubSection{Instance and Static Members}{static}
 
-Members of an aggregate type may me marked with a \kw{static} modifier, in which case they are \SpecDef{static members} of the type.
-Members not marked with \kw{static} are \SpecDef{instance members} of the type.
+Members of an aggregate type may me marked with a `static` modifier, in which case they are <dfn>static members</dfn> of the type.
+Members not marked with `static` are <dfn>instance members</dfn> of the type.
 
 Static members are referenced through the type itself.
 Instance members are referened through values that are instances of the type.
 
 \SubSubSection{Fields}{field}
 
-Variable declarations that are instance members of an aggregate type declaration are also referred to as the \SpecDef{fields} of the aggregate type declaration.
+Variable declarations that are instance members of an aggregate type declaration are also referred to as the <dfn>fields</dfn> of the aggregate type declaration.
 
 \SubSubSection{Methods}{method}
 
-Function declarations that are instance members of an aggregate type declaration are also referred to as \SpecDef{methods}.
+Function declarations that are instance members of an aggregate type declaration are also referred to as <dfn>methods</dfn>.
 
-By default, the implicit \kw{this} parameter of a method acts has a direction of \kw{in}.
-A method of a \kw{struct} type declaration may be modified with the \code{[mutating]} attribute, in which case the implicit \kw{this} parameter has a direction of \kw{inout}.
+By default, the implicit `this` parameter of a method acts has a direction of `in`.
+A method of a `struct` type declaration may be modified with the \code{[mutating]} attribute, in which case the implicit `this` parameter has a direction of \code{inout}.
 
 ### Bases ### {#decl.agg.bases}
 
@@ -116,26 +114,26 @@ A method of a \kw{struct} type declaration may be modified with the \code{[mutat
         \SynRef{TypeExpression}
 \end{Syntax}
 
-An aggregate type declaration has zero or more \SpecDef{bases}.
+An aggregate type declaration has zero or more <dfn>bases</dfn>.
 If an aggregate type declaration has no bases clause, then it has zero bases;
 otherwise, the bases of the aggregate type declaration are the types identified by each \SynRef{Base} in that clause.
 
-The list of bases of a \kw{struct} declaration must consist of:
+The list of bases of a `struct` declaration must consist of:
 
 \begin{itemize}
-\item at most one \kw{struct} type
+\item at most one `struct` type
 \item zero or more interface types
 \end{itemize}
 
 
-The list of bases of a \kw{class} declaration must consist of:
+The list of bases of a `class` declaration must consist of:
 
 \begin{itemize}
-\item at most one \kw{class} type
+\item at most one `class` type
 \item zero or more interface types
 \end{itemize}
 
-The list of bases of an \kw{interface} declaration must consist of:
+The list of bases of an `interface` declaration must consist of:
 
 \begin{itemize}
 \item zero or more interface types
@@ -146,11 +144,9 @@ The list of bases of an \kw{interface} declaration must consist of:
 ### Syntax Details ### {#decl.agg.syntax}
 
 The body clause of an aggregate type declaration may end with a semicolon (\code{;}).
-The body clause of an aggregate type declaration \emph{must} end with a semicolon if there are any tokens between the closing \lstinline|}| token and the next line break that follows it.
+The body clause of an aggregate type declaration must end with a semicolon if there are any tokens between the closing \lstinline|}| token and the next line break that follows it.
 
-\begin{Note}
-Put more simply: a closing \code{;} is not required on an aggregate type declaration \emph{so long} as there is nothing but trivia after it on the same line.
-\end{Note}
+Note: Put more simply: a closing \code{;} is not required on an aggregate type declaration so long as there is nothing but trivia after it on the same line.
 
 \end{Legacy}
 
@@ -175,26 +171,26 @@ When an aggregate type declaration is used as a type specififer, the closing \ls
 
     \SynDefine{EnumBody} \\
         \SynRef{TraditionalEnumBody} \\
-        \SynOr \SynRef{DeclarationBody}
+        | \SynRef{DeclarationBody}
 \end{Syntax}
 
-An \SpecDef{\kw{enum} declaration} introduces a binding for a type whose instances value into one or more cases.
+An <dfn>\code{enum} declaration</dfn> introduces a binding for a type whose instances value into one or more cases.
 
-An \kw{enum} declaration that has a declaration body is a \SpecDef{modern \kw{enum} declaration}.
-A \kw{enum} declaration that has a traditional \kw{enum} body is a \SpecDef{traditional \kw{enum} declaration}.
+An \code{enum} declaration that has a declaration body is a <dfn>modern \code{enum} declaration</dfn>.
+A \code{enum} declaration that has a traditional \code{enum} body is a <dfn>traditional \code{enum} declaration</dfn>.
 
-An \kw{enum} declaration may have a bases clause, in which case the list of bases must consist of:
+An \code{enum} declaration may have a bases clause, in which case the list of bases must consist of:
 
 \begin{itemize}
-\item at most one proper type; if present, this determines an \SpecDef{underlying type} for the \kw{enum} declaration.
+\item at most one proper type; if present, this determines an <dfn>underlying type</dfn> for the \code{enum} declaration.
 \item zero or more interface types
 \end{itemize}
 
-A traditional \kw{enum} declaration always has an underlying type.
-If an underlying type is not specified in the bases list of a traditional \kw{enum} declaration, then the underlying type of that declaration is \code{Int}.
-The underlying type of a traditional \kw{enum} declaration must be a built-in integer type.
+A traditional \code{enum} declaration always has an underlying type.
+If an underlying type is not specified in the bases list of a traditional \code{enum} declaration, then the underlying type of that declaration is \code{Int}.
+The underlying type of a traditional \code{enum} declaration must be a built-in integer type.
 
-A modern \kw{enum} declaration must not specify an underlying type.
+A modern \code{enum} declaration must not specify an underlying type.
 
 \SubSubSection{Cases}{case}
 
@@ -209,14 +205,14 @@ A modern \kw{enum} declaration must not specify an underlying type.
         \SynRef{Identifier} \SynRef{InitialValueClause}\SynOpt
 \end{Syntax}
 
-The possible values of an \kw{enum} type are determined by the \SpecDef{case declarations} in its body.
-An \kw{enum} type has one case for each case declaration in its body.
+The possible values of an \code{enum} type are determined by the <dfn>case declarations</dfn> in its body.
+An \code{enum} type has one case for each case declaration in its body.
 
-The case declarations in a modern \kw{enum} declaration are declared using the \kw{case} keyword.
-The case declarations in a traditional \kw{enum} body are \SpecDef{traditional case declarations}.
+The case declarations in a modern \code{enum} declaration are declared using the \code{case} keyword.
+The case declarations in a traditional \code{enum} body are <dfn>traditional case declarations</dfn>.
 
-Each case of a traditional \kw{enum} declaration has an \SpecDef{underlying value}, that is a value of the underlying type of that \kw{enum} declaration.
-When a traditional case declaration includes an initial-value expression, its underlying value is the result of evaluating that expression, with the underlying type of the \kw{enum} declaration as the expected type.
+Each case of a traditional \code{enum} declaration has an <dfn>underlying value</dfn>, that is a value of the underlying type of that \code{enum} declaration.
+When a traditional case declaration includes an initial-value expression, its underlying value is the result of evaluating that expression, with the underlying type of the \code{enum} declaration as the expected type.
 The underlying value of a traditional case declaration must be an compile-time-constant integer value.
 If a traditional case declaration does not have an initial-value expression, then its underlying value is one greater than the underlying value of the preceding case declaration, or zero if there is no preceding case declaration.
 
@@ -241,12 +237,12 @@ Case declarations are implicitly static.
 
 ### Type Aliases ### {#decl.type.alias}
 
-A \SpecDef{type alias declaration} introduces a binding that resolves to some other type.
+A <dfn>type alias declaration</dfn> introduces a binding that resolves to some other type.
 
 \begin{Syntax}
     \SynDefine{TypeAliasDeclaration} \\
         \SynRef{ModernTypeAliasDeclaration}
-        \SynOr \SynRef{TraditionalTypeAliasDeclaration}
+        | \SynRef{TraditionalTypeAliasDeclaration}
 
     \SynDefine{ModernTypeAliasDeclaration} \\
         \code{typealias} \SynRef{Identifier} \\
@@ -271,7 +267,7 @@ A \SpecDef{type alias declaration} introduces a binding that resolves to some ot
 
 \SubSubSection{Traditional Syntax}{legacy}
 
-A type alias may also be declared using a \SpecDef{traditional type alias declaration}.
+A type alias may also be declared using a <dfn>traditional type alias declaration</dfn>.
 
 \begin{Syntax}
     \SynDefine{TraditionalTypeAliasDeclaration} \\
@@ -282,7 +278,7 @@ A type alias may also be declared using a \SpecDef{traditional type alias declar
 
 ### Associated Types ### {#decl.type.associated}
 
-An \SpecDef{associated type declaration} introduces a type requirement to an \kw{interface} declaration.
+An <dfn>associated type declaration</dfn> introduces a type requirement to an `interface` declaration.
 
 \begin{Syntax}
     \SynDefine{AssociatedTypeDeclaration} \\
@@ -292,7 +288,7 @@ An \SpecDef{associated type declaration} introduces a type requirement to an \kw
         \SynRef{GenericWhereClause}\SynOpt \code{;}
 \end{Syntax}
 
-An associated type declaration may only appear as a member declaration of an \kw{interface} declaration.
+An associated type declaration may only appear as a member declaration of an `interface` declaration.
 
 %An associated type declaration introduces a type into the signature of an interface, without specifying the exact concrete type to use.
 %An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement:
@@ -302,7 +298,7 @@ Variables {#decl.var}
 
 \begin{Syntax}
     \SynDefine{VariableDeclaration} \\
-        (\code{let} \SynOr \code{var}) \SynRef{Identifier}
+        (\code{let} | \code{var}) \SynRef{Identifier}
             \SynRef{TypeAscriptionClause}\SynOpt
             \SynRef{InitialValueClause}\SynOpt \code{;}
     
@@ -313,13 +309,13 @@ Variables {#decl.var}
         \code{=} \SynRef{Expression}
 \end{Syntax}
 
-A \SpecDef{variable} is a storage location that can hold a value.
+A <dfn>variable</dfn> is a storage location that can hold a value.
 Every variable has a type, and it can only hold values of that type.
 Every variable is either immutable or mutable.
 
-A \SpecDef{variable declaration} introduces a binding for the given \SynRef{Identifier}, to a variable.
-A variable declaration using the \kw{let} keyword binds an immutable variable.
-A variable declaration using the \kw{var} keyword binds a mutable variable.
+A <dfn>variable declaration</dfn> introduces a binding for the given \SynRef{Identifier}, to a variable.
+A variable declaration using the \code{let} keyword binds an immutable variable.
+A variable declaration using the \code{var} keyword binds a mutable variable.
 
 Every variable declaration has a type, and the variable it binds is of the same type.
 
@@ -356,12 +352,10 @@ A legacy variable declaration introduces a binding for each \SynRef{InitDeclarat
 Let \MetaVar{S} be the type that results from evaluating the \SynRef{TypeSpecifier} in the input environment.
 The type \MetaVar{T} corresponding to each declarator is determined by evaluating the declarator in the input environment, against input type \MetaVar{S}.
 
-\begin{Note}
-Slang does not support the equivalent of the \kw{auto} type specifier in C++.
-Variables declared using \kw{let} and \kw{var} can be used to fill a similar role.
-\end{Note}
+Note: Slang does not support the equivalent of the \code{auto} type specifier in C++.
+Variables declared using \code{let} and \code{var} can be used to fill a similar role.
 
-The variables introduced by a legacy variable declaration are immutable if the declaration has a \kw{const} modifier; otherwise it is mutable.
+The variables introduced by a legacy variable declaration are immutable if the declaration has a \code{const} modifier; otherwise it is mutable.
 
 \end{Legacy}
 
@@ -373,60 +367,52 @@ Variables declared at global scope may be either a global constant, a static glo
 
 \SubSubSection{Global Constants}{const}
 
-A variable declared at global scope and marked with \kw{static} and \kw{const} is a \SpecDefine{global constant}.
+A variable declared at global scope and marked with `static` and \code{const} is a <dfn>global constant</dfn>.
 
 A global constant must have an initial-value clause, and the initial-value expression must be a compile-time constant expression.
 
-\begin{Incomplete}
-Need a sectin to define what a "compile-time constant expression" is.
-\end{Incomplete}
+Issue: Need a section to define what a "compile-time constant expression" is.
 
 \SubSubSection{Static Global Variables}{global.static}
 
-A variable declared at global scope and marked with \kw{static} but not with \kw{const} is a \SpecDefine{static global variable}.
+A variable declared at global scope and marked with `static` but not with \code{const} is a <dfn>static global variable</dfn>.
 
 A static global variable provides storage for each invocation executing an entry point.
 Writes to a static global variable from one invocation do not affect the value seen by other invocations.
 
-\begin{Note}
-The semantics of static global variable are similar to a "thread-local" variable in other programming models.
-\end{Note}
+Note: The semantics of static global variable are similar to a "thread-local" variable in other programming models.
 
 A static global variable may include an initial-value expression; if an initial-value expression is included it is guaranteed to be evaluated and assigned to the variable before any other expression that references the variable is evaluated.
 If a thread attempts to read from a static global variable during the evaluation of the initial-value expression for that variable, a runtime error is raised.
 
 There is no guarantee that the initial-value expression for a static global variable is evaluated before entry point execution begins, or even that the initial-value expression is evaluated at all (in cases where the variable might not be referenced at runtime).
 
-\begin{Note}
-The above rules mean that an implementation may perform dead code elimination on static global variables, and may choose between eager and lazy initialization of those variables at its discretion.
-\end{Note}
+Note: The above rules mean that an implementation may perform dead code elimination on static global variables, and may choose between eager and lazy initialization of those variables at its discretion.
 
 \SubSubSection{Global Shader Parameters}{global.param}
 
-A variable declared at global scope and not marked with \kw{static} is a \SpecDef{global shader parameter}.
+A variable declared at global scope and not marked with `static` is a <dfn>global shader parameter</dfn>.
 
 Global shader parameters are used to pass arguments from application code into invocations of an entry point.
 The mechanisms for parameter passing are specific to each target platform.
 
 A global shader parameter may include an initial-value expression, but such an expression does not affect the semantics of the compiled program.
 
-\begin{Note}
-An implementation may choose to provide ways to query the initial-value expression of a global shader parameter, or to evaluate it to a value.
+Note: An implementation may choose to provide ways to query the initial-value expression of a global shader parameter, or to evaluate it to a value.
 Host applications may use such capabilities to establish a default value for global shader parameters.
-\end{Note}
 
 ### Variables at Function Scope ### {#decl.var.func}
 
-Variables declared at \emph{function scope} (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
+Variables declared at <dfn>function scope</dfn> (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
 
 \SubSubSection{Function-Scope Constants}{const}
 
-A variable declared at function scope and marked with both \kw{static} and \kw{const} is a \SpecDef{function-scope constant}.
+A variable declared at function scope and marked with both `static` and \code{const} is a <dfn>function-scope constant</dfn>.
 Semantically, a function-scope constant behaves like a global constant except that its name is only bound in the local scope.
 
 \SubSubSection{Function-Scope Static Variables}{static}
 
-A variable declared at function scope and marked with \kw{static} (but not \kw{const}) is a \SpecDef{function-scope static variable}.
+A variable declared at function scope and marked with `static` (but not \code{const}) is a <dfn>function-scope static variable</dfn>.
 Semantically, a function-scope static variable behaves like a global static variable except that its name is only visible in the local scope.
 
 The initial-value expression for a function-scope static variable may refer to non-static variables in the body of the function.
@@ -434,17 +420,15 @@ In these cases initialization of the variable is guaranteed not to occur until a
 
 \SubSubSection{Local Variables}{local}
 
-A variable declared at function scope and not marked with \kw{static} (even if marked with \kw{const}) is a \SpecDef{local variable}.
+A variable declared at function scope and not marked with `static` (even if marked with \code{const}) is a <dfn>local variable</dfn>.
 A local variable has unique storage for each activation of a function.
 
-\begin{Note}
-When a function is called recursively, each call produces a distinct activation with its own copies of local variables.
-\end{Note}
+Note: When a function is called recursively, each call produces a distinct activation with its own copies of local variables.
 
 Functions {#decl.func}
 ---------
 
-A \SpecDef{function declaration} introduces a binding to a function.
+A <dfn>function declaration</dfn> introduces a binding to a function.
 
 \begin{Syntax}
     \SynDefine{FunctionDeclaration} \\
@@ -458,7 +442,7 @@ A \SpecDef{function declaration} introduces a binding to a function.
 
 ### Parameters ### {#decl.param}
 
-The parameters of a function declaration are determined by the \SpecDef{parameter declarations} in its parameters clause.
+The parameters of a function declaration are determined by the <dfn>parameter declarations</dfn> in its parameters clause.
 
 \begin{Syntax}
     \SynDefine{ParametersClause} \\
@@ -477,39 +461,39 @@ A parameter declaration may include a default-value clause; it it does, the defa
 
 \SubSubSection{Directions}{dir}
 
-Every parameter has a \SpecDef{direction}, which determines how an argument provided at a call site is connected to that parameter.
+Every parameter has a <dfn>direction</dfn>, which determines how an argument provided at a call site is connected to that parameter.
 
 \begin{Syntax}
     \SynDefine{Direction} \\
         \code{in} \\
-        \SynOr \code{out} \\
-        \SynOr \code{take} \\
-        \SynOr \code{borrow} \\
-        \SynOr \code{inout} \SynOr \code{in out} \\
-        \SynOr \code{ref} \\
+        | \code{out} \\
+        | \code{take} \\
+        | \code{borrow} \\
+        | \code{inout} | \code{in out} \\
+        | \code{ref} \\
 \end{Syntax}
 
-If a parameter declaration includes a \SynRef{Direction}, then that determines the direction of the parameter; otherwise the direction of the parameter is \kw{in}.
+If a parameter declaration includes a \SynRef{Direction}, then that determines the direction of the parameter; otherwise the direction of the parameter is `in`.
 
 \Paragraph{\code{in}}{in}
 
-The \kw{in} direction indicates typical pass-by-value (copy-in) semantics.
+The `in` direction indicates typical pass-by-value (copy-in) semantics.
 The parameter in the callee binds to a copy of the argument value passed by the caller.
 
 \Paragraph{\code{out}}{out}
 
-The \kw{out} direction indicates copy-out semantics.
+The \code{out} direction indicates copy-out semantics.
 The parameter in the callee binds to a fresh storage location that is uninitialized on entry.
 When the callee returns, the value in that location is moved to the storage location referenced by the argument.
 
 \Paragraph{\code{take}}{take}
 
-The \kw{take} direction indicates move-in semantics.
+The \code{take} direction indicates move-in semantics.
 The argument provided by the caller is moved into the parameter of the callee, ending the lifetime of the argument.
 
 \Paragraph{\code{borrow}}{borrow}
 
-The \kw{borrow} direction indicates immutable borrow semantics.
+The \code{borrow} direction indicates immutable borrow semantics.
 
 If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
 
@@ -517,8 +501,8 @@ If the parameter has a copyable type, then the parameter in the callee may, at t
 
 \Paragraph{\code{inout}}{inout}
 
-The \kw{inout} direction indicates exclusive mutable borrow semantics.
-The syntax \kw{in out} is equivalent to \kw{inout}
+The \code{inout} direction indicates exclusive mutable borrow semantics.
+The syntax \code{in out} is equivalent to \code{inout}
 
 If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
 
@@ -531,7 +515,7 @@ If the parameter has a copyable type, then the parameter in the callee may, at t
 
 \Paragraph{\code{ref}}{ref}
 
-The \kw{ref} direction indicates pass-by-reference semantics.
+The \code{ref} direction indicates pass-by-reference semantics.
 The parameter in the callee binds to the storage location referenced by the argument.
 
 ### Result Type ### {#decl.func.result}
@@ -541,7 +525,7 @@ The parameter in the callee binds to the storage location referenced by the argu
         \code{->} \SynRef{TypeExpression}
 \end{Syntax}
 
-Every function has a \SpecDef{result type}, which is the type of value that results from calling that function.
+Every function has a <dfn>result type</dfn>, which is the type of value that results from calling that function.
 If a function declaration has a result type clause, then the result type of the function is the type that results from evaluating the type expression in that clause.
 If a function declaration does not have a result type clause, then the result type of the function is \code{Unit}.
 
@@ -550,11 +534,11 @@ If a function declaration does not have a result type clause, then the result ty
 \begin{Syntax}
     \SynDefine{FunctionBodyClause} \\
         \SynRef{BlockStatement} \\
-        \SynOr \code{;}
+        | \code{;}
 \end{Syntax}
 
-A function declaration may have a \SpecDef{body}.
-A function declaration with a body is a \SpecDef{function definition}.
+A function declaration may have a <dfn>body</dfn>.
+A function declaration with a body is a <dfn>function definition</dfn>.
 
 If the function body clause is a block statement, then that statement is the body of the function declaration.
 If the function body clause is \code{;}, then that function declaration has no body.
@@ -563,7 +547,7 @@ If the function body clause is \code{;}, then that function declaration has no b
 
 ### Traditional Function Declarations ### {#decl.func.traditional}
 
-A \SpecDef{traditional function declaration} is a function declaration that uses traditional C-like syntax.
+A <dfn>traditional function declaration</dfn> is a function declaration that uses traditional C-like syntax.
 
 \begin{Syntax}
     \SynDefine{TraditionalFunctionDeclaration} \\
@@ -584,12 +568,12 @@ A \SpecDef{traditional function declaration} is a function declaration that uses
 
 ### Entry Points ### {#decl.func.entry}
 
-An \SpecDef{entry point} declaration is a function declaration that can be used as the starting point of execution for a thread.
+An <dfn>entry point declaration</dfn> is a function declaration that can be used as the starting point of execution for a thread.
 
 Constructors {#decl.init}
 ------------
 
-A \SpecDef{constructor declaration} introduces logic for initializing an instance of the enclosing type declaration.
+A <dfn>constructor declaration</dfn> introduces logic for initializing an instance of the enclosing type declaration.
 A constructor declaration is implicitly static.
 
 \begin{Syntax}
@@ -600,7 +584,7 @@ A constructor declaration is implicitly static.
         \SynRef{FunctionBodyClause} \\
 \end{Syntax}
 
-A constructor declaratin has an implicit \kw{this} parameter, with a direction of \kw{out}.
+A constructor declaratin has an implicit `this` parameter, with a direction of \code{out}.
 
 %An initializer has access to an implicit `this` variable that is the instance being initialized; an initializer must not be marked `static`.
 %The `this` variable of an initializer is always mutable; an initializer need not, and must not, be marked `[mutating]`.
@@ -609,14 +593,12 @@ A constructor declaratin has an implicit \kw{this} parameter, with a direction o
 %> It is possible for user code to declare a variable of type `MyVector` above, and explicitly write to the `x` and `y` fields to initialize it.
 %> A future version of the language may close up this loophole.
 
-\begin{Note}
-Slang does not provide any equivalent to C++ \emph{destructors}, which run automatically when an instance goes out of scope.
-\end{Note}
+Note: Slang does not provide any equivalent to C++ destructors, which run automatically when an instance goes out of scope.
 
 Properties {#decl.prop}
 ----------
 
-A \SpecDef{property declaration} introduces a binding that can have its behavior for read and write operations customized.
+A <dfn>property declaration</dfn> introduces a binding that can have its behavior for read and write operations customized.
 
 \begin{Syntax}
     \SynDefine{PropertyDeclaration} \\
@@ -650,7 +632,7 @@ A \SpecDef{property declaration} introduces a binding that can have its behavior
 Subscripts {#decl.subscript}
 ----------
 
-A \SpecDef{subscript declaration} introduces a way for the enclosing type to be used as the base expression of a subscript expression.
+A <dfn>subscript declaration</dfn> introduces a way for the enclosing type to be used as the base expression of a subscript expression.
 
 \begin{Syntax}
     \SynDefine{SubscriptDeclaration} \\
@@ -662,14 +644,12 @@ A \SpecDef{subscript declaration} introduces a way for the enclosing type to be 
         \SynRef{PropertyBody} \\
 \end{Syntax}
 
-\begin{Note}
-Unlike a function declaration, a subscript declaration cannot elide the result type clause.
-\end{Note}
+Note: Unlike a function declaration, a subscript declaration cannot elide the result type clause.
 
 Extensions {#decl.extension}
 ----------
 
-An extension declaration is introduced with the \kw{extension} keyword:
+An extension declaration is introduced with the \code{extension} keyword:
 
 ```
 extension MyVector
@@ -685,10 +665,8 @@ In the example above, the \code{MyVector} type is extended with an instance meth
 An extension declaration names the type being extended after the `extension` keyword.
 The body of an extension declaration may include type declarations, functions, initializers, and subscripts.
 
-\begin{Note}
-The body of an extension may *not* include variable declarations.
+Note: The body of an extension must *not* include variable declarations.
 An extension cannot introduce members that would change the in-memory layout of the type being extended.
-\end{Note}
 
 The members of an extension are accessed through the type that is being extended.
 For example, for the above extension of \code{MyVector}, the introduced methods are accessed as follows:
@@ -701,7 +679,7 @@ int n = MyVector.getDimensionality();
 ```
 
 An extension declaration need not be placed in the same module as the type being extended; it is possible to extend a type from third-party or standard-library code.
-The members of an extension are only visible inside of modules that \kw{import} the module declaring the extension;
+The members of an extension are only visible inside of modules that \code{import} the module declaring the extension;
 extension members are \emph{not} automatically visible wherever the type being extended is visible.
 
 An extension declaration may include an inheritance clause:
@@ -722,23 +700,24 @@ It is an error for overlapping conformances (that is, of the same type to the sa
 This includes cases where two extensions declare the same conformance, as well as those where the original type and an extension both declare the same conformance.
 The conflicting conformances may come from the same module or difference modules.
 
-In order to avoid problems with conflicting conformances, when a module \Char{M} introduces a conformance of type \Char{T} to interface \Char{I}, one of the following should be true:
-\begin{enumerate}
-    \item{the type \Char{T} is declared in module \Char{M}, or}
-    \item{the type \Char{I} is declared in module \Char{M}}
-\end{enumerate}
+<div algorithm>
+In order to avoid problems with conflicting conformances, when a module |M| introduces a conformance of type |T| to interface |I|, one of the following should be true:
 
-Any conformance that does not follow these rules (that is, where both \Char{T} and \Char{I} are imported into module \Char{M}) is called a \SpecDef{retroactive} conformance, and there is no way to guarantee that another module \Char{N} will not introduce the same conformance.
+* The type |T| is declared in module |M|
+* The interface |I| is declared in module |M|
+
+Any conformance that does not follow these rules (that is, where both |T| and |I| are imported into module |M|) is called a <dfn>retroactive conformance</dfn>, and there is no way to guarantee that another module |N| will not introduce the same conformance.
 The runtime behavior of programs that include overlapping retroactive conformances is currently undefined.
+</div>
 
-Currently, extension declarations can only apply to structure types; extensions cannot apply to enumeration types or interfaces.
+Currently, extension declarations can only apply to structure types.
 
 Generics {#decl.generic}
 --------
 
-Many kinds of declarations can be made \SpecDef{generic}: structure types, interfaces, extensions, functions, initializers, and subscripts.
+Many kinds of declarations can be made <dfn>generic</dfn>: structure types, interfaces, extensions, functions, initializers, and subscripts.
 
-A generic declaration introduces a \SpecDef{generic parameter list} enclosed in angle brackets \Char{<>}:
+A generic declaration introduces a <dfn>generic parameter list</dfn> enclosed in angle brackets `<>`:
 
 ```
 T myFunction<T>(T left, T right, bool condition)
@@ -751,17 +730,14 @@ T myFunction<T>(T left, T right, bool condition)
 
 A generic parameter list can include one or more parameters separated by commas.
 The allowed forms for generic parameters are:
-\begin{enumerate}
-    \item{A single identifier like \Char{T} is used to declare a \SpecDef{generic type parameter} with no constraints.}
-    \item{A clause like \code{T : IFoo} is used to introduce a generic type parameter \Char{T} where the parameter is \SpecDef{constrained} so that it must conform to the \code{IFoo} interface.}
-    \item{A clause like \code{let N : int} is used to introduce a generic value parameter \Char{N}, which takes on values of type \code{int}.}
-\end{enumerate}
 
-\begin{Note}
-The syntax for generic value parameters is provisional and subject to possible change in the future.
-\end{Note}
+* A single identifier like `T` is used to declare a <dfn>generic type parameter</dfn> with no constraints.
+* A clause like `T : IFoo` is used to introduce a generic type parameter `T` where the parameter is <dfn>constrained</dfn> so that it must conform to the `IFoo` interface.
+* A clause like `let N : int` is used to introduce a generic value parameter `N`, which takes on values of type `int`.
 
-Generic parameters may declare a default value with \Char{=}:
+Note: The syntax for generic value parameters is provisional and subject to possible change in the future.
+
+Generic parameters may declare a default value with `=`:
 
 ```
 T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
@@ -772,7 +748,7 @@ For generic value parameters, the default value is a value of the same type to u
 
 ### Explicit Specialization ### {#decl.generic.specialize.explicit}
 
-A generic is \SpecDef{specialized} by applying it to \SpecDef{generic arguments} listed inside angle brackets \Char{<>}:
+A generic is <dfn>specialized</dfn> by applying it to <dfn>generic arguments</dfn> listed inside angle brackets `<>`:
 
 ```
 anotherFunction<int, 3>
@@ -791,7 +767,7 @@ int i = anotherFunction<int,3>( int3(99) );
 
 ### Implicit Specialization ### {#decl.generic.specialize.implicit}
 
-If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts \SpecDef{implicit specialization}.
+If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts <dfn>implicit specialization</dfn>.
 Implicit specialization infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.
 
 For example, if a programmer writes:
@@ -802,10 +778,8 @@ int i = anotherFunction( int3(99) );
 
 The compiler will infer the generic arguments `<int, 3>` from the way that \code{anotherFunction} was applied to a value of type \code{int3}.
 
-\begin{Note}
-Inference for generic arguments currently only takes the types of value arguments into account.
+Note: Inference for generic arguments currently only takes the types of value arguments into account.
 The expected result type does not currently affect inference.
-\end{Note}
 
 ### Syntax Details ### {#decl.generic.syntax}
 
@@ -829,27 +803,25 @@ interface IGenericInterface<T> : IBase<T>
 }
 ```
 
-\begin{Note}
-Currently there is no user-exposed syntax for writing a generic extension.
-\end{Note}
+Note: Currently there is no user-exposed syntax for writing a generic extension.
 
 \begin{Legacy}
 
 Constant Buffers and Texture Buffers {#decl.buffer}
 ------------------------------------
 
-A \SpecDef{traditional buffer declaration} is a shorthand for declaring a global-scope shader parameter.
+A <dfn>traditional buffer declaration</dfn> is a shorthand for declaring a global-scope shader parameter.
 
 \begin{Syntax}
     \SynDefine{TraditionalBufferDeclaration} \\
-        (\code{cbuffer} \SynOr \code{tbuffer}) \SynRef{Identifier} \SynRef{DeclarationBody} \code{;}\SynOpt
+        (\code{cbuffer} | \code{tbuffer}) \SynRef{Identifier} \SynRef{DeclarationBody} \code{;}\SynOpt
 \end{Syntax}
 
 Given a traditional buffer declaration, an implementation shall behave as if the declaration were desugared into:
 
 \begin{itemize}
-\item A \kw{struct} declaration with some unique name \MetaVar{S}, and with the declaration body of the buffer declaration.
-\item A global shader parameter declaration with some unique name \MetaVar{P}, where the type of the parameter is \code{ConstantBuffer<S>} in the case of a \kw{cbuffer} declaration, or \code{TextureBuffer<S>} in the case of a \kw{tbuffer} declaration.
+\item A `struct` declaration with some unique name \MetaVar{S}, and with the declaration body of the buffer declaration.
+\item A global shader parameter declaration with some unique name \MetaVar{P}, where the type of the parameter is \code{ConstantBuffer<S>} in the case of a \code{cbuffer} declaration, or \code{TextureBuffer<S>} in the case of a \code{tbuffer} declaration.
 \end{itemize}
 
 For each member declared in \MetaVar{S}, a traditional buffer declaration introduces a binding that refers to that member accessed through \MetaVar{P}.

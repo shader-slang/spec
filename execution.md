@@ -1,8 +1,8 @@
 Execution Model {#exec}
 ===============
 
-\begin{TODO}
-Even if we don't define a completely formal runtime semantics, we need sufficient terminology to be able to explain the intended semantics of language constructs, including things like \kw{discard}, shared memory, wave-level ops, etc.
+<div class=issue>
+Even if we don't define a completely formal runtime semantics, we need sufficient terminology to be able to explain the intended semantics of language constructs, including things like \code{discard}, shared memory, wave-level ops, etc.
 
 Key concepts that this chapter will need to discuss:
 
@@ -22,4 +22,5 @@ Key concepts that this chapter will need to discuss:
 \item A definition of core GPU rendering concepts such as \emph{pipelines}, \emph{stages}, \emph{kernels}, \emph{varying} input/output, \emph{uniform} shader parameters, etc.
 \end{itemize}
 
-\end{TODO}
+</div>
+

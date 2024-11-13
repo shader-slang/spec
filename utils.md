@@ -173,7 +173,7 @@ fonttitle=\CalloutStyle,##1}}
 
 \newcommand{\SynDefine}[1]{\label{syntax:#1}\text{\emph{#1} ::=}}
 \newcommand{\SynRef}[1]{\hyperref[syntax:#1]{\text{\emph{#1}}}}
-\newcommand{\SynOr}{\text{ $\vert$ }}
+\newcommand{|}{\text{ $\vert$ }}
 \newcommand{\SynStar}{\text{*}}
 \newcommand{\SynPlus}{\text{+}}
 \newcommand{\SynOpt}{\text{?}}

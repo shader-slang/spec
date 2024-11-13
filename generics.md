@@ -1,7 +1,7 @@
 Generics {#generic}
 ========
 
-\begin{TODO}
+<div class=issue>
 This chapter needs to define the key semantic-checking operations that relate to generics, including:
 
 \begin{itemize}
@@ -14,4 +14,4 @@ This chapter needs to define the key semantic-checking operations that relate to
 \item Inference of generic arguments in contexts where a generic function is called on value arguments (without first specializing it).
 \end{itemize}
 
-\end{TODO}
+</div>

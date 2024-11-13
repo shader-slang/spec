@@ -1,31 +1,27 @@
 Semantic Checking {#check}
 =================
 
-\begin{TODO}
+<div class=issue>
 The intention of this chapter is to establish the formalisms and notations that will be used for expressing typing judgements and other semantic-checking rules in this specification.
 
 The notation being used here is aligned with how papers in the PLT world on type theory, semantics, etc. present a language.
-
-
-
-
-\end{TODO}
+</div>
 
 Contexts {#check.context}
 --------
 
-A \SpecDef{context} is an ordered sequence of zero or more \SpecDef{context entries}.
-Context entries include \SpecDef{bindings} of the name of a variable (an identifier) to its type.
+A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries</dfn>.
+Context entries include <dfn>bindings</dfn> of the name of a variable (an [[=identifier=]]) to its type.
 
 \begin{Syntax}
     \SynDefine{context}
         \ContextVarA, \ContextVarB, ... \SynComment{context variable} \\
-        \SynOr $null$ \SynComment{empty context} \\
-        \SynOr \SynRef{context}, \SynRef{binding}
+        | $null$ \SynComment{empty context} \\
+        | \SynRef{context}, \SynRef{binding}
 
     \SynDefine{binding}
         $name$ : $type$ \SynComment{variable} \\
-        \SynOr $name$ :  \textsc{Exactly}($value$) \SynComment{alias}
+        | $name$ :  \textsc{Exactly}($value$) \SynComment{alias}
 \end{Syntax}
 
 
@@ -53,7 +49,7 @@ The notation:
 \begin{center}
 \SynthExpr{\ContextVarA}{e}{t}{\ContextVarB}
 \end{center}
-means that under input context \ContextVarA, the expression $e$ \SpecDef{synthesizes} the type $t$, an yields output context \ContextVarB.
+means that under input context \ContextVarA, the expression $e$ <dfn>synthesizes</dfn> the type $t$, an yields output context \ContextVarB.
 
 \begin{Description}
 Synthesis judgements are used in places where an expression needs to be checked, but the expected type of the expression is not known.
@@ -66,7 +62,7 @@ The notation:
 \begin{center}
 \CheckExpr{\ContextVarA}{e}{t}{\ContextVarB}
 \end{center}
-means that under input context \ContextVarA, the expression $e$ \SpecDef{checks} against the type $t$, and yields output context \ContextVarB.
+means that under input context \ContextVarA, the expression $e$ <dfn>checks against</dfn> the type $t$, and yields output context \ContextVarB.
 
 \begin{Description}
 Checking judgements are used in places where the type that an expression is expected to have is known.

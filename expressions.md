@@ -1,13 +1,13 @@
 Expressions {#expr}
 ===========
 
-Expressions are terms that can be \SpecDef{evaluated} to produce values.
+Expressions are terms that can be <dfn>evaluated</dfn> to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
 
 In general, the order of evaluation of a Slang expression proceeds from left to right.
 Where specific expressions do not follow this order of evaluation, it will be noted.
 
-Some expressions can yield \SpecDef{l-values}, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
+Some expressions can yield <dfn>l-values</dfn>, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
 Literal Expressions {#expr.lit}
 -------------------
@@ -16,7 +16,7 @@ Literal expressions are never l-values.
 
 ### Integer Literal Expressions ### {#expr.lit.int}
 
-An \SpecDef{integer literal expression} consists of a single \SynRef{IntegerLiteral} token.
+An <dfn>integer literal expression</dfn> consists of a single \SynRef{IntegerLiteral} token.
 
 \begin{Checking}
 	\DerivationRule{
@@ -32,13 +32,11 @@ An \SpecDef{integer literal expression} consists of a single \SynRef{IntegerLite
 An unsuffixed integer literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromIntegerLiteral}.
 \end{Description}
 
-\begin{Incomplete}
-We need a description of how suffixed integer literals have their type derived from their suffix.
-\end{Incomplete}
+Issue: We need a description of how suffixed integer literals have their type derived from their suffix.
 
 ### Floating-Point Literal Expressions ### {#expr.lit.float}
 
-A \SpecDef{floating-point literal expression} consists of a single \SynRef{FloatingPointLiteral} token.
+A <dfn>floating-point literal expression</dfn> consists of a single \SynRef{FloatingPointLiteral} token.
 
 \begin{Checking}
 	\DerivationRule{
@@ -54,9 +52,7 @@ A \SpecDef{floating-point literal expression} consists of a single \SynRef{Float
 An unsuffixed floating-point literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromFloatingPointLiteral}.
 \end{Description}
 
-\begin{Incomplete}
-We need a description of how suffixed floating-point literals have their type derived from their suffix.
-\end{Incomplete}
+Issue: We need a description of how suffixed floating-point literals have their type derived from their suffix.
     
 ### Boolean Literal Expressions ### {#expr.lit.bool}
 
@@ -66,7 +62,7 @@ We need a description of how suffixed floating-point literals have their type de
     
 \begin{Syntax}
 	\SynDefine{BooleanLiteralExpression}
-        \code{true} \SynOr \code{false}
+        \code{true} | \code{false}
 \end{Syntax}
 
 \begin{Checking}
@@ -105,7 +101,7 @@ Identifier Expressions {#expr.ident}
 \begin{Syntax}
 	\SynDefine{IdentifierExpression} \\
         \SynRef{Identifier} \\
-        \SynOr \code{operator} \SynRef{Operator} \\
+        | \code{operator} \SynRef{Operator} \\
 \end{Syntax}
 
 \begin{Checking}
@@ -122,9 +118,7 @@ Identifier Expressions {#expr.ident}
 	}\\
 \end{Checking}
 
-\begin{Incomplete}
-This presentation delegates the actual semantics of identifier expressions to the \textsc{Lookup} judgement, which needs to be explained in detail.
-\end{Incomplete}
+Issue: This presentation delegates the actual semantics of identifier expressions to the \textsc{Lookup} judgement, which needs to be explained in detail.
 
 %\begin{verbatim}
 %When evaluated, this expression looks up `someName` in the environment of the %expression and yields the value of a declaration with a matching name.
@@ -153,14 +147,14 @@ Member Expression {#expr.member}
         \SynRef{Expression} \code{.} \SynRef{Identifier} \\
 \end{Syntax}
 
-\begin{Incomplete}
+<div class=issue>
 The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
 In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
 \begin{itemize}
 \item Implicit dereference of pointer-like types.
 \item Swizzles (vector or matrix).
 \item Static vs. instance members.
-\end{itemize}
+</div>
 
 In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
 \end{Incomplete}
@@ -226,19 +220,17 @@ This Expression {#expr.this}
 
 
 \begin{Description}
-In contexts where a \kw{this} expression is valid, it refers to the implicit instance of the closest enclosing type declaration.
-The type of a \kw{this} expression is always \code{This}.
+In contexts where a `this` expression is valid, it refers to the implicit instance of the closest enclosing type declaration.
+The type of a `this` expression is always \code{This}.
 \end{Description}
 
-\begin{Incomplete}
-This section needs to deal with the rules for when \kw{this} is mutable vs. immutable.
-\end{Incomplete}
+Issue: This section needs to deal with the rules for when `this` is mutable vs. immutable.
 
 Parenthesized Expression {#expr.paren}
 -------------
 
 \begin{Description}
-An expression wrapped in parentheses \code{()} is a \SpecDef{parenthesized expression} and evaluates to the same value as the wrapped expression.
+An expression wrapped in parentheses \code{()} is a <dfn>parenthesized expression</dfn> and evaluates to the same value as the wrapped expression.
 \end{Description}
 
 \begin{Syntax}
@@ -270,7 +262,7 @@ Call Expression {#expr.call}
 
     \SynDefine{Argument} \\
         \SynRef{Expression} \\
-        \SynOr \SynRef{NamedArgument} \\
+        | \SynRef{NamedArgument} \\
 
     \SynDefine{NamedArgument} \\
         \SynRef{Identifier} \code{:} \SynRef{Expression}
@@ -290,9 +282,7 @@ Call Expression {#expr.call}
 	}	
 \end{Checking}
 
-\begin{Incomplete}
-These rules just kick the can down the road and say that synthesis/checking for call expressions bottlenecks through the \textsc{Call} judgements.
-\end{Incomplete}
+Issue: These rules just kick the can down the road and say that synthesis/checking for call expressions bottlenecks through the \textsc{Call} judgements.
 
 %\begin{verbatim}
 %A _call expression_ consists of a base expression and a list of argument %expressions, separated by commas and enclosed in `()`:
@@ -326,12 +316,12 @@ Subscript Expression {#expr.subscript}
 		\SynRef{Expression} \code{[} (\SynRef{Argument} \code{,})\SynStar \code{]}
 \end{Syntax}
 
-\begin{Incomplete}
+<div class=issue>
 To a first approximation, a subscript expression like \code{base[a0, a1]} is equivalent to something like \code{base.subscript(a0, a1)}.
-That is, we look up the \kw{subscript} members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
+That is, we look up the \code{subscript} members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
 
-Unlike simple function calls, a subscript expression can result in an l-value, based on what accessors the \kw{subscript} declaration that is selected by overload resolution has.
-\end{Incomplete}
+Unlike simple function calls, a subscript expression can result in an l-value, based on what accessors the \code{subscript} declaration that is selected by overload resolution has.
+</div>
 
 %A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
 %
@@ -371,7 +361,7 @@ Cast Expression {#expr.cast}
 \end{Syntax}
 
 \begin{Description}
-A \SpecDef{cast expression} attempts to coerce an expression to a desired type.
+A <dfn>cast expression</dfn> attempts to coerce an expression to a desired type.
 \end{Description}
 
 \begin{Checking}
@@ -386,11 +376,11 @@ A \SpecDef{cast expression} attempts to coerce an expression to a desired type.
 A cast expression always synthesizes a type, since the type it produces is manifest in the expression.
 \end{Description}
 
-\begin{Incomplete}
+<div class=issue>
 The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
 
 In contrast, we want a cast expression to be able to invoke \emph{explicit} conversions as well, which are currently not something the formalism encodes.
-\end{Incomplete}
+</div>
 
 \begin{Legacy}
 ### Legacy: Compatibility Feature ### {#expr.cast.compatiblity}
@@ -443,10 +433,8 @@ Assignment expressions support both synthesis and checking judgements.
 In each case, the \SynRef{destination} expression is validated first, and then the \SynRef{source} expression.
 \end{Description}
 
-\begin{Incomplete}
-The above rules pretend that we can write \code{out} before a type to indicate that we mean an l-value of that type.
+Issue: The above rules pretend that we can write \code{out} before a type to indicate that we mean an l-value of that type.
 We will need to expand the formalism to include \emph{qualified} types.
-\end{Incomplete}
 
 Operator Expressions {#expr.op}
 --------------------
@@ -459,11 +447,11 @@ Operator Expressions {#expr.op}
 
     \SynDefine{PrefixOperator} \\
         \code{+} \SynComment{identity} \\
-        \SynOr \code{-} \SynComment{arithmetic negation} \\
-        \SynOr \code{\~} \SynComment{bit\-wise Boolean negation} \\
-        \SynOr \code{!} \SynComment{Boolean negation} \\
-        \SynOr \code{++} \SynComment{increment in place} \\
-        \SynOr \code{--} \SynComment{decrement in place} \\
+        | \code{-} \SynComment{arithmetic negation} \\
+        | \code{\~} \SynComment{bit\-wise Boolean negation} \\
+        | \code{!} \SynComment{Boolean negation} \\
+        | \code{++} \SynComment{increment in place} \\
+        | \code{--} \SynComment{decrement in place} \\
 \end{Syntax}
 
 \begin{Checking}
@@ -485,12 +473,10 @@ Operator Expressions {#expr.op}
 \end{Checking}
 
 \begin{Description}
-A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the \kw{prefix} modifier.
+A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the \code{prefix} modifier.
 \end{Description}
 
-\begin{Incomplete}
-The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
-\end{Incomplete}
+Issue: The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
 
 ### Postfix Operator Expressions ### {#expr.op.postfix}
 
@@ -499,8 +485,8 @@ The notation here needs a way to express the restrictions on lookup that are use
         \SynRef{Expression} \SynRef{PostfixOperator}
 
     \SynDefine{PostfixOperator} \\
-        \SynOr \code{++} \SynComment{increment in place} \\
-        \SynOr \code{--} \SynComment{decrement in place} \\
+        | \code{++} \SynComment{increment in place} \\
+        | \code{--} \SynComment{decrement in place} \\
 \end{Syntax}
 
 \begin{Checking}
@@ -522,7 +508,7 @@ The notation here needs a way to express the restrictions on lookup that are use
 \end{Checking}
 
 \begin{Description}
-Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \kw{postfix} modifier.
+Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \code{postfix} modifier.
 \end{Description}
 
 ### Infix Operator Expressions ### {#expr.op.infix}
@@ -532,36 +518,36 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
         \SynRef{Expression} \SynRef{InfixOperator} \SynRef{Expression}
 
     \SynDefine{InfixOperator} \\
-        \SynOr \code{*} \SynComment{multiplication} \\
-        \SynOr \code{/} \SynComment{division} \\
-        \SynOr \code{\%} \SynComment{remainder of division} \\
-        \SynOr \code{+} \SynComment{addition} \\
-        \SynOr \code{-} \SynComment{subtraction} \\
-        \SynOr \code{<<} \SynComment{left shift} \\
-        \SynOr \code{>>} \SynComment{right shift} \\
-        \SynOr \code{<} \SynComment{less than} \\
-        \SynOr \code{>} \SynComment{greater than} \\
-        \SynOr \code{<=} \SynComment{less than or equal to} \\
-        \SynOr \code{>=} \SynComment{greater than or equal to} \\
-        \SynOr \code{==} \SynComment{equal to} \\
-        \SynOr \code{!=} \SynComment{not equal to} \\
-        \SynOr \code{&} \SynComment{bitwise and} \\
-        \SynOr \code{^} \SynComment{bitwise exclusive or} \\
-        \SynOr \code{|} \SynComment{bitwise or} \\
-        \SynOr \code{&&} \SynComment{logical and} \\
-        \SynOr \code{||} \SynComment{logical or} \\
-        \SynOr \code{+=}		\SynComment{compound add/assign} \\
-        \SynOr \code{-=}    	\SynComment{compound subtract/assign} \\
-        \SynOr \code{*=}    	\SynComment{compound multiply/assign} \\
-        \SynOr \code{/=}    	\SynComment{compound divide/assign} \\
-        \SynOr \code{\%=}    	\SynComment{compound remainder/assign} \\
-        \SynOr \code{<<=}   	\SynComment{compound left shift/assign} \\
-        \SynOr \code{>>=}   	\SynComment{compound right shift/assign} \\
-        \SynOr \code{&=}    	\SynComment{compound bitwise and/assign} \\
-        \SynOr \code{\|=}   	\SynComment{compound bitwise or/assign} \\
-        \SynOr \code{^=}    	\SynComment{compound bitwise xor/assign} \\
-%        \SynOr \code{=}    	\SynComment{assignment} \\
-%        \SynOr \code{,}		\SynComment{sequence} \\
+        | \code{*} \SynComment{multiplication} \\
+        | \code{/} \SynComment{division} \\
+        | \code{\%} \SynComment{remainder of division} \\
+        | \code{+} \SynComment{addition} \\
+        | \code{-} \SynComment{subtraction} \\
+        | \code{<<} \SynComment{left shift} \\
+        | \code{>>} \SynComment{right shift} \\
+        | \code{<} \SynComment{less than} \\
+        | \code{>} \SynComment{greater than} \\
+        | \code{<=} \SynComment{less than or equal to} \\
+        | \code{>=} \SynComment{greater than or equal to} \\
+        | \code{==} \SynComment{equal to} \\
+        | \code{!=} \SynComment{not equal to} \\
+        | \code{&} \SynComment{bitwise and} \\
+        | \code{^} \SynComment{bitwise exclusive or} \\
+        | \code{|} \SynComment{bitwise or} \\
+        | \code{&&} \SynComment{logical and} \\
+        | \code{||} \SynComment{logical or} \\
+        | \code{+=}		\SynComment{compound add/assign} \\
+        | \code{-=}    	\SynComment{compound subtract/assign} \\
+        | \code{*=}    	\SynComment{compound multiply/assign} \\
+        | \code{/=}    	\SynComment{compound divide/assign} \\
+        | \code{\%=}    	\SynComment{compound remainder/assign} \\
+        | \code{<<=}   	\SynComment{compound left shift/assign} \\
+        | \code{>>=}   	\SynComment{compound right shift/assign} \\
+        | \code{&=}    	\SynComment{compound bitwise and/assign} \\
+        | \code{\|=}   	\SynComment{compound bitwise or/assign} \\
+        | \code{^=}    	\SynComment{compound bitwise xor/assign} \\
+%        | \code{=}    	\SynComment{assignment} \\
+%        | \code{,}		\SynComment{sequence} \\
 
 \end{Syntax}
 

@@ -1,7 +1,7 @@
 Lexical Structure {#lex}
 =================
 
-This chapter describes how a source unit is decomposed into a sequence of lexemes.
+This chapter describes how a source unit is decomposed into a sequence of [[=lexemes=]].
 
 Source Units {#lex.source-unit}
 ------------
@@ -165,75 +165,62 @@ NumericLiteral :
     ;
 ```
 
-A \SpecDef{radix specifier} is one of:
+A <dfn>radix specifier</dfn> is one of:
 
-\begin{enumerate}
-    \item{\Char{0x} or \Char{0X} to specify a \SpecDef{hexadecimal literal} (radix 16)}
-    \item{\Char{0b} or \Char{0B} to specify a \SpecDef{binary literal} (radix 2)}
-\end{enumerate}
-When no radix specifier is present, a numeric literal is a \SpecDef{decimal literal} (radix 10).
+* `0x` or `0X` to specify a <dfn>hexadecimal literal</dfn> (radix 16)
+* `0b` or `0B` to specify a <dfn>binary literal</dfn> (radix 2)
 
-/begin{Note}
-Octal literals (radix 8) are not supported.
-A \Char{0} prefix on an integer literal does *not* specify an octal literal as it does in C.
-Implementations \emph{may} warn on integer literals with a \Char{0} prefix in case users expect C behavior.
-/end{Note}
+When no radix specifier is present, a numeric literal is a <dfn>decimal literal</dfn> (radix 10).
 
-The grammar of the \SpecDef{digits} for a numeric level depend on its radix, as follows:
+Note:Octal literals (radix 8) are not supported.
+A `0` prefix on an integer literal does *not* specify an octal literal as it does in C.
+Implementations \emph{may} warn on integer literals with a `0` prefix in case users expect C behavior.
 
-\begin{enumerate}
-    \item{The digits of a decimal literal may include \Char{0} through \Char{9}}
-    \item{The digits of a hexadecimal literal may include \Char{0} through \Char{9}, the letters \Char{A} through \Char{F} and \Char{a} through \Char{f}. The letters represent digit values 10 through 15.}
-    \item{The digits of a binary literal may include \Char{0} and \Char{1}}
-\end{enumerate}
+The grammar of the <dfn>digits</dfn> for a numeric level depend on its radix, as follows:
 
-Digits for all numeric literals may also include \lstinline{_}, which are ignored and have no semantic impact.
+* The digits of a decimal literal may include `0` through `9`
+* The digits of a hexadecimal literal may include `0` through `9`, the letters `A` through `F` and `a` through `f`. The letters represent digit values 10 through 15.
+* The digits of a binary literal may include `0` and `1`
 
-A \SpecDef{numeric literal suffix} consists of any sequence of characters that would be a valid identifier, that does not start with \Char{e} or \Char{E}.
+Digits for all numeric literals may also include `_`, which are ignored and have no semantic impact.
 
-\begin{Note}
-A leading \Char{-} (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
-\end{Note}
+A <dfn>numeric literal suffix</dfn> consists of any sequence of characters that would be a valid identifier, that does not start with `e` or `E`.
+
+Note: A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
 
 \SubSubSection{Integer Literals}{int}
 
-An \SpecDef{integer literal} consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
+An <dfn>integer literal</dfn> consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
 
 The suffix on an integer literal may be used to indicate the desired type of the literal:
 
-\begin{enumerate}
-    \item{A \Char{u} suffix indicates the \code{UInt} type}
-    \item{An \Char{l} or \Char{ll} suffix indicates the \code{Int64} type}
-    \item{A `ul` or `ull` suffix indicates the \code{UInt64} type}
-\end{enumerate}
+* A `u` suffix indicates the `UInt` type
+* An `l` or `ll` suffix indicates the `Int64` type
+* A `ul` or `ull` suffix indicates the `UInt64` type
 
 \SubSubSection{Floating-Point Literals}{float}
 
-A \SpecDef{floating-point literal} consists of either
+A <dfn>floating-point literal</dfn> consists of either
 
-\begin{enumerate}
-    \item{An optional radix specifier, followed by digits, followed by a \Char{.} (U+002E), followed by optional digits, an optional exponent, and an optional numeric literal suffix.}
-    \item{An optional radix specifier, followed by digits, an exponent, and an optional numeric literal suffix.}
-    \item{A \Char{.} (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.}
-\end{enumerate}
+* An optional radix specifier, followed by digits, followed by a `.` (U+002E), followed by optional digits, an optional exponent, and an optional numeric literal suffix.
+* An optional radix specifier, followed by digits, an exponent, and an optional numeric literal suffix.
+* A `.` (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.
 
 A floating-point literal may only use dexicmal or hexadecimal radix.
 
-The \SpecDef{exponent} of a floating-pointer literal consists of either \Char{e} or \Char{E}, followed by an optional \SpecDef{sign} of \Char{+} or \Char{-}, followed by decimal digits.
+The <dfn>exponent</dfn> of a floating-pointer literal consists of either `e` or `E`, followed by an optional <dfn>sign</dfn> of `+` or `-`, followed by decimal digits.
 
 ### Text Literals ### {#lex.lit.text}
 
-\begin{Incomplete}
-Need to document supported escape sequences.
-\end{Incomplete}
+Issue: Need to document supported escape sequences.
 
 \SubSubSection{String Literals}{string}
 
-A \SpecDef{string literal} consists of a sequence of characters enclosed between two \Char{"}, with the constraint that any \Char{"} within the sequence must be escaped with \Char{\\}.
+A <dfn>string literal</dfn> consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
 
 \SubSubSection{Character Literals}{char}
 
-A \SpecDef{character literal} consists of a sequence of characters enclosed between two \Char{'}, with the constraint that any \Char{'} within the sequence must be escaped with \Char{\\}.
+A <dfn>character literal</dfn> consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
 
 The sequence of characters within a character literal must represent a single character.
 
@@ -244,57 +231,60 @@ The following table defines tokens that are used as operators and punctuation in
 When a given sequence of characters could be interpreted as starting with more than one of the following tokens, the longest matching token is used.
 The name or names given to tokens by this table may be used in the rest of this document to refer to those tokens.
 
-\begin{tabular}{ |c|c| }
-  \hline
-  Token & Name(s) \\
-  \hline
-  \Char{`} & backtick \\
-  \textasciitilde & tilde \\
-  \Char{!} & exclamation mark \\
-  \Char{@} & at sign \\
-  \$ & dollar sign \\
-  \Char{\%} & percent sign \\
-  \^{} & caret \\
-  \Char{&} & ampersand \\
-  \Char{*} & asterisk, multiplication operator \\
-  \Char{(} & left parenthesis \\
-  \Char{)} & right parenthesis \\
-  \Char{-} & minus sign, subtraction operator \\
-  \Char{=} & equals sign, assignment operator \\
-  \Char{+} & plus sign, addition operator \\
-  \Char{[} & left square bracket, opening square bracket \\
-  \Char{]} & right square bracket, closing square bracket \\
-  \Char{\{} & left curly brace, opening curly brace \\
-  \Char{\}} & right curly brace, closing curly brace \\
-  \textbar & pipe \\
-  \Char{;} & semicolon \\
-  \Char{:} & colon \\
-  \Char{,} & comma \\
-  \Char{.} & dot \\
-  \Char{<} & less-than sign, less-than operator \\
-  \Char{>} & greater-than sign, greater-than operator \\
-  \Char{/} & slash, division operator \\
-  \Char{?} & question mark \\
-  \Char{==} & double-equals, equal-to operator \\
-  \Char{!=} & not-equal operator \\
-  \Char{\%=} & modulo-assign operator \\
-  \Char{+=} & add-assign operator \\
-  \^{}\Char{=} & xor-assign operator \\
-  \Char{&=} & and-assign operator \\
-  \Char{*=} & multiply-assign operator \\
-  \Char{-=} & subtract-assign operator \\
-  \textbar\Char{=} & or-assign operator \\
-  \Char{<=} & less-than-or-equal-to operator \\
-  \Char{>=} & greater-than-or-equal-to operator \\
-  \Char{/=} & divide-assign operator \\
-  \Char{&&} & and-and operator \\
-  \Char{--} & decrement operator \\
-  \Char{++} & increment operator \\
-  \textbar\textbar & or-or operator \\
-  \Char{<<} & left shift operator \\
-  \Char{>>} & right shift operator \\
-  \Char{...} & ellipsis \\
-  \Char{::} & double colon, scope operator \\
-  \Char{->} & arrow \\
-  \hline
-\end{tabular}
+```.lexical
+
+Punctuation :
+  | `(`     // left parenthesis
+  | `)`     // right parenthesis
+  | `[`     // left square bracket, opening square bracket
+  | `]`     // right square bracket, closing square bracket
+  | `\{`    // left curly brace, opening curly brace
+  | `\}`    // right curly brace, closing curly brace
+  | `;`     // semicolon
+  | `:`     // colon
+  | `,`     // comma
+  | `.`     // dot
+  | `...`   // ellipsis
+  | `::`    // double colon, scope operator
+  | `->`    // arrow
+    ;
+
+Operator :
+  | ```     // backtick
+  | `!`     // exclamation mark
+  | `@`     // at sign
+  \$ & dollar sign
+  | `\%`    // percent sign
+  \textasciitilde & tilde
+  \^{`      // caret
+  | `&`     // ampersand
+  | `*`     // asterisk, multiplication operator
+  | `-`     // minus sign, subtraction operator
+  | `=`     // equals sign, assignment operator
+  | `+`     // plus sign, addition operator
+  \textbar & pipe
+  | `<`     // less-than sign, less-than operator
+  | `>`     // greater-than sign, greater-than operator
+  | `/`     // slash, division operator
+  | `?`     // question mark
+  | `==`    // double-equals, equal-to operator
+  | `!=`    // not-equal operator
+  | `\%=`   // modulo-assign operator
+  | `+=`    // add-assign operator
+  | `^=`    // xor-assign operator
+  | `&=`    // and-assign operator
+  | `*=`    // multiply-assign operator
+  | `-=`    // subtract-assign operator
+  | `|=`    // or-assign operator
+  | `<=`    // less-than-or-equal-to operator
+  | `>=`    // greater-than-or-equal-to operator
+  | `/=`    // divide-assign operator
+  | `&&`    // and-and operator
+  | `--`    // decrement operator
+  | `++`    // increment operator
+  | `||`    // or-or operator
+  | `<<`    // left shift operator
+  | `>>`    // right shift operator
+    ;
+
+```

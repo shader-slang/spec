@@ -4,42 +4,40 @@ Statements {#stmt}
 A <dfn>statement</dfn> is an entity in the abstract syntax that describes actions to be taken by a thread.
 Statements are executed for their effect, rather than evaluated to produce a value.
 
-\begin{Syntax}
-	\SynDefine{Statement} \\
-		\SynRef{ExpressionStatement} \\
-		| \SynRef{DeclarationStatement} \\
-		| \SynRef{BlockStatement} \\
-		| \SynRef{EmptyStatement} \\
-		| \SynRef{IfStatement} \\
-		| \SynRef{SwitchStatement} \\
-		| \SynRef{CaseStmt} \\
-		| \SynRef{ForStatement} \\
-		| \SynRef{WhileStatement} \\
-		| \SynRef{DoWhileStatement} \\
-		| \SynRef{BreakStatement} \\
-		| \SynRef{ContinueStatement} \\
-		| \SynRef{ReturnStatement} \\
-		| \SynRef{DiscardStatement} \\
-		| \SynRef{LabeledStatement} \\
-\end{Syntax}
+```.syntax
+Statement :
+	ExpressionStatement
+	| DeclarationStatement
+	| BlockStatement
+	| EmptyStatement
+	| IfStatement
+	| SwitchStatement
+	| CaseStmt
+	| ForStatement
+	| WhileStatement
+	| DoWhileStatement
+	| BreakStatement
+	| ContinueStatement
+	| ReturnStatement
+	| DiscardStatement
+	| LabeledStatement
+```
 
 Expression Statement {#stmt.expr}
 --------------------
 
 An <dfn>expression statement</dfn> evaluates an expression, and then ignores the resulting value.
 
-\begin{Syntax}
-	\SynDefine{ExpressionStatement} \\
-		\SynRef{Expression} \code{;}
-\end{Syntax}
+```.syntax
+ExpressionStatement :
+	Expression `;`
+```
 
-\begin{Checking}
-\DerivationRule{
-	\SynthExpr{\ContextVarA}{\ExprVarE}{\TypeVarT}{\ContextVarB}
-}{
-	\CheckStmt{\ContextVarA}{\ExprVarE \code{;}}{\ContextVarB}
-}
-\end{Checking}
+```.checking
+GIVEN context c, expression e
+GIVEN e synthesizes type t in context c
+THEN e `;` checks in context c
+```
 
 An implementation may diagnose a warning when execution of an expression statement cannot have side effects.
 
@@ -48,311 +46,257 @@ Declaration Statement {#expr.decl}
 
 A <dfn>declaration statement</dfn> introduces a declaration into the current scope.
 	
-\begin{Syntax}
-	\SynDefine{DeclarationStatement} \\
-		\SynRef{Declaration}
-\end{Syntax}
+```.syntax
+DeclarationStatement :
+	Declaration
+```
 
-\begin{Checking}
-	\DerivationRule{
-		\CheckDecl{\ContextVarA}{\MetaVar{D}}{\ContextVarB}
-	}{
-		\CheckStmt{\ContextVarA}{\MetaVar{D}}{\ContextVarB}
-	}
-\end{Checking}
+```.checking
+GIVEN context c, declaration d
+GIVEN declaration d checks in context c
+THEN statement d checks in context c
+```
 	
 Only the following types of declarations may be used in a declaration statement:
 
-\begin{itemize}
-\item \SynRef{VariableDeclaration}
-\end{itemize}
+
+* VariableDeclaration}
+
 
 Block Statement {#stmt.block}
 ---------------
 
 A <dfn>block statement</dfn> executes each of its constituent statements in order.
 
-\begin{Syntax}
-	\SynDefine{BlockStatement} \\
-		\lcurly \SynRef{Statement}\SynStar \rcurly
-\end{Syntax}
+```.syntax
+BlockStatement :
+	`{` Statement* `}`
+```
 
 
-\begin{Checking}
+```.checking
 
-	\DerivationRule{
-		\CheckStmts{\ContextVarA}{ \bar{\MetaVar{S}} }{\ContextVarB}
-	}{
-		\CheckStmt{\ContextVarA}{ \lcurly \bar{\MetaVar{S}} \rcurly }{\ContextVarA}
-	}
-
-	\DerivationRule{
-		\begin{trgather}
-		\CheckStmt{\ContextVarA}{ \MetaVar{S} }{\ContextVarB} \\
-		\CheckStmts{\ContextVarB}{ \bar{\MetaVar{T}} }{\ContextVarC}
-		\end{trgather}
-	}{
-		\CheckStmts{\ContextVarA}{ \MetaVar{S}\ \bar{\MetaVar{T}} }{\ContextVarC}
-	}
-
-\end{Checking}
+GIVEN context c
+GIVEN statements s0,s1,...
+GIVEN context d, a fresh sub-context of c
+GIVEN s0,s1,... check in d
+THEN `{` s0,s1,... `}` checks in c
+```
 
 Note: Declarations in a block statement are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
 
 Empty Statement {#stmt.empty}
 ---------------
 
-\begin{Description}
-	Executing an empty statement has no effect.
-\end{Description}
+Executing an empty statement has no effect.
 	
-\begin{Syntax}
-	\SynDefine{EmptyStatement} \\
-		\code{;}
-\end{Syntax}
+```.syntax
+EmptyStatement :
+	`;`
+```
 
-\begin{Checking}
-	\CheckStmt{\ContextVarA}{ \code{;} }{\ContextVarA}
-\end{Checking}
+```.checking
+GIVEN context c
+THEN `;` checks in c
+```
 
 Conditional Statements {#stmt.cond}
 ----------------------
 
 ### If Statement ### {#stmt.if}
 
-An <dfn>\code{if} statement</dfn> executes a sub-statement conditionally.
+An <dfn>`if` statement</dfn> executes a sub-statement conditionally.
 
-\begin{Syntax}
-	\SynDefine{IfStatement} \\
-		\code{if} \code{(} \SynRef{Condition} \code{)}
-		\SynRef{Statement}
-		\SynRef{ElseClause}\SynOpt \\
+```.syntax
+IfStatement :
+	`if` `(` IfCondition `)`
+	Statement
+	ElseClause?
 
-	\SynDefine{Condition}
-		\SynRef{Expression}
-		| \SynRef{LetDeclaration} \\
+IfCondition :
+	Expression
+	| LetDeclaration
 
-	\SynDefine{ElseClause}
-		\code{else} \SynRef{Statement} \\
+ElseClause :
+	`else` Statement
 	
-\end{Syntax}
+```
 
-\begin{Checking}
+```.checking
 
-	\DerivationRule{
-		\begin{trgather}
-		\CheckExpr{\ContextVarA}{\ExprVarE}{\code{Bool}}{\ContextVarB} \\
-		\CheckStmt{\ContextVarB}{\MetaVar{T}}{\ContextVarC} \\
-		\end{trgather}	
-	}{
-		\CheckStmt{\ContextVarA}{\code{if(} \ExprVarE \code{)} \MetaVar{T}}{\ContextVarA}
-	}
+GIVEN context c, expression e, statement t
+GIVEN e checks against `Bool` in c
+GIVEN t checks in C
+THEN `if(` e `)` t checks in c
 
-	\DerivationRule{
-		\begin{trgather}
-		\CheckExpr{\ContextVarA}{\ExprVarE}{\code{Bool}}{\ContextVarB} \\
-		\CheckStmt{\ContextVarB}{\MetaVar{T}}{\ContextVarC} \\
-		\CheckStmt{\ContextVarB}{\MetaVar{E}}{\ContextVarD}
-		\end{trgather}	
-	}{
-		\CheckStmt{\ContextVarA}{\code{if(} \ExprVarE \code{)} \MetaVar{T} \code{else} \MetaVar{E}}{\ContextVarA}
-	}
-	
-\end{Checking}
+GIVEN context c, expression e, statement t
+GIVEN e checks against `Bool` in c
+GIVEN t checks in C
+GIVEN f checks in C
+THEN `if(` e `)` t `else` f checks in c	
+```
 
-If the condition of an \code{if} statement is an expression, then it is evaluated against an expected type of \code{Bool} to yield a value \MetaVar{C}.
-If \MetaVar{C} is \code{true}, then the \SynRef{ThenClause} is executed.
-If \MetaVar{C} is \code{false} and there is a \SynRef{ElseClause}, then it is executed.
+If the condition of an `if` statement is an expression, then it is evaluated against an expected type of `Bool` to yield a value |C|.
+If |C| is `true`, then the ThenClause is executed.
+If |C| is `false` and there is a ElseClause, then it is executed.
 
-If the condition of an \code{if} statement is a \code{let} declaration, then that declaration must have an initial-value expression.
-That initial-value expression is evaluated against an expected type of \lstinline[style=SlangCodeStyle]|Optional<$\MetaVar{T}$>|, where \MetaVar{T} is a fresh type variable, to yield a value \MetaVar{D}.
-If \MetaVar{D} is \lstinline[style=SlangCodeStyle]|Some($\MetaVar{C}$)|, then the \SynRef{ThenClause} is executed, in an environment where the name of the \code{let} declaration is bound to \MetaVar{C}.
-If \MetaVar{D} is \code{null} and there is a \SynRef{ElseClause}, then it is executed.
+If the condition of an `if` statement is a `let` declaration, then that declaration must have an initial-value expression.
+That initial-value expression is evaluated against an expected type of `Optional<T>`, where |T| is a fresh type variable, to yield a value |D|.
+If |D| is `Some(|C|)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to |C|.
+If |D| is `null` and there is a ElseClause, then it is executed.
 
 ### Switch Statement ### {#stmt.switch}
 
-A <dfn>\code{switch} statement</dfn> conditionally executes up to one of its <dfn>alternatives</dfn>, based on the value of an expression.
+
+A <dfn>`switch` statement</dfn> conditionally executes up to one of its <dfn>alternatives</dfn>, based on the value of an expression.
 	
-\begin{Syntax}
-	\SynDefine{SwitchStatement} \\
-		\code{switch} \code{(} \SynRef{Expression} \code{)}
-		\lcurly\ \SynRef{SwitchAlternative}\SynPlus \rcurly\ \\
+```.syntax
+SwitchStatement :
+	`switch` `(` Expression `)`
+	`{` SwitchAlternative+ `}`
 
-	\SynDefine{SwitchAlternative} \\
-		\SynRef{SwitchAlternativeLabel}\SynPlus \SynRef{Statement}\SynPlus
+SwitchAlternative :
+	SwitchAlternativeLabel+ Statement+
 
-	\SynDefine{SwitchAlternativeLabel}
-		\SynRef{CaseClause}
-		| \SynRef{DefaultClause} \\
-	
-	\SynDefine{CaseClause}
-		\code{case} \SynRef{Expression} \code{:} \\
-	
-	\SynDefine{DefaultClause}
-		\code{default} \code{;} \\
-\end{Syntax}
+SwitchAlternativeLabel :
+	CaseClause
+	| DefaultClause
 
-\begin{Checking}
-	\DerivationRule{
-		\begin{trgather}
-		\SynthExpr{\ContextVarA}{\ExprVarE}{\TypeVarT}{\ContextVarB} \\
-		\CheckCase{\ContextVarB}{\bar{\MetaVar{C}}}{\TypeVarT} \\
-		\end{trgather}	
-	}{
-		\CheckStmt{\ContextVarA}{\code{switch(} \ExprVarE \code{) \{} \bar{\MetaVar{C}} \code{\}}}{\ContextVarA}
-	}
-\end{Checking}
+CaseClause :
+	`case` Expression `:`
 
-\begin{Description}
-A \code{switch} statement is checked by first checking the expression, and then checking each of the alternatives against the type of that expression.
-\end{Description}
+DefaultClause
+	`default` `:`
+```
 
-\begin{Checking}
-	\DerivationRule{
-		\begin{trgather}
-		\CheckCaseLabel{\ContextVarA}{\overline{label}}{\TypeVarT} \\
-		\CheckStmts{\ContextVarA}{stmts}{\ContextVarB} \\
-		\end{trgather}	
-	}{
-		\CheckCase{\ContextVarA}{\overline{label}\ {stmts}}{\TypeVarT} \\
-	}\vspace{1em}
+```.checking
+GIVEN context c, expression e, switch alternatives a0,a1,...
+GIVEN e synthesizes type t in c
+GIVEN a0,a1,... check against t in c
+THEN `switch(` e `) {` a0,a1,... `}` checks in c
+```
 
-	\DerivationRule{
-	}{
-		\CheckCaseLabel{\ContextVarA}{\code{default:}}{\TypeVarT} \\
-	}\vspace{1em}
+Note:
+A `switch` statement is checked by first checking the expression, and then checking each of the alternatives against the type of that expression.
 
-	\DerivationRule{
-		\CheckExpr{\ContextVarA}{expr}{\TypeVarT}{\ContextVarB}
-	}{
-		\CheckCaseLabel{\ContextVarA}{\code{case}\ expr\ \code{:}}{\TypeVarT} \\
-	}\vspace{1em}
+```.checking
+GIVEN context c, type t,
+GIVEN switch alternative labels l0,l1,...
+GIVEN statements s0,s1,...
+GIVEN l0,l1,... check against t in c
+GIVEN s0,s1,... check in c
+THEN switch alternative l0,l1,... s0,s1,... checks in c
 
-\end{Checking}
+GIVEN context c, type t, expression e
+GIVEN e checks against t in c
+THEN `case` e `:` checks against t in c
 
-\begin{Description}
-A \code{case} clause is valid if its expression checks against the type of the control expressio nof the \code{switch} statement.
-\end{Description}
+GIVEN context c, type t
+THEN `default:` checks against t in c
+```
 
-A \code{switch} statement may have at most one \code{default} clause.
+Note:
+A `case` clause is valid if its expression checks against the type of the control expressio nof the `switch` statement.
 
-If the type of the controlling expression of a \code{switch} statement is a built-in integer type, then:
+A `switch` statement may have at most one `default` clause.
 
-\begin{itemize}
-\item The expression of each \code{case} clause must be a compile-time constant expression.
-\item The constant value of the expression for each \code{case} clause must not be equal to that of any other \code{case} clause in the same \code{switch}.
-\end{itemize}
+If the type of the controlling expression of a `switch` statement is a built-in integer type, then:
 
-Each alternative of a \code{switch} statement must exit the \code{switch} statement via a `break` or other control transfer statement.
+
+* The expression of each `case` clause must be a compile-time constant expression.
+* The constant value of the expression for each `case` clause must not be equal to that of any other `case` clause in the same `switch`.
+
+
+Each alternative of a `switch` statement must exit the `switch` statement via a `break` or other control transfer statement.
 "Fall-through" from one switch case clause to another is not allowed.
 
-\begin{Description}
-Semantically, a \code{switch} statement is equivalent to an ``\code{if} cascade'' that compares the value of the conditional expression against each \code{case} clause,
-\end{Description}
+Note:
+Semantically, a `switch` statement is equivalent to an "`if` cascade" that compares the value of the conditional expression against each `case` clause,
 
 Loop Statements {#stmt.loop}
 ---------------
 
 ### For Statement ### {#stmt.for}
 
-\begin{Syntax}
-	\SynDefine{ForStatement} \\
-		\code{for} \code{(} \\
-		\SynVar[initial]{Statement}\SynOpt \code{;} \\
-		\SynVar[condition]{Expression}\SynOpt \code{;} \\
-		\SynVar[sideEffect]{Expression}\SynOpt \code{)} \\
-		\SynVar[body]{Statement}
-\end{Syntax}
+```.syntax
+ForStatement :
+	`for` `(`
+	initial:Statement? `;`
+	conditional:Expression? `;`
+	sideEffect:Expression? `)`
+	body:Statement
+```
 
 
-\begin{Checking}
-	\DerivationRule{
-		\begin{trgather}
-		\CheckStmt{\ContextVarA}{init}{\ContextVarB} \\
-		\CheckExpr{\ContextVarB}{cond}{\code{Bool}}{\ContextVarC} \\
-		\SynthExpr{\ContextVarC}{iter}{T}{\ContextVarD} \\
-		\CheckStmt{\ContextVarD}{body}{\ContextVarE} \\
-		\end{trgather}	
-	}{
-		\CheckStmt{\ContextVarA}{\code{for(}\ init \code{;}\ cond \code{;}\ iter \code{)} body}{\ContextVarA} \\
-	}
-\end{Checking}
+```.checking
+GIVEN init checks in c
+GIVEN cond checks against `Bool` in c
+GIVEN iter synthesizes type t in c
+GIVEN body checks in c
+THEN `for(init;cond;iter) body` checks in c
+```
 
-Issue: The checking judgements above aren't complete because they don't handle the case where \emph{cond} is absent, in which case it should be treated like it was \code{true}.
+Issue: The checking judgements above aren't complete because they don't handle the case where |cond| is absent, in which case it should be treated like it was `true`.
 
 ### While Statement ### {#stmt.while}
 
 
-\begin{Syntax}
-	\SynDefine{WhileStatement} \\
-		\code{while} \code{(}
-		\SynVar[condition]{Expression}\SynOpt \code{)}
-		\SynVar[body]{Statement}
-\end{Syntax}
+```.syntax
+WhileStatement :
+	`while` `(`
+	conditional:Expression? `)`
+	body:Statement
+```
 
 
-\begin{Checking}
-	\DerivationRule{
-		\begin{trgather}
-		\CheckExpr{\ContextVarA}{cond}{\code{Bool}}{\ContextVarB} \\
-		\CheckStmt{\ContextVarB}{body}{\ContextVarC} \\
-		\end{trgather}	
-	}{
-		\CheckStmt{\ContextVarA}{\code{while(}\ cond \code{)} body}{\ContextVarA} 
-	}
-\end{Checking}
+```.checking
+GIVEN cond checks against `Bool` in c
+GIVEN body checks in c
+THEN `while(cond) body` checks in c
+```
 
 ### Do-While Statement ### {#stmt.do-while}
 
 A <dfn>do-while statement</dfn> uses the following form:
 
-\begin{Syntax}
-	\SynDefine{DoWhileStatement} \\
-		\code{do} \SynVar[body]{Statement} \\
-		\code{while} \code{(} \SynVar[condition]{Expression}\SynOpt \code{)} \code{;}		
-\end{Syntax}
+```.syntax
+DoWhileStatement :
+	`do` body:Statement
+	`while` `(` conditional:Expression? `)` `;`		
+```
 
 
-\begin{Checking}
-	\DerivationRule{
-		\begin{trgather}
-			\CheckStmt{\ContextVarA}{body}{\ContextVarB} \\
-			\CheckExpr{\ContextVarA}{cond}{\code{Bool}}{\ContextVarC} \\
-		\end{trgather}	
-	}{
-		\CheckStmt{\ContextVarA}{\code{do} body \code{while(}\ cond \code{);}}{\ContextVarA} 
-	}
-\end{Checking}
+```.checking
+GIVEN body checks in c
+GIVEN cond checks againt `Bool` in c
+THEN `do body while(cond);` checks in c
+```
+
+Issue: These simplified prose checking rules are leaving out all the subtlties of sub-contexts, etc.
 
 Control Transfer Statements {#stmt.control}
 ---------------------------
 
-### Break Statement ### {#stmt.break}
+### `break` Statement ### {#stmt.break}
 
-\begin{Syntax}
-	\SynDefine{BreakStatement}
-		`break` \SynVar[label]{Identifier}\SynOpt \code{;} \\
-\end{Syntax}
+```.syntax
+BreakStatement :
+	`break` label:Identifier? `;`
+```
 
-\begin{Description}
-A `break` statement without a \SynRef{label} transfers control to after the end of the closest lexically enclosing switch statement or loop statement.
+A [[=break statement=]] without a [[=label=]] transfers control to after the end of the closest lexically enclosing [[=switch statement=]] or [[=loop statement=]].
 
-A `break` statement with a \SynRef{label} transfers control to after the end of the lexically enclosing switch or loop statement labeled with a matching \SynRef{label}.
-\end{Description}
+A [[=break statement=]] with a [[=label=]] transfers control to after the end of the lexically enclosing [[=switch statement=]] or [[=loop statement=]] labeled with a matching [[=label=]].
 
-\begin{Checking}
-	\DerivationRule{
-		\ContextLookup{\ContextVarA}{\BreakLabel}{\textunderscore}
-	}{
-		\CheckStmt{\ContextVarA}{`break`\code{;}}{\ContextVarA} 
-	} \\
+```.checking
+GIVEN context c
+GIVEN lookup of BREAK_LABEL in c yields label l
+THEN `break;` checks in context c
 
-	\DerivationRule{
-		\ContextContains{\ContextVarA}{\BreakLabel: label}
-	}{
-		\CheckStmt{\ContextVarA}{`break` label\code{;}}{\ContextVarA} 
-	}
-\end{Checking}
+GIVEN context c, label l
+GIVEN c contains an entry of the form BREAK_LABEL = l
+THEN `break l;` checks in context c
+```
 
 <div class=issue>
 Issue: The checking rules for `break`-able statements should add a suitable item to the context used for checking their body statements, which will be matched by the rules above.
@@ -362,87 +306,71 @@ We also need to define the context-containment rule that is being used to look u
 
 ### Continue Statement ### {#stmt.continue}
 
-\begin{Syntax}
-	\SynDefine{ContinueStatement}
-		\code{continue} \SynVar[label]{Identifier}\SynOpt \code{;} \\
-\end{Syntax}
+```.syntax
+ContinueStatement :
+	`continue` label:Identifier? `;`
+```
 
-\begin{Description}
-A \code{continue} statement transfers control to the start of the next iteration of a loop statement.
-In a for statement with a side effect expression, the side effect expression is evaluated when \code{continue} is used:
-\end{Description}
+A `continue` statement transfers control to the start of the next iteration of a loop statement.
+In a `for` statement with a side effect expression, the side effect expression is evaluated when `continue` is used:
 
-\begin{Checking}
-	\DerivationRule{
-		\ContextLookup{\ContextVarA}{\ContinueLabel}{\textunderscore}
-	}{
-		\CheckStmt{\ContextVarA}{\code{continue}\code{;}}{\ContextVarA} 
-	} \\
+```.checking
+GIVEN context c
+GIVEN lookup of CONTINUE_LABEL in c yields label l
+THEN `continue;` checks in context c
 
-	\DerivationRule{
-		\ContextContains{\ContextVarA}{\ContinueLabel: label}
-	}{
-		\CheckStmt{\ContextVarA}{\code{continue} label\code{;}}{\ContextVarA} 
-	}
-\end{Checking}
+GIVEN context c, label l
+GIVEN c contains an entry of the form CONTINUE_LABEL = l
+THEN `continue l;` checks in context c
+```
 
 ### Return Statement ### {#stmt.continue}
 
-\begin{Description}
-	A \code{return} statement transfers control out of the current function.
-\end{Description}
+A `return` statement transfers control out of the current function.
+
 	
-\begin{Syntax}
-	\SynDefine{ReturnStatement}
-		\code{return} \SynRef{Expression}\SynOpt \code{;} \\
-\end{Syntax}
+```.syntax
+ReturnStatement :
+	`return` Expression? `;`
+```
 
-\begin{Checking}
-	\DerivationRule{
-		\begin{trgather}
-		\ContextLookup{\ContextVarA}{\ResultType}{type} \\
-		\CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB} \\
-		\end{trgather}
-	}{
-		\CheckStmt{\ContextVarA}{\code{return} expr \code{;}}{\ContextVarB} 
-	}
-\end{Checking}
+```.checking
+GIVEN context c, expression e
+GIVEN lookup of RESULT_TYPE in c yields type t
+GIVEN e checks against t in c
+THEN `return e;` checks in c
+```
 
-\begin{Checking}
-	\DerivationRule{
-		\CheckStmt{\ContextVarA}{\code{return Unit();}}{\ContextVarB} 
-	}{
-		\CheckStmt{\ContextVarA}{\code{return}\code{;}}{\ContextVarB} 
-	}
-\end{Checking}
+```.checking
+GIVEN context c
+GIVEN lookup of RESULT_TYPE in c yield type t
+GIVEN `Unit` is a subtype of t
+THEN `return;` checks in c
+```
 
-\begin{Description}
-	A \code{return} statement without an expression is equivalent to a \code{return} of a value of type \code{Unit}.
-\end{Description}
+Note: A `return` statement without an expression is equivalent to a `return` of a value of type `Unit`.
+
 
 ### Discard Statement ### {#stmt.discard}
 
-\begin{Syntax}
-	\SynDefine{DiscardStatement}
-		\code{discard} \code{;} \\
-\end{Syntax}
+```.syntax
+DiscardStatement :
+	`discard` `;`
+```
 
-\begin{Description}
-A \code{discard} statement can only be used in the context of a fragment shader, in which case it causes the current invocation to terminate and the graphics system to discard the corresponding fragment so that it does not get combined with the framebuffer pixel at its coordinates.
+A `discard` statement may only be used in the context of a fragment shader, in which case it causes the current invocation to terminate and the graphics system to discard the corresponding fragment so that it does not get combined with the framebuffer pixel at its coordinates.
 
-Operations with side effects that were executed by the invocation before a \code{discard} will still be performed and their results will become visible according to the rules of the platform.	
-\end{Description}
+Operations with side effects that were executed by the invocation before a `discard` will still be performed and their results will become visible according to the rules of the platform.	
 
-\begin{Checking}
-	\DerivationRule{
-	}{
-		\CheckStmt{\ContextVarA}{\code{discard;}}{\RequireCap{fragment},\ContextVarB} 
-	}
-\end{Checking}
 
-\begin{Incomplete}
-The intent of the above rule is that checking a \code{discard} statement will add the \code{fragment} capability to the context, so that it can be checked against the capabilities of the surrounding function/context.
+```.checking
+GIVEN context c
+GIVEN capability `fragment` is available in c
+THEN `discard;` checks in c
+```
+
+Issue:
+The intent of the above rule is that checking a `discard` statement will add the `fragment` capability to the context, so that it can be checked against the capabilities of the surrounding function/context.
 However, the way the other statement rules handle the context, they do not allow for anything in the context to flow upward/outward in that fashion.
 It may be simplest to have the process of collecting the capabilities required by a function body be a different judgement than the type checking rules.
-\end{Incomplete}
-	
+

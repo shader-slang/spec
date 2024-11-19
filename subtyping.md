@@ -8,7 +8,7 @@ This chapter needs to define what the subtyping rules are, as something distinct
 At the most basic, we want to have a guarantee that if \code{T} is a subtype of \code{S}, then it is safe and meaningful to read an \code{S} from a memory location that holds a \code{T}.
 Beyond that, we need to decide whether it a subtype (in the formal semantics) must have the same size and stride as the supertype, or it if is allowed to be larger.
 
-The key reason to have the subtyping rules kept distinct from the conversion/coercion rules is that many built-in types (as well as the conceptual/intermediate types that are needed for semantic checking) are covariant type constructors, where the covariance must be defined in terms of true subtyping and not just convertability. E.g., a \code{borrow T} can be converted to a \code{borrow S} only if \code{T} is truly a subtype of \code{S}, and not just convertible to it.
+The key reason to have the subtyping rules kept distinct from the conversion/coercion rules is that many built-in types (as well as the conceptual/intermediate types that are needed for semantic checking) are covariant type constructors, where the covariance must be defined in terms of true subtyping and not just convertability. E.g., a `borrow` T} can be converted to a `borrow` S} only if \code{T} is truly a subtype of \code{S}, and not just convertible to it.
 
 Note that the ``is-a-subtype-of'' relationship between two types is distinct from the ``conforms-to'' relationship between a proper type and an interface type.
 The ``conforms-to'' relationship might need to be documented in this chapter as well, just because it shares a lot of structurally similar machinery.

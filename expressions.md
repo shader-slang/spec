@@ -16,9 +16,9 @@ Literal expressions are never l-values.
 
 ### Integer Literal Expressions ### {#expr.lit.int}
 
-An <dfn>integer literal expression</dfn> consists of a single \SynRef{IntegerLiteral} token.
+An <dfn>integer literal expression</dfn> consists of a single IntegerLiteral token.
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
 		\begin{trgather}
         \CheckConforms{\ContextVarA,\alpha}{\alpha}{\code{IFromIntegerLiteral}}{\ContextVarB}
@@ -26,19 +26,19 @@ An <dfn>integer literal expression</dfn> consists of a single \SynRef{IntegerLit
 	}{
 		\SynthExpr{\ContextVarA}{i}{\alpha}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 An unsuffixed integer literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromIntegerLiteral}.
-\end{Description}
+
 
 Issue: We need a description of how suffixed integer literals have their type derived from their suffix.
 
 ### Floating-Point Literal Expressions ### {#expr.lit.float}
 
-A <dfn>floating-point literal expression</dfn> consists of a single \SynRef{FloatingPointLiteral} token.
+A <dfn>floating-point literal expression</dfn> consists of a single FloatingPointLiteral token.
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
 		\begin{trgather}
         \CheckConforms{\ContextVarA,\alpha}{\alpha}{\code{IFromFloatingPointLiteral}}{\ContextVarB}
@@ -46,65 +46,65 @@ A <dfn>floating-point literal expression</dfn> consists of a single \SynRef{Floa
 	}{
 		\SynthExpr{\ContextVarA}{f}{\alpha}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 An unsuffixed floating-point literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromFloatingPointLiteral}.
-\end{Description}
+
 
 Issue: We need a description of how suffixed floating-point literals have their type derived from their suffix.
     
 ### Boolean Literal Expressions ### {#expr.lit.bool}
 
-\begin{Description}
+Note:
     Boolean literal expressions use the keywords `true` and `false`.
-\end{Description}
-    
-\begin{Syntax}
-	\SynDefine{BooleanLiteralExpression}
-        \code{true} | \code{false}
-\end{Syntax}
 
-\begin{Checking}
+    
+```.syntax
+	BooleanLiteralExpression}
+        `true` | `false`
+```
+
+```.checking
 	\DerivationRule{
 	}{
-		\SynthExpr{\ContextVarA}{\code{true}}{\code{Bool}}{\ContextVarA}
+		\SynthExpr{\ContextVarA}{`true`}{`Bool`}{\ContextVarA}
 	}\\
 	\DerivationRule{
 	}{
-		\SynthExpr{\ContextVarA}{\code{false}}{\code{Bool}}{\ContextVarA}
+		\SynthExpr{\ContextVarA}{`false`}{`Bool`}{\ContextVarA}
 	}\\
-\end{Checking}
+```
 
 
 ### String Literal Expressions ### {#expr.lit.string}
 
-\begin{Description}
+Note:
 A string literal expressions consists of one or more string literal tokens in a row.
-\end{Description}
 
-\begin{Syntax}
-	\SynDefine{StringLiteralExpression}
-        \SynRef{StirngLiteral}\SynPlus
-\end{Syntax}
 
-\begin{Checking}
+```.syntax
+	StringLiteralExpression}
+        StringLiteral+
+```
+
+```.checking
 	\DerivationRule{
 	}{
 		\SynthExpr{\ContextVarA}{\overline{s}}{\code{String}}{\ContextVarA}
 	}\\
-\end{Checking}
+```
 
 Identifier Expressions {#expr.ident}
 ----------------------
 
-\begin{Syntax}
-	\SynDefine{IdentifierExpression} \\
-        \SynRef{Identifier} \\
-        | \code{operator} \SynRef{Operator} \\
-\end{Syntax}
+```.syntax
+	IdentifierExpression
+        Identifier
+        | \code{operator} Operator
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \SynthLookup{\ContextVarA}{name}{type}
 	}{
@@ -116,7 +116,7 @@ Identifier Expressions {#expr.ident}
 	}{
 		\CheckExpr{\ContextVarA}{name}{type}{\ContextVarB}
 	}\\
-\end{Checking}
+```
 
 Issue: This presentation delegates the actual semantics of identifier expressions to the \textsc{Lookup} judgement, which needs to be explained in detail.
 
@@ -142,18 +142,18 @@ Issue: This presentation delegates the actual semantics of identifier expression
 Member Expression {#expr.member}
 -----------------
 
-\begin{Syntax}
-	\SynDefine{MemberExpression}
-        \SynRef{Expression} \code{.} \SynRef{Identifier} \\
-\end{Syntax}
+```.syntax
+	MemberExpression}
+        Expression `.` Identifier
+```
 
 <div class=issue>
 The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
 In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
-\begin{itemize}
-\item Implicit dereference of pointer-like types.
-\item Swizzles (vector or matrix).
-\item Static vs. instance members.
+
+* Implicit dereference of pointer-like types.
+* Swizzles (vector or matrix).
+* Static vs. instance members.
 </div>
 
 In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
@@ -206,81 +206,81 @@ In both synthesis and checking modes, the base expression should first synthesiz
 This Expression {#expr.this}
 ---------------
 
-\begin{Syntax}
-	\SynDefine{ThisExpression} 
-        \code{this} \\
-\end{Syntax}
+```.syntax
+	ThisExpression} 
+        \code{this
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
 	}{
 		\SynthExpr{\ContextVarA}{\code{this}}{\code{This}}{\ContextVarB}
 	}	
-\end{Checking}
+```
 
 
-\begin{Description}
+Note:
 In contexts where a `this` expression is valid, it refers to the implicit instance of the closest enclosing type declaration.
 The type of a `this` expression is always \code{This}.
-\end{Description}
+
 
 Issue: This section needs to deal with the rules for when `this` is mutable vs. immutable.
 
 Parenthesized Expression {#expr.paren}
 -------------
 
-\begin{Description}
+Note:
 An expression wrapped in parentheses \code{()} is a <dfn>parenthesized expression</dfn> and evaluates to the same value as the wrapped expression.
-\end{Description}
 
-\begin{Syntax}
-	\SynDefine{ParenthesizedExpression} 
-        \code{(} \SynRef{Expression} \code{)} \\
-\end{Syntax}
 
-\begin{Checking}
+```.syntax
+	ParenthesizedExpression} 
+        `(` Expression \code{)
+```
+
+```.checking
 	\DerivationRule{
 		\CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB}
 	}{
-		\CheckExpr{\ContextVarA}{\code{(} expr \code{)}}{type}{\ContextVarB}
+		\CheckExpr{\ContextVarA}{`(` expr `)`}{type}{\ContextVarB}
 	}\vspace{1em}
 
 	\DerivationRule{
 		\SynthExpr{\ContextVarA}{expr}{type}{\ContextVarB}
 	}{
-		\SynthExpr{\ContextVarA}{\code{(} expr \code{)}}{type}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{`(` expr `)`}{type}{\ContextVarB}
 	}	
-\end{Checking}
+```
 
 
 Call Expression {#expr.call}
 ---------------
 
-\begin{Syntax}
-	\SynDefine{CallExpression} \\
-        \SynRef{Expression} \code{(} (\SynRef{Argument} \code{,})\SynStar \code{)} \\
+```.syntax
+	CallExpression
+        Expression `(` (Argument `,`)* \code{)
 
-    \SynDefine{Argument} \\
-        \SynRef{Expression} \\
-        | \SynRef{NamedArgument} \\
+    Argument
+        Expression \\
+        | NamedArgument
 
-    \SynDefine{NamedArgument} \\
-        \SynRef{Identifier} \code{:} \SynRef{Expression}
-\end{Syntax}
+    NamedArgument
+        Identifier `:` Expression
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \CheckCall{\ContextVarA}{f}{\overline{args}}{type}{\ContextVarB}
 	}{
-		\CheckExpr{\ContextVarA}{f \code{(} \overline{args} \code{)}}{type}{\ContextVarB}
+		\CheckExpr{\ContextVarA}{f `(` \overline{args} `)`}{type}{\ContextVarB}
 	}\vspace{1em}
 
 	\DerivationRule{
         \SynthCall{\ContextVarA}{f}{\overline{args}}{type}{\ContextVarB}
 	}{
-		\SynthExpr{\ContextVarA}{f \code{(} \overline{args} \code{)}}{type}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{f `(` \overline{args} `)`}{type}{\ContextVarB}
 	}	
-\end{Checking}
+```
 
 Issue: These rules just kick the can down the road and say that synthesis/checking for call expressions bottlenecks through the \textsc{Call} judgements.
 
@@ -311,16 +311,16 @@ Issue: These rules just kick the can down the road and say that synthesis/checki
 Subscript Expression {#expr.subscript}
 --------------------
 
-\begin{Syntax}
-	\SynDefine{SubscriptExpression} \\
-		\SynRef{Expression} \code{[} (\SynRef{Argument} \code{,})\SynStar \code{]}
-\end{Syntax}
+```.syntax
+	SubscriptExpression
+		Expression \code{[} (Argument `,`)* \code{]}
+```
 
 <div class=issue>
 To a first approximation, a subscript expression like \code{base[a0, a1]} is equivalent to something like \code{base.subscript(a0, a1)}.
-That is, we look up the \code{subscript} members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
+That is, we look up the `subscript` members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
 
-Unlike simple function calls, a subscript expression can result in an l-value, based on what accessors the \code{subscript} declaration that is selected by overload resolution has.
+Unlike simple function calls, a subscript expression can result in an l-value, based on what accessors the `subscript` declaration that is selected by overload resolution has.
 </div>
 
 %A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
@@ -332,49 +332,49 @@ Unlike simple function calls, a subscript expression can result in an l-value, b
 Initializer List Expression {#expr.init-list}
 ---------------------------
 
-\begin{Syntax}
-	\SynDefine{InitializerListExpression} \\
-		\code{\{} (\SynRef{Argument} \code{,})\SynStar \code{\}}
-\end{Syntax}
+```.syntax
+	InitializerListExpression
+		\code{\{} (Argument `,`)* \code{\}}
+```
 
-\begin{Description}
+Note:
 An initializer-list expression may only appear in contexts where it will be checked against an expected type.
 There are no synthesis rules for initializer-list expressions.
 
 An initializer-list expression is equivalent to constructing an instance of the expected type using the arguments.
-\end{Description}
 
-\begin{Checking}
+
+```.checking
 	\DerivationRule{
-        \CheckConstruct{\ContextVarA}{type}{\overline{args}}{\ContextVarB} \\
+        \CheckConstruct{\ContextVarA}{type}{\overline{args}}{\ContextVarB
 	}{
 		\CheckExpr{\ContextVarA}{\code{\{} \overline{args} \code{\}}}{type}{\ContextVarB}
 	}
-\end{Checking}
+```
 
 Cast Expression {#expr.cast}
 ---------------
 
-\begin{Syntax}
-	\SynDefine{CastExpression} \\
-		\code{(} \SynRef{TypeExpression} \code{)} \SynRef{Expression}
-\end{Syntax}
+```.syntax
+	CastExpression
+		`(` TypeExpression `)` Expression
+```
 
-\begin{Description}
+Note:
 A <dfn>cast expression</dfn> attempts to coerce an expression to a desired type.
-\end{Description}
 
-\begin{Checking}
+
+```.checking
 	\DerivationRule{
         \CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB}
 	}{
-		\SynthExpr{\ContextVarA}{\code{(} type \code{)} expr}{type}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{`(` type `)` expr}{type}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 A cast expression always synthesizes a type, since the type it produces is manifest in the expression.
-\end{Description}
+
 
 <div class=issue>
 The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
@@ -402,38 +402,38 @@ MyStruct s = {};
 Assignment Expression {#expr.assign}
 ----------
 
-\begin{Syntax}
-	\SynDefine{AssignmentExpression} \\
-        \SynVar[destination]{Expression} \code{=} \SynVar[source]{Expression}
-\end{Syntax}
+```.syntax
+	AssignmentExpression
+        \SynVar[destination]{Expression} `=` \SynVar[source]{Expression}
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthExpr{\ContextVarA}{dst}{\code{out} type}{\ContextVarB} \\
-        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB} \\
+        \SynthExpr{\ContextVarA}{dst}{`out` type}{\ContextVarB
+        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB
         \end{trgather}
 	}{
-		\SynthExpr{\ContextVarA}{dst \code{=} src}{\code{out} type}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{dst `=` src}{`out` type}{\ContextVarB}
 	}
 
 	\DerivationRule{
         \begin{trgather}
-        \CheckExpr{\ContextVarA}{dst}{\code{out} type}{\ContextVarB} \\
-        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB} \\
+        \CheckExpr{\ContextVarA}{dst}{`out` type}{\ContextVarB
+        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB
         \end{trgather}
 	}{
-		\CheckExpr{\ContextVarA}{dst \code{=} src}{type}{\ContextVarB}
+		\CheckExpr{\ContextVarA}{dst `=` src}{type}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 Assignment expressions support both synthesis and checking judgements.
 
-In each case, the \SynRef{destination} expression is validated first, and then the \SynRef{source} expression.
-\end{Description}
+In each case, the destination} expression is validated first, and then the source} expression.
 
-Issue: The above rules pretend that we can write \code{out} before a type to indicate that we mean an l-value of that type.
+
+Issue: The above rules pretend that we can write `out` before a type to indicate that we mean an l-value of that type.
 We will need to expand the formalism to include \emph{qualified} types.
 
 Operator Expressions {#expr.op}
@@ -441,23 +441,23 @@ Operator Expressions {#expr.op}
 
 ### Prefix Operator Expressions ### {#expr.op.prefix}
 
-\begin{Syntax}
-	\SynDefine{PrefixOperatorExpression} \\
-        \SynRef{PrefixOperator} \SynRef{Expression}
+```.syntax
+	PrefixOperatorExpression
+        PrefixOperator Expression
 
-    \SynDefine{PrefixOperator} \\
-        \code{+} \SynComment{identity} \\
-        | \code{-} \SynComment{arithmetic negation} \\
-        | \code{\~} \SynComment{bit\-wise Boolean negation} \\
-        | \code{!} \SynComment{Boolean negation} \\
-        | \code{++} \SynComment{increment in place} \\
-        | \code{--} \SynComment{decrement in place} \\
-\end{Syntax}
+    PrefixOperator
+        \code{+} // identity
+        | `-` // arithmetic negation
+        | \code{\~} // bit\-wise Boolean negation
+        | \code{!} // Boolean negation
+        | \code{++} // increment in place
+        | \code{--} // decrement in place
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\SynthExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
@@ -465,34 +465,34 @@ Operator Expressions {#expr.op}
 
 	\DerivationRule{
         \begin{trgather}
-            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\CheckExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the \code{prefix} modifier.
-\end{Description}
+
 
 Issue: The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
 
 ### Postfix Operator Expressions ### {#expr.op.postfix}
 
-\begin{Syntax}
-	\SynDefine{PostfixOperatorExprssion} \\
-        \SynRef{Expression} \SynRef{PostfixOperator}
+```.syntax
+	PostfixOperatorExprssion
+        Expression PostfixOperator}
 
-    \SynDefine{PostfixOperator} \\
-        | \code{++} \SynComment{increment in place} \\
-        | \code{--} \SynComment{decrement in place} \\
-\end{Syntax}
+    PostfixOperator
+        | \code{++} // increment in place
+        | \code{--} // decrement in place
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\SynthExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
@@ -500,56 +500,56 @@ Issue: The notation here needs a way to express the restrictions on lookup that 
 
 	\DerivationRule{
         \begin{trgather}
-            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB} \\
+            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\CheckExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \code{postfix} modifier.
-\end{Description}
+
 
 ### Infix Operator Expressions ### {#expr.op.infix}
 
-\begin{Syntax}
-	\SynDefine{InfixOperatorExpression} \\
-        \SynRef{Expression} \SynRef{InfixOperator} \SynRef{Expression}
+```.syntax
+	InfixOperatorExpression
+        Expression InfixOperator} Expression
 
-    \SynDefine{InfixOperator} \\
-        | \code{*} \SynComment{multiplication} \\
-        | \code{/} \SynComment{division} \\
-        | \code{\%} \SynComment{remainder of division} \\
-        | \code{+} \SynComment{addition} \\
-        | \code{-} \SynComment{subtraction} \\
-        | \code{<<} \SynComment{left shift} \\
-        | \code{>>} \SynComment{right shift} \\
-        | \code{<} \SynComment{less than} \\
-        | \code{>} \SynComment{greater than} \\
-        | \code{<=} \SynComment{less than or equal to} \\
-        | \code{>=} \SynComment{greater than or equal to} \\
-        | \code{==} \SynComment{equal to} \\
-        | \code{!=} \SynComment{not equal to} \\
-        | \code{&} \SynComment{bitwise and} \\
-        | \code{^} \SynComment{bitwise exclusive or} \\
-        | \code{|} \SynComment{bitwise or} \\
-        | \code{&&} \SynComment{logical and} \\
-        | \code{||} \SynComment{logical or} \\
-        | \code{+=}		\SynComment{compound add/assign} \\
-        | \code{-=}    	\SynComment{compound subtract/assign} \\
-        | \code{*=}    	\SynComment{compound multiply/assign} \\
-        | \code{/=}    	\SynComment{compound divide/assign} \\
-        | \code{\%=}    	\SynComment{compound remainder/assign} \\
-        | \code{<<=}   	\SynComment{compound left shift/assign} \\
-        | \code{>>=}   	\SynComment{compound right shift/assign} \\
-        | \code{&=}    	\SynComment{compound bitwise and/assign} \\
-        | \code{\|=}   	\SynComment{compound bitwise or/assign} \\
-        | \code{^=}    	\SynComment{compound bitwise xor/assign} \\
-%        | \code{=}    	\SynComment{assignment} \\
-%        | \code{,}		\SynComment{sequence} \\
+    InfixOperator
+        | \code{*} // multiplication
+        | `/` // division
+        | \code{\%} // remainder of division
+        | \code{+} // addition
+        | `-` // subtraction
+        | \code{<<} // left shift
+        | \code{>>} // right shift
+        | `<` // less than
+        | `>` // greater than
+        | \code{<=} // less than or equal to
+        | \code{>=} // greater than or equal to
+        | \code{==} // equal to
+        | \code{!=} // not equal to
+        | \code{&} // bitwise and
+        | \code{^} // bitwise exclusive or
+        | \code{|} // bitwise or
+        | \code{&&} // logical and
+        | \code{||} // logical or
+        | \code{+=}		// compound add/assign
+        | \code{-=}    	// compound subtract/assign
+        | \code{*=}    	// compound multiply/assign
+        | \code{/=}    	// compound divide/assign
+        | \code{\%=}    	// compound remainder/assign
+        | \code{<<=}   	// compound left shift/assign
+        | \code{>>=}   	// compound right shift/assign
+        | \code{&=}    	// compound bitwise and/assign
+        | \code{\|=}   	// compound bitwise or/assign
+        | \code{^=}    	// compound bitwise xor/assign
+%        | `=`    	// assignment
+%        | `,`		// sequence
 
-\end{Syntax}
+```
 
 
 %TODO: need to get the precedence groups from this table into the grammar rules.
@@ -587,10 +587,10 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
 %| `=`       | Assignment  		| assignment |
 %| `,`		| Sequencing  		| sequence |
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB} \\
+        \SynthCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\SynthExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
@@ -598,51 +598,51 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
 
 	\DerivationRule{
         \begin{trgather}
-            \CheckCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB} \\
+            \CheckCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\CheckExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
 	}
-\end{Checking}
+```
 
 With the exception of the assignment operator (`=`), an infix operator expression like `left + right` is equivalent to a call expression to a function of the matching name `operator+(left, right)`.
 
 ### Conditional Expression ### {#expr.op.cond}
 
-\begin{Syntax}
-	\SynDefine{ConditionalExpression} \\
-        \SynVar[condition]{Expression} \code{?} \SynVar[then]{Expression} \code{:} \SynVar[else]{Expression}
-\end{Syntax}
+```.syntax
+	ConditionalExpression
+        \SynVar[condition]{Expression} \code{?} \SynVar[then]{Expression} `:` \SynVar[else]{Expression}
+```
 
-\begin{Checking}
+```.checking
 	\DerivationRule{
         \begin{trgather}
-        \CheckExpr{\ContextVarA}{cond}{\code{Bool}}{\ContextVarB} \\
-        \CheckExpr{\ContextVarB,\code{type} \alpha}{t}{type}{\ContextVarC} \\
-        \CheckExpr{\ContextVarC,\code{type} \alpha}{e}{type}{\ContextVarD} \\
+        \CheckExpr{\ContextVarA}{cond}{`Bool`}{\ContextVarB
+        \CheckExpr{\ContextVarB,\code{type} \alpha}{t}{type}{\ContextVarC
+        \CheckExpr{\ContextVarC,\code{type} \alpha}{e}{type}{\ContextVarD
         \end{trgather}
 	}{
-		\CheckExpr{\ContextVarA}{cond \code{?} t \code{:} e}{type}{\ContextVarD}
+		\CheckExpr{\ContextVarA}{cond \code{?} t `:` e}{type}{\ContextVarD}
 	}\vspace{1em}
-\end{Checking}
+```
 
-\begin{Description}
-In both checking and synthesis judgements, the \SynRef{condition} of a conditional expression is checked against the \code{Bool} type.
+Note:
+In both checking and synthesis judgements, the condition} of a conditional expression is checked against the `Bool` type.
 
-In the checking judgement, the \SynRef{then} and \SynRef{else} expressions are both checked against the expected type.
-\end{Description}
+In the checking judgement, the then} and else} expressions are both checked against the expected type.
 
-\begin{Checking}
+
+```.checking
 	\DerivationRule{
         \begin{trgather}
-		\CheckExpr{\ContextVarA, \code{type} \alpha}{cond \code{?} t \code{:} e}{\alpha}{\ContextVarB} \\
+		\CheckExpr{\ContextVarA, \code{type} \alpha}{cond \code{?} t `:` e}{\alpha}{\ContextVarB
         \end{trgather}
 	}{
-		\SynthExpr{\ContextVarA}{cond \code{?} t \code{:} e}{\alpha}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{cond \code{?} t `:` e}{\alpha}{\ContextVarB}
 	}
-\end{Checking}
+```
 
-\begin{Description}
+Note:
 In the synthesis direction, a fresh type variable $\alpha$ is introduced, and the expression is checked against that type.
-The output context \ContextVarB of the checking step may include constraints on $\alpha$ introduced by checking the \SynRef{then} and \SynRef{else} expressions.
-\end{Description}
+The output context \ContextVarB of the checking step may include constraints on $\alpha$ introduced by checking the then} and else} expressions.
+

@@ -5,10 +5,10 @@ Automatic Differentiation {#autodiff}
 This chapter needs to specify:
 
 
-\begin{itemize}
-\item The built-in types and attributes related to automatic differentiation.
-\item The rules applied when checking the body of a \code{[Differentiable]} function.
-\item The semantics of the \code{fwd_diff} and \code{bwd_diff} operators, including how to determine the signature of the function they return.
-\item The requirements of the \code{IDifferentiable} interface, and also the rules used to automatically synthesize conformance for it.
-\end{itemize}
+
+* The built-in types and attributes related to automatic differentiation.
+* The rules applied when checking the body of a `[Differentiable]` function.
+* The semantics of the `fwd_diff` and `bwd_diff` operators, including how to determine the signature of the function they return.
+* The requirements of the `IDifferentiable` interface, and also the rules used to automatically synthesize conformance for it.
+
 </div>

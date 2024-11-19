@@ -13,29 +13,23 @@ Contexts {#check.context}
 A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries</dfn>.
 Context entries include <dfn>bindings</dfn> of the name of a variable (an [[=identifier=]]) to its type.
 
-\begin{Syntax}
-    \SynDefine{context}
-        \ContextVarA, \ContextVarB, ... \SynComment{context variable} \\
-        | $null$ \SynComment{empty context} \\
-        | \SynRef{context}, \SynRef{binding}
+```.checking
 
-    \SynDefine{binding}
-        $name$ : $type$ \SynComment{variable} \\
-        | $name$ :  \textsc{Exactly}($value$) \SynComment{alias}
-\end{Syntax}
+    Context :
+        ContextEntry*
+    
+    ContextEntry :
+        Binding
+    
+    Binding :
+        Identifier : Type // variable
+        Identifer = Value // alias
+```
 
+A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=bindings=] with |n| on the left-hand side.
 
-The notation:
-\begin{center}
-\ContextContains{\ContextVarA}{E}
-\end{center}
-indicates that the context \ContextVarA\ contains an entry matching $E$.
-
-The notation:
-\begin{center}
-\ContextLookup{\ContextVarA}{k}{v}
-\end{center}
-indicates that the right-most entry in context \ContextVarA\ that has key $k$ maps to $v$.
+Issue: We need to describe here the process by which an identifier resolves to a binding, including overloaded, etc.
+The discussion here will have to be a forward reference to the algorithms to be given later.
 
 Expressions {#check.expr}
 -----------
@@ -45,46 +39,31 @@ There are two different judgements used when checking expressions.
 
 ### Synthesis ### {#check.synth}
 
-The notation:
-\begin{center}
-\SynthExpr{\ContextVarA}{e}{t}{\ContextVarB}
-\end{center}
-means that under input context \ContextVarA, the expression $e$ <dfn>synthesizes</dfn> the type $t$, an yields output context \ContextVarB.
+A <dfn>synthesis judgement</dfn> determines that, given a [=context=] |c| and an [=expression=] |e|, |e| <dfn>synthesizes</dfn> some [=type=] |t| in context |c|.
 
-\begin{Description}
-Synthesis judgements are used in places where an expression needs to be checked, but the expected type of the expression is not known.
-In terms of implementation, \ContextVarA and $e$ are inputs, while $t$ and \ContextVarB are outputs.
-\end{Description}
+Issue: as written here, a synthesis judgement might actually have *side effects* on the context.
+That needs to be specified somehow.
+
+Note: Synthesis judgements are used in places where an expression needs to be checked, but the expected type of that expression in not known.
+In algorithmic terms |c| and |e| are inputs, while |t| is an output.
 
 ### Checking ### {#check.check}
 
-The notation:
-\begin{center}
-\CheckExpr{\ContextVarA}{e}{t}{\ContextVarB}
-\end{center}
-means that under input context \ContextVarA, the expression $e$ <dfn>checks against</dfn> the type $t$, and yields output context \ContextVarB.
+A <dfn>checking judgement</dfn> determines that, given a [=context=] |c|, an [=expression=] |e|, and a [=type=] |t|, |e| <dfn>checks against</dfn> |t| in context |c|.
 
-\begin{Description}
-Checking judgements are used in places where the type that an expression is expected to have is known.
-In terms of implementation, \ContextVarA, $e$, and $t$ are all inputs, and \ContextVarB is the only output.
-\end{Description}
-
+Note: Checking judgements are used in places where the type that an expression is expected to have is known.
+In algorithmic terms |c|, |e|, and |t| are all inputs.
 
 Statements {#check.stmt}
 ----------
 
-The notation:
-\begin{center}
-\CheckStmt{\ContextVarA}{s}{\ContextVarB}
-\end{center}
-means that under input context \ContextVarA, checking of statement $s$ is successful, and yields output context \ContextVarB.
+Statement also use [=checking judgements=].
+A checking judgement for a statement determines that [=statement=] |s| <dfn>checks</dfn> in [=context=] |c|.
 
 Declarations {#check.decl}
 ------------
 
-The notation:
-\begin{center}
-\CheckDecl{\ContextVarA}{d}{\ContextVarB}
-\end{center}
-means that under input context \ContextVarA, checking of declaration $d$ is successful, and yields output context \ContextVarB.
+Declarations also use [=checking judgements=].
+A checking judgement for a declaration determines that [=declaration=] |d| [[=checks=]] in [=context=] |c|.
 
+Checking of a declaration may modify the context |c| to include additional bindings.

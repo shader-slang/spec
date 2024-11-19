@@ -4,19 +4,19 @@ Visibility Control {#vis}
 <div class=issue>
 This chapter needs to explain the rules for:
 
-\begin{itemize}
 
-\item What declarations in a module are visible to modules that \code{import} it?
 
-\item What are the modifiers that can be used to control visibility (\code{public}, \code{internal}, \code{private}), and what are their semantics.
+* What declarations in a module are visible to modules that `import` it?
 
-\item What is the inferred visibility of a declaration without an explicit modifier?
+* What are the modifiers that can be used to control visibility (`public`, `internal`, `private`), and what are their semantics.
 
-\item What are the rules about what modifiers are legal in what contexts?
-\subitem E.g., a \code{public} field should not be allowed in an \code{internal} type.
-\subitem E.g., a \code{public} function should not be allowed to have a non-\code{public} type used in its signature.
+* What is the inferred visibility of a declaration without an explicit modifier?
 
-\item How is visibility controlled for interface conformances?
+* What are the rules about what modifiers are legal in what contexts?
+  *  E.g., a `public` field should not be allowed in an `internal` type.
+  *  E.g., a `public` function should not be allowed to have a non-`public` type used in its signature.
 
-\end{itemize}
+* How is visibility controlled for interface conformances?
+
+
 </div>

@@ -1,7 +1,7 @@
 Lexical Structure {#lex}
 =================
 
-This chapter describes how a source unit is decomposed into a sequence of [[=lexemes=]].
+This chapter describes how a [=source unit=] is decomposed into a sequence of [[=lexemes=]].
 
 Source Units {#lex.source-unit}
 ------------
@@ -11,12 +11,12 @@ For the purposes of this document, a <dfn>character</dfn> is defined as a [[!Uni
 
 Note: A Unicode scalar value is a Unicode code point that is not a surrogate code point.
 
-Implementations may accept source units stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
+Implementations may accept [=source units=] stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
 Encoding {#lex.encoding}
 --------
 
-Implementations must support source units encoded using UTF-8, if they support any encoding of source units as byte sequences.
+Implementations must support [=source units=] encoded using UTF-8, if they support any encoding of [=source units=] as byte sequences.
 
 Implementations should default to the UTF-8 encoding for all text input/output.
 
@@ -33,7 +33,7 @@ Lexical processing of a [[=source unit=]] proceeds *as if* the following steps a
 
 3. Each comment is replaced with a single space (U+0020)
 
-4. The source unit is *lexed* into a sequence of [[=tokens=]] according to the lexical grammar in this chapter
+4. The [=source unit=] is *lexed* into a sequence of [[=tokens=]] according to the lexical grammar in this chapter
 
 5. The lexed sequence of tokens is [[=preprocessed=]] to produce a new sequence of tokens
 
@@ -90,16 +90,16 @@ A <dfn>line break</dfn> consists of a line feed (U+000A), carriage return (U+000
 
 An <dfn>escaped line break</dfn> is a backslash (`\`, U+005C) follow immediately by a [[=line break=]].
 
-A source unit is split into <dfn>lines</dfn>: non-empty sequences of [[=characters=]] separated by [[=line breaks=]].
+A [=source unit=] is split into <dfn>lines</dfn>: non-empty sequences of [[=characters=]] separated by [[=line breaks=]].
 
-Note: Line breaks are used as line separators rather than terminators; it is not necessary for a source unit to end with a line break.
+Note: Line breaks are used as line separators rather than terminators; it is not necessary for a [=source unit=] to end with a line break.
 
 #### Comments #### {#comment}
 
 A <dfn>comment</dfn> is either a [[=line comment=]] or a [[=block comment=]].
 
 A <dfn>line comment</dfn> comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a [[=line break=]].
-A [[=line comment=]] extends up to, but does not include, a subsequent [[=line break=]] or the end of the source unit.
+A [[=line comment=]] extends up to, but does not include, a subsequent [[=line break=]] or the end of the [=source unit=].
 
 A <dfn>block comment</dfn> begins with a forward slash (`/`, U+002F) followed by an asterisk (`*`, U+0052). 
 A [[=block comment=]] is terminated by the next instance of an asterisk followed by a forward slash (`*/`).
@@ -174,7 +174,7 @@ When no radix specifier is present, a numeric literal is a <dfn>decimal literal<
 
 Note:Octal literals (radix 8) are not supported.
 A `0` prefix on an integer literal does *not* specify an octal literal as it does in C.
-Implementations \emph{may} warn on integer literals with a `0` prefix in case users expect C behavior.
+Implementations may warn on integer literals with a `0` prefix in case users expect C behavior.
 
 The grammar of the <dfn>digits</dfn> for a numeric level depend on its radix, as follows:
 
@@ -188,7 +188,7 @@ A <dfn>numeric literal suffix</dfn> consists of any sequence of characters that 
 
 Note: A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
 
-\SubSubSection{Integer Literals}{int}
+#### Integer Literals #### {#int}
 
 An <dfn>integer literal</dfn> consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
 
@@ -198,7 +198,7 @@ The suffix on an integer literal may be used to indicate the desired type of the
 * An `l` or `ll` suffix indicates the `Int64` type
 * A `ul` or `ull` suffix indicates the `UInt64` type
 
-\SubSubSection{Floating-Point Literals}{float}
+#### Floating-Point Literals #### {#float}
 
 A <dfn>floating-point literal</dfn> consists of either
 
@@ -214,11 +214,11 @@ The <dfn>exponent</dfn> of a floating-pointer literal consists of either `e` or 
 
 Issue: Need to document supported escape sequences.
 
-\SubSubSection{String Literals}{string}
+#### String Literals #### {#string}
 
 A <dfn>string literal</dfn> consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
 
-\SubSubSection{Character Literals}{char}
+#### Character Literals #### {#char}
 
 A <dfn>character literal</dfn> consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
 
@@ -238,8 +238,8 @@ Punctuation :
   | `)`     // right parenthesis
   | `[`     // left square bracket, opening square bracket
   | `]`     // right square bracket, closing square bracket
-  | `\{`    // left curly brace, opening curly brace
-  | `\}`    // right curly brace, closing curly brace
+  | `{`    // left curly brace, opening curly brace
+  | `}`    // right curly brace, closing curly brace
   | `;`     // semicolon
   | `:`     // colon
   | `,`     // comma
@@ -253,23 +253,23 @@ Operator :
   | ```     // backtick
   | `!`     // exclamation mark
   | `@`     // at sign
-  \$ & dollar sign
-  | `\%`    // percent sign
-  \textasciitilde & tilde
-  \^{`      // caret
+  | `$`     // dollar sign
+  | `%`     // percent sign
+  | `~`     //tilde
+  | `^`     // caret
   | `&`     // ampersand
   | `*`     // asterisk, multiplication operator
   | `-`     // minus sign, subtraction operator
   | `=`     // equals sign, assignment operator
   | `+`     // plus sign, addition operator
-  \textbar & pipe
+  | `|`     // pipe
   | `<`     // less-than sign, less-than operator
   | `>`     // greater-than sign, greater-than operator
   | `/`     // slash, division operator
   | `?`     // question mark
   | `==`    // double-equals, equal-to operator
   | `!=`    // not-equal operator
-  | `\%=`   // modulo-assign operator
+  | `%=`    // modulo-assign operator
   | `+=`    // add-assign operator
   | `^=`    // xor-assign operator
   | `&=`    // and-assign operator

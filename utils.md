@@ -158,13 +158,13 @@ fonttitle=\CalloutStyle,##1}}
     \text{\ttfamily\colorbox{CodeBackgroundColor}{#1}}
 }
 
-\newcommand{\code}[1]{\InlineCodeStyle{\lstinline[style=SlangCodeStyle]{#1}}}
+\newcommand{\code}[1]{\InlineCodeStyle{\code{#1}}}
 
-%\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{\lstinline[style=SlangCodeStyle]{#1}}}}
+%\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{\code{#1}}}}
 \newcommand{\kw}[1]{\code{#1}}
 
-\newcommand{\lcurly}{\code{\{}}
-\newcommand{\rcurly}{\code{\}}}
+\newcommand{`{`}{\code{\{}}
+\newcommand{`}`}{\code{\}}}
 
 % TODO: should make `\SpecRef` link to the definition point.
 \newcommand{\SpecDef}[1]{\text{\emph{#1}}}
@@ -174,9 +174,9 @@ fonttitle=\CalloutStyle,##1}}
 \newcommand{\SynDefine}[1]{\label{syntax:#1}\text{\emph{#1} ::=}}
 \newcommand{\SynRef}[1]{\hyperref[syntax:#1]{\text{\emph{#1}}}}
 \newcommand{|}{\text{ $\vert$ }}
-\newcommand{\SynStar}{\text{*}}
-\newcommand{\SynPlus}{\text{+}}
-\newcommand{\SynOpt}{\text{?}}
+\newcommand{*}{\text{*}}
+\newcommand{+}{\text{+}}
+\newcommand{?}{\text{?}}
 
 \newcommand{\SynVar}[2][]{\text{\emph{#1:#2}}}
 

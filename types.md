@@ -8,24 +8,24 @@ It is important to have the specification include a list of the major built-in t
 
 A key concept that this chapter needs to discuss is that there are a few distinct \emph{kinds} of types that Slang traffics in:
 
-\begin{itemize}
-\item \emph{Proper} types, such as \code{Int} and \code{RWStructuredBuffer<Float>}, which can be used for local variables, function parameters, etc.
 
-\item \emph{Interface} types, which include both references to `interface` declarations, but also conjunctions of interface types. Interface types are distinct from proper types. Interfaces can be used as constraints on generic type parameters, but proper types cannot. Similarly, an interface type is not semantically valid as a local variable or function parameter (the current Slang compiler simply translates such invalid usages to existential types, which are proper).
+* \emph{Proper} types, such as `Int` and \code{RWStructuredBuffer<Float>}, which can be used for local variables, function parameters, etc.
 
-\item \emph{Generic} types, which are the types of references to generic declarations. The current Slang language rules do not allow developers to utter generic types, and the semantics do not treat them as proper types. However, intermediate expressions of generic type can easily appear when checking Slang expressions.
-\end{itemize}
+* \emph{Interface} types, which include both references to [=interface declaration=]s, but also conjunctions of interface types. Interface types are distinct from proper types. Interfaces can be used as constraints on generic type parameters, but proper types cannot. Similarly, an interface type is not semantically valid as a local variable or function parameter (the current Slang compiler simply translates such invalid usages to existential types, which are proper).
+
+* \emph{Generic} types, which are the types of references to generic declarations. The current Slang language rules do not allow developers to utter generic types, and the semantics do not treat them as proper types. However, intermediate expressions of generic type can easily appear when checking Slang expressions.
+
 
 The type-checking rules will likely need to be able to refer to certain other types that are not part of the user-exposed Slang type system.
 From the judgements that have been sketched so far, it seems clear that we at least need:
 
-\begin{itemize}
-\item Some kind of ``type type'' or other way to refer to the logical ``type'' of an expression that itself names a (specific) type. This might be spelled $\textsc{Exactly}(...)$. So, for example, if the name \code{I} is bound as an alias for \code{Int} in a certain context, the typing judgements would determine $\code{I} : \textsc{Exactly}(\code{Int})$.
 
-\item Some kind of ``overload group'' type, which represents that a given expression resolves only to a group of candidates, such that further disambiguation is needed. Such a type might be spelled $\textsc{Overloaded}(...)$, where the arguments are the types of the candidates.
+* Some kind of ``type type'' or other way to refer to the logical ``type'' of an expression that itself names a (specific) type. This might be spelled $\textsc{Exactly}(...)$. So, for example, if the name \code{I} is bound as an alias for `Int` in a certain context, the typing judgements would determine $\code{I} : \textsc{Exactly}(`Int`)$.
 
-\item A set of ``reference'' types, such as \code{inout Int}, that can be used to represent the value category (e.g., l-value vs. r-value) of an expression. Subtyping/coercion rules would then need to support, e.g., passing a \code{ref Int} where an \code{inout Int} is expected, etc.
-\end{itemize}
+* Some kind of ``overload group'' type, which represents that a given expression resolves only to a group of candidates, such that further disambiguation is needed. Such a type might be spelled $\textsc{Overloaded}(...)$, where the arguments are the types of the candidates.
+
+* A set of ``reference'' types, such as `in`out Int}, that can be used to represent the value category (e.g., l-value vs. r-value) of an expression. Subtyping/coercion rules would then need to support, e.g., passing a `ref` Int} where an `in`out Int} is expected, etc.
+
 
 </div>
 
@@ -48,7 +48,7 @@ Scalar Types {#type.scalar}
 
 ### Boolean Type ### {#type.bool}
 
-The type \code{bool} is used to represent Boolean truth values: \code{true} and \code{false}.
+The type \code{bool} is used to represent Boolean truth values: `true` and `false`.
 
 The size of a \code{bool} varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use \code{bool} for in-memory data structures.
 On all platforms, the \code{bool} type must be <dfn>naturally aligned</dfn> (its alignment is its size).
@@ -61,10 +61,10 @@ The following integer types are defined:
   \hline
   Name & Description \\
   \hline
-  \code{int8\_t} & 8-bit signed integer \\
-  \code{int16\_t} & 16-bit signed integer \\
-  \code{int} & 32-bit signed integer \\
-  \code{int64\_t} & 64-bit signed integer \\
+  `int8_t` & 8-bit signed integer \\
+  `int16_t` & 16-bit signed integer \\
+  `int` & 32-bit signed integer \\
+  `int64_t` & 64-bit signed integer \\
   \code{uint8\_t} & 8-bit unsigned integer \\
   \code{uint16\_t} & 16-bit unsigned integer \\
   \code{uint} & 32-bit unsigned integer \\
@@ -75,7 +75,7 @@ The following integer types are defined:
 All signed integers use two's complement representation.
 All arithmetic operations on integers (both signed and unsigned) wrap on overflow/underflow.
 
-All target platforms must support the \code{int} and \code{uint} types.
+All target platforms must support the `int`} and \code{uint} types.
 Specific target platforms may not support the other integer types.
 
 Issue: "target platforms" links outside the specification to target-compatibility.md
@@ -109,8 +109,8 @@ All floating-point types are stored in memory with their natural size and alignm
 Vector Types {#type.vector}
 ------------
 
-A vector type is written as `vector<T, N>` and represents an \Char{N}-element vector with elements of type \Char{T}.
-The <dfn>element type</dfn> \Char{T} must be one of the built-in scalar types, and the <dfn>element count</dfn> \Char{N} must be a specialization-time constant integer.
+A vector type is written as `vector<T, N>` and represents an \code{N}-element vector with elements of type \code{T}.
+The <dfn>element type</dfn> \code{T} must be one of the built-in scalar types, and the <dfn>element count</dfn> \code{N} must be a specialization-time constant integer.
 The element count must be between 2 and 4, inclusive.
 
 A vector type allows subscripting of its elements like an array, but also supports element-wise arithmetic on its elements.
@@ -126,9 +126,9 @@ b / a; // yields { 10, 10, 0, 0 }
 a > b; // yields { false, false, true, true }
 ```
 
-A vector type is laid out in memory as \Char{N} contiguous values of type \Char{T} with no padding.
+A vector type is laid out in memory as \code{N} contiguous values of type \code{T} with no padding.
 The alignment of a vector type may vary by target platforms.
-The alignment of `vector<T,N>` will be at least the alignment of \Char{T} and may be at most \Char{N} times the alignment of \Char{T}.
+The alignment of `vector<T,N>` will be at least the alignment of \code{T} and may be at most \code{N} times the alignment of \code{T}.
 
 As a convenience, Slang defines built-in type aliases for vectors of the built-in scalar types.
 E.g., declarations equivalent to the following are provided by the Slang standard library:
@@ -140,7 +140,7 @@ typealias int8_t3 = vector<int8_t, 3>;
 
 ### Legacy Syntax ### {#type.vector.legacy}
 
-For compatibility with older codebases, the generic \code{vector} type includes default values for \Char{T} and \Char{N}, being declared as:
+For compatibility with older codebases, the generic \code{vector} type includes default values for \code{T} and \code{N}, being declared as:
 
 ```
 struct vector<T = float, let N : int = 4> { ... }
@@ -159,23 +159,23 @@ vector<float, 4> d;
 Matrix Types {#type.matrix}
 ------------
 
-A matrix type is written as `matrix<T, R, C>` and represents a matrix of \Char{R} rows and \Char{C} columns, with elements of type \Char{T}.
-The element type \Char{T} must be one of the built-in scalar types.
-The <dfn>row count</dfn> \Char{R} and <dfn>column count</dfn> \Char{C} must be specialization-time constant integers.
+A matrix type is written as `matrix<T, R, C>` and represents a matrix of \code{R} rows and \code{C} columns, with elements of type \code{T}.
+The element type \code{T} must be one of the built-in scalar types.
+The <dfn>row count</dfn> \code{R} and <dfn>column count</dfn> \code{C} must be specialization-time constant integers.
 The row count and column count must each be between 2 and 4, respectively.
 
-A matrix type allows subscripting of its rows, similar to an \Char{R}-element array of `vector<T,C>` elements.
+A matrix type allows subscripting of its rows, similar to an \code{R}-element array of `vector<T,C>` elements.
 A matrix type also supports element-wise arithmetic.
 
 Matrix types support both <dfn>row-major</dfn> and <dfn>column-major</dfn> memory layout.
 Implementations may support command-line flags or API options to control the default layout to use for matrices.
 
-Note: Slang currently does \emph{not} support the HLSL \code{row\_major} and \code{column\_major} modifiers to set the layout used for specific declarations.
+Note: Slang currently does not support the HLSL \code{row\_major} and \code{column\_major} modifiers to set the layout used for specific declarations.
 
-Under row-major layout, a matrix is laid out in memory equivalently to an \Char{R}-element array of `vector<T,C>` elements.
+Under row-major layout, a matrix is laid out in memory equivalently to an \code{R}-element array of `vector<T,C>` elements.
 
 Under column-major layout, a matrix is laid out in memory equivalent to the row-major layout of its transpose.
-This means it will be laid out equivalently to a \Char{C}-element array of `vector<T,R>` elements.
+This means it will be laid out equivalently to a \code{C}-element array of `vector<T,R>` elements.
 
 As a convenience, Slang defines built-in type aliases for matrices of the built-in scalar types.
 E.g., declarations equivalent to the following are provided by the Slang standard library:
@@ -189,12 +189,12 @@ Note: For programmers using OpenGL or Vulkan as their graphics API, and/or who a
 it is important to recognize that the equivalent of a GLSL \code{mat3x4} is a Slang \code{float3x4}.
 This is despite the fact that GLSL defines a \code{mat3x4} as having 3 \emph{columns} and 4 \emph{rows}, while a Slang \code{float3x4} is defined as having 3 rows and 4 columns.
 This convention means that wherever Slang refers to "rows" or "columns" of a matrix, the equivalent terms in the GLSL, SPIR-V, OpenGL, and Vulkan specifications are "column" and "row" respectively (\emph{including} in the compound terms of "row-major" and "column-major")
-While it may seem that this choice of convention is confusing, it is necessary to ensure that subscripting with \Char{[]} can be efficiently implemented on all target platforms.
+While it may seem that this choice of convention is confusing, it is necessary to ensure that subscripting with \code{[]} can be efficiently implemented on all target platforms.
 This decision in the Slang language is consistent with the compilation of HLSL to SPIR-V performed by other compilers.
 
 ### Legacy Syntax ### {#type.matrix.legacy}
 
-For compatibility with older codebases, the generic \code{matrix} type includes default values for \Char{T}, \Char{R}, and \Char{C}, being declared as:
+For compatibility with older codebases, the generic \code{matrix} type includes default values for \code{T}, \code{R}, and \code{C}, being declared as:
 
 ```
 struct matrix<T = float, let R : int = 4, let C : int = 4> { ... }
@@ -227,11 +227,11 @@ struct S
 The <dfn>standard layout</dfn> for a structure type uses the following algorithm:
 
 * Initialize variables \code{size} and \code{alignment} to zero and one, respectively
-* For each field \Char{f} of the structure type:
-  * Update \code{alignment} to be the maximum of \code{alignment} and the alignment of \Char{f}
+* For each field \code{f} of the structure type:
+  * Update \code{alignment} to be the maximum of \code{alignment} and the alignment of \code{f}
   * Set \code{size} to the smallest multiple of \code{alignment} not less than \code{size}
-  * Set the offset of field \Char{f} to \code{size}
-  * Add the size of \Char{f} to \code{size}
+  * Set the offset of field \code{f} to \code{size}
+  * Add the size of \code{f} to \code{size}
 
 When this algorithm completes, \code{size} and \code{alignment} will be the size and alignment of the structure type.
 
@@ -258,17 +258,17 @@ Array Types {#type.array}
 
 An <dfn>array type</dfn> is either a statically-sized or dynamically-sized array type.
 
-A known-size array type is written `T[N]` where \Char{T} is a type and \Char{N} is a specialization-time constant integer.
-This type represents an array of exactly \Char{N} values of type \Char{T}.
+A known-size array type is written `T[N]` where \code{T} is a type and \code{N} is a specialization-time constant integer.
+This type represents an array of exactly \code{N} values of type \code{T}.
 
-An unknown-size array type is written \Char{T[]} where \Char{T} is a type.
+An unknown-size array type is written \code{T[]} where \code{T} is a type.
 This type represents an array of some fixed, but statically unknown, size.
 
 Note: Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
 
 ### Declaration Syntax ### {#type.array.decl}
 
-For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \Char{T} as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
+For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \code{T} as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
 
 ```
 int a[10];
@@ -280,7 +280,7 @@ Alternatively, the array type itself may be used as the type specifier:
 int[10] a;
 ```
 
-When using the \code{var} or \code{let} keyword to declare a variable, the array type must not be split:
+When using the `var` or `let` keyword to declare a variable, the array type must not be split:
 
 ```
 var a : int[10];
@@ -293,8 +293,8 @@ The following two declarations are equivalent:
 int[3][5] a;
 int a[5][3];
 ```
-In each case, \Char{a} is a five-element array of three-element arrays of \code{int}s.
-However, one declaration orders the element counts as \Char{[3][5]} and the other as \Char{[5][3]}.
+In each case, \code{a} is a five-element array of three-element arrays of `int`s.
+However, one declaration orders the element counts as \code{[3][5]} and the other as \code{[5][3]}.
 </div>
 
 ### Element Count Inference ### {#type.array.inference}
@@ -319,22 +319,22 @@ A variable declared in this fashion semantically has a known-size array type and
 
 The <dfn>stride</dfn> of a type is the smallest multiple of its alignment not less than its size.
 
-Using the standard layout for an array type \Char{T[]} or `T[N]`:
+Using the standard layout for an array type \code{T[]} or `T[N]`:
 
-* The <dfn>element stride</dfn> of the array type is the stride of its element type \Char{T}
-* Element \Char{i} of the array starts at an offset that is \Char{i} times the element stride of the array
-* The alignment of the array type is the alignment of \Char{T}
+* The <dfn>element stride</dfn> of the array type is the stride of its element type \code{T}
+* Element \code{i} of the array starts at an offset that is \code{i} times the element stride of the array
+* The alignment of the array type is the alignment of \code{T}
 * The size of an unknown-size array type is unknown
 * The size of a known-size array with zero elements is zero
-* The size of a known-size array with a nonzero number \Char{N} of elements is the size of \Char{T} plus \Char{N - 1} times the element stride of the array
+* The size of a known-size array with a nonzero number \code{N} of elements is the size of \code{T} plus \code{N - 1} times the element stride of the array
 
 ### C-Style Layout ### {#type.array.layout.c}
 
-The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number \Char{N} of elements is \Char{N} times the element stride of the array.
+The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number \code{N} of elements is \code{N} times the element stride of the array.
 
 ### D3D Constant Buffer Layout ### {#type.array.layout.d3d.cbuffer}
 
-The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \Char{T} that is not less than the stride of \Char{T}
+The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \code{T} that is not less than the stride of \code{T}
 
 This Type {#type.this}
 ---------

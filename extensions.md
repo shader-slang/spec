@@ -4,19 +4,19 @@ Type Linearization {#linearization}
 <div class=issue>
 
 This chapter needs to explain how, given a type, an implementation should derive the \emph{linearization} of that type into an ordered list of \emph{facets}.
-Each facet corresponds to some \SynRef{DeclBody}, and thus has a set of declarations in it that may bind certain names.
+Each facet corresponds to some DeclBody, and thus has a set of declarations in it that may bind certain names.
 
 The linearization of a type should include:
 
-\begin{itemize}
-\item A facet for the type itself, which will include the declarations explicitly written inside the body of that type's \SynRef{DeclBody}.
 
-\item One facet for each transitive base of the type, including both concrete types it inherits from and `interface`s it conforms to.
+* A facet for the type itself, which will include the declarations explicitly written inside the body of that type's DeclBody.
 
-\item One facet for each \code{extension} that is both visible in the context where linearization is being performed \emph{and} applicable to the type.
-\end{itemize}
+* One facet for each transitive base of the type, including both concrete types it inherits from and `interface`s it conforms to.
 
-Note that base facets are included even for bases that are introduced via an \code{extension}.
+* One facet for each `extension` that is both visible in the context where linearization is being performed \emph{and} applicable to the type.
+
+
+Note that base facets are included even for bases that are introduced via an `extension`.
 Similarly, extension facets are included for extensions that might apply to the type through one of its bases.
 
 The set of facets for a type will always be a subset of those for each of its bases.

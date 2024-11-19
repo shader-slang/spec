@@ -34,6 +34,8 @@ path: checking.md
 <pre class=include>path: attributes.md</pre>
 <pre class=include>path: visibility.md</pre>
 <pre class=include>path: statements.md</pre>
+<!--
+
 <pre class=include>path: expressions.md</pre>
 <pre class=include>path: extensions.md</pre>
 <pre class=include>path: lookup.md</pre>
@@ -45,3 +47,5 @@ path: checking.md
 <pre class=include>path: conversion.md</pre>
 <pre class=include>path: capabilities.md</pre>
 <pre class=include>path: autodiff.md</pre>
+
+-->

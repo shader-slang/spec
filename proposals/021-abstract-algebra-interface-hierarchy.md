@@ -1,8 +1,7 @@
-# SP #015: Abstract Algebra Interface Hierarchy
+# SP #021: Abstract Algebra Interface Hierarchy
 
 This proposal introduces a hierarchy of algebraic structure interfaces in
-Slang, providing a foundation for principled generic mathematical
-operations.
+Slang, providing a foundation for principled generic mathematical operations.
 
 ## Status
 
@@ -29,17 +28,17 @@ abstract algebra, for example:
 - Matrices
 - Complex numbers
 
-Additionally, many types support only a subset of arithmetic operations. For
-example:
+Additionally, many types support only a subset of arithmetic operations. For example:
 
-- Strings support concatenation (forming a monoid) but not subtraction
+- Strings support concatenation (forming a monoid (an additive identity
+  structure)) but not subtraction
 - Colors support addition and scalar multiplication but not division
 - Matrices support multiplication but aren't always invertible
-- Non-empty containers support concatenation (forming a semigroup) but lack an
-  identity element
+- Non-empty containers support concatenation (forming a semigroup)
+  but lack an identity element
 
 A single catch-all "Arithmetic" interface would be insufficient as it would
-force types to implement operations that don't make mathematical sense
+force types to implement operations that don't make mathematical sense.
 
 A formal interface hierarchy allows us to:
 
@@ -60,99 +59,112 @@ A formal interface hierarchy allows us to:
 
 ## Proposed Approach
 
-Implement the following interfaces, replacing in part `__BuiltinArithmeticType`
+Implement the following interfaces, replacing in part `__BuiltinArithmeticType`:
 
 ```slang
-// IAdditive represents a semigroup, i.e. types with an associative addition
-// operation
-// Examples: Non-empty arrays (concatenation), Colors (blending)
+// IAdditive represents a semigroup - a set with an associative binary operation
+// Properties: (a + b) + c = a + (b + c)
+// Examples: Non-empty arrays (concatenation), Colors (blending), Positive integers (addition)
 interface IAdditive
 {
-    T operator+(T a, T b);  // Associative addition
+    static This operator+(This a, This b);  // Associative addition
 };
 
-// IAdditiveIdentity represents an identity element on top of IAdditive, forming
-// a monoid
-// Examples: float3(0), identity matrix, zero quaternion
+// IAdditiveIdentity represents a monoid - a semigroup with an identity element
+// Properties: zero() + a = a + zero() = a
+// Examples: Arrays (empty array), Natural Numbers (0), Matrices (zero matrix)
 interface IAdditiveIdentity : IAdditive
 {
-    static T zero();  // Additive identity
+    static This zero();  // Additive identity
 };
 
-// ISubtractable adds inverse elements to IAdditiveIdentity, i.e. this is group
-// Examples: Vectors under addition, Matrices under addition
+// ISubtractable represents a group - a monoid with inverse elements
+// Properties: a + (-a) = (-a) + a = zero()
+// Examples: Integers, Real numbers, Vectors, Matrices under addition
 interface ISubtractable : IAdditiveIdentity
 {
-    T operator-();  // Additive inverse
+    static This operator-(This t);  // Additive inverse
+    static This operator-(This a, This b);
 };
 
-// ISemiring adds non-commutative multiplication with identity to IAdditiveIdentity,
-// Examples: Natural numbers under addition and multiplication
-interface ISemiring : IZero
+// IDistributive combines additive monoid with multiplicative monoid to form a
+// semiring.
+// Properties: Multiplication distributes over addition
+// (a + b) * c = (a * c) + (b * c)
+// c * (a + b) = (c * a) + (c * b)
+// one() * a = a * one() = a
+// Examples: Natural numbers, Matrices, Boolean algebra
+interface IDistributive : IAdditiveIdentity
 {
-    T operator*(T a, T b);
-    static T one();
+    static This operator*(This a, This b); // Multiplicative operation
+    static This one(); // Multiplicative identity
 };
 
-// IMultiplicative combines ISemiring with ISubtractable to form a ring.
-// Examples: Square matrices
-interface IMultiplicative : ISemiring, ISubtractable
+// IMultiplicative combines semiring with additive group to form a ring
+// Properties: All semiring properties plus additive inverses, multiplication
+// may not be commutative.
+// Examples: Integers, Square matrices, Quaternions
+interface IMultiplicative : IDistributive, ISubtractable
 {
 };
 
-// ICommutativeRing enforces that multiplication is commutative
-// Examples: Integers
+// ICommutativeRing represents a ring where multiplication is commutative
+// Properties: a * b = b * a
+// Examples: Integers, Real numbers, Complex numbers
 interface ICommutativeRing : IMultiplicative
 {
-    // Enforces a * b == b * a
+    // Enforces a * b = b * a
 };
 
-// IDivisible adds a multiplicative inverse to IMultiplicative
-// Examples: Quaternions
+// IDivisible adds multiplicative inverses to a IDivible to form a division
+// ring
+// Properties: x * recip(x) = recip(x) * x = one()
+// Examples: Quaternions, Real matrices (when invertible)
 interface IDivisible : IMultiplicative
 {
-    T recip(T x);  // Multiplicative inverse (named to avoid confusion with matrix inverse)
+    static This recip(This x);  // Multiplicative inverse
+    static This operator/(This a, This b);  // Division
 };
 
-// IRemainder adds division with remainder to ICommutativeRing
-// Examples: Integers
-interface IRemainder : CommutativeRing
+// IRemainder adds Euclidean division properties to a commutative ring
+// Properties: a = (a / b) * b + (a % b) where norm(a % b) < norm(b)
+// Examples: Integers, Polynomials
+interface IRemainder : ICommutativeRing
 {
-    T operator/(T a, T b);
-    T operator%(T a, T b);
-    uint norm(T a);
+    static This operator%(This a, This b);  // Remainder
+    static uint norm(This a);          // Absolute value for remainder comparison
 };
 
-// IField combines ICommutativeRing with IDivisble
-// Examples: Real numbers, Complex numbers
+// IField represents a commutative ring where every non-zero element has a multiplicative inverse
+// Properties: All commutative ring properties plus multiplicative inverses
+// Examples: Real numbers, Complex numbers, Rational numbers
 interface IField : ICommutativeRing, IDivisible
 {
 };
-
 ```
 
 ## Implementation notes
 
 Part of the scope of this work is to determine how close to this design we can
-achieve and not break backwards compatability. Or, what elements of backwards
-compatability we are willing to compromise on if any.
+achieve and not break backwards compatibility. Or, what elements of backwards
+compatibility we are willing to compromise on if any.
 
 ## Interface Rationale
 
 Each interface has specific types that satisfy it but not more specialized
-interfaces. A selection of non-normative examples.
+interfaces. A selection of non-normative examples:
 
-- Semigroup: Non-empty arrays/buffers under concatenation (no identity element)
-- Monoid: Strings under concatenation (no inverse operation)
-- Group: Square matrices under addition (multiplication isn't distributive)
-- CommutativeGroup: Vectors under addition (no multiplication)
-- Semiring: Boolean algebra (no additive inverses)
-- Ring: Square matrices under standard operations (multiplication isn't
-  commutative)
-- CommutativeRing: Dual numbers (no general multiplicative inverse)
-- EuclideanRing: Integers (no multiplicative inverse)
-- DivisionRing: Quaternions (multiplication isn't commutative)
-- Field: Complex numbers, Real numbers (satisfy all field axioms)
+- IAdditive: Non-empty arrays/buffers under concatenation (no identity element)
+- IAdditiveIdentity: Strings under concatenation (no inverse operation)
+- ISubtractable: Square matrices under addition (multiplication isn't
+  distributive)
+- IDistributive: Boolean algebra (no additive inverses)
+- IMultiplicative: Square matrices under standard operations (multiplication
+  isn't commutative)
+- ICommutativeRing: Dual numbers (no general multiplicative inverse)
+- IRemainder: Integers (no multiplicative inverse)
+- IDivisible: Quaternions (multiplication isn't commutative)
+- IField: Complex numbers, Real numbers (satisfy all field axioms)
 
 ## Floating Point Considerations
 
@@ -198,8 +210,7 @@ Design choices still TBD:
 - Treatment of unsigned integer literals
 - Conversion of double precision literals to single precision types
 - Error reporting mechanisms for out-of-range values
-- Whether to provide separate interfaces for different integer types (int32,
-  uint32, etc.)
+- Whether to provide separate interfaces for different integer types (int32, uint32, etc.)
 
 ## Generic Programming
 
@@ -207,14 +218,14 @@ This hierarchy enables generic algorithms that work with any type satisfying
 specific algebraic properties:
 
 ```slang
-// Generic linear interpolation for any Field
-T lerp<T : Field>(T a, T b, T t)
+// Generic linear interpolation for any IField
+T lerp<T : IField>(T a, T b, T t)
 {
     return a * (T.one() - t) + b * t;
 }
 
-// Generic accumulation for any Monoid
-T sum<T : Monoid>(T[] elements)
+// Generic accumulation for any IAdditiveIdentity
+T sum<T : IAdditiveIdentity>(T[] elements)
 {
     T result = T.zero();
     for(T elem in elements)
@@ -223,19 +234,18 @@ T sum<T : Monoid>(T[] elements)
 }
 
 // Generic matrix multiplication
-matrix<T, N, P>; mul<T : Ring, let N : int, let M : int, let P : int>(
+matrix<T, N, P> mul<T : IMultiplicative, let N : int, let M : int, let P : int>(
     a : matrix<T, N, M>,
     b : matrix<T, M, P>
 )
 {
-    // Implementation using only Ring operations
+    // Implementation using only IMultiplicative operations
 }
 
-
 // Generic geometric transforms
-Transform<T : Ring> compose<T>(Transform<T> a, Transform<T> b)
+Transform<T : IMultiplicative> compose<T>(Transform<T> a, Transform<T> b)
 {
-    // Implementation using Ring operations
+    // Implementation using IMultiplicative operations
 }
 ```
 
@@ -243,10 +253,9 @@ Transform<T : Ring> compose<T>(Transform<T> a, Transform<T> b)
 
 ### More nuanced hierarchy
 
-We could go a little further an introduce structures such as a `Magma`, which
-could be used to represent non-associative binary operations without an
-identity element. This could be used for example for some color mixing, however
-this has a major downside in that it defies programmer intuition that the `+`
+We could go further and introduce additional interfaces below `IAdditive`,
+which could be used for example for some color mixing operations. However, this
+has a major downside in that it defies programmer intuition that the `+`
 operator is associative.
 
 ### Operator Overloading Only
@@ -267,7 +276,8 @@ will need to built upon some algebraic hierarchy.
 
 ### Alternative: Heterogeneous Operation Types
 
-Similar to Rust's approach, we could allow operations to return different types than their inputs:
+Similar to Rust's approach, we could allow operations to return different types
+than their inputs:
 
 ```slang
 interface Add<RHS>
@@ -296,13 +306,13 @@ extension float : Add<float>
 This comes with some downsides however:
 
 - Non-injective type families (where multiple input type combinations could
-  produce the same output type) may lead to worse type inference.
+  produce the same output type) may lead to worse type inference
 - This flexibility, while powerful, introduces potential confusion about
   operation semantics
 - Most mathematical structures in abstract algebra assume operations are closed
-- The rare cases where heterogeneous operations are needed can be served
-  by explicit conversion functions or dedicated methods. This can also be
-  served by implicit conversions.
+- The rare cases where heterogeneous operations are needed can be served by
+  explicit conversion functions or dedicated methods. This can also be served by
+  implicit conversions
 
 The benefits of simpler type inference and clearer algebraic semantics outweigh
 the flexibility of heterogeneous operations.
@@ -327,7 +337,7 @@ Several potential extensions could enhance this algebraic hierarchy:
 
   - Add interfaces for lattices and boolean algebras
   - Support min/max operations
-  - Interval arithmetic
+  - Enable interval arithmetic
 
 - Module Interface
 

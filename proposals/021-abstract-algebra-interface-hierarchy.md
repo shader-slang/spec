@@ -63,78 +63,72 @@ A formal interface hierarchy allows us to:
 Implement the following interfaces, replacing in part `__BuiltinArithmeticType`
 
 ```slang
-// Semigroup represents types with an associative addition operation
+// IAdditive represents a semigroup, i.e. types with an associative addition
+// operation
 // Examples: Non-empty arrays (concatenation), Colors (blending)
-interface Semigroup
+interface IAdditive
 {
     T operator+(T a, T b);  // Associative addition
 };
 
-// Monoid adds an identity element to Semigroup
+// IAdditiveIdentity represents an identity element on top of IAdditive, forming
+// a monoid
 // Examples: float3(0), identity matrix, zero quaternion
-interface Monoid : Semigroup
+interface IAdditiveIdentity : IAdditive
 {
     static T zero();  // Additive identity
 };
 
-// Group adds inverse elements to Monoid
+// ISubtractable adds inverse elements to IAdditiveIdentity, i.e. this is group
 // Examples: Vectors under addition, Matrices under addition
-interface Group : Monoid
+interface ISubtractable : IAdditiveIdentity
 {
     T operator-();  // Additive inverse
 };
 
-// CommutativeGroup ensures addition order doesn't matter
-// Examples: Vectors, Colors (in linear space)
-interface CommutativeGroup : Group
-{
-    // Enforces a + b == b + a
-};
-
-// Semiring adds multiplication with identity to Monoid
-// Examples: Matrices, Quaternions
-interface Semiring : Monoid
+// ISemiring adds non-commutative multiplication with identity to IAdditiveIdentity,
+// Examples: Natural numbers under addition and multiplication
+interface ISemiring : IZero
 {
     T operator*(T a, T b);
     static T one();
 };
 
-// Ring combines CommutativeGroup with multiplication
-// Examples: Dual numbers, Complex numbers
-interface Ring : CommutativeGroup
+// IMultiplicative combines ISemiring with ISubtractable to form a ring.
+// Examples: Square matrices
+interface IMultiplicative : ISemiring, ISubtractable
 {
-    T operator*(T a, T b);
-    static T one();
 };
 
-// CommutativeRing ensures multiplication order doesn't matter
-// Examples: Complex numbers, Dual numbers
-interface CommutativeRing : Ring
+// ICommutativeRing enforces that multiplication is commutative
+// Examples: Integers
+interface ICommutativeRing : IMultiplicative
 {
     // Enforces a * b == b * a
 };
 
-// EuclideanRing adds division with remainder
-// Examples: Integers for texture coordinates
-interface EuclideanRing : CommutativeRing
+// IDivisible adds a multiplicative inverse to IMultiplicative
+// Examples: Quaternions
+interface IDivisible : IMultiplicative
+{
+    T recip(T x);  // Multiplicative inverse (named to avoid confusion with matrix inverse)
+};
+
+// IRemainder adds division with remainder to ICommutativeRing
+// Examples: Integers
+interface IRemainder : CommutativeRing
 {
     T operator/(T a, T b);
     T operator%(T a, T b);
     uint norm(T a);
 };
 
-// DivisionRing adds multiplicative inverses
-// Examples: Quaternions
-interface DivisionRing : Ring
+// IField combines ICommutativeRing with IDivisble
+// Examples: Real numbers, Complex numbers
+interface IField : ICommutativeRing, IDivisible
 {
-    T recip();  // Multiplicative inverse (named to avoid confusion with matrix inverse)
 };
 
-// Field combines CommutativeRing with DivisionRing
-// Examples: Real numbers, Complex numbers
-interface Field : CommutativeRing, DivisionRing
-{
-};
 ```
 
 ## Implementation notes

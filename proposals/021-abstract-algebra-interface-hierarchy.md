@@ -64,7 +64,7 @@ Implement the following interfaces, replacing in part `__BuiltinArithmeticType`:
 ```slang
 // IAdditive represents a semigroup - a set with an associative binary operation
 // Properties: (a + b) + c = a + (b + c)
-// Examples: Non-empty arrays (concatenation), Colors (blending), Positive integers (addition)
+// Examples: Non-empty arrays, Finite bounding box intersection, Probability distributions (convolution)
 interface IAdditive
 {
     static This operator+(This a, This b);  // Associative addition
@@ -72,7 +72,7 @@ interface IAdditive
 
 // IAdditiveIdentity represents a monoid - a semigroup with an identity element
 // Properties: zero() + a = a + zero() = a
-// Examples: Arrays (empty array), Natural Numbers (0), Matrices (zero matrix)
+// Examples: Arrays/strings under concatenation, Sets under union, Option type
 interface IAdditiveIdentity : IAdditive
 {
     static This zero();  // Additive identity
@@ -80,67 +80,123 @@ interface IAdditiveIdentity : IAdditive
 
 // ISubtractable represents a group - a monoid with inverse elements
 // Properties: a + (-a) = (-a) + a = zero()
-// Examples: Integers, Real numbers, Vectors, Matrices under addition
+// Examples: 2d rotations under composition, permutations under composition
 interface ISubtractable : IAdditiveIdentity
 {
     static This operator-(This t);  // Additive inverse
     static This operator-(This a, This b);
 };
 
-// IDistributive combines additive monoid with multiplicative monoid to form a
-// semiring.
+// IDistributive combines additive monoid with multiplicative monoid to form a semiring.
 // Properties: Multiplication distributes over addition
 // (a + b) * c = (a * c) + (b * c)
 // c * (a + b) = (c * a) + (c * b)
 // one() * a = a * one() = a
-// Examples: Natural numbers, Matrices, Boolean algebra
+// Examples: Natural numbers under addition and multiplication, Tropical semiring, Boolean semiring
 interface IDistributive : IAdditiveIdentity
 {
     static This operator*(This a, This b); // Multiplicative operation
     static This one(); // Multiplicative identity
 };
 
-// IMultiplicative combines semiring with additive group to form a ring
+// IMultiplicative combines semiring with additive group to form a ring.
 // Properties: All semiring properties plus additive inverses, multiplication
 // may not be commutative.
-// Examples: Integers, Square matrices, Quaternions
+// Examples: Square matrices (non-invertible), Quaternions (non-zero)
 interface IMultiplicative : IDistributive, ISubtractable
 {
 };
 
-// ICommutativeRing represents a ring where multiplication is commutative
+// ICommutativeRing represents a ring where multiplication is commutative.
 // Properties: a * b = b * a
-// Examples: Integers, Real numbers, Complex numbers
+// Examples: Polynomials with integer coefficients
 interface ICommutativeRing : IMultiplicative
 {
     // Enforces a * b = b * a
 };
 
-// IDivisible adds multiplicative inverses to a IDivible to form a division
-// ring
+// IDivisible adds multiplicative inverses to a ring to form a division ring.
 // Properties: x * recip(x) = recip(x) * x = one()
-// Examples: Quaternions, Real matrices (when invertible)
+// Examples: Quaternions, non-zero reals
 interface IDivisible : IMultiplicative
 {
     static This recip(This x);  // Multiplicative inverse
     static This operator/(This a, This b);  // Division
 };
 
-// IRemainder adds Euclidean division properties to a commutative ring
+// IRemainder adds Euclidean division properties to a commutative ring.
 // Properties: a = (a / b) * b + (a % b) where norm(a % b) < norm(b)
-// Examples: Integers, Polynomials
+// Examples: Integers, Gaussian integers
 interface IRemainder : ICommutativeRing
 {
     static This operator%(This a, This b);  // Remainder
     static uint norm(This a);          // Absolute value for remainder comparison
 };
 
-// IField represents a commutative ring where every non-zero element has a multiplicative inverse
+// IField represents a commutative ring where every non-zero element has a multiplicative inverse.
 // Properties: All commutative ring properties plus multiplicative inverses
 // Examples: Real numbers, Complex numbers, Rational numbers
 interface IField : ICommutativeRing, IDivisible
 {
 };
+```
+
+```mermaid
+flowchart TD
+    IAdditive["IAdditive
+(Semigroup)
+Examples: Colors, String concat,
+Probability distributions"]
+
+    IAdditiveIdentity["IAdditiveIdentity
+(Monoid)
+Examples: Sets with union,
+Functions with pointwise addition"]
+
+    ISubtractable["ISubtractable
+(Group)
+Examples: Permutations
+under composition"]
+
+    IDistributive["IDistributive
+(Semiring)
+Examples: Natural numbers,
+Boolean algebra"]
+
+    IMultiplicative["IMultiplicative
+(Ring)
+Examples: Square matrices,
+Quaternions"]
+
+    ICommutativeRing["ICommutativeRing
+(Commutative Ring)
+Examples: Polynomials with
+integer coefficients"]
+
+    IDivisible["IDivisible
+(Division Ring)
+Examples: Non-zero
+quaternions"]
+
+    IRemainder["IRemainder
+(Euclidean Ring)
+Examples: Gaussian
+integers"]
+
+    IField["IField
+(Field)
+Examples: Complex numbers,
+Rational numbers"]
+
+    IAdditive --> IAdditiveIdentity
+    IAdditiveIdentity --> ISubtractable
+    IAdditiveIdentity --> IDistributive
+    IDistributive & ISubtractable --> IMultiplicative
+    IMultiplicative --> ICommutativeRing
+    IMultiplicative --> IDivisible
+    ICommutativeRing --> IRemainder
+    ICommutativeRing & IDivisible --> IField
+
 ```
 
 ## Implementation notes

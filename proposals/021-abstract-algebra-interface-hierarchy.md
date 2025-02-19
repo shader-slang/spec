@@ -145,47 +145,50 @@ interface IField : ICommutativeRing, IDivisible
 flowchart TD
     IAdditive["IAdditive
 (Semigroup)
-Examples: Colors, String concat,
-Probability distributions"]
+Examples: Non-empty arrays,
+Finite bounding box intersection,
+Probability distributions (convolution)"]
 
     IAdditiveIdentity["IAdditiveIdentity
 (Monoid)
-Examples: Sets with union,
-Functions with pointwise addition"]
+Examples: Arrays/strings under concatenation,
+Sets under union,
+Option type"]
 
     ISubtractable["ISubtractable
 (Group)
-Examples: Permutations
-under composition"]
+Examples: 2D rotations under composition,
+Permutations under composition"]
 
     IDistributive["IDistributive
 (Semiring)
-Examples: Natural numbers,
-Boolean algebra"]
+Examples: Natural numbers under addition and multiplication,
+Tropical semiring,
+Boolean semiring"]
 
     IMultiplicative["IMultiplicative
 (Ring)
-Examples: Square matrices,
-Quaternions"]
+Examples: Square matrices (non-invertible),
+Quaternions (non-zero)"]
 
     ICommutativeRing["ICommutativeRing
 (Commutative Ring)
-Examples: Polynomials with
-integer coefficients"]
+Examples: Polynomials with integer coefficients"]
 
     IDivisible["IDivisible
 (Division Ring)
-Examples: Non-zero
-quaternions"]
+Examples: Quaternions,
+Non-zero reals"]
 
     IRemainder["IRemainder
 (Euclidean Ring)
-Examples: Gaussian
-integers"]
+Examples: Integers,
+Gaussian integers"]
 
     IField["IField
 (Field)
-Examples: Complex numbers,
+Examples: Real numbers,
+Complex numbers,
 Rational numbers"]
 
     IAdditive --> IAdditiveIdentity
@@ -196,7 +199,65 @@ Rational numbers"]
     IMultiplicative --> IDivisible
     ICommutativeRing --> IRemainder
     ICommutativeRing & IDivisible --> IField
+```
 
+Additionally the following interfaces extend `IField` to add support for
+hyperbolic and trigonometric operations.
+
+```slang
+interface ITrigonometric : IField
+{
+    static This pi();
+    static This sin(This angle);
+    static This cos(This angle);
+    static This tan(This angle);
+    static This asin(This value);
+    static This acos(This value);
+    static This atan(This value);
+    static This atan2(This y, This x);
+}
+
+interface IHyperbolic : IField
+{
+    static This e();
+    static This sinh(This value);
+    static This cosh(This value);
+    static This tanh(This value);
+    static This asinh(This value);
+    static This acosh(This value);
+    static This atanh(This value);
+}
+
+interface IExponential : IField
+{
+    static This exp(This x);
+    static This log(This x);   // Natural logarithm, base e
+    static This log10(This x); // Base-10 logarithm
+}
+```
+
+## Machine values
+
+```slang
+interface IEEE754Float : ITrigonometric, IHyperbolic, IExponential
+{
+    // IEEE754-specific constants
+    static This positiveInfinity(); // Returns the IEEE754 +∞
+    static This negativeInfinity(); // Returns the IEEE754 -∞
+    static This nan();              // Returns a NaN (Not-a-Number) value
+    static This epsilon();          // Returns the smallest difference such that 1 + epsilon != 1
+
+    // Classification functions
+    static bool isNaN(This x);      // Returns true if x is NaN
+    static bool isInfinite(This x); // Returns true if x is positive or negative infinity
+    static bool isFinite(This x);   // Returns true if x is finite (not infinity or NaN)
+
+    // Rounding operations
+    static This floor(This x);      // Returns the largest integer not greater than x
+    static This ceil(This x);       // Returns the smallest integer not less than x
+    static This round(This x);      // Rounds x to the nearest integer
+    static This trunc(This x);      // Truncates x, discarding the fractional part
+};
 ```
 
 ## Implementation notes

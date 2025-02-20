@@ -260,6 +260,24 @@ interface IEEE754Float : ITrigonometric, IHyperbolic, IExponential
 };
 ```
 
+## Interaction with vector and matrix types
+
+Vectors and square matrices can implement lawful conformances for many of the
+above interfaces. In most cases this just involves treating operations
+componentwise.
+
+One notable exception to this is matrix/vector or non-square matrix/matrix
+multiplication. An alternative implementation is discussed under Heterogeneous
+Operation Types below.
+
+## Interaction with built in operations
+
+The implementation of built in operations remains the same, with the internals
+branching at compile-time based on monomorphized function implementations.
+
+The user facing side of these implementations would however be moved into
+interface extensions defined in terms of renamed built in operations.
+
 ## Implementation notes
 
 Part of the scope of this work is to determine how close to this design we can
@@ -308,16 +326,18 @@ a + b * c  // equivalent to a + (b * c)
 ## Literal Conversion Interfaces
 
 ```slang
-// Types that can be constructed from integer literals
-interface FromInt
-{
-    static T fromInt(int value);
-};
-
 // Types that can be constructed from floating point literals
 interface FromFloat
 {
     static T fromFloat(float value);
+    static T fromDouble(double value);
+};
+
+// Types that can be constructed from integer literals
+interface FromInt
+{
+    static T fromInt(int value);
+    ...
 };
 ```
 
@@ -423,16 +443,15 @@ extension float : Add<float>
 This comes with some downsides however:
 
 - Non-injective type families (where multiple input type combinations could
-  produce the same output type) may lead to worse type inference
-- This flexibility, while powerful, introduces potential confusion about
-  operation semantics
+  produce the same output type) may lead to worse type inference should slang
+  move to a more sophisticated, bidirectional, type inference algorithm.
 - Most mathematical structures in abstract algebra assume operations are closed
 - The rare cases where heterogeneous operations are needed can be served by
   explicit conversion functions or dedicated methods. This can also be served by
   implicit conversions
 
-The benefits of simpler type inference and clearer algebraic semantics outweigh
-the flexibility of heterogeneous operations.
+The benefits of heterogeneous matrix multiplication are alluring though, and
+this is probably the alternative which should be given the most consideration.
 
 ## Future Extensions
 

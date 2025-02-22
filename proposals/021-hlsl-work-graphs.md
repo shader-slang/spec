@@ -208,23 +208,21 @@ For broadcasting launch nodes, where multiple thread groups can be launched for 
 ```
 /// read-only input to Coalescing launch node used with [MaxRecords(maxCount)] on Coalescing launch to specify a count greater than 1
 __generic<RecordType>
-[MaxRecords(4)]
 [require(hlsl_spirv, coalescing)]
 struct GroupNodeInputRecords
 {
-    NodePayloadPtr<RecordType> Get();
-    NodePayloadPtr<RecordType> __subscribe(int index) { get; }
+    NodePayloadPtr<RecordType> Get(int index = 0);
+    NodePayloadPtr<RecordType> __subscript(int index) { get; }
     int Count();
 };
 
 /// shared read/write input to Coalescing launch node used with [MaxRecords(maxCount)] on Coalescing launch to specify a count greater than 1
 __generic_<RecordType>
-[MaxRecords(4)]
 [require(hlsl_spirv, coalescing)]
 struct RWGroupNodeInputRecords
 {
-    NodePayloadPtr<RecordType> Get();
-    NodePayloadPtr<RecordType> __subscribe(int index) { get; set; }
+    NodePayloadPtr<RecordType> Get(int index = 0);
+    NodePayloadPtr<RecordType> __subscript(int index) { get; set; }
     int Count();
 };
 ```
@@ -264,7 +262,6 @@ struct RWThreadNodeInputRecord
 ```
 /// empty input used with [MaxRecords(maxCount)] on Coalescing launch to specify a count greater than 1
 [require(hlsl_spirv, coalescing)]
-[MaxRecords(4)]
 struct EmptyNodeInput
 {
     int Count();
@@ -291,7 +288,7 @@ struct NodeOutput
 [require(hlsl_spirv, thread)]
 struct NodeOutputArray
 {
-    NodePayloadPtr<NodeOutput> __subscribe(int index) { get; }
+    NodePayloadPtr<NodeOutput> __subscript(int index) { get; }
 };
 ```
 
@@ -314,7 +311,7 @@ struct EmptyNodeOutput
 [require(hlsl_spirv, broadcasting_coalescing_thread)]
 struct EmptyNodeOutputArray
 {
-    NodePayloadPtr<EmptyNodeOutput> __subscribe(int index) { get; }
+    NodePayloadPtr<EmptyNodeOutput> __subscript(int index) { get; }
 };
 ```
 
@@ -329,8 +326,8 @@ __generic<RecordType>
 [require(hlsl_spirv, thread)]
 struct ThreadNodeOutputRecords
 {
-    NodePayloadPtr<RecordType> Get();
-    NodePayloadPtr<RecordType> __subscribe(int index) { get; }
+    NodePayloadPtr<RecordType> Get(int index = 0);
+    NodePayloadPtr<RecordType> __subscript(int index) { get; }
     void OutputComplete();
 };
 ```
@@ -343,8 +340,8 @@ __generic<RecordType>
 [require(hlsl_spirv, coalescing_thread)]
 struct GroupNodeOutputRecords
 {
-    NodePayloadPtr<RecordType> Get();
-    NodePayloadPtr<RecordType> __subscribe(int index) { get; }
+    NodePayloadPtr<RecordType> Get(int index = 0);
+    NodePayloadPtr<RecordType> __subscript(int index) { get; }
     void OutputComplete();
 };
 ```

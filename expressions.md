@@ -1,8 +1,14 @@
 Expressions {#expr}
 ===========
 
-Expressions are terms that can be <dfn>evaluated</dfn> to produce values.
+<dfn>Expressions</dfn> are terms that can be <dfn>evaluated</dfn> to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
+
+<div class="issue">
+We need a place to define a <dfn>term</dfn> and note how it can be either an expression or a <dfn>type expression</dfn>.
+
+A <dfn>specialize expression</dfn> might occur in either the expression or type expression grammar.
+</div>
 
 In general, the order of evaluation of a Slang expression proceeds from left to right.
 Where specific expressions do not follow this order of evaluation, it will be noted.
@@ -16,7 +22,7 @@ Literal expressions are never l-values.
 
 ### Integer Literal Expressions ### {#expr.lit.int}
 
-An <dfn>integer literal expression</dfn> consists of a single IntegerLiteral token.
+An integer literal expression consists of a single IntegerLiteral token.
 
 ```.checking
 	\DerivationRule{
@@ -29,14 +35,14 @@ An <dfn>integer literal expression</dfn> consists of a single IntegerLiteral tok
 ```
 
 Note:
-An unsuffixed integer literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromIntegerLiteral}.
+An unsuffixed integer literal [=synthesizes=] a type that is a fresh type variable $\alpha$, [=constrained=] to conform to \code{IFromIntegerLiteral}.
 
 
 Issue: We need a description of how suffixed integer literals have their type derived from their suffix.
 
 ### Floating-Point Literal Expressions ### {#expr.lit.float}
 
-A <dfn>floating-point literal expression</dfn> consists of a single FloatingPointLiteral token.
+A floating-point literal expression consists of a single FloatingPointLiteral token.
 
 ```.checking
 	\DerivationRule{
@@ -61,7 +67,7 @@ Note:
 
     
 ```.syntax
-	BooleanLiteralExpression}
+	BooleanLiteralExpression
         `true` | `false`
 ```
 
@@ -84,7 +90,7 @@ A string literal expressions consists of one or more string literal tokens in a 
 
 
 ```.syntax
-	StringLiteralExpression}
+	StringLiteralExpression
         StringLiteral+
 ```
 
@@ -148,12 +154,14 @@ Member Expression {#expr.member}
 ```
 
 <div class=issue>
+
 The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
 In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
 
 * Implicit dereference of pointer-like types.
 * Swizzles (vector or matrix).
 * Static vs. instance members.
+
 </div>
 
 In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
@@ -207,7 +215,7 @@ This Expression {#expr.this}
 ---------------
 
 ```.syntax
-	ThisExpression} 
+	ThisExpression
         \code{this
 ```
 
@@ -230,7 +238,7 @@ Parenthesized Expression {#expr.paren}
 -------------
 
 Note:
-An expression wrapped in parentheses \code{()} is a <dfn>parenthesized expression</dfn> and evaluates to the same value as the wrapped expression.
+An expression wrapped in parentheses (`()`) is a parenthesized expression and evaluates to the same value as the wrapped expression.
 
 
 ```.syntax
@@ -320,7 +328,7 @@ Subscript Expression {#expr.subscript}
 To a first approximation, a subscript expression like \code{base[a0, a1]} is equivalent to something like \code{base.subscript(a0, a1)}.
 That is, we look up the `subscript` members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
 
-Unlike simple function calls, a subscript expression can result in an l-value, based on what accessors the `subscript` declaration that is selected by overload resolution has.
+Unlike simple function calls, a subscript expression can result in an [=l-value=], based on what accessors the `subscript` declaration that is selected by overload resolution has.
 </div>
 
 %A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
@@ -338,7 +346,7 @@ Initializer List Expression {#expr.init-list}
 ```
 
 Note:
-An initializer-list expression may only appear in contexts where it will be checked against an expected type.
+An initializer-list expression can only appear in contexts where it will be checked against an expected type.
 There are no synthesis rules for initializer-list expressions.
 
 An initializer-list expression is equivalent to constructing an instance of the expected type using the arguments.
@@ -373,7 +381,7 @@ A <dfn>cast expression</dfn> attempts to coerce an expression to a desired type.
 ```
 
 Note:
-A cast expression always synthesizes a type, since the type it produces is manifest in the expression.
+A [=cast expression=] always synthesizes a type, since the type it produces is manifest in the expression.
 
 
 <div class=issue>
@@ -441,6 +449,10 @@ Operator Expressions {#expr.op}
 
 ### Prefix Operator Expressions ### {#expr.op.prefix}
 
+<div class="issue">
+This section defines the terms: <dfn>prefix operator</dfn>.
+</div>
+
 ```.syntax
 	PrefixOperatorExpression
         PrefixOperator Expression
@@ -478,7 +490,7 @@ A prefix operator expression is semantically equivalent to a call expression to 
 
 Issue: The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
 
-### Postfix Operator Expressions ### {#expr.op.postfix}
+## Postfix Operator Expressions ## {#expr.op.postfix}
 
 ```.syntax
 	PostfixOperatorExprssion
@@ -513,9 +525,14 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
 
 ### Infix Operator Expressions ### {#expr.op.infix}
 
+<div class="issue">
+The syntax here should introduce the term: <dfn>infix expression</dfn>.
+</div>
+
+
 ```.syntax
 	InfixOperatorExpression
-        Expression InfixOperator} Expression
+        Expression InfixOperator Expression
 
     InfixOperator
         | \code{*} // multiplication
@@ -627,7 +644,7 @@ With the exception of the assignment operator (`=`), an infix operator expressio
 ```
 
 Note:
-In both checking and synthesis judgements, the condition} of a conditional expression is checked against the `Bool` type.
+In both checking and [=synthesis judgements=], the condition} of a conditional expression is checked against the `Bool` type.
 
 In the checking judgement, the then} and else} expressions are both checked against the expected type.
 
@@ -644,5 +661,5 @@ In the checking judgement, the then} and else} expressions are both checked agai
 
 Note:
 In the synthesis direction, a fresh type variable $\alpha$ is introduced, and the expression is checked against that type.
-The output context \ContextVarB of the checking step may include constraints on $\alpha$ introduced by checking the then} and else} expressions.
+The output context \ContextVarB of the checking step can include constraints on $\alpha$ introduced by checking the then} and else} expressions.
 

@@ -39,7 +39,7 @@ GIVEN e synthesizes type t in context c
 THEN e `;` checks in context c
 ```
 
-An implementation may diagnose a warning when execution of an expression statement cannot have side effects.
+An implementation may diagnose a warning when execution of an [=expression statement=] cannot have side effects.
 
 Declaration Statement {#expr.decl}
 ---------------------
@@ -57,10 +57,10 @@ GIVEN declaration d checks in context c
 THEN statement d checks in context c
 ```
 	
-Only the following types of declarations may be used in a declaration statement:
+Only the following types of declarations may be used in a [=declaration statement=]:
 
 
-* VariableDeclaration}
+* VariableDeclaration
 
 
 Block Statement {#stmt.block}
@@ -83,7 +83,7 @@ GIVEN s0,s1,... check in d
 THEN `{` s0,s1,... `}` checks in c
 ```
 
-Note: Declarations in a block statement are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
+Note: Declarations in a [=block statement=] are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
 
 Empty Statement {#stmt.empty}
 ---------------
@@ -105,7 +105,7 @@ Conditional Statements {#stmt.cond}
 
 ### If Statement ### {#stmt.if}
 
-An <dfn>`if` statement</dfn> executes a sub-statement conditionally.
+An <dfn>if statement</dfn> executes a sub-statement conditionally.
 
 ```.syntax
 IfStatement :
@@ -136,7 +136,7 @@ GIVEN f checks in C
 THEN `if(` e `)` t `else` f checks in c	
 ```
 
-If the condition of an `if` statement is an expression, then it is evaluated against an expected type of `Bool` to yield a value |C|.
+If the condition of an [=if statement=] is an expression, then it is evaluated against an expected type of `Bool` to yield a value |C|.
 If |C| is `true`, then the ThenClause is executed.
 If |C| is `false` and there is a ElseClause, then it is executed.
 
@@ -177,7 +177,7 @@ THEN `switch(` e `) {` a0,a1,... `}` checks in c
 ```
 
 Note:
-A `switch` statement is checked by first checking the expression, and then checking each of the alternatives against the type of that expression.
+A `switch` statement is checked by first checking the expression, and then checking each of the [=alternatives=] against the type of that expression.
 
 ```.checking
 GIVEN context c, type t,
@@ -196,7 +196,7 @@ THEN `default:` checks against t in c
 ```
 
 Note:
-A `case` clause is valid if its expression checks against the type of the control expressio nof the `switch` statement.
+A `case` clause is valid if its expression [=checks against=] the type of the control expressio nof the `switch` statement.
 
 A `switch` statement may have at most one `default` clause.
 
@@ -215,6 +215,8 @@ Semantically, a `switch` statement is equivalent to an "`if` cascade" that compa
 
 Loop Statements {#stmt.loop}
 ---------------
+
+A <dfn>loop statement</dfn> executes a body statement one or more times.
 
 ### For Statement ### {#stmt.for}
 
@@ -236,7 +238,7 @@ GIVEN body checks in c
 THEN `for(init;cond;iter) body` checks in c
 ```
 
-Issue: The checking judgements above aren't complete because they don't handle the case where |cond| is absent, in which case it should be treated like it was `true`.
+Issue: The checking judgements above aren't complete because they don't handle the case where _cond_ is absent, in which case it should be treated like it was `true`.
 
 ### While Statement ### {#stmt.while}
 
@@ -244,7 +246,7 @@ Issue: The checking judgements above aren't complete because they don't handle t
 ```.syntax
 WhileStatement :
 	`while` `(`
-	conditional:Expression? `)`
+	conditional:Expression `)`
 	body:Statement
 ```
 
@@ -257,12 +259,12 @@ THEN `while(cond) body` checks in c
 
 ### Do-While Statement ### {#stmt.do-while}
 
-A <dfn>do-while statement</dfn> uses the following form:
+A do-while statement uses the following form:
 
 ```.syntax
 DoWhileStatement :
 	`do` body:Statement
-	`while` `(` conditional:Expression? `)` `;`		
+	`while` `(` conditional:Expression `)` `;`		
 ```
 
 
@@ -278,6 +280,9 @@ Control Transfer Statements {#stmt.control}
 ---------------------------
 
 ### `break` Statement ### {#stmt.break}
+
+A <dfn>break statement</dfn> is used to transfer control out of the context of some enclosing statement.
+A [=break statement=] may optionally provide a <dfn>label</dfn>, to identify the enclosing statement.
 
 ```.syntax
 BreakStatement :
@@ -324,7 +329,7 @@ GIVEN c contains an entry of the form CONTINUE_LABEL = l
 THEN `continue l;` checks in context c
 ```
 
-### Return Statement ### {#stmt.continue}
+### Return Statement ### {#stmt.return}
 
 A `return` statement transfers control out of the current function.
 

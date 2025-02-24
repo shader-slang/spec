@@ -101,7 +101,7 @@ Issue: Also need conventions for how code points are named in productions in the
 The Slang Standard Library {#intro.stdlib}
 --------------------------
 
-Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the <dfn>standard library</dfn> for Slang.
+Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the _standard library_ for Slang.
 This document may, of neccessity, refer to constructs from the Slang standard library (e.g., the `Texture2D` type) that are not defined herein.
 
 This document does not provide a normative definition of all of the types, functions, attributes, modifiers, capabilities, etc. that are defined in the Slang standard library.

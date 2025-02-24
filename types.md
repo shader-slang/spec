@@ -1,8 +1,10 @@
-Types {#type}
+Types {#section.type}
 =====
 
 <div class=issue>
 The text of this chapter is largely still written in a more guide/reference style than in anything formal.
+
+This section must define what a <dfn>type</dfn> is.
 
 It is important to have the specification include a list of the major built-in types that this chapter currently documents, but those are not the only things relevant to types that need to be discussed.
 
@@ -33,7 +35,7 @@ This section defines the kinds of types supported by Slang.
 
 
 Types in Slang do not necessarily prescribe a single <dfn>layout</dfn> in memory.
-The discussion of each type will specify any guarantees about layout it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
+The discussion of each type will specify any guarantees about [=layout=] it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
 
 Void Type {#type.unit}
 ---------
@@ -51,7 +53,7 @@ Scalar Types {#type.scalar}
 The type \code{bool} is used to represent Boolean truth values: `true` and `false`.
 
 The size of a \code{bool} varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use \code{bool} for in-memory data structures.
-On all platforms, the \code{bool} type must be <dfn>naturally aligned</dfn> (its alignment is its size).
+On all platforms, the \code{bool} type must be naturally aligned (its alignment is its size).
 
 ### Integer Types ### {#type.int}
 
@@ -111,9 +113,9 @@ Vector Types {#type.vector}
 
 A vector type is written as `vector<T, N>` and represents an \code{N}-element vector with elements of type \code{T}.
 The <dfn>element type</dfn> \code{T} must be one of the built-in scalar types, and the <dfn>element count</dfn> \code{N} must be a specialization-time constant integer.
-The element count must be between 2 and 4, inclusive.
+The [=element count=] must be between 2 and 4, inclusive.
 
-A vector type allows subscripting of its elements like an array, but also supports element-wise arithmetic on its elements.
+A vector type allows subscripting of its elements like an array, but also supports [=element-wise arithmetic=] on its elements.
 <dfn>Element-wise arithmetic</dfn> means mapping unary and binary operators over the elements of a vector to produce a vector of results:
 
 ```
@@ -160,9 +162,9 @@ Matrix Types {#type.matrix}
 ------------
 
 A matrix type is written as `matrix<T, R, C>` and represents a matrix of \code{R} rows and \code{C} columns, with elements of type \code{T}.
-The element type \code{T} must be one of the built-in scalar types.
+The [=element type=] \code{T} must be one of the built-in scalar types.
 The <dfn>row count</dfn> \code{R} and <dfn>column count</dfn> \code{C} must be specialization-time constant integers.
-The row count and column count must each be between 2 and 4, respectively.
+The [=row count=] and [=column count=] must each be between 2 and 4, respectively.
 
 A matrix type allows subscripting of its rows, similar to an \code{R}-element array of `vector<T,C>` elements.
 A matrix type also supports element-wise arithmetic.
@@ -172,9 +174,9 @@ Implementations may support command-line flags or API options to control the def
 
 Note: Slang currently does not support the HLSL \code{row\_major} and \code{column\_major} modifiers to set the layout used for specific declarations.
 
-Under row-major layout, a matrix is laid out in memory equivalently to an \code{R}-element array of `vector<T,C>` elements.
+Under [=row-major=] layout, a matrix is laid out in memory equivalently to an \code{R}-element array of `vector<T,C>` elements.
 
-Under column-major layout, a matrix is laid out in memory equivalent to the row-major layout of its transpose.
+Under [=column-major=] layout, a matrix is laid out in memory equivalent to the row-major layout of its transpose.
 This means it will be laid out equivalently to a \code{C}-element array of `vector<T,R>` elements.
 
 As a convenience, Slang defines built-in type aliases for matrices of the built-in scalar types.
@@ -189,7 +191,7 @@ Note: For programmers using OpenGL or Vulkan as their graphics API, and/or who a
 it is important to recognize that the equivalent of a GLSL \code{mat3x4} is a Slang \code{float3x4}.
 This is despite the fact that GLSL defines a \code{mat3x4} as having 3 \emph{columns} and 4 \emph{rows}, while a Slang \code{float3x4} is defined as having 3 rows and 4 columns.
 This convention means that wherever Slang refers to "rows" or "columns" of a matrix, the equivalent terms in the GLSL, SPIR-V, OpenGL, and Vulkan specifications are "column" and "row" respectively (\emph{including} in the compound terms of "row-major" and "column-major")
-While it may seem that this choice of convention is confusing, it is necessary to ensure that subscripting with \code{[]} can be efficiently implemented on all target platforms.
+While this choice of convention can cause confusion, it is necessary to ensure that subscripting with \code{[]} can be efficiently implemented on all target platforms.
 This decision in the Slang language is consistent with the compilation of HLSL to SPIR-V performed by other compilers.
 
 ### Legacy Syntax ### {#type.matrix.legacy}
@@ -235,7 +237,7 @@ The <dfn>standard layout</dfn> for a structure type uses the following algorithm
 
 When this algorithm completes, \code{size} and \code{alignment} will be the size and alignment of the structure type.
 
-Most target platforms do not use the standard layout directly, but it provides a baseline for defining other layout algorithms.
+Most target platforms do not use the [=standard layout=] directly, but it provides a baseline for defining other layout algorithms.
 Any layout for structure types must guarantee an alignment at least as large as the standard layout.
 
 ### C-Style Layout ### {#type.struct.layout.c}
@@ -251,7 +253,7 @@ This mirrors the layout rules used by typical C/C++ compilers.
 D3D constant buffer layout is similar to standard layout with two differences:
 
 * The initial alignment is 16 instead of one}
-* If a field would have <dfn>improper straddle</dfn>, where the interval \code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16
+* If a field would have improper straddle, where the interval \code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16
 
 Array Types {#type.array}
 -----------
@@ -261,7 +263,7 @@ An <dfn>array type</dfn> is either a statically-sized or dynamically-sized array
 A known-size array type is written `T[N]` where \code{T} is a type and \code{N} is a specialization-time constant integer.
 This type represents an array of exactly \code{N} values of type \code{T}.
 
-An unknown-size array type is written \code{T[]} where \code{T} is a type.
+An unknown-size [=array type=] is written \code{T[]} where \code{T} is a type.
 This type represents an array of some fixed, but statically unknown, size.
 
 Note: Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
@@ -287,7 +289,7 @@ var a : int[10];
 ```
 
 <div class=note>
-When declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer must be careful about the difference between the two declaration syntaxes.
+When declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer needs to be careful about the difference between the two declaration syntaxes.
 The following two declarations are equivalent:
 ```
 int[3][5] a;
@@ -322,7 +324,7 @@ The <dfn>stride</dfn> of a type is the smallest multiple of its alignment not le
 Using the standard layout for an array type \code{T[]} or `T[N]`:
 
 * The <dfn>element stride</dfn> of the array type is the stride of its element type \code{T}
-* Element \code{i} of the array starts at an offset that is \code{i} times the element stride of the array
+* Element \code{i} of the array starts at an offset that is \code{i} times the [=element stride=] of the array
 * The alignment of the array type is the alignment of \code{T}
 * The size of an unknown-size array type is unknown
 * The size of a known-size array with zero elements is zero
@@ -334,7 +336,7 @@ The C-style layout of an array type differs from the standard layout in that the
 
 ### D3D Constant Buffer Layout ### {#type.array.layout.d3d.cbuffer}
 
-The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \code{T} that is not less than the stride of \code{T}
+The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \code{T} that is not less than the [=stride=] of \code{T}
 
 This Type {#type.this}
 ---------
@@ -349,7 +351,7 @@ Opaque Types {#type.opaque}
 <dfn>Opaque</dfn> types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
 Similar languages may refer to these as "resource types" or "object types."
 
-The full list of opaque types supported by Slang can be found in the standard library reference, but important examples are:
+The full list of [=opaque=] types supported by Slang can be found in the standard library reference, but important examples are:
 
 * Texture types such as \code{Texture2D<T>}, \code{TextureCubeArray<T>}, and \code{RWTexture2DMS<T>}
 * Sampler state types: \code{SamplerState} and \code{SamplerComparisonState}

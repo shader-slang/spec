@@ -32,7 +32,7 @@ Changes {#prepro.changes}
 The input to the Slang preprocessor is a token sequence produced by the rules in Chapter 2, and does not use the definition of "preprocessor tokens" as they are used by the C/C++ preprocessor.
 
 Note: The key place where this distinction matters is in macros that perform token pasting.
-The input to the Slang preprocessor must be a valid sequence of tokens *before* any token pasting occurs.
+The input to the Slang preprocessor has to be a valid sequence of tokens *before* any token pasting occurs.
 
 When tokens are pasted with the `##` operator, the resulting concatenated text is decomposed into one or more new tokens.
 It is an error if the concatenated text does not form a valid sequence of tokens.

@@ -11,7 +11,7 @@ Contexts {#check.context}
 --------
 
 A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries</dfn>.
-Context entries include <dfn>bindings</dfn> of the name of a variable (an [[=identifier=]]) to its type.
+[=Context entries=] include <dfn>bindings</dfn> of the name of a variable (an [[=identifier=]]) to its type.
 
 ```.checking
 
@@ -28,7 +28,7 @@ Context entries include <dfn>bindings</dfn> of the name of a variable (an [[=ide
 
 A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=bindings=] with |n| on the left-hand side.
 
-Issue: We need to describe here the process by which an identifier resolves to a binding, including overloaded, etc.
+Issue: We need to describe here the process by which an identifier resolves to a [=binding=], including overloaded, etc.
 The discussion here will have to be a forward reference to the algorithms to be given later.
 
 Expressions {#check.expr}
@@ -64,6 +64,6 @@ Declarations {#check.decl}
 ------------
 
 Declarations also use [=checking judgements=].
-A checking judgement for a declaration determines that [=declaration=] |d| [[=checks=]] in [=context=] |c|.
+A checking judgement for a declaration determines that [=declaration=] _d_ [[=checks=]] in [=context=] |c|.
 
 Checking of a declaration may modify the context |c| to include additional bindings.

@@ -11,22 +11,10 @@ Complain About: accidental-2119 yes, missing-example-ids yes
 Markup Shorthands: markdown yes, css no
 </pre>
 
-<pre class=include>
-path: introduction.md
-</pre>
-
-<pre class=include>
-path: lexical.md
-</pre>
-
-<pre class=include>
-path: preprocessor.md
-</pre>
-
-<pre class=include>
-path: checking.md
-</pre>
-
+<pre class=include>path: introduction.md</pre>
+<pre class=include>path: lexical.md</pre>
+<pre class=include>path: preprocessor.md</pre>
+<pre class=include>path: checking.md</pre>
 <pre class=include>path: parsing.md</pre>
 <pre class=include>path: execution.md</pre>
 <pre class=include>path: modules.md</pre>
@@ -34,8 +22,6 @@ path: checking.md
 <pre class=include>path: attributes.md</pre>
 <pre class=include>path: visibility.md</pre>
 <pre class=include>path: statements.md</pre>
-<!--
-
 <pre class=include>path: expressions.md</pre>
 <pre class=include>path: extensions.md</pre>
 <pre class=include>path: lookup.md</pre>
@@ -47,5 +33,3 @@ path: checking.md
 <pre class=include>path: conversion.md</pre>
 <pre class=include>path: capabilities.md</pre>
 <pre class=include>path: autodiff.md</pre>
-
--->

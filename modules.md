@@ -1,4 +1,4 @@
-Modules {#module}
+Modules {#sec.module}
 =======
 
 A <dfn>module</dfn> is a unit of encapsulation for declarations.
@@ -49,11 +49,11 @@ Secondary [=source units=] are included into a module via <dfn>include declarati
         | StringLiteral
 ```
 
-An implementation must use the |path| given in an [=include declaration=] to identify a [=source unit=] via implementation-specified means.
+An implementation must use the _path_ given in an [=include declaration=] to identify a [=source unit=] via implementation-specified means.
 It is an error if [=source unit=] matching the given name cannot be identified.
 
 <div class=note>
-Include declarations should not be confused with preprocessor `#include` directives.
+Include declarations are distinct from preprocessor `#include` directives.
 
 Each [=source unit=] in a module is preprocessed independently, and the preprocessor state at the point where an `include` declaration appears does not have any impact on how the [=source unit=] identified by that include declaration will be preprocessed.
 </div>

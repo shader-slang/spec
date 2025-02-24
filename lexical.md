@@ -35,7 +35,7 @@ Lexical processing of a [[=source unit=]] proceeds *as if* the following steps a
 
 4. The [=source unit=] is *lexed* into a sequence of [[=tokens=]] according to the lexical grammar in this chapter
 
-5. The lexed sequence of tokens is [[=preprocessed=]] to produce a new sequence of tokens
+5. The lexed sequence of tokens is _preprocessed_ to produce a new sequence of tokens
 
 The final [[=token=]] sequence produced by this process is used as input to subsequent phases of compilation.
 
@@ -44,7 +44,7 @@ Lexemes {#lex.lexeme}
 
 A <dfn>lexeme</dfn> is a contiguous sequence of characters in a single [[=source unit=]].
 
-<dfn>Lexing</dfn> is the process by which an implementation decomposes a [[=source unit=]] into zero or more non-overlapping [[=lexemes=]].
+_Lexing_ is the process by which an implementation decomposes a [[=source unit=]] into zero or more non-overlapping [[=lexemes=]].
 
 Every [[=lexeme=]] is either a [[=token=]] or it is [[=trivia=]].
 
@@ -55,7 +55,7 @@ Lexeme :
   ;
 ```
 
-### Trivia ### {#trivia}
+### Trivia ### {#lex.trivia}
 
 <dfn>Trivia</dfn> are [[=lexemes=]] that do not appear in the abstract syntax; they are only part of the lexical grammar.
 The presence or absence of [[=trivia=]] in a sequence of [[=lexemes=]] has no semantic impact, except where specifically noted in this specification.
@@ -67,7 +67,9 @@ Trivia :
   ;
 ```
 
-#### Whitespace #### {#whitespace}
+Note: Trivia is either [=whitespace=] or a [=comment=].
+
+#### Whitespace #### {#lex.trivia.space}
 
 <dfn>Whitespace</dfn> consists of [[=horizontal whitespace=]] and [[=line breaks=]].
 
@@ -84,7 +86,7 @@ Whitespace :
 HorizontalSpace : (' ' | '\t')+ ;
 ```
 
-##### Line Breaks ##### {#line}
+##### Line Breaks ##### {#lex.trivia.space.line-break}
 
 A <dfn>line break</dfn> consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
 
@@ -92,9 +94,9 @@ An <dfn>escaped line break</dfn> is a backslash (`\`, U+005C) follow immediately
 
 A [=source unit=] is split into <dfn>lines</dfn>: non-empty sequences of [[=characters=]] separated by [[=line breaks=]].
 
-Note: Line breaks are used as line separators rather than terminators; it is not necessary for a [=source unit=] to end with a line break.
+Note: Line breaks are used as [=line=] separators rather than terminators; it is not necessary for a [=source unit=] to end with a line break.
 
-#### Comments #### {#comment}
+#### Comments #### {#lex.trivia.comment}
 
 A <dfn>comment</dfn> is either a [[=line comment=]] or a [[=block comment=]].
 
@@ -109,7 +111,7 @@ Note: [[=Block comments=]] do not nest.
 
 It is an error if a [[=block comment=]] that begins in a [[=source unit=]] is not terminated in that [[=source unit=]].
 
-### Tokens ### {#token}
+### Tokens ### {#lex.token}
 
 <dfn>Tokens</dfn> are lexemes that are significant to the abstract syntax.
 
@@ -122,7 +124,7 @@ Token :
 ;
 ```
 
-#### Identifiers #### {#ident}
+#### Identifiers #### {#lex.token.ident}
 
 ```.lexical
 Identifier :
@@ -140,12 +142,13 @@ IdentifierContinue :
     | [0-9]
     ;
 ```
+TODO: <dfn>identifier</dfn>.
 
 The identifier consisting of a single underscore (`_`) is reserved by the language and must not be used by programs as a name in a declaration or binding.
 
 Note: There are no other fixed keywords or reserved words recognized by the lexical grammar.
 
-#### Literals #### {#literal}
+#### Literals #### {#lex.token.lit}
 
 ```.lexical
 Literal :
@@ -154,7 +157,9 @@ Literal :
     ;
 ```
 
-##### Numeric Literals ##### {#literal.numeric}
+TODO: <dfn>literal</dfn>, [=numeric literal=].
+
+##### Numeric Literals ##### {#lex.token.num}
 
 A <dfn>numeric literal</dfn> is either an [[=integer literal=]] or a [[=floating-point literal=]].
 
@@ -173,14 +178,14 @@ A <dfn>radix specifier</dfn> is one of:
 When no radix specifier is present, a numeric literal is a <dfn>decimal literal</dfn> (radix 10).
 
 Note:Octal literals (radix 8) are not supported.
-A `0` prefix on an integer literal does *not* specify an octal literal as it does in C.
-Implementations may warn on integer literals with a `0` prefix in case users expect C behavior.
+A `0` prefix on an integer literal is not used to specify an octal literal as it does in C.
+Implementations might warn on integer literals with a `0` prefix in case users expect C behavior.
 
 The grammar of the <dfn>digits</dfn> for a numeric level depend on its radix, as follows:
 
-* The digits of a decimal literal may include `0` through `9`
-* The digits of a hexadecimal literal may include `0` through `9`, the letters `A` through `F` and `a` through `f`. The letters represent digit values 10 through 15.
-* The digits of a binary literal may include `0` and `1`
+* The [=digits=] of a [=decimal literal=] may include `0` through `9`
+* The [=digits=] of a [=hexadecimal literal=] may include `0` through `9`, the letters `A` through `F` and `a` through `f`. The letters represent digit values 10 through 15.
+* The [=digits=] of a [=binary literal=] may include `0` and `1`
 
 Digits for all numeric literals may also include `_`, which are ignored and have no semantic impact.
 
@@ -188,9 +193,9 @@ A <dfn>numeric literal suffix</dfn> consists of any sequence of characters that 
 
 Note: A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
 
-#### Integer Literals #### {#int}
+#### Integer Literals #### {#lex.token.int}
 
-An <dfn>integer literal</dfn> consists of an optional radix specifier followed by digits and an optional numeric literal suffix.
+An <dfn>integer literal</dfn> consists of an optional radix specifier followed by digits and an optional [=numeric literal suffix=].
 
 The suffix on an integer literal may be used to indicate the desired type of the literal:
 
@@ -198,33 +203,37 @@ The suffix on an integer literal may be used to indicate the desired type of the
 * An `l` or `ll` suffix indicates the `Int64` type
 * A `ul` or `ull` suffix indicates the `UInt64` type
 
-#### Floating-Point Literals #### {#float}
+#### Floating-Point Literals #### {#lex.token.float}
 
 A <dfn>floating-point literal</dfn> consists of either
 
-* An optional radix specifier, followed by digits, followed by a `.` (U+002E), followed by optional digits, an optional exponent, and an optional numeric literal suffix.
-* An optional radix specifier, followed by digits, an exponent, and an optional numeric literal suffix.
+* An optional [=radix specifier=], followed by digits, followed by a `.` (U+002E), followed by optional digits, an optional [=exponent=], and an optional numeric literal suffix.
+* An optional [=radix specifier=], followed by digits, an exponent, and an optional numeric literal suffix.
 * A `.` (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.
 
 A floating-point literal may only use dexicmal or hexadecimal radix.
 
 The <dfn>exponent</dfn> of a floating-pointer literal consists of either `e` or `E`, followed by an optional <dfn>sign</dfn> of `+` or `-`, followed by decimal digits.
 
-### Text Literals ### {#lex.lit.text}
+TODO: [=sign=].
+
+### Text Literals ### {#lex.token.text}
 
 Issue: Need to document supported escape sequences.
 
-#### String Literals #### {#string}
+#### String Literals #### {#lex.token.string}
 
 A <dfn>string literal</dfn> consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
 
-#### Character Literals #### {#char}
+TODO: [=string literal=]
+
+#### Character Literals #### {#lex.token.char}
 
 A <dfn>character literal</dfn> consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
 
-The sequence of characters within a character literal must represent a single character.
+The sequence of characters within a [=character literal=] must represent a single character.
 
-Operators and Punctuation {#lex.punctuation}
+Operators and Punctuation {#lex.token.punctuation}
 -------------------------
 
 The following table defines tokens that are used as operators and punctuation in the syntax.

@@ -36,6 +36,7 @@ New attributes and new classes are introduced in HLSL syntax to support the work
  - New shader attributes
    - [NodeLaunch("mode")] : "mode" can be "broadcasting", "coalescing" or "thread".
    - [MaxRecords(maxCount)] : defines the maximum amount of children that a node can launch.
+   - [NodeID("name")] : name for the node.
    - [NodeDispatchGrid(x,y,z)] : define the number of thread groups to launch.
    - Other attributes not a part of this proposal
  - Input Record Objects
@@ -143,6 +144,10 @@ As a node input attribute, its description is following:
 As a node output attribute, its description is following:
 > Given uint count declaration, the thread group can output 0...count records to this output. Exceeding this results in undefined behavior. For NodeArrayOutput, count applies across all the output nodes in the array (not count per node). This attribute can be overridden via the NumOutputOverrides / pOutputOverrides option when constructing a work graph as part of the definition of a node.
 
+### [NodeID("name")]
+
+[NodeID("name")] defines the name of the node. It is an optional attribute and when it is omitted, the variable-name or the function-name is assumed to be the NodeID. For this proposal, we want to avoid using the variable-name or the function-name as NodeID, and the attribute [NodeID("name")] will be required.
+
 
 ### [NodeDispatchGrid(x,y,z)]
 
@@ -153,7 +158,6 @@ Define the number of thread groups to launch for a BroadcastingLaunch node. In i
 
 The following attributes are **not** required and they are **not** a part of this proposal:
  - `[NodeIsProgramEntry]`: Designates a node as the entry point for a program, indicating that the node's shader function serves as the starting point for execution.
- - `[NodeID("nodeName")]`: Assigns a unique identifier to a node, allowing it to be referenced by name within the work graph.
  - `[NodeID("nodeName", arrayIndex)]`: Assigns a unique identifier to a node with a specified array index, enabling the identification of individual nodes within an array.
  - `[NodeLocalRootArgumentsTableIndex(index)]`: Specifies the index of the root arguments table for a node, facilitating the management of node-specific arguments.
  - `[NodeShareInputOf("nodeName")]`: Indicates that a node shares its input with another node identified by "nodeName," allowing for shared data access.
@@ -180,7 +184,7 @@ __generic<RecordType>
 [require(hlsl_spirv, broadcasting)]
 struct DispatchNodeInputRecord
 {
-    NodePayloadPtr<RecordType> Get();
+    Ref<RecordType> Get();
 };
 
 /// shared read/write input to Broadcasting launch node
@@ -188,7 +192,7 @@ __generic_<RecordType>
 [require(hlsl_spirv, broadcasting)]
 struct RWDispatchNodeInputRecord
 {
-    NodePayloadPtr<RecordType> Get();
+    Ref<RecordType> Get();
     bool FinishedCrossGroupSharing();
 };
 ```
@@ -211,9 +215,11 @@ __generic<RecordType>
 [require(hlsl_spirv, coalescing)]
 struct GroupNodeInputRecords
 {
-    NodePayloadPtr<RecordType> Get(int index = 0);
-    NodePayloadPtr<RecordType> __subscript(int index) { get; }
+    Ref<RecordType> Get(int index = 0);
     int Count();
+
+    __subscript(int index) -> Ref<RecordType>
+    { get{ return Get(index); } }
 };
 
 /// shared read/write input to Coalescing launch node used with [MaxRecords(maxCount)] on Coalescing launch to specify a count greater than 1
@@ -221,9 +227,11 @@ __generic_<RecordType>
 [require(hlsl_spirv, coalescing)]
 struct RWGroupNodeInputRecords
 {
-    NodePayloadPtr<RecordType> Get(int index = 0);
-    NodePayloadPtr<RecordType> __subscript(int index) { get; set; }
+    Ref<RecordType> Get(int index = 0);
     int Count();
+
+    __subscript(int index) -> Ref<RecordType>
+    { get{ return Get(index); } set; }
 };
 ```
 
@@ -245,7 +253,7 @@ __generic<RecordType>
 [require(hlsl_spirv, thread)]
 struct ThreadNodeInputRecord
 {
-    NodePayloadPtr<RecordType> Get();
+    Ref<RecordType> Get();
 };
 
 /// read/write input to Thread launch node
@@ -253,7 +261,7 @@ __generic<RecordType>
 [require(hlsl_spirv, thread)]
 struct RWThreadNodeInputRecord
 {
-    NodePayloadPtr<RecordType> Get();
+    Ref<RecordType> Get();
 };
 ```
 
@@ -275,12 +283,12 @@ struct EmptyNodeInput
 
 ```
 /// Defines an output and record type for spawning nodes
-__generic<RecordType>
+__generic<RecordType, let nodeID : int>
 [require(hlsl_spirv, thread)]
 struct NodeOutput
 {
-    NodePayloadPtr<ThreadNodeOutputRecords<RecordType>> GetThreadNodeOutputRecords();
-    NodePayloadPtr<GroupNodeOutputRecords<RecordType>> GetGroupNodeOutputRecords();
+    ThreadNodeOutputRecords<RecordType, nodeID> GetThreadNodeOutputRecords(uint numRecordsForThisThread);
+     GroupNodeOutputRecords<RecordType, nodeID> GetGroupNodeOutputRecords(uint numRecords);
     bool IsValid();
 };
 
@@ -288,9 +296,12 @@ struct NodeOutput
 [require(hlsl_spirv, thread)]
 struct NodeOutputArray
 {
-    NodePayloadPtr<NodeOutput> __subscript(int index) { get; }
+    __subscript(int index) -> Ref<NodeOutput>
+    { get; }
 };
 ```
+
+`NodeOutput` must be used with `[nodeID("name")]` for the purpose of this proposal. And the "name" needs to be converted into an integer because we cannot use `String` type as a generic parameter.
 
 `IsValid()` indicates whether the specified output node is present in the work graph.
 
@@ -311,7 +322,8 @@ struct EmptyNodeOutput
 [require(hlsl_spirv, broadcasting_coalescing_thread)]
 struct EmptyNodeOutputArray
 {
-    NodePayloadPtr<EmptyNodeOutput> __subscript(int index) { get; }
+    __subscript(int index) -> Ref<EmptyNodeOutput>
+    { get; }
 };
 ```
 
@@ -322,31 +334,40 @@ struct EmptyNodeOutputArray
 
 ```
 /// set of zero or more records for each thread
-__generic<RecordType>
+__generic<RecordType, let nodeID : int>
 [require(hlsl_spirv, thread)]
 struct ThreadNodeOutputRecords
 {
-    NodePayloadPtr<RecordType> Get(int index = 0);
-    NodePayloadPtr<RecordType> __subscript(int index) { get; }
+    Ref<RecordType> Get(int index = 0);
     void OutputComplete();
+
+    __subscript(int index) -> Ref<RecordType>
+    { get{ return Get(index); } }
 };
 ```
+
+`nodeID` is needed by `OutputComplete()`.
+
+After obtaining zero or more output records by calling Get{Group|Thread}NodeOutputRecords(), and a thread group is later finished using the returned ThreadNodeOutputRecords/GroupNodeOutputRecords object for writing a set of zero or more records, it must call `OutputComplete()` at least once once, otherwise behavior is undefined. 
+
 
 ### GroupNodeOutputRecords
 
 ```
 /// set of one or more records with shared access across the thread group
-__generic<RecordType>
+__generic<RecordType, let nodeID : int>
 [require(hlsl_spirv, coalescing_thread)]
 struct GroupNodeOutputRecords
 {
-    NodePayloadPtr<RecordType> Get(int index = 0);
-    NodePayloadPtr<RecordType> __subscript(int index) { get; }
+    Ref<RecordType> Get(int index = 0);
     void OutputComplete();
+
+    __subscript(int index) -> Ref<RecordType>
+    { get{ return Get(index); } }
 };
 ```
 
-After obtaining zero or more output records by calling Get{Group|Thread}NodeOutputRecords(), and a thread group is later finished using the returned ThreadNodeOutputRecords/GroupNodeOutputRecords object for writing a set of zero or more records, it must call `OutputComplete()` at least once once, otherwise behavior is undefined. 
+`nodeID` is needed by `OutputComplete()`.
 
 
 # Examples
@@ -364,12 +385,12 @@ struct RecordData
 [Shader("node")]
 [NodeLaunch("thread")]
 void MyGraphRoot(
-    [MaxRecords(1)] NodeOutput<RecordData> MyChildNode
+    [MaxRecords(1)] NodeOutput<RecordData> nodes
 )
 {
-    ThreadNodeOutputRecords<RecordData> childNodeRecord  MyChildNode.GetThreadNodeOutputRecords(1);
-    childNodeRecord.Get(.myData = 123456;
-    childNodeRecord.OutputComplete(;
+    let node = nodes.GetThreadNodeOutputRecords(1);
+    node.Get().myData = 123456;
+    node.OutputComplete();
 }
 
 [shader("node")]

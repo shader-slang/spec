@@ -23,7 +23,7 @@ A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries
     
     Binding :
         Identifier : Type // variable
-        Identifer = Value // alias
+        Identifer = TypedValue // alias
 ```
 
 A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=bindings=] with |n| on the left-hand side.
@@ -31,28 +31,90 @@ A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=b
 Issue: We need to describe here the process by which an identifier resolves to a [=binding=], including overloaded, etc.
 The discussion here will have to be a forward reference to the algorithms to be given later.
 
+Values {#check.value}
+------
+
+A type is conceptually a set of values; the values in that set are *instances* of the type.
+
+Note: A given value might be an instance of zero or more types. We avoid saying that a value *has* some type, except in cases where there is an "obviously right" type for such a value.
+
+A typed value, written |v| `:` |T|, consists of a type |T| and a value |v| that is an instance of |T|.
+
+A value is one of:
+
+* A simple value
+* A composite value
+* A declaration reference
+* A module reference
+
+A simple value is one of:
+
+* An integer value
+* A floating-point value
+* A string value
+* A code point value
+* A Boolean value
+
+A composite value is one of:
+
+* An array-like value
+* A structure value
+* An `enum` value
+
 Expressions {#check.expr}
 -----------
 
-Slang use a bidirectional type-checking algorithm.
-There are two different judgements used when checking expressions.
+Slang use a variation on a bidirectional type-checking algorithm.
 
-### Synthesis ### {#check.synth}
+There are two main steps used when checking expressions.
+Each form of expression may define rules for resolving, checking, or both.
 
-A <dfn>synthesis judgement</dfn> determines that, given a [=context=] |c| and an [=expression=] |e|, |e| <dfn>synthesizes</dfn> some [=type=] |t| in context |c|.
+<div class="issue">
+We need to define what checked expressions, resolved expressions, and (parsed) expressions are.
 
-Issue: as written here, a synthesis judgement might actually have *side effects* on the context.
-That needs to be specified somehow.
+A parsed expression is what you get out of the relevant parsing rules for `Expression`.
 
-Note: Synthesis judgements are used in places where an expression needs to be checked, but the expected type of that expression in not known.
-In algorithmic terms |c| and |e| are inputs, while |t| is an output.
+A checked expression is a limited subset of forms that includes stuff like:
+
+* typed values
+* declaration references
+* calls
+
+A resolved expression is either a checked expression *or* one of a few cases that need further context:
+
+* overloaded declaration references
+* overloaded calls
+* initializer lists
+
+We also need to drill into the representation of types and values...
+
+</div>
+
+### Resolving ### {#check.expr.resolve}
+
+Resolving an [=expression=] in a context results in a <dfn>resolved expression</dfn>.
+
+Note: Resolving is used in places where an expression needs to have some amount of validation performed, but an expected type for the expression is not available.
+
+To resolve an [=expression=] |e| when the form of |e| does not define a resolving rule:
+
+* Extend the context with a fresh type variable |T|
+* Return the result of checking |e| against |T|
 
 ### Checking ### {#check.check}
 
+Checking a [=resolved expression=] against a type results in a checked expression.
+
+Note: Checking is used in places where the type that an expression is expected to have is known.
+
+To check an [=expression=] |e| against a type |T| when form of |e| does not define a checking rule:
+
+* Let |re| be the result of resolving |e|
+* Return the result of coercing |re| to |T|
+
+OLD TEXT:
 A <dfn>checking judgement</dfn> determines that, given a [=context=] |c|, an [=expression=] |e|, and a [=type=] |t|, |e| <dfn>checks against</dfn> |t| in context |c|.
 
-Note: Checking judgements are used in places where the type that an expression is expected to have is known.
-In algorithmic terms |c|, |e|, and |t| are all inputs.
 
 Statements {#check.stmt}
 ----------

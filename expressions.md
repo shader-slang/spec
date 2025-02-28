@@ -34,9 +34,11 @@ An integer literal expression consists of a single IntegerLiteral token.
 	}
 ```
 
-Note:
-An unsuffixed integer literal [=synthesizes=] a type that is a fresh type variable $\alpha$, [=constrained=] to conform to \code{IFromIntegerLiteral}.
+To check an unsuffixed integer literal |lit| against type |T|:
 
+* Validate that |T| conforms to `IFromIntegerLiteral`, yielding conformance witness `w`
+* Let |f| be a declaration reference to `IFromIntegerLiteral.init` looked up through `w`
+* Return the checked expression |f| `(` |lit| `) :` |T|
 
 Issue: We need a description of how suffixed integer literals have their type derived from their suffix.
 
@@ -71,17 +73,9 @@ Note:
         `true` | `false`
 ```
 
-```.checking
-	\DerivationRule{
-	}{
-		\SynthExpr{\ContextVarA}{`true`}{`Bool`}{\ContextVarA}
-	}\\
-	\DerivationRule{
-	}{
-		\SynthExpr{\ContextVarA}{`false`}{`Bool`}{\ContextVarA}
-	}\\
-```
+The expression `true` resolves to the typed value `true : Bool`.
 
+The expression `false` resolves to the typed value `false : Bool`.
 
 ### String Literal Expressions ### {#expr.lit.string}
 
@@ -242,24 +236,11 @@ An expression wrapped in parentheses (`()`) is a parenthesized expression and ev
 
 
 ```.syntax
-	ParenthesizedExpression} 
-        `(` Expression \code{)
+	ParenthesizedExpression := 
+        `(` Expression `)`
 ```
 
-```.checking
-	\DerivationRule{
-		\CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB}
-	}{
-		\CheckExpr{\ContextVarA}{`(` expr `)`}{type}{\ContextVarB}
-	}\vspace{1em}
-
-	\DerivationRule{
-		\SynthExpr{\ContextVarA}{expr}{type}{\ContextVarB}
-	}{
-		\SynthExpr{\ContextVarA}{`(` expr `)`}{type}{\ContextVarB}
-	}	
-```
-
+If expression |e| resolves to |er| then the parenthesized expression `(` |e| `)` resolves to |er|.
 
 Call Expression {#expr.call}
 ---------------
@@ -342,23 +323,12 @@ Initializer List Expression {#expr.init-list}
 
 ```.syntax
 	InitializerListExpression
-		\code{\{} (Argument `,`)* \code{\}}
+		`{` (Argument `,`)* `}`
 ```
 
-Note:
-An initializer-list expression can only appear in contexts where it will be checked against an expected type.
-There are no synthesis rules for initializer-list expressions.
+If the sequence of arguments |args| resolves to |resolvedArgs|, then the initializer list expression `{` |args| `}` resolves to the resolved initializer list expression `{` |resolvedArgs| `}`.
 
-An initializer-list expression is equivalent to constructing an instance of the expected type using the arguments.
-
-
-```.checking
-	\DerivationRule{
-        \CheckConstruct{\ContextVarA}{type}{\overline{args}}{\ContextVarB
-	}{
-		\CheckExpr{\ContextVarA}{\code{\{} \overline{args} \code{\}}}{type}{\ContextVarB}
-	}
-```
+Note: An initializer-list expression can only appear in contexts where it will be coerced to an expected type.
 
 Cast Expression {#expr.cast}
 ---------------
@@ -371,18 +341,11 @@ Cast Expression {#expr.cast}
 Note:
 A <dfn>cast expression</dfn> attempts to coerce an expression to a desired type.
 
+To resolve a [=cast expression=] `(` |t| `)` |e|:
 
-```.checking
-	\DerivationRule{
-        \CheckExpr{\ContextVarA}{expr}{type}{\ContextVarB}
-	}{
-		\SynthExpr{\ContextVarA}{`(` type `)` expr}{type}{\ContextVarB}
-	}
-```
-
-Note:
-A [=cast expression=] always synthesizes a type, since the type it produces is manifest in the expression.
-
+* Let |checkType| be the result of checking |t| as a type
+* Let |checkedExpr| be the result of checking |e| against |checkType|
+* Return |checkedExpr|
 
 <div class=issue>
 The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
@@ -631,35 +594,15 @@ With the exception of the assignment operator (`=`), an infix operator expressio
         \SynVar[condition]{Expression} \code{?} \SynVar[then]{Expression} `:` \SynVar[else]{Expression}
 ```
 
-```.checking
-	\DerivationRule{
-        \begin{trgather}
-        \CheckExpr{\ContextVarA}{cond}{`Bool`}{\ContextVarB
-        \CheckExpr{\ContextVarB,\code{type} \alpha}{t}{type}{\ContextVarC
-        \CheckExpr{\ContextVarC,\code{type} \alpha}{e}{type}{\ContextVarD
-        \end{trgather}
-	}{
-		\CheckExpr{\ContextVarA}{cond \code{?} t `:` e}{type}{\ContextVarD}
-	}\vspace{1em}
-```
+To check the conditional expression |cond| `?` |t| `:` |e| against expected type |T|:
 
-Note:
-In both checking and [=synthesis judgements=], the condition} of a conditional expression is checked against the `Bool` type.
+* Let |checkedCond| be the result of checking |cond| against `Bool`
+* Let |checkedThen| be the result of checking |t| against |T|
+* Let |checkedElse| be the result of checking |e| against |T|
+* Return the checked expression |checkedCond| `?` |checkedThen| `:` |checkedElse|
 
-In the checking judgement, the then} and else} expressions are both checked against the expected type.
+To check the conditional expression |ce|:
 
-
-```.checking
-	\DerivationRule{
-        \begin{trgather}
-		\CheckExpr{\ContextVarA, \code{type} \alpha}{cond \code{?} t `:` e}{\alpha}{\ContextVarB
-        \end{trgather}
-	}{
-		\SynthExpr{\ContextVarA}{cond \code{?} t `:` e}{\alpha}{\ContextVarB}
-	}
-```
-
-Note:
-In the synthesis direction, a fresh type variable $\alpha$ is introduced, and the expression is checked against that type.
-The output context \ContextVarB of the checking step can include constraints on $\alpha$ introduced by checking the then} and else} expressions.
+* Extend the context with a fresh type variable |T|
+* Return the result of checking |ce| against |T|
 

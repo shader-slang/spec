@@ -61,8 +61,117 @@ We need to define that there are two kinds of bodies: <dfn>declaration bodies</d
 </div>
 
 ### Bases ### {#TODO.decl.base}
-### Parameters ### {#TODO.decl.param}
+
+### Parameters ### {#decl.param}
+
+A parameters clause defines a sequence of <dfn>parameter declarations</dfn>.
+
+```.syntax
+    ParametersClause
+        `(` (ParameterDeclaration `,`)* `)`
+
+    ParameterDeclaration
+        Identifier `:` Direction? TypeExpression DefaultValueClause?
+
+    DefaultValueClause
+        `=` Expression
+```
+
+A [=parameter declaration=] must include a type expression; the type of the parameter is the result of evaluating that type expression.
+
+A parameter declaration may include a default-value clause; it it does, the default value for that parameter is the result of evaluating the expression in that clause with an expected type that is the type of the parameter.
+
+#### Directions #### {#dir}
+
+Every parameter has a <dfn>direction</dfn>, which determines how an argument provided at a call site is connected to that parameter.
+
+```.syntax
+    Direction
+        `in`
+        | `out`
+        | `take`
+        | `borrow`
+        | `inout` | `in` `out`
+        | `ref`
+```
+
+If a parameter declaration includes a [=direction=], then that determines the direction of the parameter; otherwise the direction of the parameter is `in`.
+
+##### `in` ##### {#dir.in}
+
+The `in` direction indicates typical pass-by-value (copy-in) semantics.
+The parameter in the callee binds to a copy of the argument value passed by the caller.
+
+##### `out` ##### {#out}
+
+The `out` direction indicates copy-out semantics.
+The parameter in the callee binds to a fresh storage location that is uninitialized on entry.
+When the callee returns, the value in that location is moved to the storage location referenced by the argument.
+
+##### `take` ##### {#take}
+
+The `take` direction indicates move-in semantics.
+The argument provided by the caller is moved into the parameter of the callee, ending the lifetime of the argument.
+
+##### `borrow` ##### {#borrow}
+
+The `borrow` direction indicates immutable borrow semantics.
+
+If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
+
+If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either the storage location referenced by the argument, or a copy of the argument value.
+
+##### `inout` ##### {#inout}
+
+The `inout` direction indicates exclusive mutable borrow semantics.
+The syntax `in` `out` is equivalent to `inout`
+
+If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
+
+If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either:
+
+
+* the storage location referenced by the argument
+* a fresh storage location, in which case that location is initialized with a copy of the argument value on entry, and the value at that location is written to the argument on return from the function.
+
+
+##### `ref` ##### {#ref}
+
+The `ref` direction indicates pass-by-reference semantics.
+The parameter in the callee binds to the storage location referenced by the argument.
+
+
+
 ### Accessors ### {#TODO.decl.accessor}
+
+
+### Invocable Declarations ### {#decl.invocable}
+
+A declaration that is <dfn>invocable</dfn> can be invoked by a strand during execution.
+
+Patterns {#pattern}
+--------
+
+```.syntax
+
+Pattern :=
+    BindingPattern
+    | TuplePattern
+    | ExpressionPattern
+
+TuplePattern := `(` (Pattern `,`)* `)`
+
+ExpressionPattern := Expression
+
+BindingPattern := `let` BindingPatternInner
+
+BindingPatternInner :=
+    Identifier
+    | TuplePatternInner
+
+TuplePatternInner := `(` (BindingPatternInner `,`)* `)`
+
+```
 
 Generics {#TODO.decl.generic}
 --------
@@ -73,7 +182,7 @@ Type Declarations {#decl.type}
 A <dfn>type declaration</dfn> [=introduces=] a binding to a type.
 
 ```.syntax
-TypeDeclaration
+TypeDeclaration =
     AggregateTypeDeclaration
     | EnumDeclaration
     | TypeAliasDeclaration
@@ -113,7 +222,7 @@ Variable declarations that are instance members of an aggregate type declaration
 
 #### Methods #### {#method}
 
-Function declarations that are instance members of an aggregate type declaration are also referred to as <dfn>methods</dfn>.
+[=Function declarations=] that are instance members of an aggregate type declaration are also referred to as <dfn>methods</dfn>.
 
 By default, the implicit `this` parameter of a method acts has a direction of `in`.
 A method of a `struct` type declaration may be modified with the `[mutating]` attribute, in which case the implicit `this` parameter has a direction of `inout`.
@@ -279,6 +388,15 @@ TraditionalTypeAliasDeclaration :
 
 TODO: [=traditional type alias declaration=]
 
+To desguar a [=traditional type alias declaration=] `typedef` |ts| |d| `;`, where |ts| is a type specifier and |d| is a declarator:
+
+* Unwrap |d| for |ts| to yield type expression |t| and optional name declarator |nd|
+* If |nd| is not present then:
+    * diagnose an error
+* Otherwise:
+    * Let |n| be the name of |nd|
+    * Return the modern type alias declaration `typealias` |n| `=` |t| `;`
+
 ### Associated Types ### {#decl.type.associated}
 
 An <dfn>associated type declaration</dfn> introduces a type requirement to an [=interface declaration=].
@@ -294,6 +412,36 @@ An <dfn>associated type declaration</dfn> introduces a type requirement to an [=
 An [=associated type declaration=] may only appear as a member declaration of an [=interface declaration=].
 
 An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement.
+
+Traditional Declarations {#decl.traditional}
+------------------------
+
+```.syntax
+Declarator :
+    NameDeclarator
+    | ParenthesizedDeclarator
+    | ArrayDeclarator
+    | PointerDeclarator
+
+NameDeclarator : Identifier
+
+ParenthesizedDeclarator: `(` Declarator `)`
+
+ArrayDeclarator: Declarator `[` (Expression `,`)* `]`
+
+PointerDeclarator: `*` PointerQualifier* Declarator
+```
+
+Unwrapping a declarator for some type expression yields a type expression and an optional name declarator.
+
+The unwrapping of a name declarator |nd| for a type expression |t| is (|t|, |nd|).
+
+The unwrapping of a parenthesized declarator `(` |d| `)` for a type expression |t| is the unwrapping of |d| for |t|.
+
+The unwrapping of an array declarator |d| `[` |args| `]` for a type expression |t| is the unwrapping of |d| for `Array<`|t|, |args|`>`.
+
+The unwrapping of a pointer declarator `*` |q| |d| for a type expression |t| is the unwrapping of |d| for `Ptr<(`|q| |t|`)>`
+
 
 Variables {#decl.var}
 ---------
@@ -348,6 +496,24 @@ InitDeclarator :
     Declarator InitialValueClause ?
 ```
 
+To desugar a traditional variable declaration |typeSpecifier| |initDeclarators| `;`:
+
+* Let variable |result| be an empty sequence of declarations
+* Let |ts| be a fresh name
+* Append `typealias` |ts| `=` |typeSpecifier| `;` to |result|
+* For each |i| in |initDeclarators|:
+    * Let |d| be the declarator of |i|
+    * Unwrap |d| for |ts| to yield |n| and |t|
+    * Let |iv| be the initial value clause of |i|
+    * Let |v| be `var` |n| `:` |t| |iv| `;`
+    * Append |v| to |result|
+* Return |result|
+
+<div class="issue">
+The above desugaring logic is ignoring modifiers.
+It also isn't making sure to use a `let` declaration where possible (because |t| ends up being `const`).
+</div>
+
 A legacy variable declaration introduces a binding for each InitDeclarator.
 Let |S| be the type that results from evaluating the TypeSpecifier in the input environment.
 The type |T| corresponding to each declarator is determined by evaluating the declarator in the input environment, against input type |S|.
@@ -399,6 +565,8 @@ A global shader parameter may include an initial-value expression, but such an e
 Note: An implementation can choose to provide ways to query the initial-value expression of a global shader parameter, or to evaluate it to a value.
 [=Host=] applications can use such capabilities to establish a default value for global shader parameters.
 
+TODO: We need to define <dfn>uniform shader parameters</dfn> somewhere.
+
 ### Variables at Function Scope ### {#decl.var.func}
 
 Variables declared at <dfn>function scope</dfn> (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
@@ -438,83 +606,8 @@ FunctionDeclaration :
     FunctionBodyClause
 ```
 
-### Parameters ### {#decl.param}
+A function declaration is invocable.
 
-The parameters of a [=function declaration=] are determined by the <dfn>parameter declarations</dfn> in its parameters clause.
-
-```.syntax
-    ParametersClause
-        `(` (ParameterDeclaration `,`)* `)`
-
-    ParameterDeclaration
-        Identifier `:` Direction? TypeExpression DefaultValueClause?
-
-    DefaultValueClause
-        `=` Expression
-```
-
-A [=parameter declaration=] must include a type expression; the type of the parameter is the result of evaluating that type expression.
-
-A parameter declaration may include a default-value clause; it it does, the default value for that parameter is the result of evaluating the expression in that clause with an expected type that is the type of the parameter.
-
-#### Directions #### {#dir}
-
-Every parameter has a <dfn>direction</dfn>, which determines how an argument provided at a call site is connected to that parameter.
-
-```.syntax
-    Direction
-        `in`
-        | `out`
-        | `take`
-        | `borrow`
-        | `inout` | `in` `out`
-        | `ref`
-```
-
-If a parameter declaration includes a [=direction=], then that determines the direction of the parameter; otherwise the direction of the parameter is `in`.
-
-##### `in` ##### {#dir.in}
-
-The `in` direction indicates typical pass-by-value (copy-in) semantics.
-The parameter in the callee binds to a copy of the argument value passed by the caller.
-
-##### `out` ##### {#out}
-
-The `out` direction indicates copy-out semantics.
-The parameter in the callee binds to a fresh storage location that is uninitialized on entry.
-When the callee returns, the value in that location is moved to the storage location referenced by the argument.
-
-##### `take` ##### {#take}
-
-The `take` direction indicates move-in semantics.
-The argument provided by the caller is moved into the parameter of the callee, ending the lifetime of the argument.
-
-##### `borrow` ##### {#borrow}
-
-The `borrow` direction indicates immutable borrow semantics.
-
-If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
-
-If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either the storage location referenced by the argument, or a copy of the argument value.
-
-##### `inout` ##### {#inout}
-
-The `inout` direction indicates exclusive mutable borrow semantics.
-The syntax `in` out} is equivalent to `inout`
-
-If the parameter has a noncopyable type, then the parameter in the callee binds to the storage location referenced by the argument.
-
-If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either:
-
-
-* the storage location referenced by the argument
-* a fresh storage location, in which case that location is initialized with a copy of the argument value on entry, and the value at that location is written to the argument on return from the function.
-
-
-##### `ref` ##### {#ref}
-
-The `ref` direction indicates pass-by-reference semantics.
-The parameter in the callee binds to the storage location referenced by the argument.
 
 ### Result Type ### {#decl.func.result}
 
@@ -582,6 +675,7 @@ ConstructorDeclaration :
     FunctionBodyClause
 ```
 
+A constructor declaration is invocable.
 A constructor declaratin has an implicit `this` parameter, with a direction of `out`.
 
 Note: Slang does not provide any equivalent to C++ destructors, which run automatically when an instance goes out of scope.
@@ -620,6 +714,8 @@ TODO: reference [=property declaration=].
         `set` ParametersClause? FunctionBodyClause
 ```
 
+An accessor declaration is invocable.
+
 Subscripts {#decl.subscript}
 ----------
 
@@ -634,6 +730,8 @@ SubscriptDeclaration :
     GenericWhereClause?
     PropertyBody
 ```
+
+A subscript declaration is invocable.
 
 Note: Unlike a function declaration, a [=subscript declaration=] cannot elide the result type clause.
 
@@ -723,7 +821,7 @@ A [=generic parameter list=] can include one or more parameters separated by com
 The allowed forms for <dfn>generic parameters</dfn> are:
 
 * A single identifier like `T` is used to declare a <dfn>generic type parameter</dfn> with no constraints.
-* A clause like `T : IFoo` is used to introduce a [=generic type parameter=] `T` where the parameter is <dfn>constrained</dfn> so that it must conform to the `IFoo` interface.
+* A clause like `T : IFoo` is used to introduce a [=generic type parameter=] `T` where the parameter is constrained so that it must conform to the `IFoo` interface.
 * A clause like `let N : int` is used to introduce a <dfn>generic value parameter</dfn> `N`, which takes on values of type `int`.
 
 Note: The syntax for [=generic value parameters=] is provisional and subject to possible change in the future.

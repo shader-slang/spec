@@ -36,6 +36,10 @@ Layout {#SECTION.layout}
 We clearly need a chapter on the guarantees Slang makes about memory layout.
 </div>
 
+Types in Slang do not necessarily prescribe a single <dfn>layout</dfn> in memory.
+The discussion of each type will specify any guarantees about [=layout=] it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
+
+
 Storage {#storage}
 =======
 
@@ -295,6 +299,14 @@ For some implementations, a [=runtime session=] may be the same as a [=process=]
 A [=runtime session=] has access to one or more distinct <dfn>devices</dfn> on which work may be performed.
 Different [=devices=] in a [=runtime session=] may implement different <dfn>architectures</dfn>, each having its own machine code format(s).
 For some implementations, the [=host=] may also be a [=device=], but this is not required.
+
+<div class="issue">
+We need to define what it means to "execute" statements and to "evaluate" expressions...
+</div>
+
+When a strand invokes an invocable entity |f|, it executes the body of |f| (a statement).
+As part of executing a statement, a strand may execute other statements, and evaluate expressions.
+A strand evaluates an expression to yield a value, and also for any side effects that may occur.
 
 Strands {#exec.strand}
 -------

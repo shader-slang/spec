@@ -31,36 +31,6 @@ A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=b
 Issue: We need to describe here the process by which an identifier resolves to a [=binding=], including overloaded, etc.
 The discussion here will have to be a forward reference to the algorithms to be given later.
 
-Values {#check.value}
-------
-
-A type is conceptually a set of values; the values in that set are *instances* of the type.
-
-Note: A given value might be an instance of zero or more types. We avoid saying that a value *has* some type, except in cases where there is an "obviously right" type for such a value.
-
-A typed value, written |v| `:` |T|, consists of a type |T| and a value |v| that is an instance of |T|.
-
-A value is one of:
-
-* A simple value
-* A composite value
-* A declaration reference
-* A module reference
-
-A simple value is one of:
-
-* An integer value
-* A floating-point value
-* A string value
-* A code point value
-* A Boolean value
-
-A composite value is one of:
-
-* An array-like value
-* A structure value
-* An `enum` value
-
 Expressions {#check.expr}
 -----------
 
@@ -79,6 +49,8 @@ A checked expression is a limited subset of forms that includes stuff like:
 * typed values
 * declaration references
 * calls
+
+A typed value evaluates to itself, with no side effects.
 
 A resolved expression is either a checked expression *or* one of a few cases that need further context:
 

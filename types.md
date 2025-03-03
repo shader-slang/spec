@@ -1,19 +1,7 @@
-Types {#section.type}
-=====
+Types and Values {#section.type}
+================
 
 <div class=issue>
-The text of this chapter is largely still written in a more guide/reference style than in anything formal.
-
-This section must define what a <dfn>type</dfn> is.
-
-It is important to have the specification include a list of the major built-in types that this chapter currently documents, but those are not the only things relevant to types that need to be discussed.
-
-A key concept that this chapter needs to discuss is that there are a few distinct \emph{kinds} of types that Slang traffics in:
-
-
-* \emph{Proper} types, such as `Int` and \code{RWStructuredBuffer<Float>}, which can be used for local variables, function parameters, etc.
-
-* \emph{Interface} types, which include both references to [=interface declaration=]s, but also conjunctions of interface types. Interface types are distinct from proper types. Interfaces can be used as constraints on generic type parameters, but proper types cannot. Similarly, an interface type is not semantically valid as a local variable or function parameter (the current Slang compiler simply translates such invalid usages to existential types, which are proper).
 
 * \emph{Generic} types, which are the types of references to generic declarations. The current Slang language rules do not allow developers to utter generic types, and the semantics do not treat them as proper types. However, intermediate expressions of generic type can easily appear when checking Slang expressions.
 
@@ -29,348 +17,473 @@ From the judgements that have been sketched so far, it seems clear that we at le
 * A set of ``reference'' types, such as `in`out Int}, that can be used to represent the value category (e.g., l-value vs. r-value) of an expression. Subtyping/coercion rules would then need to support, e.g., passing a `ref` Int} where an `in`out Int} is expected, etc.
 
 
+A value is one of:
+
+* A simple value
+* A composite value
+* A declaration reference
+* A module reference
+* A type
+
+A simple value is one of:
+
+* An integer value
+* A floating-point value
+* A string value
+* A code point value
+* A Boolean value
+
+A composite value is one of:
+
+* A tuple value
+* An array-like value
+* A structure value
+* An `enum` value
+
+All values have a *level*.
+The level of a simple value is zero.
+The level of a composite value is the maximum level of its contents, or zero if it has no contents.
+
+A type is itself a value.
+The level of a type is one greater than the maximum level of instances of that type.
+
+The type `Type` is the type of all values with level zero.
+The type `Kind` is the type of all types with level one.
+
+
+
 </div>
 
-This section defines the kinds of types supported by Slang.
 
+A <dfn>type</dfn> is a set of <dfn>values</dfn>;
+the values in that set are <dfn>instances</dfn> of the type.
 
-Types in Slang do not necessarily prescribe a single <dfn>layout</dfn> in memory.
-The discussion of each type will specify any guarantees about [=layout=] it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
+Note: A given [=value=] might be an [=instance=] of zero or more [=types=]. We avoid saying that a value *has* some type, except in cases where there is an "obviously right" type for such a value.
 
-Void Type {#type.unit}
----------
+```.semantics
+Value :=
+  ImplicitlyTypedValue
+  | UntypedValue
 
-The type \code{void} contains no data and has a single, unnamed, value.
+TypedValue :=
+  ImplicitlyTypedValue
+  | ExplicitlyTypedValue
 
-A \code{void} value takes up no space, and thus does not affect the layout of types.
-Formally, a \code{void} value behaves as if it has a size of zero bytes, and one-byte alignment.
+ExplicitlyTypedValue := UntypedValue `:` Type
 
-Scalar Types {#type.scalar}
-------------
+ImplicitlyTypedValue := /* TODO */
 
-### Boolean Type ### {#type.bool}
-
-The type \code{bool} is used to represent Boolean truth values: `true` and `false`.
-
-The size of a \code{bool} varies across target platforms; programs that need to ensure a matching in-memory layout between targets should not use \code{bool} for in-memory data structures.
-On all platforms, the \code{bool} type must be naturally aligned (its alignment is its size).
-
-### Integer Types ### {#type.int}
-
-The following integer types are defined:
-
-\begin{tabular}{ |c|c| }
-  \hline
-  Name & Description \\
-  \hline
-  `int8_t` & 8-bit signed integer \\
-  `int16_t` & 16-bit signed integer \\
-  `int` & 32-bit signed integer \\
-  `int64_t` & 64-bit signed integer \\
-  \code{uint8\_t} & 8-bit unsigned integer \\
-  \code{uint16\_t} & 16-bit unsigned integer \\
-  \code{uint} & 32-bit unsigned integer \\
-  \code{uint64\_t} & 64-bit unsigned integer \\
-  \hline
-\end{tabular}
-
-All signed integers use two's complement representation.
-All arithmetic operations on integers (both signed and unsigned) wrap on overflow/underflow.
-
-All target platforms must support the `int`} and \code{uint} types.
-Specific target platforms may not support the other integer types.
-
-Issue: "target platforms" links outside the specification to target-compatibility.md
-
-All integer types are stored in memory with their natural size and alignment on all targets that support them.
-
-### Floating-Point Types ### {#type.float}
-
-The following floating-point type are defined:
-
-\begin{tabular}{ |c|c| }
-  \hline
-  Name & Description \\
-  \hline
-  \code{half} & 16-bit floating-point number (1 sign bit, 5 exponent bits, 10 fraction bits) \\
-  \code{float} & 32-bit floating-point number (1 sign bit, 8 exponent bits, 23 fraction bits) \\
-  \code{double} & 64-bit floating-point number (1 sign bit, 11 exponent bits, 52 fraction bits) \\
-  \hline
-\end{tabular}
-
-All floating-point types are laid out in memory using the matching IEEE 754 standard format (\code{binary16}, \code{binary32}, \code{binary64}).
-Target platforms may define their own rules for rounding, precision, denormals, infinities, and not-a-number values.
-
-All target platforms must support the \code{float} type.
-Specific targets may not support the other floating-point types.
-
-Issue: "targets" links outside the specification to target-compatibility.md
-
-All floating-point types are stored in memory with their natural size and alignment on all targets that support them.
-
-Vector Types {#type.vector}
-------------
-
-A vector type is written as `vector<T, N>` and represents an \code{N}-element vector with elements of type \code{T}.
-The <dfn>element type</dfn> \code{T} must be one of the built-in scalar types, and the <dfn>element count</dfn> \code{N} must be a specialization-time constant integer.
-The [=element count=] must be between 2 and 4, inclusive.
-
-A vector type allows subscripting of its elements like an array, but also supports [=element-wise arithmetic=] on its elements.
-<dfn>Element-wise arithmetic</dfn> means mapping unary and binary operators over the elements of a vector to produce a vector of results:
-
-```
-vector<int,4> a = { 1, 2, 30, 40 };
-vector<int,4> b = { 10, 20, 3, 4 };
-
--a; // yields { -1, -2, -30, -40 }
-a + b; // yields { 11, 22, 33, 44 }
-b / a; // yields { 10, 10, 0, 0 }
-a > b; // yields { false, false, true, true }
+UntypedValue := /* TODO */
 ```
 
-A vector type is laid out in memory as \code{N} contiguous values of type \code{T} with no padding.
-The alignment of a vector type may vary by target platforms.
-The alignment of `vector<T,N>` will be at least the alignment of \code{T} and may be at most \code{N} times the alignment of \code{T}.
+Level {#value.level}
+-----
 
-As a convenience, Slang defines built-in type aliases for vectors of the built-in scalar types.
-E.g., declarations equivalent to the following are provided by the Slang standard library:
+Every [=value=] has a positive integer <dfn export>level</dfn>.
 
+Note: Typical values that a Slang program calculates and works with have [=level=] zero.
+
+Types of Types {#type.type}
+--------------
+
+A [=type=] is itself a [=value=].
+
+The level of a [=type=] is one greater than the maximum of zero and the maximum level of the instances of that type.
+
+Note: It is impossible for a type to be an instance of itself.
+
+A [=type=] whose instances are all [=values=] with [=level=] zero is a <dfn export>proper type</dfn>.
+
+Note: Most of what a programmer thinks of as types are [=proper types=]. The [=level=] of a [=proper type=] will always be one.
+
+A [=type=] whose instances are [=types=] with [=level=] one is a <dfn export>kind</dfn>.
+
+The [=kind=] `Type` is the [=kind=] of all [=proper types=].
+
+A [=type=] whose instances are [=types=] with [=level=] two is a <dfn export>sort</dfn>.
+
+The [=sort=] `Kind` is the [=sort=] of all [=kinds=].
+
+Scalars {#type.scalar}
+-------
+
+All scalar values have [=level=] zero.
+
+### Unit ### {#type.unit}
+
+The type `Unit` has a single instance: the unit value.
+The name `void` is an alias for the unit type.
+
+### Booleans ### {#type.bool}
+
+The type `Bool` has two instances: `true` and `false`.
+
+### Numeric Scalars ### {#type.scalar.numeric}
+
+#### Integers #### {#type.scalar.numeric.int}
+
+The <dfn>integer types</dfn> are:
+
+<table>
+<tr><th>Type</th><th>Kind</th></tr>
+
+<tr><td>`Int8`</td>  <td>8-bit signed integer type</td></tr>
+<tr><td>`Int16`</td><td>16-bit signed integer type</td></tr>
+<tr><td>`Int32`</td><td>32-bit signed integer type</td></tr>
+<tr><td>`Int64`</td><td>64-bit signed integer type</td></tr>
+
+<tr><td>`UInt8`</td>  <td>8-bit unsigned integer type</td></tr>
+<tr><td>`UInt16`</td><td>16-bit unsigned integer type</td></tr>
+<tr><td>`UInt32`</td><td>32-bit unsigned integer type</td></tr>
+<tr><td>`UInt64`</td><td>64-bit unsigned integer type</td></tr>
+
+</table>
+
+An [=integer type=] is either signed or unsigned.
+An integer type has a bit width.
+
+Signed integer types use two's complement representation.
+Arithmetic operations on values of integer type (both signed and unsigned) wrap on overflow/underflow.
+
+The name `Int` is an alias for the type `Int32`.
+The name `UInt` is an alias for the type `UInt32`.
+
+#### Floating-Point Numbers #### {#type.scalar.numeric.float}
+
+The <dfn>floating-point types</dfn> are:
+
+<table>
+<tr><th>Type</th><th>Kind</th><th>IEEE 754 Format</tr>
+
+<tr><td>`Float16`</td><td>16-bit floating-point type</td><td>`binary16`</td></tr>
+<tr><td>`Float32`</td><td>32-bit floating-point type</td><td>`binary16`</td></tr>
+<tr><td>`Float64`</td><td>64-bit floating-point type</td><td>`binary16`</td></tr>
+</table>
+
+All [=floating-point types=] are signed.
+A floating-point type has a bit width.
+
+A [=floating-point type=] has a corresponding IEEE 754 format.
+The instances of a floating-point type are all the values of its IEEE 754 format.
+
+The name `Float` is an alias for the `Float32` type.
+
+Finite Sequences {#type.sequence.finite}
+----------------
+
+The <dfn>element count</dfn> of a finite sequence is the number of elements in it.
+
+The <dfn>element type</dfn> of a homogeneous sequence is the type of elements in it.
+
+The [=level=] of a sequence is the level of its [=element type=].
+
+```.semantics
+Sequence := `{` (Value `,`)* `}`
 ```
-typealias float4 = vector<float, 4>;
-typealias int8_t3 = vector<int8_t, 3>;
-```
-
-### Legacy Syntax ### {#type.vector.legacy}
-
-For compatibility with older codebases, the generic \code{vector} type includes default values for \code{T} and \code{N}, being declared as:
-
-```
-struct vector<T = float, let N : int = 4> { ... }
-```
-
-This means that the bare name \code{vector} may be used as a type equivalent to \code{float4}:
-
-```
-// All of these variables have the same type
-vector a;
-float4 b;
-vector<float> c;
-vector<float, 4> d;
-```
-
-Matrix Types {#type.matrix}
-------------
-
-A matrix type is written as `matrix<T, R, C>` and represents a matrix of \code{R} rows and \code{C} columns, with elements of type \code{T}.
-The [=element type=] \code{T} must be one of the built-in scalar types.
-The <dfn>row count</dfn> \code{R} and <dfn>column count</dfn> \code{C} must be specialization-time constant integers.
-The [=row count=] and [=column count=] must each be between 2 and 4, respectively.
-
-A matrix type allows subscripting of its rows, similar to an \code{R}-element array of `vector<T,C>` elements.
-A matrix type also supports element-wise arithmetic.
-
-Matrix types support both <dfn>row-major</dfn> and <dfn>column-major</dfn> memory layout.
-Implementations may support command-line flags or API options to control the default layout to use for matrices.
-
-Note: Slang currently does not support the HLSL \code{row\_major} and \code{column\_major} modifiers to set the layout used for specific declarations.
-
-Under [=row-major=] layout, a matrix is laid out in memory equivalently to an \code{R}-element array of `vector<T,C>` elements.
-
-Under [=column-major=] layout, a matrix is laid out in memory equivalent to the row-major layout of its transpose.
-This means it will be laid out equivalently to a \code{C}-element array of `vector<T,R>` elements.
-
-As a convenience, Slang defines built-in type aliases for matrices of the built-in scalar types.
-E.g., declarations equivalent to the following are provided by the Slang standard library:
-
-```
-typealias float3x4 = matrix<float, 3, 4>;
-typealias int64_t4x2 = matrix<int64_t, 4, 2>;
-```
-
-Note: For programmers using OpenGL or Vulkan as their graphics API, and/or who are used to the GLSL language,
-it is important to recognize that the equivalent of a GLSL \code{mat3x4} is a Slang \code{float3x4}.
-This is despite the fact that GLSL defines a \code{mat3x4} as having 3 \emph{columns} and 4 \emph{rows}, while a Slang \code{float3x4} is defined as having 3 rows and 4 columns.
-This convention means that wherever Slang refers to "rows" or "columns" of a matrix, the equivalent terms in the GLSL, SPIR-V, OpenGL, and Vulkan specifications are "column" and "row" respectively (\emph{including} in the compound terms of "row-major" and "column-major")
-While this choice of convention can cause confusion, it is necessary to ensure that subscripting with \code{[]} can be efficiently implemented on all target platforms.
-This decision in the Slang language is consistent with the compilation of HLSL to SPIR-V performed by other compilers.
-
-### Legacy Syntax ### {#type.matrix.legacy}
-
-For compatibility with older codebases, the generic \code{matrix} type includes default values for \code{T}, \code{R}, and \code{C}, being declared as:
-
-```
-struct matrix<T = float, let R : int = 4, let C : int = 4> { ... }
-```
-
-This means that the bare name \code{matrix} may be used as a type equivalent to \code{float4x4}:
-
-```
-// All of these variables have the same type
-matrix a;
-float4x4 b;
-matrix<float, 4, 4> c;
-```
-
-Structure Types {#type.struct}
----------------
-
-Structure types are introduced with `struct` declarations, and consist of an ordered sequence of named and typed fields:
-
-```
-struct S
-{
-    float2 f;
-    int3 i;
-}
-```
-
-### Standard Layout ### {#type.struct.layout.standard}
-
-The <dfn>standard layout</dfn> for a structure type uses the following algorithm:
-
-* Initialize variables \code{size} and \code{alignment} to zero and one, respectively
-* For each field \code{f} of the structure type:
-  * Update \code{alignment} to be the maximum of \code{alignment} and the alignment of \code{f}
-  * Set \code{size} to the smallest multiple of \code{alignment} not less than \code{size}
-  * Set the offset of field \code{f} to \code{size}
-  * Add the size of \code{f} to \code{size}
-
-When this algorithm completes, \code{size} and \code{alignment} will be the size and alignment of the structure type.
-
-Most target platforms do not use the [=standard layout=] directly, but it provides a baseline for defining other layout algorithms.
-Any layout for structure types must guarantee an alignment at least as large as the standard layout.
-
-### C-Style Layout ### {#type.struct.layout.c}
-
-C-style layout for structure types differs from standard layout by adding an additional final step:
-
-* Set `size` to the smallest multiple of `alignment` not less than `size`
-
-This mirrors the layout rules used by typical C/C++ compilers.
-
-### D3D Constant Buffer Layout ### {#type.struct.layout.d3d.cbuffer}
-
-D3D constant buffer layout is similar to standard layout with two differences:
-
-* The initial alignment is 16 instead of one}
-* If a field would have improper straddle, where the interval \code{(fieldOffset, fieldOffset+fieldSize)} (exclusive on both sides) contains any multiple of 16, \emph{and} the field offset is not already a multiple of 16, then the offset of the field is adjusted to the next multiple of 16
 
 Array Types {#type.array}
 -----------
 
-An <dfn>array type</dfn> is either a statically-sized or dynamically-sized array type.
-
-A known-size array type is written `T[N]` where \code{T} is a type and \code{N} is a specialization-time constant integer.
-This type represents an array of exactly \code{N} values of type \code{T}.
-
-An unknown-size [=array type=] is written \code{T[]} where \code{T} is a type.
-This type represents an array of some fixed, but statically unknown, size.
-
-Note: Unlike in C and C++, arrays in Slang are always value types, meaning that assignment and parameter passing of arrays copies their elements.
-
-### Declaration Syntax ### {#type.array.decl}
-
-For variable and parameter declarations using traditional syntax, a variable of array type may be declared by using the element type \code{T} as a type specifier (before the variable name) and the `[N]` to specify the element count after the variable name:
-
-```
-int a[10];
+```.semantics
+ArrayType := elementType:Type `[` elementCount:Int `]`
 ```
 
-Alternatively, the array type itself may be used as the type specifier:
+An <dfn>array</dfn> is a finite homogenous sequence.
+An <dfn>array type</dfn> |T|`[`|N|`]` is the type of |N|-element [=arrays=] with elements of type |T|.
 
-```
-int[10] a;
-```
+The [=element count=] of an [=array type=] must be a non-negative `Int`.
 
-When using the `var` or `let` keyword to declare a variable, the array type must not be split:
 
-```
-var a : int[10];
-```
+Vectors {#type.vector}
+-------
 
-<div class=note>
-When declaring arrays of arrays (often thought of as "multidimensional arrays") a programmer needs to be careful about the difference between the two declaration syntaxes.
-The following two declarations are equivalent:
-```
-int[3][5] a;
-int a[5][3];
-```
-In each case, \code{a} is a five-element array of three-element arrays of `int`s.
-However, one declaration orders the element counts as \code{[3][5]} and the other as \code{[5][3]}.
-</div>
-
-### Element Count Inference ### {#type.array.inference}
-
-When a variable is declared with an unknown-size array type, and also includes an initial-value expression:
-
-```
-int a[] = { 0xA, 0xB, 0xC, 0xD };
+```.semantics
+VectorType := `Vector` `<` elementType:Type `,` elementCount:Int `>`
 ```
 
-The compiler will attempt to infer an element count based on the type and/or structure of the initial-value expression.
-In the above case, the compiler will infer an element count of 4 from the structure of the initializer-list expression.
-Thus the preceding declaration is equivalent to:
+A <dfn>vector</dfn> is a finite homogenous sequence.
+The [=element type=] of a vector must be a scalar numeric type.
 
+A <dfn>vector type</dfn> `Vector<`|T|`,`|N|`>` is the type of [=vectors=] with |N| elements of type |T|.
+
+The [=element count=] of a [=vector type=] must be a non-negative `Int`.
+
+Matrices {#type.matrix}
+--------
+
+A <dfn>matrix</dfn> is a finite homogenous sequence.
+The [=element type=] of a [=matrix=] must be a [=vector type=].
+
+The <dfn>rows</dfn> of a matrix are its elements.
+The <dfn>row type</dfn> of a matrix is its [=element type=].
+The <dfn export>row count</dfn> of a matrix is its [=element count=].
+
+The <dfn>scalar type</dfn> of a matrix is the [=element type=] of its [=element type=].
+
+The <dfn>column count</dfn> of a matrix is the [=element count=] of its [=row type=].
+The <dfn export>column type</dfn> of a matrix with [=scalar type=] |T| and [=column count=] |C| is `Vec<`T`,`|C|`>`
+
+A <dfn export>matrix type</dfn> `Matrix<`|T|`,`|R|`,`|C|`>` is the type of matrices with |R| [=rows=] of type `Vector<`|C|`,`|T|`>`.
+
+The `Never` Type {#type.never}
+----------------
+
+```.semantics
+NeverType := `Never`
 ```
-int a[4] = { 0xA, 0xB, 0xC, 0xD };
-```
 
-A variable declared in this fashion semantically has a known-size array type and not an unknown-size array type; the use of an unknown-size array type for the declaration is just a convenience feature.
+The type `Never` has no instances.
 
-### Standard Layout ### {#type.array.layout.std}
-
-The <dfn>stride</dfn> of a type is the smallest multiple of its alignment not less than its size.
-
-Using the standard layout for an array type \code{T[]} or `T[N]`:
-
-* The <dfn>element stride</dfn> of the array type is the stride of its element type \code{T}
-* Element \code{i} of the array starts at an offset that is \code{i} times the [=element stride=] of the array
-* The alignment of the array type is the alignment of \code{T}
-* The size of an unknown-size array type is unknown
-* The size of a known-size array with zero elements is zero
-* The size of a known-size array with a nonzero number \code{N} of elements is the size of \code{T} plus \code{N - 1} times the element stride of the array
-
-### C-Style Layout ### {#type.array.layout.c}
-
-The C-style layout of an array type differs from the standard layout in that the size of a known-size array with a nonzero number \code{N} of elements is \code{N} times the element stride of the array.
-
-### D3D Constant Buffer Layout ### {#type.array.layout.d3d.cbuffer}
-
-The D3D constant buffer layout of an array differs from the standard layout in that the element stride of the array is set to the smallest multiple of the alignment of \code{T} that is not less than the [=stride=] of \code{T}
-
-This Type {#type.this}
----------
-
-Within the body of a structure or interface declaration, the keyword \code{This} may be used to refer to the enclosing type.
-Inside of a structure type declaration, \code{This} refers to the structure type itself.
-Inside of an interface declaration, \code{This} refers to the concrete type that is conforming to the interface (that is, the type of `this`).
-
-Opaque Types {#type.opaque}
-------------
-
-<dfn>Opaque</dfn> types are built-in types that (depending on the target platform) may not have a well-defined size or representation in memory.
-Similar languages may refer to these as "resource types" or "object types."
-
-The full list of [=opaque=] types supported by Slang can be found in the standard library reference, but important examples are:
-
-* Texture types such as \code{Texture2D<T>}, \code{TextureCubeArray<T>}, and \code{RWTexture2DMS<T>}
-* Sampler state types: \code{SamplerState} and \code{SamplerComparisonState}
-* Buffer types like \code{ConstantBuffer<T>} and  \code{StructuredBuffer<T>}
-* Parameter blocks: \code{ParameterBlock<T>}
-
-Layout for opaque types depends on the target platform, and no specific guarantees can be made about layout rules across platforms.
-
-Known and Unknown Size {#type.size}
+Declaration References {#decl.ref}
 ----------------------
 
-Every type has either known or unknown size.
-Types with unknown size arise in a few ways:
+A <dfn export>declaration reference</dfn> is a [=value=] that refers to some [=declaration=].
 
-* An unknown-size array type has unknown size
-* A structure type has unknown size if any field type has unknown size
+```.semantics
+DeclarationReference :=
+  DirectDeclarationReference
+  | MemberDeclarationReference
+  | SpecializedDeclarationReference
+```
 
-The use of types with unknown size is restricted as follows:
+### Direct Declaration References ### {#decl.ref.direct}
 
-* A type with unknown size cannot be used as the element type of an array
-* A type with unknown size can only be used as the last field of a structure type
-* A type with unknown size cannot be used as a generic argument to specialize a user-defined type, function, etc. Specific built-in generic types/functions may support unknown-size types, and this will be documented on the specific type/function.
+A [=declaration=] serves as a <dfn export>direct declaration reference</dfn> to itself.
+
+```.semantics
+DirectDeclarationReference := Declaration
+```
+
+### Member Declaration Reference ### {#decl.ref.member}
+
+```.semantics
+MemberDeclarationReference := base:DeclarationReference `::` member:Declaration
+```
+
+A <dfn export>member declaration reference</dfn> refers to some *member* [=declaration=] of a base [=declaration reference=].
+A [=member declaration reference=] must satisfy the following constraints:
+
+* The *base* must refer to a declaration with members (TODO: make this precise)
+* The *member* must be a direct member declaration of the *base*
+
+### Specialized Declaration Reference ### {#decl.ref.specialize}
+
+```.semantics
+SpecializedDeclarationReference := base:Value `<` (arguments:Value `,`)* `>`
+```
+
+A <dfn export>specialized declaration reference</dfn> refers to a specialization of some generic declaration.
+A [=specialized declaration reference=] must satisfy the following constraints:
+
+* The *base* must refer to a generic declaration
+* The *base* must not be a [=specialized declaration reference=]
+* The number of *arguments* must match the number of parameters of *base*
+* Each of the *arguments* must be an instance of the type of the corresponding parameter of *base*
+
+### Fully-Specialized Declaration References ### {#decl.ref.specialized.fully}
+
+A [=declaration reference=] |r| is <dfn export>unspecialized</dfn> if |r| refers to a generic declaration and |r| is not a [=specialized declaration reference=].
+
+A [=declaration reference=] |r| is <dfn export>fully specialized</dfn> if all of:
+
+* |r| is [=unspecialized=]
+* if |r| has a base [=declaration reference=], then its base is [=fully specialized=]
+
+<div class="issue">
+We need to do some work to define what a fully-qualified declaration reference is, since some parts of the semantics want it.
+
+A direct declaration reference is fully qualified if it is to a module, a parameter (generic or value), or a local declaration.
+
+A member declaration reference is fully qualified if its base is.
+A specialization is fully qualified if its base is.
+</div>
+
+Nominal Types {#type.nominal}
+-------------
+
+A <dfn export>nominal type</dfn> is a fully-specialized declaration reference to a [=type declaration=].
+
+`struct` Types {#type.struct}
+---------------
+
+A <dfn export>struct type</dfn> is a fully-specialized declaration reference to a `struct` declaration.
+
+A [=struct type=] is a [=proper type=].
+
+`class` Types {#type.class}
+-------------
+
+A <dfn export>class type</dfn> is a fully-specialized declaration reference to a `class` declaration.
+
+An instance of a [=class type=] is an <dfn export>object</dfn>.
+
+A [=class type=] is a [=proper type=].
+
+`enum` Types {#type.enum}
+------------
+
+An <dfn export>enum type</dfn> is a fully-specialized declaration reference to an `enum` declaration.
+
+An [=enum type=] is a [=proper type=].
+
+Type Aliases {#type.alias}
+------------
+
+A <dfn export>type alias</dfn> is a fully-specialized declaration reference to an `typealias` declaration.
+
+A [=type alias=] is a [=proper type=].
+
+Associated Types {#type.assoc}
+----------------
+
+An <dfn export>associated type</dfn> is a fully-specialized declaration reference to an `associatedtype` declaration.
+
+An [=associated type=] is a [=proper type=].
+
+Interfaces {#type.interface}
+----------
+
+An <dfn export>interface</dfn> is a value that is either:
+
+* a fully-specialized declaration reference to an `interface` declaration
+
+* a conjunction of interfaces
+
+The [=instances=] of an interface are the [=proper types=] that conform to it.
+
+An [=interface=] has level two.
+
+The [=sort=] `Interface` is the [=sort=] of all [=interfaces=].
+
+`any` Types {#type.any}
+-----------
+
+```.semantics
+ExistentialAnyType := `any` Interface
+```
+
+An <dfn export>any type</dfn> takes the form `any` |I|, where |I| is an [=interface=].
+
+The [=level=] of an [=any type=] is one.
+
+An instance of `any` |I| is an <dfn export>existential value</dfn>.
+
+* a [=type=] |T|
+
+* a witness that |T| conforms to |I|
+
+* a [=value=] of type |T|
+
+The [=level=] of an existential value is zero.
+
+Functions {#type.function}
+---------
+
+A <dfn export>function</dfn> is a value that can be called.
+
+A function is called with zero or more values as <dfn export>arguments</dfn>.
+The [=arguments=] to a function call must match the function's <dfn export>parameters</dfn>
+
+If a call to a function returns normally, it returns a value of the function's <dfn export>result type</dfn>.
+
+A call to a function may have additional <dfn export>effects</dfn>.
+
+A <dfn export>function type</dfn> takes the form:
+
+```.semantics
+FunctionType := `(` (Parameter `,`)* `)` Effect* `->` resultType:Type
+
+Parameter := (Name `:`)? Type
+```
+
+`(` |parameters| `)` |effects| `->` |resultType|
+
+where:
+
+* |parameters| is a comma-separated sequence of zero or more [=parameters=]
+* |effects| is zero or more [=effects=]
+* |resultType| is a [=type=]
+
+Each of the |parameters| of a function type may either be a [=type=] or of the form *name*`:`*type*.
+
+A fully-specialized declaration reference to a function declaration is a [=function=].
+
+The level of a function is the maximum of the levels of its parameter types and result types.
+
+Generics {#type.generic}
+--------
+
+A <dfn export>generic</dfn> is a value that can be specialized.
+
+A generic is specialized with one or more values as [=arguments=].
+The [=arguments=] to a specialization must match the generic's [=parameters=].
+
+A <dfn export>dependent function type</dfn> takes the form:
+
+```.semantics
+DependentFunctionType := `<` (Parameter `,`)* `>` `->` resultType:Type
+```
+
+`<` |parameters| `>` `->` |resultType|
+
+where:
+
+* |parameters| is a comma-separated sequence of zero or more parameters
+* |resultType| is a type
+
+The |parameters| of a generic type may either be a type or of the form *name*`:`*type*.
+
+The result type of a generic type may refer to the parameters.
+
+An unspecialized declaration reference to a generic declaration is a [=generic=].
+
+The level of a generic is the maximum of the level of its result type and one greater than the maximul of the levels of its parameter types.
+
+Witnesses {#type.witness}
+---------
+
+A <dfn export>proposition</dfn> is a phrase that logically may be either true or false.
+
+[=Propositions=] are [=types=].
+A <dfn export>witness</dfn> is an instance of a [=proposition=].
+The existance of a [=witness=] of some [=proposition=] |P| demonstrates the truth of |P|.
+
+The notation "a [=witness=] that |P|", where |P| is a proposition, is equivalent to "an [=instance=] of |P|".
+
+The notation |T| `extends` |S| denotes a [=proposition=] that the [=type=] |T| is a subtype of the [=type=] |S|.
+
+The notation |T| `implements` |I| denotes a [=proposition=] that the [=type=] |T| conforms to the [=interface=] |I|.
+
+```.semantics
+Proposition := /* TODO */
+
+SubtypeProposition := subtype:Type `extends` supertype:Type
+
+ImplementationProposition := Type `implements` Interface
+```
+
+<div class="issue">
+A witness that *t* `implements` *i* is a witness table.
+
+Given:
+* an interface *i*
+* a requirement of *i*, represented as a direct member declaration of *r*
+* a type *t*
+* a witness table *w*, of type *t* `implements` *i*
+
+then looking up the witness value for *r* should basically amount to a (static) member reference into *w*.
+
+This would all be easier if Slang followed the approach of something like Haskell, where the `This` parameter is basically explicit.
+
+Basically this amounts to saying that *t* `implements` *i* acts as a declaration reference to *i*, and that a declaration reference to an `interface` is not "fully specialized" (in the sense that members can be looked up) without that added parameter.
+
+(*t* `implements` *i*)::*r*
+
+So... I need to do that.
+</div>
+
+
+Module Values {#value.module}
+-------------
+
+A [=module=] is a [=value=].

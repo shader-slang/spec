@@ -616,9 +616,8 @@ ResultTypeClause :
     `->` TypeExpression
 ```
 
-Every function has a <dfn>result type</dfn>, which is the type of value that results from calling that function.
 If a function declaration has a result type clause, then the [=result type=] of the function is the type that results from evaluating the type expression in that clause.
-If a function declaration does not have a result type clause, then the result type of the function is `void`.
+If a function declaration does not have a result type clause, then the result type of the function is the unit type.
 
 ### Body ### {#decl.func.body}
 
@@ -804,7 +803,7 @@ Currently, extension declarations can only apply to structure types.
 Generics {#decl.generic}
 --------
 
-Many kinds of declarations can be made <dfn>generic</dfn>: structure types, interfaces, extensions, functions, initializers, and subscripts.
+Many kinds of declarations can be made [=generic=]: structure types, interfaces, extensions, functions, initializers, and subscripts.
 
 A [=generic=] declaration introduces a <dfn>generic parameter list</dfn> enclosed in angle brackets `<>`:
 

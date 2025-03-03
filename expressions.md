@@ -73,9 +73,9 @@ Note:
         `true` | `false`
 ```
 
-The expression `true` resolves to the typed value `true : Bool`.
+The expression `true` resolves to the typed Boolean value `true : Bool`.
 
-The expression `false` resolves to the typed value `false : Bool`.
+The expression `false` resolves to the typed Boolean value `false : Bool`.
 
 ### String Literal Expressions ### {#expr.lit.string}
 

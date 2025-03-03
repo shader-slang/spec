@@ -9,27 +9,38 @@ Editor: Theresa Foley, NVIDIA https://www.nvidia.com, tfoley@nvidia.com, https:/
 Abstract: Slang is a programming language primarily intended for use in *shader programming*--that is, real-time graphics programming on GPUs.
 Complain About: accidental-2119 yes, missing-example-ids yes
 Markup Shorthands: markdown yes, css no
+Warning: Not Ready
+
 </pre>
 
 <pre class=include>path: introduction.md</pre>
+
 <pre class=include>path: lexical.md</pre>
 <pre class=include>path: preprocessor.md</pre>
-<pre class=include>path: checking.md</pre>
 <pre class=include>path: parsing.md</pre>
+
+<pre class=include>path: types.md</pre>
+<pre class=include>path: checking.md</pre>
 <pre class=include>path: execution.md</pre>
+
+
 <pre class=include>path: modules.md</pre>
 <pre class=include>path: declarations.md</pre>
+
+<pre class=include>path: statements.md</pre>
+
+<pre class=include>path: expressions.md</pre>
+
 <pre class=include>path: attributes.md</pre>
 <pre class=include>path: visibility.md</pre>
-<pre class=include>path: statements.md</pre>
-<pre class=include>path: expressions.md</pre>
 <pre class=include>path: extensions.md</pre>
-<pre class=include>path: lookup.md</pre>
-<pre class=include>path: overloading.md</pre>
 <pre class=include>path: interfaces.md</pre>
 <pre class=include>path: generics.md</pre>
-<pre class=include>path: types.md</pre>
+
+<pre class=include>path: lookup.md</pre>
+<pre class=include>path: overloading.md</pre>
 <pre class=include>path: subtyping.md</pre>
 <pre class=include>path: conversion.md</pre>
+
 <pre class=include>path: capabilities.md</pre>
 <pre class=include>path: autodiff.md</pre>

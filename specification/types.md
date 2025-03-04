@@ -3,29 +3,6 @@ Types and Values {#section.type}
 
 <div class=issue>
 
-* \emph{Generic} types, which are the types of references to generic declarations. The current Slang language rules do not allow developers to utter generic types, and the semantics do not treat them as proper types. However, intermediate expressions of generic type can easily appear when checking Slang expressions.
-
-
-The type-checking rules will likely need to be able to refer to certain other types that are not part of the user-exposed Slang type system.
-From the judgements that have been sketched so far, it seems clear that we at least need:
-
-
-* Some kind of ``type type'' or other way to refer to the logical ``type'' of an expression that itself names a (specific) type. This might be spelled $\textsc{Exactly}(...)$. So, for example, if the name \code{I} is bound as an alias for `Int` in a certain context, the typing judgements would determine $\code{I} : \textsc{Exactly}(`Int`)$.
-
-* Some kind of ``overload group'' type, which represents that a given expression resolves only to a group of candidates, such that further disambiguation is needed. Such a type might be spelled $\textsc{Overloaded}(...)$, where the arguments are the types of the candidates.
-
-* A set of ``reference'' types, such as `in`out Int}, that can be used to represent the value category (e.g., l-value vs. r-value) of an expression. Subtyping/coercion rules would then need to support, e.g., passing a `ref` Int} where an `in`out Int} is expected, etc.
-
-
-A value is one of:
-
-* A simple value
-* A composite value
-* A declaration reference
-* A module reference
-* A type
-
-A simple value is one of:
 
 * An integer value
 * A floating-point value
@@ -39,18 +16,6 @@ A composite value is one of:
 * An array-like value
 * A structure value
 * An `enum` value
-
-All values have a *level*.
-The level of a simple value is zero.
-The level of a composite value is the maximum level of its contents, or zero if it has no contents.
-
-A type is itself a value.
-The level of a type is one greater than the maximum level of instances of that type.
-
-The type `Type` is the type of all values with level zero.
-The type `Kind` is the type of all types with level one.
-
-
 
 </div>
 
@@ -111,7 +76,7 @@ All scalar values have [=level=] zero.
 
 ### Unit ### {#type.unit}
 
-The type `Unit` has a single instance: the unit value.
+The <dfn export>unit type</dfn>, named <a lt="unit type">`Unit`</a>, has a single instance: the <dfn export>unit value</dfn>.
 The name `void` is an alias for the unit type.
 
 ### Booleans ### {#type.bool}
@@ -130,7 +95,7 @@ The <dfn>integer types</dfn> are:
 <tr><td>`Int8`</td>  <td>8-bit signed integer type</td></tr>
 <tr><td>`Int16`</td><td>16-bit signed integer type</td></tr>
 <tr><td>`Int32`</td><td>32-bit signed integer type</td></tr>
-<tr><td>`Int64`</td><td>64-bit signed integer type</td></tr>
+<tr><td><dfn lt="Int64" export>`Int64`</dfn></td><td>64-bit signed integer type</td></tr>
 
 <tr><td>`UInt8`</td>  <td>8-bit unsigned integer type</td></tr>
 <tr><td>`UInt16`</td><td>16-bit unsigned integer type</td></tr>
@@ -167,6 +132,20 @@ A [=floating-point type=] has a corresponding IEEE 754 format.
 The instances of a floating-point type are all the values of its IEEE 754 format.
 
 The name `Float` is an alias for the `Float32` type.
+
+### Text ### {#type.text}
+
+#### Unicode Scalar Values #### {#type.text.unicode-scalar-value}
+
+Issue: Need to write this section.
+
+#### Characters #### {#type.text.char}
+
+Issue: Need to write this section.
+
+#### Strings #### {#type.text.string}
+
+Issue: Need to write this section.
 
 Finite Sequences {#type.sequence.finite}
 ----------------

@@ -1,4 +1,4 @@
-Lexical Structure {#lex}
+Lexical Structure {#CHAPTER.lex}
 =================
 
 This chapter describes how a [=source unit=] is decomposed into a sequence of [[=lexemes=]].
@@ -33,7 +33,7 @@ Lexical processing of a [[=source unit=]] proceeds *as if* the following steps a
 
 3. Each comment is replaced with a single space (U+0020)
 
-4. The [=source unit=] is *lexed* into a sequence of [[=tokens=]] according to the lexical grammar in this chapter
+4. The [=source unit=] is <a lt=lex>lexed</a> into a sequence of [[=tokens=]] according to the lexical grammar in this chapter
 
 5. The lexed sequence of tokens is _preprocessed_ to produce a new sequence of tokens
 
@@ -44,7 +44,7 @@ Lexemes {#lex.lexeme}
 
 A <dfn>lexeme</dfn> is a contiguous sequence of characters in a single [[=source unit=]].
 
-_Lexing_ is the process by which an implementation decomposes a [[=source unit=]] into zero or more non-overlapping [[=lexemes=]].
+<dfn lt="lex" export>Lexing</dfn> is the process by which an implementation decomposes a [[=source unit=]] into zero or more non-overlapping [[=lexemes=]].
 
 Every [[=lexeme=]] is either a [[=token=]] or it is [[=trivia=]].
 
@@ -297,3 +297,37 @@ Operator :
     ;
 
 ```
+
+Associating Trivia With Tokens {#lex.token.trivia}
+------------------------------
+
+Issue: We should define lexing in terms of producing a sequence of tokens-with-trivia instead of just lexemes.
+
+Each token in a source unit may be prededed or followed by trivia:
+
+```.lexical
+TokenWithTrivia =
+  LeadingTrivia Token TrailingTrivia
+
+LeadingTrivia = Trivia*
+
+TrailingTrivia = (Trivia - LineBreak)* LineBreak?
+```
+
+A compiler implementation must use the "maximal munch" rule when lexing, so that each *TokenWithTrivia* includes as many characters of *TrailingTrivia* as possible.
+
+Note: Informally, the trailing trivia of a token is all the trivia up to the next line break, the next token, or the end of the source unit - whichever comes first.
+The leading trivia of a token starts immediately after the trailing trivia of the preceding token, or at the beginning of the file if there is no preceding token.
+
+Lexing decomposes a source unit into a sequence of zero or more tokens with trivia, as well as zero or more pieces of trivia that do not belong to any token:
+
+```.lexical
+LexicalSourceUnit =
+  TokenWithTrivia* Trivia*
+```
+
+The terminals of the context-free grammar should be understood to be tokens with trivia.
+A reference to a nonterminal |N| in productions for the abstract syntax should be understood as matching the *TokenWithTrivia* rule, restricted to the case where the contained token is |N|.
+
+Issue: We should probably make a dedicated **EOF** be part of the alphabet for input source units, so that the *LexicalSourceUnit* can be simpler to define.
+E.g., "The alphabet of the lexical grammar comprises all Unicode scalar values, as well as the unique meta-value **EOF**."

@@ -133,19 +133,13 @@ The instances of a floating-point type are all the values of its IEEE 754 format
 
 The name `Float` is an alias for the `Float32` type.
 
-### Text ### {#type.text}
+### Unicode Scalar Values ### {#type.scalar.unicode}
 
-#### Unicode Scalar Values #### {#type.text.unicode-scalar-value}
+A **unicode scalar** is defined by the Unicode specification.
 
-Issue: Need to write this section.
-
-#### Characters #### {#type.text.char}
-
-Issue: Need to write this section.
-
-#### Strings #### {#type.text.string}
-
-Issue: Need to write this section.
+<div class="note">
+A unicode scalar is a Unicode code point that is not a surrogate code point.
+</div>
 
 Finite Sequences {#type.sequence.finite}
 ----------------
@@ -466,3 +460,15 @@ Module Values {#value.module}
 -------------
 
 A [=module=] is a [=value=].
+
+## Text ## {#type.text}
+
+### Characters ### {#type.text.char}
+
+A **character** is an ordered sequence of one or more unicode scalar values, matching the definition of a Unicode extended grapheme cluster.
+
+### Strings ### {#type.text.string}
+
+A **string** is an ordered sequence of zero or unicode scalar values.
+
+Issue: This text should eventually clarify how to decompose a string into a sequence of characters.

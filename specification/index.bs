@@ -13,22 +13,38 @@ Warning: Not Ready
 
 </pre>
 
-<pre class=include>path: introduction.md</pre>
+<!--
+The front matter consists of:
 
+* A preface, that describes the overall purpose and philosophy of the Slang language
+* An introduction, that gives instructions on how to read the rest of the document
+* A high-level overflow of the lifecycle of Slang code
+-->
+<pre class=include>path: preface.md</pre>
+<pre class=include>path: introduction.md</pre>
+<pre class=include>path: lifecycle.md</pre>
+
+<!--
+Next we dive into matters related to the textual structure of the language.
+-->
 <pre class=include>path: lexical.md</pre>
 <pre class=include>path: preprocessor.md</pre>
 <pre class=include>path: parsing.md</pre>
 
+<!--
+Before going into the details of the abstract syntax nodes and their semantics,
+we introduce important concepts related to semantic checking.
+-->
 <pre class=include>path: types.md</pre>
 <pre class=include>path: checking.md</pre>
-<pre class=include>path: execution.md</pre>
 
-
+<!--
+Now we dive into the syntax nodes themselves, proceeding in a more-or-less
+top-down fashion.
+-->
 <pre class=include>path: modules.md</pre>
 <pre class=include>path: declarations.md</pre>
-
 <pre class=include>path: statements.md</pre>
-
 <pre class=include>path: expressions.md</pre>
 
 <pre class=include>path: attributes.md</pre>
@@ -36,11 +52,36 @@ Warning: Not Ready
 <pre class=include>path: extensions.md</pre>
 <pre class=include>path: interfaces.md</pre>
 <pre class=include>path: generics.md</pre>
+<pre class=include>path: capabilities.md</pre>
 
+<!--
+The discussion of the semantic-checking rules for the syntax nodes leaves
+many details to secondary chapters, which we now provide the details of.
+-->
 <pre class=include>path: lookup.md</pre>
 <pre class=include>path: overloading.md</pre>
 <pre class=include>path: subtyping.md</pre>
 <pre class=include>path: conversion.md</pre>
 
-<pre class=include>path: capabilities.md</pre>
+<!--
+Now we turn our attention to the dynamic semantics.
+
+This starts with an overview of how execution is structured.
+-->
+<pre class=include>path: execution.md</pre>
+<pre class=include>path: gpu.md</pre>
+
+<!--
+We then dive into a discussion of how storage is organized.
+-->
+<pre class=include>path: memory.md</pre>
+<pre class=include>path: layout.md</pre>
+<pre class=include>path: storage.md</pre>
+
+<!--
+We end with appendices, which can be seen as secondary or
+optional features of the language.
+-->
+
+<pre class=include>path: breaking.md</pre>
 <pre class=include>path: autodiff.md</pre>

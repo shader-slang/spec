@@ -1,5 +1,4 @@
-Automatic Differentiation {#autodiff}
-=========================
+# Automatic Differentiation {#autodiff}
 
 <div class=issue>
 This chapter needs to specify:

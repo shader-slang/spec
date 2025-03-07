@@ -1,4 +1,4 @@
-Types and Values {#section.type}
+# Types and Values {#section.type}
 ================
 
 <div class=issue>
@@ -41,15 +41,13 @@ ImplicitlyTypedValue := /* TODO */
 UntypedValue := /* TODO */
 ```
 
-Level {#value.level}
------
+## Level {#value.level}
 
 Every [=value=] has a positive integer <dfn export>level</dfn>.
 
 Note: Typical values that a Slang program calculates and works with have [=level=] zero.
 
-Types of Types {#type.type}
---------------
+## Types of Types {#type.type}
 
 A [=type=] is itself a [=value=].
 
@@ -69,8 +67,7 @@ A [=type=] whose instances are [=types=] with [=level=] two is a <dfn export>sor
 
 The [=sort=] `Kind` is the [=sort=] of all [=kinds=].
 
-Scalars {#type.scalar}
--------
+## Scalars {#type.scalar}
 
 All scalar values have [=level=] zero.
 
@@ -147,8 +144,7 @@ Issue: Need to write this section.
 
 Issue: Need to write this section.
 
-Finite Sequences {#type.sequence.finite}
-----------------
+## Finite Sequences {#type.sequence.finite}
 
 The <dfn>element count</dfn> of a finite sequence is the number of elements in it.
 
@@ -160,8 +156,7 @@ The [=level=] of a sequence is the level of its [=element type=].
 Sequence := `{` (Value `,`)* `}`
 ```
 
-Array Types {#type.array}
------------
+## Array Types {#type.array}
 
 ```.semantics
 ArrayType := elementType:Type `[` elementCount:Int `]`
@@ -173,8 +168,7 @@ An <dfn>array type</dfn> |T|`[`|N|`]` is the type of |N|-element [=arrays=] with
 The [=element count=] of an [=array type=] must be a non-negative `Int`.
 
 
-Vectors {#type.vector}
--------
+## Vectors {#type.vector}
 
 ```.semantics
 VectorType := `Vector` `<` elementType:Type `,` elementCount:Int `>`
@@ -187,8 +181,7 @@ A <dfn>vector type</dfn> `Vector<`|T|`,`|N|`>` is the type of [=vectors=] with |
 
 The [=element count=] of a [=vector type=] must be a non-negative `Int`.
 
-Matrices {#type.matrix}
---------
+## Matrices {#type.matrix}
 
 A <dfn>matrix</dfn> is a finite homogenous sequence.
 The [=element type=] of a [=matrix=] must be a [=vector type=].
@@ -204,8 +197,7 @@ The <dfn export>column type</dfn> of a matrix with [=scalar type=] |T| and [=col
 
 A <dfn export>matrix type</dfn> `Matrix<`|T|`,`|R|`,`|C|`>` is the type of matrices with |R| [=rows=] of type `Vector<`|C|`,`|T|`>`.
 
-The `Never` Type {#type.never}
-----------------
+## The `Never` Type {#type.never}
 
 ```.semantics
 NeverType := `Never`
@@ -213,8 +205,7 @@ NeverType := `Never`
 
 The type `Never` has no instances.
 
-Declaration References {#decl.ref}
-----------------------
+## Declaration References {#decl.ref}
 
 A <dfn export>declaration reference</dfn> is a [=value=] that refers to some [=declaration=].
 
@@ -277,8 +268,7 @@ A member declaration reference is fully qualified if its base is.
 A specialization is fully qualified if its base is.
 </div>
 
-Nominal Types {#type.nominal}
--------------
+## Nominal Types {#type.nominal}
 
 A <dfn export>nominal type</dfn> is a fully-specialized declaration reference to a [=type declaration=].
 

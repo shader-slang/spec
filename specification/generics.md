@@ -1,5 +1,4 @@
-Generics {#section.generic}
-========
+# Generics {#section.generic}
 
 <div class=issue>
 This chapter needs to define the key semantic-checking operations that relate to generics, including:

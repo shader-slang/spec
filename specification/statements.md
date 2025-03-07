@@ -1,4 +1,4 @@
-Statements {#stmt}
+# Statements {#stmt}
 ==========
 
 A <dfn>statement</dfn> is an entity in the abstract syntax that describes actions to be taken by a thread.
@@ -23,7 +23,7 @@ Statement :
 	| LabeledStatement
 ```
 
-Expression Statement {#stmt.expr}
+## Expression Statement {#stmt.expr}
 --------------------
 
 An <dfn>expression statement</dfn> evaluates an expression, and then ignores the resulting value.
@@ -41,7 +41,7 @@ THEN e `;` checks in context c
 
 An implementation may diagnose a warning when execution of an [=expression statement=] cannot have side effects.
 
-Declaration Statement {#expr.decl}
+## Declaration Statement {#expr.decl}
 ---------------------
 
 A <dfn>declaration statement</dfn> introduces a declaration into the current scope.
@@ -63,7 +63,7 @@ Only the following types of declarations may be used in a [=declaration statemen
 * VariableDeclaration
 
 
-Block Statement {#stmt.block}
+## Block Statement {#stmt.block}
 ---------------
 
 A <dfn>block statement</dfn> executes each of its constituent statements in order.
@@ -85,7 +85,7 @@ THEN `{` s0,s1,... `}` checks in c
 
 Note: Declarations in a [=block statement=] are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
 
-Empty Statement {#stmt.empty}
+## Empty Statement {#stmt.empty}
 ---------------
 
 Executing an empty statement has no effect.
@@ -100,7 +100,7 @@ GIVEN context c
 THEN `;` checks in c
 ```
 
-Conditional Statements {#stmt.cond}
+## Conditional Statements {#stmt.cond}
 ----------------------
 
 ### If Statement ### {#stmt.if}
@@ -213,7 +213,7 @@ Each alternative of a `switch` statement must exit the `switch` statement via a 
 Note:
 Semantically, a `switch` statement is equivalent to an "`if` cascade" that compares the value of the conditional expression against each `case` clause,
 
-Loop Statements {#stmt.loop}
+## Loop Statements {#stmt.loop}
 ---------------
 
 A <dfn>loop statement</dfn> executes a body statement one or more times.
@@ -276,7 +276,7 @@ THEN `do body while(cond);` checks in c
 
 Issue: These simplified prose checking rules are leaving out all the subtlties of sub-contexts, etc.
 
-Control Transfer Statements {#stmt.control}
+## Control Transfer Statements {#stmt.control}
 ---------------------------
 
 ### `break` Statement ### {#stmt.break}

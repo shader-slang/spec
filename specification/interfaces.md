@@ -1,5 +1,4 @@
-Interfaces {#SECTION.interface}
-==========
+# Interfaces {#SECTION.interface}
 
 <div class=issue>
 This chapter needs to document the rules for what it means for a type to \emph{conform} to an interface, and how the compiler should check for conformance.

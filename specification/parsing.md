@@ -1,5 +1,4 @@
-Parsing {#parse}
-=======
+# Parsing {#parse}
 
 <div class=issue>
 The intention of this chapter is to establish the overall rules for the recursive-descent [=parsing=] strategy needed for Slang's grammar.
@@ -10,8 +9,7 @@ The parsing strategy is necessarily complicated as a result, but we hope to isol
 
 <dfn>Parsing</dfn> is the process of matching a sequence of tokens from the lexical grammar with a rule of the abstract syntax grammar.
 
-Contexts {#parse.context}
---------
+## Contexts {#parse.context}
 
 Parsing is always performed with respect to a [=context=], which determines which identifiers are bound, and what they are bound to.
 
@@ -23,8 +21,7 @@ The initial context also includes bindings for the declarations in the Slang sta
 Implementations may include additional bindings in the initial context.
 
 
-Strategies {#parse.strat}
-----------
+## Strategies {#parse.strat}
 
 Parsing is always performed in one of two modes: [=unordered=] or [=ordered=].
 Unless otherwise specified, each grammar rule matches its sub-rules in the same mode.
@@ -74,8 +71,7 @@ A <dfn>balanced</dfn> rule in the grammar is one that meets one of the following
 Whenever the parser is in ordered mode and would attempt to match a [=balanced=] rule |r|, it instead matches the [=balanced token=] rule and saves the token sequence that was matched.
 Those tokens are then matched against |r| as part of semantic analysis, using the context that the checking rules specify.
 
-Angle Brackets {#parse.angle}
---------------
+## Angle Brackets {#parse.angle}
 
 ### Opening Angle Brackets ### {#parse.angle.open}
 

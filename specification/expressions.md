@@ -1,5 +1,4 @@
-Expressions {#expr}
-===========
+# Expressions {#expr}
 
 <dfn>Expressions</dfn> are terms that can be <dfn>evaluated</dfn> to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
@@ -15,8 +14,7 @@ Where specific expressions do not follow this order of evaluation, it will be no
 
 Some expressions can yield <dfn>l-values</dfn>, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
-Literal Expressions {#expr.lit}
--------------------
+## Literal Expressions {#expr.lit}
 
 Literal expressions are never l-values.
 
@@ -95,8 +93,7 @@ A string literal expressions consists of one or more string literal tokens in a 
 	}\\
 ```
 
-Identifier Expressions {#expr.ident}
-----------------------
+## Identifier Expressions {#expr.ident}
 
 ```.syntax
 	IdentifierExpression
@@ -139,8 +136,7 @@ Issue: This presentation delegates the actual semantics of identifier expression
 %* When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may %refer to a field declared inside the `cbuffer` or `tbuffer`
 %\end{verbatim}
 
-Member Expression {#expr.member}
------------------
+## Member Expression {#expr.member}
 
 ```.syntax
 	MemberExpression}
@@ -205,8 +201,7 @@ In both synthesis and checking modes, the base expression should first synthesiz
 %```
 %\end{verbatim}
 
-This Expression {#expr.this}
----------------
+## This Expression {#expr.this}
 
 ```.syntax
 	ThisExpression
@@ -228,8 +223,7 @@ The type of a `this` expression is always \code{This}.
 
 Issue: This section needs to deal with the rules for when `this` is mutable vs. immutable.
 
-Parenthesized Expression {#expr.paren}
--------------
+## Parenthesized Expression {#expr.paren}
 
 Note:
 An expression wrapped in parentheses (`()`) is a parenthesized expression and evaluates to the same value as the wrapped expression.
@@ -242,8 +236,7 @@ An expression wrapped in parentheses (`()`) is a parenthesized expression and ev
 
 If expression |e| resolves to |er| then the parenthesized expression `(` |e| `)` resolves to |er|.
 
-Call Expression {#expr.call}
----------------
+## Call Expression {#expr.call}
 
 ```.syntax
 	CallExpression
@@ -297,8 +290,7 @@ Issue: These rules just kick the can down the road and say that synthesis/checki
 %The argument expressions corresponding to any `out` or `in out` parameters of the %callee must be l-values.
 %\end{verbatim}
 
-Subscript Expression {#expr.subscript}
---------------------
+## Subscript Expression {#expr.subscript}
 
 ```.syntax
 	SubscriptExpression
@@ -318,8 +310,7 @@ Unlike simple function calls, a subscript expression can result in an [=l-value=
 %
 %Subscripts may be formed on the built-in vector, matrix, and array types.
 
-Initializer List Expression {#expr.init-list}
----------------------------
+## Initializer List Expression {#expr.init-list}
 
 ```.syntax
 	InitializerListExpression
@@ -330,8 +321,7 @@ If the sequence of arguments |args| resolves to |resolvedArgs|, then the initial
 
 Note: An initializer-list expression can only appear in contexts where it will be coerced to an expected type.
 
-Cast Expression {#expr.cast}
----------------
+## Cast Expression {#expr.cast}
 
 ```.syntax
 	CastExpression
@@ -370,8 +360,7 @@ MyStruct s = {};
 
 \end{Legacy}
 
-Assignment Expression {#expr.assign}
-----------
+## Assignment Expression {#expr.assign}
 
 ```.syntax
 	AssignmentExpression
@@ -407,8 +396,7 @@ In each case, the destination} expression is validated first, and then the sourc
 Issue: The above rules pretend that we can write `out` before a type to indicate that we mean an l-value of that type.
 We will need to expand the formalism to include \emph{qualified} types.
 
-Operator Expressions {#expr.op}
---------------------
+## Operator Expressions {#expr.op}
 
 ### Prefix Operator Expressions ### {#expr.op.prefix}
 

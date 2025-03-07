@@ -1,5 +1,4 @@
-Declarations {#decl}
-============
+# Declarations {#decl}
 
 A <dfn>declaration</dfn> is a unit of syntax that typically affects what names are visibile in a scope, and how those names are interpreted.
 In the abstract syntax, a [=source unit=] comprises a sequence of declarations.
@@ -47,8 +46,7 @@ The output environment of an empty production is its input [=environment=].
 
 When we say that a declaration <dfn>introduces</dfn> a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
-Shared Concepts {#decl.shared}
----------------
+## Shared Concepts {#decl.shared}
 
 <div class="issue">
 We need to define concepts that are used by traditional-style declarations, including <dfn>type specifiers</dfn>.
@@ -149,8 +147,7 @@ The parameter in the callee binds to the storage location referenced by the argu
 
 A declaration that is <dfn>invocable</dfn> can be invoked by a strand during execution.
 
-Patterns {#pattern}
---------
+## Patterns {#pattern}
 
 ```.syntax
 
@@ -173,11 +170,9 @@ TuplePatternInner := `(` (BindingPatternInner `,`)* `)`
 
 ```
 
-Generics {#TODO.decl.generic}
---------
+## Generics {#TODO.decl.generic}
 
-Type Declarations {#decl.type}
------------------
+## Type Declarations {#decl.type}
 
 A <dfn>type declaration</dfn> [=introduces=] a binding to a type.
 

@@ -1,5 +1,4 @@
-Type Conversions {#conv}
-================
+# Type Conversions {#conv}
 
 <div class=issue>
 Broadly this chapter needs to do two things:

@@ -1,15 +1,12 @@
-Introduction {#intro}
-=====================
+# Introduction {#intro}
 
-Scope {#intro.scope}
------
+## Scope {#intro.scope}
 
 This document is a specification for the Slang programming language.
 
 Slang is language primarily designed for use in *shader programming*: performance oriented GPU programming for real-time graphics.
 
-Conformance {#intro.conformance}
------------
+## Conformance {#intro.conformance}
 
 This document aspires to specify the Slang language, and the behaviors expected of conforming implementations, with a high level of rigor.
 
@@ -21,8 +18,7 @@ The open-source Slang compiler *implementation* may deviate from the language as
 
 Where practical, this document will call out known deviations between the language as specified, and the current implementation in the open-source Slang compiler.
 
-The Slang Standard Library {#intro.stdlib}
---------------------------
+## The Slang Standard Library {#intro.stdlib}
 
 Many constructs that appear to users of Slang as built-in syntax are instead defined as part of the _standard library_ for Slang.
 This document may, of neccessity, refer to constructs from the Slang standard library (e.g., the `Texture2D` type) that are not defined herein.
@@ -35,8 +31,7 @@ Issue: Need to turn that into a link.
 In cases where a language construct is described in *both* this specification and the Standard Library Reference, the construct has all the capabilities and restrictions defined in either source.
 In cases where the two sources disagree, there is a correctness issue in one or the other.
 
-Document Conventions {#intro.conventions}
---------------------
+## Document Conventions {#intro.conventions}
 
 ### Terminology ### {#intro.conventions.terminology}
 

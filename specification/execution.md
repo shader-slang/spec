@@ -1,19 +1,16 @@
-Memory {#memory}
-======
+# Memory {#memory}
 
 Values of [=storable=] types may be stored into and loaded from memory.
 A proper type |T| is <dfn>storable</dfn> if |T| conforms to `IStorable`.
 
-Memory Locations {#memory.location}
-----------------
+## Memory Locations {#memory.location}
 
 Memory logically consists of a set of <dfn>memory locations</dfn>, each of which can hold an 8-bit byte.
 Each memory location is part of one and only one <dfn>address space</dfn>.
 
 Two sets of [=memory locations=] overlap if their intersection is non-empty.
 
-Memory Accesses {#memory.access}
----------------
+## Memory Accesses {#memory.access}
 
 A <dfn>memory access</dfn> is an operation performed by a [=strand=] on a set of [=memory locations=] in a single [=address space=].
 A [=memory access=] has a [=memory access mode=].
@@ -22,15 +19,13 @@ A [=memory access=] has a [=memory access mode=].
 
 A <dfn>memory access mode</dfn> is one of: `read`, `write`, or `modify`.
 
-Memory Model {#memory.model}
-------------
+## Memory Model {#memory.model}
 
 <div class="issue">
 We need to find an existing formal memory model to reference and use.
 </div>
 
-Layout {#SECTION.layout}
-======
+# Layout {#SECTION.layout}
 
 <div class="issue">
 We clearly need a chapter on the guarantees Slang makes about memory layout.
@@ -40,11 +35,9 @@ Types in Slang do not necessarily prescribe a single <dfn>layout</dfn> in memory
 The discussion of each type will specify any guarantees about [=layout=] it provides; any details of layout not specified here may depend on the target platform, compiler options, and context in which a type is used.
 
 
-Storage {#storage}
-=======
+# Storage {#storage}
 
-Concrete Storage Locations {#storage.concrete}
---------------------------
+## Concrete Storage Locations {#storage.concrete}
 
 A <dfn>concrete storage location</dfn> with layout *L* for storable type |T| comprises a set of contiguous [=memory locations=], in a single [=address space=], where a value of type |T| with layout *L* can be stored.
 
@@ -64,8 +57,7 @@ An expression of reference type `modify` `ref` |T| can be implicitly coerced to 
 
 An expression of reference type `read` `ref` |T| can be implicitly coerced to type |T|.
 
-Abstract Storage Locations {#storage.abstract.location}
---------------------------
+## Abstract Storage Locations {#storage.abstract.location}
 
 An <dfn>abstract storage location</dfn> is a logical place where a value of some proper type |T| can reside.
 
@@ -73,19 +65,16 @@ A [=concrete storage location=] is also an [=abstract storage location=].
 
 Example: A local variable declaration like `var x : Int;` defines an [=abstract storage location=], and a reference to `x` will have the [=abstract storage reference type=] `read modify Int`.
 
-Abstract Storage Access {#storage.abstract.access}
------------------------
+## Abstract Storage Access {#storage.abstract.access}
 
 An <dfn>abstract storage access</dfn> is an operation performed by a [=strand=] on an [=abstract storage location=].
 Each [=abstract storage access=] has an [=abstract storage access mode=].
 
-Access Mode {#storage.abstract.access.mode}
-------------
+## Access Mode {#storage.abstract.access.mode}
 
 An <dfn>abstract storage access mode</dfn> is either `get`, `set`, or a [=memory access mode=].
 
-Abstract Storage References {#storage.abstract.reference.type}
----------------------------
+## Abstract Storage References {#storage.abstract.reference.type}
 
 An <dfn>abstract storage reference type</dfn> is written |m| |T| where |T| is a proper type and |m| is a set of one or more [=abstract storage access modes=].
 
@@ -98,7 +87,6 @@ For example:
 * If you hae `modify` or `write` access, you can also perform a `set` (if the stored type is copyable).
 
 (Having `modify` access doesn't let you perform a `read` or `get`, because it implies the possibility of write-back which could in principle conflict with other accesses)
-
 </div>
 
 ### Type Conversion ### {#storage.abstract.reference.type.conversion}
@@ -116,8 +104,7 @@ An expression with an abstract storage type |m| |T| can be implicitly coerced to
 * |S| is a subtype of |T| unless |m| does not contain any of `write`, `modify`, and `set`
 * |T| is a subtype of |S| unless |m| does not contain any of `read`, `modify`, and `get`
 
-Containment {#storage.location.contain}
------------
+## Containment {#storage.location.contain}
 
 An abstract storage location may contain other abstract storage locations.
 
@@ -148,8 +135,7 @@ Two distinct [=abstract storage accesses=] |A| and |B| conflict if all of the fo
 * |A| and |B| overlap
 * At least one of the accesses is a `write`, `modify`, or `set`
 
-Expressions That Reference Storage {#storage.expr}
-----------------------------------
+## Expressions That Reference Storage {#storage.expr}
 
 <div class="issue">
 This text really belongs in the relevant sections about type-checking each of these expression forms.
@@ -182,11 +168,9 @@ Examples of expressions that perform an abstract storage access include:
 
   * TODO: `ref` etc.
 
-Program Lifecycle {#lifecycle}
-=================
+# Program Lifecycle {#lifecycle}
 
-Compilation {#lifecyle.compilation}
------------
+## Compilation {#lifecyle.compilation}
 
 A Slang <dfn>compiler</dfn> is a tool that is invoked on Slang source code to produce <dfn>object code</dfn>.
 
@@ -200,8 +184,7 @@ A [=compiler=] implementation may support being invoked on source code at other 
 
 When compiling code that is part of a Slang module |M|, the output of a compiler implementation must not depend on any non-[=fragile=] information in the modules that |M| depends on.
 
-Linking {#lifecycle.linking}
--------
+## Linking {#lifecycle.linking}
 
 A <dfn>static library</dfn> is a unit of code suitable for distribution or re-use.
 Static libraries created by a toolchain should be usable with later versions of that same toolchain.
@@ -222,8 +205,7 @@ A [=linker=] may fail with an error rather than produce an invalid binary.
 Note: In practice, a linked binary has to either contain all of a given Slang module, or none of it.
 The nuance is that [=fragile=] symbols, such as inlinable functions, from a module |M| might get copied into object code for a module |N| that depends on |M|, and thus end up in a binary for |N|.
 
-Loading {#lifecycle.loading}
--------
+## Loading {#lifecycle.loading}
 
 A Slang runtime must support <dfn>loading</dfn> [=binaries=] into a [=runtime session=], and resolving dependencies between them.
 
@@ -234,12 +216,11 @@ A Slang runtime must support <dfn>loading</dfn> [=binaries=] into a [=runtime se
 It is valid to load a binary containing fragile symbols from module |M| even if other binaries containing one or more of those symbols has already been loaded, and even if the definitions of those fragile symbols differ between the binaries.
 References to fragile symbols may resolve at runtime to any definition of those symbols that was compiled into object code that made its way into the binaries that are loaded.
 
-If Slang code is stored in a [=binary=] for a [=host=], then that code may be loaded as part of initialization of a [=process=] for a [=host=] [=executable].
+If Slang code is stored in a [=binary=] for a [=host=], then that code may be loaded as part of initialization of a [=process=] for a [=host=] [=executable=].
 
 If a [=module=] of Slang code is loaded programmatically, a Slang runtime must return a [=mirror=] reflecting that module.
 
-Runtime Reflection {#lifecyle.reflection}
-------------------
+## Runtime Reflection {#lifecyle.reflection}
 
 A Slang runtime may support reflection of [=modules=] that have been loaded into a [=runtime session=].
 

@@ -1,5 +1,4 @@
-Overload Resolution {#overload}
-===================
+# Overload Resolution {#overload}
 
 <div class=issue>
 This chapter needs to describe how to disambiguate an overloaded lookup result.

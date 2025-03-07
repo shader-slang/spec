@@ -1,10 +1,8 @@
-Lexical Structure {#CHAPTER.lex}
-=================
+# Lexical Structure {#CHAPTER.lex}
 
 This chapter describes how a [=source unit=] is decomposed into a sequence of [[=lexemes=]].
 
-Source Units {#lex.source-unit}
-------------
+## Source Units {#lex.source-unit}
 
 A <dfn>source unit</dfn> comprises a sequence of zero or more [[=characters=]].
 For the purposes of this document, a <dfn>character</dfn> is defined as a [[!Unicode]] scalar value.
@@ -13,8 +11,7 @@ Note: A Unicode scalar value is a Unicode code point that is not a surrogate cod
 
 Implementations may accept [=source units=] stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
-Encoding {#lex.encoding}
---------
+## Encoding {#lex.encoding}
 
 Implementations must support [=source units=] encoded using UTF-8, if they support any encoding of [=source units=] as byte sequences.
 
@@ -22,8 +19,7 @@ Implementations should default to the UTF-8 encoding for all text input/output.
 
 Implementations may support additional implementation-specified encodings.
 
-Phases {#lex.phase}
-------
+## Phases {#lex.phase}
 
 Lexical processing of a [[=source unit=]] proceeds *as if* the following steps are executed in order:
 
@@ -39,8 +35,7 @@ Lexical processing of a [[=source unit=]] proceeds *as if* the following steps a
 
 The final [[=token=]] sequence produced by this process is used as input to subsequent phases of compilation.
 
-Lexemes {#lex.lexeme}
--------
+## Lexemes {#lex.lexeme}
 
 A <dfn>lexeme</dfn> is a contiguous sequence of characters in a single [[=source unit=]].
 
@@ -233,8 +228,7 @@ A <dfn>character literal</dfn> consists of a sequence of characters enclosed bet
 
 The sequence of characters within a [=character literal=] must represent a single character.
 
-Operators and Punctuation {#lex.token.punctuation}
--------------------------
+## Operators and Punctuation {#lex.token.punctuation}
 
 The following table defines tokens that are used as operators and punctuation in the syntax.
 When a given sequence of characters could be interpreted as starting with more than one of the following tokens, the longest matching token is used.
@@ -298,8 +292,7 @@ Operator :
 
 ```
 
-Associating Trivia With Tokens {#lex.token.trivia}
-------------------------------
+## Associating Trivia With Tokens {#lex.token.trivia}
 
 Issue: We should define lexing in terms of producing a sequence of tokens-with-trivia instead of just lexemes.
 

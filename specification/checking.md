@@ -1,4 +1,4 @@
-Semantic Checking {#check}
+# Semantic Checking {#check}
 =================
 
 <div class=issue>
@@ -7,8 +7,7 @@ The intention of this chapter is to establish the formalisms and notations that 
 The notation being used here is aligned with how papers in the PLT world on type theory, semantics, etc. present a language.
 </div>
 
-Contexts {#check.context}
---------
+## Contexts {#check.context}
 
 A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries</dfn>.
 [=Context entries=] include <dfn>bindings</dfn> of the name of a variable (an [[=identifier=]]) to its type.
@@ -31,8 +30,7 @@ A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=b
 Issue: We need to describe here the process by which an identifier resolves to a [=binding=], including overloaded, etc.
 The discussion here will have to be a forward reference to the algorithms to be given later.
 
-Expressions {#check.expr}
------------
+## Expressions {#check.expr}
 
 Slang use a variation on a bidirectional type-checking algorithm.
 
@@ -87,15 +85,12 @@ To check an [=expression=] |e| against a type |T| when form of |e| does not defi
 OLD TEXT:
 A <dfn>checking judgement</dfn> determines that, given a [=context=] |c|, an [=expression=] |e|, and a [=type=] |t|, |e| <dfn>checks against</dfn> |t| in context |c|.
 
-
-Statements {#check.stmt}
-----------
+## Statements {#check.stmt}
 
 Statement also use [=checking judgements=].
 A checking judgement for a statement determines that [=statement=] |s| <dfn>checks</dfn> in [=context=] |c|.
 
-Declarations {#check.decl}
-------------
+## Declarations {#check.decl}
 
 Declarations also use [=checking judgements=].
 A checking judgement for a declaration determines that [=declaration=] _d_ [[=checks=]] in [=context=] |c|.

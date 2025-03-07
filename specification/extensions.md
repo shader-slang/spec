@@ -1,5 +1,4 @@
-Type Linearization {#linearization}
-==================
+# Type Linearization {#linearization}
 
 <div class=issue>
 

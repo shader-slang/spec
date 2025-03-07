@@ -1,24 +1,24 @@
-# Expressions {#expr}
+# Expressions  [expr]
 
-<dfn>Expressions</dfn> are terms that can be <dfn>evaluated</dfn> to produce values.
+ **Expressions** are terms that can be  **evaluated** to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
 
 <div class="issue">
-We need a place to define a <dfn>term</dfn> and note how it can be either an expression or a <dfn>type expression</dfn>.
+We need a place to define a  **term** and note how it can be either an expression or a  **type expression**.
 
-A <dfn>specialize expression</dfn> might occur in either the expression or type expression grammar.
+A  **specialize expression** might occur in either the expression or type expression grammar.
 </div>
 
 In general, the order of evaluation of a Slang expression proceeds from left to right.
 Where specific expressions do not follow this order of evaluation, it will be noted.
 
-Some expressions can yield <dfn>l-values</dfn>, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
+Some expressions can yield  **l-values**, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
-## Literal Expressions {#expr.lit}
+## Literal Expressions  [expr.lit]
 
 Literal expressions are never l-values.
 
-### Integer Literal Expressions ### {#expr.lit.int}
+### Integer Literal Expressions  [expr.lit.int]
 
 An integer literal expression consists of a single IntegerLiteral token.
 
@@ -32,15 +32,15 @@ An integer literal expression consists of a single IntegerLiteral token.
 	}
 ```
 
-To check an unsuffixed integer literal |lit| against type |T|:
+To check an unsuffixed integer literal _lit_ against type _T_:
 
-* Validate that |T| conforms to `IFromIntegerLiteral`, yielding conformance witness `w`
-* Let |f| be a declaration reference to `IFromIntegerLiteral.init` looked up through `w`
-* Return the checked expression |f| `(` |lit| `) :` |T|
+* Validate that _T_ conforms to `IFromIntegerLiteral`, yielding conformance witness `w`
+* Let _f_ be a declaration reference to `IFromIntegerLiteral.init` looked up through `w`
+* Return the checked expression _f_ `(` _lit_ `) :` _T_
 
 Issue: We need a description of how suffixed integer literals have their type derived from their suffix.
 
-### Floating-Point Literal Expressions ### {#expr.lit.float}
+### Floating-Point Literal Expressions  [expr.lit.float]
 
 A floating-point literal expression consists of a single FloatingPointLiteral token.
 
@@ -60,7 +60,7 @@ An unsuffixed floating-point literal synthesizes a type that is a fresh type var
 
 Issue: We need a description of how suffixed floating-point literals have their type derived from their suffix.
     
-### Boolean Literal Expressions ### {#expr.lit.bool}
+### Boolean Literal Expressions  [expr.lit.bool]
 
 Note:
     Boolean literal expressions use the keywords `true` and `false`.
@@ -75,7 +75,7 @@ The expression `true` resolves to the typed Boolean value `true : Bool`.
 
 The expression `false` resolves to the typed Boolean value `false : Bool`.
 
-### String Literal Expressions ### {#expr.lit.string}
+### String Literal Expressions  [expr.lit.string]
 
 Note:
 A string literal expressions consists of one or more string literal tokens in a row.
@@ -93,7 +93,7 @@ A string literal expressions consists of one or more string literal tokens in a 
 	}\\
 ```
 
-## Identifier Expressions {#expr.ident}
+## Identifier Expressions  [expr.ident]
 
 ```.syntax
 	IdentifierExpression
@@ -136,7 +136,7 @@ Issue: This presentation delegates the actual semantics of identifier expression
 %* When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may %refer to a field declared inside the `cbuffer` or `tbuffer`
 %\end{verbatim}
 
-## Member Expression {#expr.member}
+## Member Expression  [expr.member]
 
 ```.syntax
 	MemberExpression}
@@ -201,7 +201,7 @@ In both synthesis and checking modes, the base expression should first synthesiz
 %```
 %\end{verbatim}
 
-## This Expression {#expr.this}
+## This Expression  [expr.this]
 
 ```.syntax
 	ThisExpression
@@ -223,7 +223,7 @@ The type of a `this` expression is always \code{This}.
 
 Issue: This section needs to deal with the rules for when `this` is mutable vs. immutable.
 
-## Parenthesized Expression {#expr.paren}
+## Parenthesized Expression  [expr.paren]
 
 Note:
 An expression wrapped in parentheses (`()`) is a parenthesized expression and evaluates to the same value as the wrapped expression.
@@ -234,9 +234,9 @@ An expression wrapped in parentheses (`()`) is a parenthesized expression and ev
         `(` Expression `)`
 ```
 
-If expression |e| resolves to |er| then the parenthesized expression `(` |e| `)` resolves to |er|.
+If expression _e_ resolves to _er_ then the parenthesized expression `(` _e_ `)` resolves to _er_.
 
-## Call Expression {#expr.call}
+## Call Expression  [expr.call]
 
 ```.syntax
 	CallExpression
@@ -283,14 +283,14 @@ Issue: These rules just kick the can down the road and say that synthesis/checki
 %
 %In this case the base expression of the member reference (e.g., `myObject` in this %case) is used as the argument for the implicit `this` parameter of the callee.
 %
-% ### Mutability ### {#expr.call.mutable}
+% ### Mutability  [expr.call.mutable]
 %
 %If a `[mutating]` instance is being called, the argument for the implicit `this` %parameter must be an l-value.
 %
 %The argument expressions corresponding to any `out` or `in out` parameters of the %callee must be l-values.
 %\end{verbatim}
 
-## Subscript Expression {#expr.subscript}
+## Subscript Expression  [expr.subscript]
 
 ```.syntax
 	SubscriptExpression
@@ -301,7 +301,7 @@ Issue: These rules just kick the can down the road and say that synthesis/checki
 To a first approximation, a subscript expression like \code{base[a0, a1]} is equivalent to something like \code{base.subscript(a0, a1)}.
 That is, we look up the `subscript` members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
 
-Unlike simple function calls, a subscript expression can result in an [=l-value=], based on what accessors the `subscript` declaration that is selected by overload resolution has.
+Unlike simple function calls, a subscript expression can result in an  *l-value*, based on what accessors the `subscript` declaration that is selected by overload resolution has.
 </div>
 
 %A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
@@ -310,18 +310,18 @@ Unlike simple function calls, a subscript expression can result in an [=l-value=
 %
 %Subscripts may be formed on the built-in vector, matrix, and array types.
 
-## Initializer List Expression {#expr.init-list}
+## Initializer List Expression  [expr.init-list]
 
 ```.syntax
 	InitializerListExpression
 		`{` (Argument `,`)* `}`
 ```
 
-If the sequence of arguments |args| resolves to |resolvedArgs|, then the initializer list expression `{` |args| `}` resolves to the resolved initializer list expression `{` |resolvedArgs| `}`.
+If the sequence of arguments _args_ resolves to _resolvedArgs_, then the initializer list expression `{` _args_ `}` resolves to the resolved initializer list expression `{` _resolvedArgs_ `}`.
 
 Note: An initializer-list expression can only appear in contexts where it will be coerced to an expected type.
 
-## Cast Expression {#expr.cast}
+## Cast Expression  [expr.cast]
 
 ```.syntax
 	CastExpression
@@ -329,13 +329,13 @@ Note: An initializer-list expression can only appear in contexts where it will b
 ```
 
 Note:
-A <dfn>cast expression</dfn> attempts to coerce an expression to a desired type.
+A  **cast expression** attempts to coerce an expression to a desired type.
 
-To resolve a [=cast expression=] `(` |t| `)` |e|:
+To resolve a  *cast expression* `(` _t_ `)` _e_:
 
-* Let |checkType| be the result of checking |t| as a type
-* Let |checkedExpr| be the result of checking |e| against |checkType|
-* Return |checkedExpr|
+* Let _checkType_ be the result of checking _t_ as a type
+* Let _checkedExpr_ be the result of checking _e_ against _checkType_
+* Return _checkedExpr_
 
 <div class=issue>
 The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
@@ -344,7 +344,7 @@ In contrast, we want a cast expression to be able to invoke \emph{explicit} conv
 </div>
 
 \begin{Legacy}
-### Legacy: Compatibility Feature ### {#expr.cast.compatiblity}
+### Legacy: Compatibility Feature  [expr.cast.compatiblity]
 
 As a compatiblity feature for older code, Slang supports using a cast where the base expression is an integer literal zero and the target type is a user-defined structure type:
 
@@ -360,7 +360,7 @@ MyStruct s = {};
 
 \end{Legacy}
 
-## Assignment Expression {#expr.assign}
+## Assignment Expression  [expr.assign]
 
 ```.syntax
 	AssignmentExpression
@@ -396,12 +396,12 @@ In each case, the destination} expression is validated first, and then the sourc
 Issue: The above rules pretend that we can write `out` before a type to indicate that we mean an l-value of that type.
 We will need to expand the formalism to include \emph{qualified} types.
 
-## Operator Expressions {#expr.op}
+## Operator Expressions  [expr.op]
 
-### Prefix Operator Expressions ### {#expr.op.prefix}
+### Prefix Operator Expressions  [expr.op.prefix]
 
 <div class="issue">
-This section defines the terms: <dfn>prefix operator</dfn>.
+This section defines the terms:  **prefix operator**.
 </div>
 
 ```.syntax
@@ -441,7 +441,7 @@ A prefix operator expression is semantically equivalent to a call expression to 
 
 Issue: The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
 
-## Postfix Operator Expressions ## {#expr.op.postfix}
+## Postfix Operator Expressions  [expr.op.postfix]
 
 ```.syntax
 	PostfixOperatorExprssion
@@ -474,10 +474,10 @@ Note:
 Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \code{postfix} modifier.
 
 
-### Infix Operator Expressions ### {#expr.op.infix}
+### Infix Operator Expressions  [expr.op.infix]
 
 <div class="issue">
-The syntax here should introduce the term: <dfn>infix expression</dfn>.
+The syntax here should introduce the term:  **infix expression**.
 </div>
 
 
@@ -575,22 +575,22 @@ The syntax here should introduce the term: <dfn>infix expression</dfn>.
 
 With the exception of the assignment operator (`=`), an infix operator expression like `left + right` is equivalent to a call expression to a function of the matching name `operator+(left, right)`.
 
-### Conditional Expression ### {#expr.op.cond}
+### Conditional Expression  [expr.op.cond]
 
 ```.syntax
 	ConditionalExpression
         \SynVar[condition]{Expression} \code{?} \SynVar[then]{Expression} `:` \SynVar[else]{Expression}
 ```
 
-To check the conditional expression |cond| `?` |t| `:` |e| against expected type |T|:
+To check the conditional expression _cond_ `?` _t_ `:` _e_ against expected type _T_:
 
-* Let |checkedCond| be the result of checking |cond| against `Bool`
-* Let |checkedThen| be the result of checking |t| against |T|
-* Let |checkedElse| be the result of checking |e| against |T|
-* Return the checked expression |checkedCond| `?` |checkedThen| `:` |checkedElse|
+* Let _checkedCond_ be the result of checking _cond_ against `Bool`
+* Let _checkedThen_ be the result of checking _t_ against _T_
+* Let _checkedElse_ be the result of checking _e_ against _T_
+* Return the checked expression _checkedCond_ `?` _checkedThen_ `:` _checkedElse_
 
-To check the conditional expression |ce|:
+To check the conditional expression _ce_:
 
-* Extend the context with a fresh type variable |T|
-* Return the result of checking |ce| against |T|
+* Extend the context with a fresh type variable _T_
+* Return the result of checking _ce_ against _T_
 

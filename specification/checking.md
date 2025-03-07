@@ -1,5 +1,4 @@
-# Semantic Checking {#check}
-=================
+# Semantic Checking  [check]
 
 <div class=issue>
 The intention of this chapter is to establish the formalisms and notations that will be used for expressing typing judgements and other semantic-checking rules in this specification.
@@ -7,10 +6,10 @@ The intention of this chapter is to establish the formalisms and notations that 
 The notation being used here is aligned with how papers in the PLT world on type theory, semantics, etc. present a language.
 </div>
 
-## Contexts {#check.context}
+## Contexts  [check.context]
 
-A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries</dfn>.
-[=Context entries=] include <dfn>bindings</dfn> of the name of a variable (an [[=identifier=]]) to its type.
+A  **context** is an ordered sequence of zero or more  **context entries**.
+ *Context entries* include  **bindings** of the name of a variable (an [ *identifier*]) to its type.
 
 ```.checking
 
@@ -25,12 +24,12 @@ A <dfn>context</dfn> is an ordered sequence of zero or more <dfn>context entries
         Identifer = TypedValue // alias
 ```
 
-A context |c| <dfn>binds</dfn> an identifier |n| if |c| contains one or more [=bindings=] with |n| on the left-hand side.
+A context _c_  **binds** an identifier _n_ if _c_ contains one or more  *bindings* with _n_ on the left-hand side.
 
-Issue: We need to describe here the process by which an identifier resolves to a [=binding=], including overloaded, etc.
+Issue: We need to describe here the process by which an identifier resolves to a  *binding*, including overloaded, etc.
 The discussion here will have to be a forward reference to the algorithms to be given later.
 
-## Expressions {#check.expr}
+## Expressions  [check.expr]
 
 Slang use a variation on a bidirectional type-checking algorithm.
 
@@ -60,39 +59,39 @@ We also need to drill into the representation of types and values...
 
 </div>
 
-### Resolving ### {#check.expr.resolve}
+### Resolving  [check.expr.resolve]
 
-Resolving an [=expression=] in a context results in a <dfn>resolved expression</dfn>.
+Resolving an  *expression* in a context results in a  **resolved expression**.
 
 Note: Resolving is used in places where an expression needs to have some amount of validation performed, but an expected type for the expression is not available.
 
-To resolve an [=expression=] |e| when the form of |e| does not define a resolving rule:
+To resolve an  *expression* _e_ when the form of _e_ does not define a resolving rule:
 
-* Extend the context with a fresh type variable |T|
-* Return the result of checking |e| against |T|
+* Extend the context with a fresh type variable _T_
+* Return the result of checking _e_ against _T_
 
-### Checking ### {#check.check}
+### Checking  [check.check]
 
-Checking a [=resolved expression=] against a type results in a checked expression.
+Checking a  *resolved expression* against a type results in a checked expression.
 
 Note: Checking is used in places where the type that an expression is expected to have is known.
 
-To check an [=expression=] |e| against a type |T| when form of |e| does not define a checking rule:
+To check an  *expression* _e_ against a type _T_ when form of _e_ does not define a checking rule:
 
-* Let |re| be the result of resolving |e|
-* Return the result of coercing |re| to |T|
+* Let _re_ be the result of resolving _e_
+* Return the result of coercing _re_ to _T_
 
 OLD TEXT:
-A <dfn>checking judgement</dfn> determines that, given a [=context=] |c|, an [=expression=] |e|, and a [=type=] |t|, |e| <dfn>checks against</dfn> |t| in context |c|.
+A  **checking judgement** determines that, given a  *context* _c_, an  *expression* _e_, and a  *type* _t_, _e_  **checks against** _t_ in context _c_.
 
-## Statements {#check.stmt}
+## Statements  [check.stmt]
 
-Statement also use [=checking judgements=].
-A checking judgement for a statement determines that [=statement=] |s| <dfn>checks</dfn> in [=context=] |c|.
+Statement also use  *checking judgements*.
+A checking judgement for a statement determines that  *statement* _s_  **checks** in  *context* _c_.
 
-## Declarations {#check.decl}
+## Declarations  [check.decl]
 
-Declarations also use [=checking judgements=].
-A checking judgement for a declaration determines that [=declaration=] _d_ [[=checks=]] in [=context=] |c|.
+Declarations also use  *checking judgements*.
+A checking judgement for a declaration determines that  *declaration* _d_ [ *checks*] in  *context* _c_.
 
-Checking of a declaration may modify the context |c| to include additional bindings.
+Checking of a declaration may modify the context _c_ to include additional bindings.

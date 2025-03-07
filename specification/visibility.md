@@ -1,4 +1,4 @@
-# Visibility Control {#vis}
+# Visibility Control  [vis]
 
 <div class=issue>
 This chapter needs to explain the rules for:

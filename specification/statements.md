@@ -1,7 +1,6 @@
-# Statements {#stmt}
-==========
+# Statements  [stmt]
 
-A <dfn>statement</dfn> is an entity in the abstract syntax that describes actions to be taken by a thread.
+A  **statement** is an entity in the abstract syntax that describes actions to be taken by a thread.
 Statements are executed for their effect, rather than evaluated to produce a value.
 
 ```.syntax
@@ -23,10 +22,9 @@ Statement :
 	| LabeledStatement
 ```
 
-## Expression Statement {#stmt.expr}
---------------------
+## Expression Statement  [stmt.expr]
 
-An <dfn>expression statement</dfn> evaluates an expression, and then ignores the resulting value.
+An  **expression statement** evaluates an expression, and then ignores the resulting value.
 
 ```.syntax
 ExpressionStatement :
@@ -39,12 +37,11 @@ GIVEN e synthesizes type t in context c
 THEN e `;` checks in context c
 ```
 
-An implementation may diagnose a warning when execution of an [=expression statement=] cannot have side effects.
+An implementation may diagnose a warning when execution of an  *expression statement* cannot have side effects.
 
-## Declaration Statement {#expr.decl}
----------------------
+## Declaration Statement  [expr.decl]
 
-A <dfn>declaration statement</dfn> introduces a declaration into the current scope.
+A  **declaration statement** introduces a declaration into the current scope.
 	
 ```.syntax
 DeclarationStatement :
@@ -57,16 +54,15 @@ GIVEN declaration d checks in context c
 THEN statement d checks in context c
 ```
 	
-Only the following types of declarations may be used in a [=declaration statement=]:
+Only the following types of declarations may be used in a  *declaration statement*:
 
 
 * VariableDeclaration
 
 
-## Block Statement {#stmt.block}
----------------
+## Block Statement  [stmt.block]
 
-A <dfn>block statement</dfn> executes each of its constituent statements in order.
+A  **block statement** executes each of its constituent statements in order.
 
 ```.syntax
 BlockStatement :
@@ -83,10 +79,9 @@ GIVEN s0,s1,... check in d
 THEN `{` s0,s1,... `}` checks in c
 ```
 
-Note: Declarations in a [=block statement=] are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
+Note: Declarations in a  *block statement* are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
 
-## Empty Statement {#stmt.empty}
----------------
+## Empty Statement  [stmt.empty]
 
 Executing an empty statement has no effect.
 	
@@ -100,12 +95,11 @@ GIVEN context c
 THEN `;` checks in c
 ```
 
-## Conditional Statements {#stmt.cond}
-----------------------
+## Conditional Statements  [stmt.cond]
 
-### If Statement ### {#stmt.if}
+### If Statement  [stmt.if]
 
-An <dfn>if statement</dfn> executes a sub-statement conditionally.
+An  * *`if` statement** executes a sub-statement conditionally.
 
 ```.syntax
 IfStatement :
@@ -136,19 +130,19 @@ GIVEN f checks in C
 THEN `if(` e `)` t `else` f checks in c	
 ```
 
-If the condition of an [=if statement=] is an expression, then it is evaluated against an expected type of `Bool` to yield a value |C|.
-If |C| is `true`, then the ThenClause is executed.
-If |C| is `false` and there is a ElseClause, then it is executed.
+If the condition of an   *`if` statement* is an expression, then it is evaluated against an expected type of `Bool` to yield a value _C_.
+If _C_ is `true`, then the ThenClause is executed.
+If _C_ is `false` and there is a ElseClause, then it is executed.
 
 If the condition of an `if` statement is a `let` declaration, then that declaration must have an initial-value expression.
-That initial-value expression is evaluated against an expected type of `Optional<T>`, where |T| is a fresh type variable, to yield a value |D|.
-If |D| is `Some(|C|)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to |C|.
-If |D| is `null` and there is a ElseClause, then it is executed.
+That initial-value expression is evaluated against an expected type of `Optional<T>`, where _T_ is a fresh type variable, to yield a value _D_.
+If _D_ is `Some(|C|)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to _C_.
+If _D_ is `null` and there is a ElseClause, then it is executed.
 
-### Switch Statement ### {#stmt.switch}
+### Switch Statement  [stmt.switch]
 
 
-A <dfn>`switch` statement</dfn> conditionally executes up to one of its <dfn>alternatives</dfn>, based on the value of an expression.
+A  **`switch` statement** conditionally executes up to one of its  **alternatives**, based on the value of an expression.
 	
 ```.syntax
 SwitchStatement :
@@ -177,7 +171,7 @@ THEN `switch(` e `) {` a0,a1,... `}` checks in c
 ```
 
 Note:
-A `switch` statement is checked by first checking the expression, and then checking each of the [=alternatives=] against the type of that expression.
+A `switch` statement is checked by first checking the expression, and then checking each of the  *alternatives* against the type of that expression.
 
 ```.checking
 GIVEN context c, type t,
@@ -196,7 +190,7 @@ THEN `default:` checks against t in c
 ```
 
 Note:
-A `case` clause is valid if its expression [=checks against=] the type of the control expressio nof the `switch` statement.
+A `case` clause is valid if its expression  *checks against* the type of the control expressio nof the `switch` statement.
 
 A `switch` statement may have at most one `default` clause.
 
@@ -213,12 +207,11 @@ Each alternative of a `switch` statement must exit the `switch` statement via a 
 Note:
 Semantically, a `switch` statement is equivalent to an "`if` cascade" that compares the value of the conditional expression against each `case` clause,
 
-## Loop Statements {#stmt.loop}
----------------
+## Loop Statements  [stmt.loop]
 
-A <dfn>loop statement</dfn> executes a body statement one or more times.
+A  **loop statement** executes a body statement one or more times.
 
-### For Statement ### {#stmt.for}
+### For Statement  [stmt.for]
 
 ```.syntax
 ForStatement :
@@ -240,7 +233,7 @@ THEN `for(init;cond;iter) body` checks in c
 
 Issue: The checking judgements above aren't complete because they don't handle the case where _cond_ is absent, in which case it should be treated like it was `true`.
 
-### While Statement ### {#stmt.while}
+### While Statement  [stmt.while]
 
 
 ```.syntax
@@ -257,7 +250,7 @@ GIVEN body checks in c
 THEN `while(cond) body` checks in c
 ```
 
-### Do-While Statement ### {#stmt.do-while}
+### Do-While Statement  [stmt.do-while]
 
 A do-while statement uses the following form:
 
@@ -276,22 +269,21 @@ THEN `do body while(cond);` checks in c
 
 Issue: These simplified prose checking rules are leaving out all the subtlties of sub-contexts, etc.
 
-## Control Transfer Statements {#stmt.control}
----------------------------
+## Control Transfer Statements  [stmt.control]
 
-### `break` Statement ### {#stmt.break}
+### `break` Statement  [stmt.break]
 
-A <dfn>break statement</dfn> is used to transfer control out of the context of some enclosing statement.
-A [=break statement=] may optionally provide a <dfn>label</dfn>, to identify the enclosing statement.
+A  **break statement** is used to transfer control out of the context of some enclosing statement.
+A  *break statement* may optionally provide a  **label**, to identify the enclosing statement.
 
 ```.syntax
 BreakStatement :
 	`break` label:Identifier? `;`
 ```
 
-A [[=break statement=]] without a [[=label=]] transfers control to after the end of the closest lexically enclosing [[=switch statement=]] or [[=loop statement=]].
+A [ *break statement*] without a [ *label*] transfers control to after the end of the closest lexically enclosing [  *`switch` statement*] or [ *loop statement*].
 
-A [[=break statement=]] with a [[=label=]] transfers control to after the end of the lexically enclosing [[=switch statement=]] or [[=loop statement=]] labeled with a matching [[=label=]].
+A [ *break statement*] with a [ *label*] transfers control to after the end of the lexically enclosing [  *`switch` statement*] or [ *loop statement*] labeled with a matching [ *label*].
 
 ```.checking
 GIVEN context c
@@ -309,7 +301,7 @@ Issue: The checking rules for `break`-able statements should add a suitable item
 We also need to define the context-containment rule that is being used to look up the `break` item in the context.
 </div>
 
-### Continue Statement ### {#stmt.continue}
+### Continue Statement  [stmt.continue]
 
 ```.syntax
 ContinueStatement :
@@ -329,7 +321,7 @@ GIVEN c contains an entry of the form CONTINUE_LABEL = l
 THEN `continue l;` checks in context c
 ```
 
-### Return Statement ### {#stmt.return}
+### Return Statement  [stmt.return]
 
 A `return` statement transfers control out of the current function.
 
@@ -356,7 +348,7 @@ THEN `return;` checks in c
 Note: A `return` statement without an expression is equivalent to a `return` of a value of type `Unit`.
 
 
-### Discard Statement ### {#stmt.discard}
+### Discard Statement  [stmt.discard]
 
 ```.syntax
 DiscardStatement :

@@ -1,4 +1,4 @@
-# Lookup {#lookup}
+# Lookup  [lookup]
 
 <div class=issue>
 
@@ -10,7 +10,7 @@ This chapter needs to document the rules for how names are looked up in two case
 
 
 The first kind of lookup is easily expressed as a recursion over the structure of contexts, but will often bottleneck through lookup in the context of some type (since code is so often nested under a type).
-This kind of lookup also needs to deal with `import` declarations and the visibility rules for [=source units=] in the same module as one another.
+This kind of lookup also needs to deal with `import` declarations and the visibility rules for  *source units* in the same module as one another.
 
 The second kind of lookup requires access to a linearization of the type.
 It potentially needs to deal with performing substitutions on the type/signature of a declaration that is found, so that it is adjusted for the \code{This} type it has been looked up through.

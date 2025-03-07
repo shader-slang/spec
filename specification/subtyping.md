@@ -1,5 +1,4 @@
-# Subtyping {#subtype}
-=========
+# Subtyping  [subtype]
 
 <div class=issue>
 

@@ -136,7 +136,7 @@ If _C_ is `false` and there is a ElseClause, then it is executed.
 
 If the condition of an `if` statement is a `let` declaration, then that declaration must have an initial-value expression.
 That initial-value expression is evaluated against an expected type of `Optional<T>`, where _T_ is a fresh type variable, to yield a value _D_.
-If _D_ is `Some(|C|)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to _C_.
+If _D_ is `Some(_C_)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to _C_.
 If _D_ is `null` and there is a ElseClause, then it is executed.
 
 ### Switch Statement  [stmt.switch]
@@ -281,9 +281,9 @@ BreakStatement :
 	`break` label:Identifier? `;`
 ```
 
-A [ *break statement*] without a [ *label*] transfers control to after the end of the closest lexically enclosing [  *`switch` statement*] or [ *loop statement*].
+A *break statement* without a *label* transfers control to after the end of the closest lexically enclosing [  *`switch` statement*] or *loop statement*.
 
-A [ *break statement*] with a [ *label*] transfers control to after the end of the lexically enclosing [  *`switch` statement*] or [ *loop statement*] labeled with a matching [ *label*].
+A *break statement* with a *label* transfers control to after the end of the lexically enclosing [  *`switch` statement*] or *loop statement* labeled with a matching *label*.
 
 ```.checking
 GIVEN context c

@@ -21,7 +21,7 @@ The first of the two cases is the easier one by far, with an outline of it's sem
 
 
 The second case (overloaded calls) is superficially similar, in that we can filter the candidates to the applicable ones and then pick the best.
-The definition of ``best'' for an overloaded call is more subtle and needs care to not mess up developer expectations for things like simple infix expressions (since event infix \code{operator+} is handled as an overloaded call, semantically).
+The definition of ``best'' for an overloaded call is more subtle and needs care to not mess up developer expectations for things like simple infix expressions (since event infix `operator+` is handled as an overloaded call, semantically).
 
 A few basic principles that guide intuition:
 

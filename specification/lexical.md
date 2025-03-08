@@ -1,10 +1,10 @@
 # Lexical Structure  [CHAPTER.lex]
 
-This chapter describes how a  *source unit* is decomposed into a sequence of [ *lexemes*].
+This chapter describes how a  *source unit* is decomposed into a sequence of *lexemes*.
 
 ## Source Units  [lex.source-unit]
 
-A  **source unit** comprises a sequence of zero or more [ *characters*].
+A  **source unit** comprises a sequence of zero or more *characters*.
 For the purposes of this document, a  **character** is defined as a [[!Unicode]] scalar value.
 
 Note: A Unicode scalar value is a Unicode code point that is not a surrogate code point.
@@ -21,27 +21,27 @@ Implementations may support additional implementation-specified encodings.
 
 ## Phases  [lex.phase]
 
-Lexical processing of a [ *source unit*] proceeds *as if* the following steps are executed in order:
+Lexical processing of a *source unit* proceeds *as if* the following steps are executed in order:
 
-1. Line numbering (for subsequent diagnostic messages) is noted based on the locations of [ *line breaks*]
+1. Line numbering (for subsequent diagnostic messages) is noted based on the locations of *line breaks*
 
-2. [ *Escaped line breaks*] are eliminated. No new [ *characters*] are inserted to replace them. Any new [ *escaped line breaks*] introduced by this step are not eliminated.
+2. *Escaped line breaks* are eliminated. No new *characters* are inserted to replace them. Any new *escaped line breaks* introduced by this step are not eliminated.
 
 3. Each comment is replaced with a single space (U+0020)
 
-4. The  *source unit* is <a lt=lex>lexed</a> into a sequence of [ *tokens*] according to the lexical grammar in this chapter
+4. The  *source unit* is <a lt=lex>lexed</a> into a sequence of *tokens* according to the lexical grammar in this chapter
 
 5. The lexed sequence of tokens is _preprocessed_ to produce a new sequence of tokens
 
-The final [ *token*] sequence produced by this process is used as input to subsequent phases of compilation.
+The final *token* sequence produced by this process is used as input to subsequent phases of compilation.
 
 ## Lexemes  [lex.lexeme]
 
-A  **lexeme** is a contiguous sequence of characters in a single [ *source unit*].
+A  **lexeme** is a contiguous sequence of characters in a single *source unit*.
 
- **Lexing** is the process by which an implementation decomposes a [ *source unit*] into zero or more non-overlapping [ *lexemes*].
+ **Lexing** is the process by which an implementation decomposes a *source unit* into zero or more non-overlapping *lexemes*.
 
-Every [ *lexeme*] is either a [ *token*] or it is [ *trivia*].
+Every *lexeme* is either a *token* or it is *trivia*.
 
 ```.lexical
 Lexeme :
@@ -52,8 +52,8 @@ Lexeme :
 
 ### Trivia  [lex.trivia]
 
- **Trivia** are [ *lexemes*] that do not appear in the abstract syntax; they are only part of the lexical grammar.
-The presence or absence of [ *trivia*] in a sequence of [ *lexemes*] has no semantic impact, except where specifically noted in this specification.
+ **Trivia** are *lexemes* that do not appear in the abstract syntax; they are only part of the lexical grammar.
+The presence or absence of *trivia* in a sequence of *lexemes* has no semantic impact, except where specifically noted in this specification.
 
 ```.lexical
 Trivia :
@@ -66,7 +66,7 @@ Note: Trivia is either  *whitespace* or a  *comment*.
 
 #### Whitespace  [lex.trivia.space]
 
- **Whitespace** consists of [ *horizontal whitespace*] and [ *line breaks*].
+ **Whitespace** consists of *horizontal whitespace* and *line breaks*.
 
 ```.lexical
 Whitespace :
@@ -85,26 +85,26 @@ HorizontalSpace : (' ' | '\t')+ ;
 
 A  **line break** consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
 
-An  **escaped line break** is a backslash (`\`, U+005C) follow immediately by a [ *line break*].
+An  **escaped line break** is a backslash (`\`, U+005C) follow immediately by a *line break*.
 
-A  *source unit* is split into  **lines**: non-empty sequences of [ *characters*] separated by [ *line breaks*].
+A  *source unit* is split into  **lines**: non-empty sequences of *characters* separated by *line breaks*.
 
 Note: Line breaks are used as  *line* separators rather than terminators; it is not necessary for a  *source unit* to end with a line break.
 
 #### Comments  [lex.trivia.comment]
 
-A  **comment** is either a [ *line comment*] or a [ *block comment*].
+A  **comment** is either a *line comment* or a *block comment*.
 
-A  **line comment** comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a [ *line break*].
-A [ *line comment*] extends up to, but does not include, a subsequent [ *line break*] or the end of the  *source unit*.
+A  **line comment** comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a *line break*.
+A *line comment* extends up to, but does not include, a subsequent *line break* or the end of the  *source unit*.
 
 A  **block comment** begins with a forward slash (`/`, U+002F) followed by an asterisk (`*`, U+0052). 
-A [ *block comment*] is terminated by the next instance of an asterisk followed by a forward slash (`*/`).
-A [ *block comment*] contains all [ *characters*] between where it begins and where it terminates, including any [ *line breaks*].
+A *block comment* is terminated by the next instance of an asterisk followed by a forward slash (`*/`).
+A *block comment* contains all *characters* between where it begins and where it terminates, including any *line breaks*.
 
-Note: [ *Block comments*] do not nest.
+Note: *Block comments* do not nest.
 
-It is an error if a [ *block comment*] that begins in a [ *source unit*] is not terminated in that [ *source unit*].
+It is an error if a *block comment* that begins in a *source unit* is not terminated in that *source unit*.
 
 ### Tokens  [lex.token]
 
@@ -156,7 +156,7 @@ TODO:  **literal**,  *numeric literal*.
 
 ##### Numeric Literals  [lex.token.num]
 
-A  **numeric literal** is either an [ *integer literal*] or a [ *floating-point literal*].
+A  **numeric literal** is either an *integer literal* or a *floating-point literal*.
 
 ```.lexical
 NumericLiteral :
@@ -253,7 +253,7 @@ Punctuation :
     ;
 
 Operator :
-  | ```     // backtick
+  | '`'     // backtick
   | `!`     // exclamation mark
   | `@`     // at sign
   | `$`     // dollar sign

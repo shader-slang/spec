@@ -8,7 +8,7 @@ The biggest challenge in specifying the rules for conformance is that the Slang 
 
 
 * A field can satisfy a `property` requirement.
-* A non-\code{throws} function can satisfy a \code{throws} requirement
+* A non-`throws` function can satisfy a `throws` requirement
 * A non-`[mutating]` function can satisfy a `[mutating]` requirement
 * A function with default arguments can satisfy a requirement without those arguments
 * A generic function may satisfy a non-generic requirement
@@ -16,8 +16,8 @@ The biggest challenge in specifying the rules for conformance is that the Slang 
 
 
 In the limit, we can say that a type satisfies a requirement if a \emph{synthesized} declaration that exactly matches the requirement signature would type-check successfully.
-The body of a synthesized `get` accessor for a property \code{p} would consist of something like \code{return this.p;}.
-Similarly, the body of a synthesized `func` for a function \code{f} would consist of something like \code{return this.f(a0, a1, ...);} where the values \code{a0}, etc., are the declared parameters of the synthesized function.
+The body of a synthesized `get` accessor for a property `p` would consist of something like `return this.p;`.
+Similarly, the body of a synthesized `func` for a function `f` would consist of something like `return this.f(a0, a1, ...);` where the values `a0`, etc., are the declared parameters of the synthesized function.
 
 The main place where the above approach runs into wrinkles is around synthesis for generic requirements, where subtle semantic choices need to be made.
 

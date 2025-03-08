@@ -110,7 +110,7 @@ An abstract storage location may contain other abstract storage locations.
 
 Two  *abstract storage locations* overlap if they are the same location, or one transitively contains the other.
 
-An abstract storage location of an array type _T_`[`|N|`]` contains _N_ storage locations of type _T_, one for each element of the array.
+An abstract storage location of an array type _T_`[`_N_`]` contains _N_ storage locations of type _T_, one for each element of the array.
 
 An abstract storage location of a `struct` type _S_ contains a distinct storage location for each of the  *fields* of _S_.
 
@@ -118,7 +118,7 @@ An abstract storage location of a `struct` type _S_ contains a distinct storage 
 ### Conflicts  [storage.access.conflict]
 
 An  *abstract storage access* performed by a strand begins at some point _b_ in the execution of that strand, and ends at some point _e_ in the execution of that strand.
-The interval of an  *abstract storage access* is the half-open interval [|b|, _e_).
+The interval of an  *abstract storage access* is the half-open interval [_b_, _e_).
 
 The intervals [|a0|, |a1|) and [|b0|, |b1|) overlap if either:
 
@@ -148,11 +148,11 @@ Examples of expressions that evaluate to an abstract storage location include:
 
 * An identifier expression that names some variable _v_
 
-* A member-access expression _x_.|m| where _x_ is an abstract storage location of some struct type _S_ and _m_ is a field of _S_
+* A member-access expression _x_._m_ where _x_ is an abstract storage location of some struct type _S_ and _m_ is a field of _S_
 
-* A member-access expression _x_.|p| where _p_ is a property
+* A member-access expression _x_._p_ where _p_ is a property
 
-* A subscript exrpession _x_`[`|i|`]` that resolves to an invocation of a `subscript` declaration
+* A subscript exrpession _x_`[`_i_`]` that resolves to an invocation of a `subscript` declaration
 
 Examples of expressions that perform an abstract storage access include:
 
@@ -351,40 +351,40 @@ When a strand executes a collective operation, it  *participates* with those str
 When a strand executes a conditional control-flow operation, it branches to a destination that can depend on a condition value.
 When the strands of a tangle execute a conditional control-flow operation, each strand in the tangle becomes part of a new tangle with exactly those strands that branch to the same destination.
 
-A  **control-flow region** is a pair of nodes (|E|, _M_) in the control-flow graph of a function, such that either:
+A  **control-flow region** is a pair of nodes (_E_, _M_) in the control-flow graph of a function, such that either:
 
 * _E_ dominates _M_
 * _M_ is unreachable
 
-A node _N_ in the control-flow graph of a function is inside the region (|E|, _M_) if _E_ dominates _N_ and _M_ does not dominate _N_.
+A node _N_ in the control-flow graph of a function is inside the region (_E_, _M_) if _E_ dominates _N_ and _M_ does not dominate _N_.
 
 A  **structured region** is a  *control-flow region* that is significant to the Slang language semantics.
 
 For each function body, there is a  *structured region* (|Entry|, _Exit_) where _Entry_ is the unique entry block of the function's control-flow graph, and _Exit_ is a unique block dominated by all points where control flow can exit the function body.
 
 Each conditional control-flow operation has a  **merge point**,
-and defines a structured region (|C|, _M_) where _C_ is the control-flow operation and _M_ is its  *merge point*.
+and defines a structured region (_C_, _M_) where _C_ is the control-flow operation and _M_ is its  *merge point*.
 
-A strand  **breaks out of** a control-flow region (|E|, _M_) if it enters the region (by branching to _E_) and then subsequently exits the region by branching to some node _N_, distinct from _M_, that is not inside the region.
+A strand  **breaks out of** a control-flow region (_E_, _M_) if it enters the region (by branching to _E_) and then subsequently exits the region by branching to some node _N_, distinct from _M_, that is not inside the region.
 
 Note: We define the case where a strand  *breaks out of* a region, but not the case where a strand exits a region normally.
 The motivation for this choice is that a strand that goes into an infinite loop without exiting a region needs to be treated the same as a strand that exits that region normally.
 
-When the strands in a tangle enter a structured control-flow region (|E|, _M_), all of the strands in the tangle that do not break out of that region form a new region at _M_.
+When the strands in a tangle enter a structured control-flow region (_E_, _M_), all of the strands in the tangle that do not break out of that region form a new region at _M_.
 
 ### Dynamic Uniformity  [exec.uniformity.dynamic]
 
 Uniformity must be defined relative to some granularity of grouping for strands: e.g., per-strand, per-wave, per-block, etc.
 
-When the strands in a tangle evaluate some expression, we say that the result is dynamically per-|G| for some granularity of group _G_, if for any two strands in the tangle that are in the same _G_, those strands compute the same value for that expression.
+When the strands in a tangle evaluate some expression, we say that the result is dynamically per-_G_ for some granularity of group _G_, if for any two strands in the tangle that are in the same _G_, those strands compute the same value for that expression.
 
-We say that a tangle is executing code dynamically per-|G| uniform when for every _G_, either all of the strands in that _G_ are in the tangle, or all of them are not in that tangle.
+We say that a tangle is executing code dynamically per-_G_ uniform when for every _G_, either all of the strands in that _G_ are in the tangle, or all of them are not in that tangle.
 
 ### Static Uniformity  [exec.uniformity.static]
 
-A value in a Slang program (such as the result of evaluating an expression) is statically per-|G|, for some granularity of group _G_, if it can be proved, using the rules in this specification, that the value will always be dynamically per-|G| at runtime.
+A value in a Slang program (such as the result of evaluating an expression) is statically per-_G_, for some granularity of group _G_, if it can be proved, using the rules in this specification, that the value will always be dynamically per-_G_ at runtime.
 
-We say that control-flow is statically per-|G| uniform at some point in a program if it can be proved, using the rules in this specification, that at runtime any stand at that point would be part of a tangle that is per-|G| uniform.
+We say that control-flow is statically per-_G_ uniform at some point in a program if it can be proved, using the rules in this specification, that at runtime any stand at that point would be part of a tangle that is per-_G_ uniform.
 
 TODO: Okay, now we actually need to write just such rules...
 
@@ -500,7 +500,7 @@ A  *pipeline instance* depends on the  *associated record types* that are part o
 A programmable stage has a set of boundaries.
 Every programmable stage has an input boundary and an output boundary.
 
-A record type signature is a sequence of pairs (|T|, _s_), where _T_ is a type and _s_ is a semantic.
+A record type signature is a sequence of pairs (_T_, _s_), where _T_ is a type and _s_ is a semantic.
 The varying signature of a programmable stage along one of its boundaries is a record type signature.
 
 

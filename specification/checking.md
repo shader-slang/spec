@@ -9,7 +9,7 @@ The notation being used here is aligned with how papers in the PLT world on type
 ## Contexts  [check.context]
 
 A  **context** is an ordered sequence of zero or more  **context entries**.
- *Context entries* include  **bindings** of the name of a variable (an [ *identifier*]) to its type.
+ *Context entries* include  **bindings** of the name of a variable (an *identifier*) to its type.
 
 ```.checking
 
@@ -92,6 +92,6 @@ A checking judgement for a statement determines that  *statement* _s_  **checks*
 ## Declarations  [check.decl]
 
 Declarations also use  *checking judgements*.
-A checking judgement for a declaration determines that  *declaration* _d_ [ *checks*] in  *context* _c_.
+A checking judgement for a declaration determines that  *declaration* _d_ *checks* in  *context* _c_.
 
 Checking of a declaration may modify the context _c_ to include additional bindings.

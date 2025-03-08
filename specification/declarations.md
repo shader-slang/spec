@@ -4,7 +4,7 @@ A  **declaration** is a unit of syntax that typically affects what names are vis
 In the abstract syntax, a  *source unit* comprises a sequence of declarations.
 
 ```.syntax
-SourceUnit
+SourceUnit =>
     ( ModuleDeclaration | ImplementingDeclaration ) ?
     IncludeDeclaration*
     ImportDeclaration*
@@ -14,7 +14,7 @@ SourceUnit
 A declaration may be preceded by zero or more modifiers.
 
 ```.syntax
-Declaration
+Declaration :
     Modifier Declaration
     | VariableDeclaration
     | FunctionDeclaration
@@ -428,13 +428,13 @@ PointerDeclarator: `*` PointerQualifier* Declarator
 
 Unwrapping a declarator for some type expression yields a type expression and an optional name declarator.
 
-The unwrapping of a name declarator _nd_ for a type expression _t_ is (|t|, _nd_).
+The unwrapping of a name declarator _nd_ for a type expression _t_ is (_t_, _nd_).
 
 The unwrapping of a parenthesized declarator `(` _d_ `)` for a type expression _t_ is the unwrapping of _d_ for _t_.
 
-The unwrapping of an array declarator _d_ `[` _args_ `]` for a type expression _t_ is the unwrapping of _d_ for `Array<`|t|, _args_`>`.
+The unwrapping of an array declarator _d_ `[` _args_ `]` for a type expression _t_ is the unwrapping of _d_ for `Array<`_t_, _args_`>`.
 
-The unwrapping of a pointer declarator `*` _q_ _d_ for a type expression _t_ is the unwrapping of _d_ for `Ptr<(`|q| _t_`)>`
+The unwrapping of a pointer declarator `*` _q_ _d_ for a type expression _t_ is the unwrapping of _d_ for `Ptr<(`_q_ _t_`)>`
 
 
 ## Variables  [decl.var]

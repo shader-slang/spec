@@ -162,7 +162,7 @@ ArrayType := elementType:Type `[` elementCount:Int `]`
 ```
 
 An  **array** is a finite homogenous sequence.
-An  **array type** _T_`[`|N|`]` is the type of _N_-element  *arrays* with elements of type _T_.
+An  **array type** _T_`[`_N_`]` is the type of _N_-element  *arrays* with elements of type _T_.
 
 The  *element count* of an  *array type* must be a non-negative `Int`.
 
@@ -176,7 +176,7 @@ VectorType := `Vector` `<` elementType:Type `,` elementCount:Int `>`
 A  **vector** is a finite homogenous sequence.
 The  *element type* of a vector must be a scalar numeric type.
 
-A  **vector type** `Vector<`|T|`,`|N|`>` is the type of  *vectors* with _N_ elements of type _T_.
+A  **vector type** `Vector<`_T_`,`_N_`>` is the type of  *vectors* with _N_ elements of type _T_.
 
 The  *element count* of a  *vector type* must be a non-negative `Int`.
 
@@ -192,9 +192,9 @@ The  **row count** of a matrix is its  *element count*.
 The  **scalar type** of a matrix is the  *element type* of its  *element type*.
 
 The  **column count** of a matrix is the  *element count* of its  *row type*.
-The  **column type** of a matrix with  *scalar type* _T_ and  *column count* _C_ is `Vec<`T`,`|C|`>`
+The  **column type** of a matrix with  *scalar type* _T_ and  *column count* _C_ is `Vec<`T`,`_C_`>`
 
-A  **matrix type** `Matrix<`|T|`,`|R|`,`|C|`>` is the type of matrices with _R_  *rows* of type `Vector<`|C|`,`|T|`>`.
+A  **matrix type** `Matrix<`_T_`,`_R_`,`_C_`>` is the type of matrices with _R_  *rows* of type `Vector<`_C_`,`_T_`>`.
 
 ## The `Never` Type  [type.never]
 

@@ -404,16 +404,16 @@ This section defines the terms:  **prefix operator**.
 </div>
 
 ```.syntax
-	PrefixOperatorExpression
-        PrefixOperator Expression
+    PrefixOperatorExpression
+        => PrefixOperator Expression
 
     PrefixOperator
-        `+` // identity
-        | `-` // arithmetic negation
-        | `\~` // bit\-wise Boolean negation
-        | `!` // Boolean negation
-        | `++` // increment in place
-        | `--` // decrement in place
+        => `+` // identity
+        => `-` // arithmetic negation
+        => `\~` // bit\-wise Boolean negation
+        => `!` // Boolean negation
+        => `++` // increment in place
+        => `--` // decrement in place
 ```
 
 ```.checking
@@ -577,8 +577,8 @@ With the exception of the assignment operator (`=`), an infix operator expressio
 ### Conditional Expression  [expr.op.cond]
 
 ```.syntax
-	ConditionalExpression
-        n:Expression `?` n:Expression `:` e:Expression
+    ConditionalExpression
+        => cond:Expression `?` t:Expression `:` e:Expression
 ```
 
 To check the conditional expression _cond_ `?` _t_ `:` _e_ against expected type _T_:

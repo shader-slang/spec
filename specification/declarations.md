@@ -225,10 +225,10 @@ A method of a `struct` type declaration may be modified with the `[mutating]` at
 ### Bases  [decl.agg.bases]
 
 ```.syntax
-    BasesClause
-        `:`Base (`,`Base)*
+    BasesClause =>
+        `:` Base (`,`Base)*
 
-    Base
+    Base =>
         TypeExpression
 ```
 
@@ -693,14 +693,14 @@ TODO: reference  *property declaration*.
 
 ```.syntax
     AccessorDecl
-        GetAccessorDecl
-        SetAccessorDecl
+        => GetAccessorDecl
+        => SetAccessorDecl
 
     GetAccessorDecl
-        `get` FunctionBodyClause
+        => `get` FunctionBodyClause
 
     SetAccessorDecl
-        `set` ParametersClause? FunctionBodyClause
+        => `set` ParametersClause? FunctionBodyClause
 ```
 
 An accessor declaration is invocable.
@@ -893,7 +893,7 @@ Given a  *traditional buffer declaration*, an implementation shall behave as if 
 
 
 * A `struct` declaration with some unique name _S_, and with the declaration body of the buffer declaration.
-* A global shader parameter declaration with some unique name _P_, where the type of the parameter is `ConstantBuffer<S>` in the case of a `cbuffer` declaration, or `TextureBuffer<S>` in the case of a `tbuffer` declaration.
+* A global shader parameter declaration with some unique name _P_, where the type of the parameter is `ConstantBuffer<`_S_`>` in the case of a `cbuffer` declaration, or `TextureBuffer<`_S_`>` in the case of a `tbuffer` declaration.
 
 
 For each member declared in _S_, a traditional buffer declaration introduces a binding that refers to that member accessed through _P_.

@@ -1,7 +1,7 @@
 Preprocessor [prepro]
 ============
 
-As the last phase of lexical processing the token sequence of a [=source unit=] is preprocessed to produce a new token stream.
+As the last phase of lexical processing the token sequence of a *source unit* is preprocessed to produce a new token stream.
 
 The preprocessor supported by Slang is derived from the C/C++ preprocessor with a few changes and extensions.
 
@@ -24,7 +24,7 @@ Slang programs may use the following preprocessor directives, with the same sema
 
 An implementation may use any implementation-specified means to resolve paths provided to `#include` directives.
 
-An implementation that supports `#pragma  once` may use any implementation-specified means to determine if two [=source units=] are identical.
+An implementation that supports `#pragma  once` may use any implementation-specified means to determine if two *source units* are identical.
 
 Changes [prepro.changes]
 -------

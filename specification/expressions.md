@@ -1,19 +1,19 @@
 Expressions [expr]
 ===========
 
-<dfn>Expressions</dfn> are terms that can be <dfn>evaluated</dfn> to produce values.
+**Expressions** are terms that can be **evaluated** to produce values.
 This section provides a list of the kinds of expressions that may be used in a Slang program.
 
-<div class="issue">
-We need a place to define a <dfn>term</dfn> and note how it can be either an expression or a <dfn>type expression</dfn>.
-
-A <dfn>specialize expression</dfn> might occur in either the expression or type expression grammar.
-</div>
+> Issue:
+>
+> We need a place to define a **term** and note how it can be either an expression or a **type expression**.
+>
+> A **specialize expression** might occur in either the expression or type expression grammar.
 
 In general, the order of evaluation of a Slang expression proceeds from left to right.
 Where specific expressions do not follow this order of evaluation, it will be noted.
 
-Some expressions can yield <dfn>l-values</dfn>, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
+Some expressions can yield **l-values**, which allows them to be used on the left-hand-side of assignment, or as arguments for `out` or `in out` parameters.
 
 Literal Expressions [expr.lit]
 -------------------
@@ -34,11 +34,11 @@ An integer literal expression consists of a single IntegerLiteral token.
 	}
 ```
 
-To check an unsuffixed integer literal |lit| against type |T|:
+To check an unsuffixed integer literal _lit_ against type _T_:
 
-* Validate that |T| conforms to `IFromIntegerLiteral`, yielding conformance witness `w`
-* Let |f| be a declaration reference to `IFromIntegerLiteral.init` looked up through `w`
-* Return the checked expression |f| `(` |lit| `) :` |T|
+* Validate that _T_ conforms to `IFromIntegerLiteral`, yielding conformance witness `w`
+* Let _f_ be a declaration reference to `IFromIntegerLiteral.init` looked up through `w`
+* Return the checked expression _f_ `(` _lit_ `) :` _T_
 
 Issue: We need a description of how suffixed integer literals have their type derived from their suffix.
 
@@ -147,20 +147,18 @@ Member Expression [expr.member]
         Expression `.` Identifier
 ```
 
-<div class=issue>
+> Issue:
+>
+> The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
+> In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
+>
+> * Implicit dereference of pointer-like types.
+> * Swizzles (vector or matrix).
+> * Static vs. instance members.
+>
+> In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
 
-The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
-In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
-
-* Implicit dereference of pointer-like types.
-* Swizzles (vector or matrix).
-* Static vs. instance members.
-
-</div>
-
-In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
-\end{Incomplete}
-
+<!--
 %\begin{verbatim}
 %When `base` is a structure type, this expression looks up the field or other %member named by `m`.
 %Just as for an identifier expression, the result of a member expression may be %overloaded, and might be disambiguated based on how it is used.
@@ -204,6 +202,7 @@ In both synthesis and checking modes, the base expression should first synthesiz
 %Color::Red
 %```
 %\end{verbatim}
+-->
 
 This Expression [expr.this]
 ---------------
@@ -240,7 +239,7 @@ An expression wrapped in parentheses (`()`) is a parenthesized expression and ev
         `(` Expression `)`
 ```
 
-If expression |e| resolves to |er| then the parenthesized expression `(` |e| `)` resolves to |er|.
+If expression _e_ resolves to _er_ then the parenthesized expression `(` _e_ `)` resolves to _er_.
 
 Call Expression [expr.call]
 ---------------
@@ -305,12 +304,12 @@ Subscript Expression [expr.subscript]
 		Expression `[` (Argument `,`)* `]`
 ```
 
-<div class=issue>
-To a first approximation, a subscript expression like `base[a0, a1]` is equivalent to something like `base.subscript(a0, a1)`.
-That is, we look up the `subscript` members of the `base` expression, and then check a call to the result of lookup (which might be overloaded).
-
-Unlike simple function calls, a subscript expression can result in an [=l-value=], based on what accessors the `subscript` declaration that is selected by overload resolution has.
-</div>
+> Issue:
+>
+> To a first approximation, a subscript expression like `base[a0, a1]` is equivalent to something like `base.subscript(a0, a1)`.
+> That is, we look up the `subscript` members of the `base` expression, and then check a call to the result of lookup (which might be overloaded).
+> 
+> Unlike simple function calls, a subscript expression can result in an *l-value*, based on what accessors the `subscript` declaration that is selected by overload resolution has.
 
 %A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
 %
@@ -326,7 +325,7 @@ Initializer List Expression [expr.init-list]
 		`{` (Argument `,`)* `}`
 ```
 
-If the sequence of arguments |args| resolves to |resolvedArgs|, then the initializer list expression `{` |args| `}` resolves to the resolved initializer list expression `{` |resolvedArgs| `}`.
+If the sequence of arguments _args_ resolves to _resolvedArgs_, then the initializer list expression `{` _args_ `}` resolves to the resolved initializer list expression `{` _resolvedArgs_ `}`.
 
 Note: An initializer-list expression can only appear in contexts where it will be coerced to an expected type.
 
@@ -339,21 +338,20 @@ Cast Expression [expr.cast]
 ```
 
 Note:
-A <dfn>cast expression</dfn> attempts to coerce an expression to a desired type.
+A **cast expression** attempts to coerce an expression to a desired type.
 
-To resolve a [=cast expression=] `(` |t| `)` |e|:
+To resolve a *cast expression* `(` _t_ `)` _e_:
 
-* Let |checkType| be the result of checking |t| as a type
-* Let |checkedExpr| be the result of checking |e| against |checkType|
-* Return |checkedExpr|
+* Let _checkType_ be the result of checking _t_ as a type
+* Let _checkedExpr_ be the result of checking _e_ against _checkType_
+* Return _checkedExpr_
 
-<div class=issue>
-The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
+> Issue:
+>
+> The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
+>
+> In contrast, we want a cast expression to be able to invoke \emph{explicit} conversions as well, which are currently not something the formalism encodes.
 
-In contrast, we want a cast expression to be able to invoke \emph{explicit} conversions as well, which are currently not something the formalism encodes.
-</div>
-
-\begin{Legacy}
 ### Legacy: Compatibility Feature [expr.cast.compatiblity]
 
 As a compatiblity feature for older code, Slang supports using a cast where the base expression is an integer literal zero and the target type is a user-defined structure type:
@@ -411,10 +409,6 @@ Operator Expressions [expr.op]
 --------------------
 
 ### Prefix Operator Expressions [expr.op.prefix]
-
-<div class="issue">
-This section defines the terms: <dfn>prefix operator</dfn>.
-</div>
 
 ```.syntax
 	PrefixOperatorExpression
@@ -487,11 +481,6 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
 
 
 ### Infix Operator Expressions [expr.op.infix]
-
-<div class="issue">
-The syntax here should introduce the term: <dfn>infix expression</dfn>.
-</div>
-
 
 ```.syntax
 	InfixOperatorExpression
@@ -594,15 +583,15 @@ ConditionalExpression
     => condition:Expression `?` then:Expression `:` else:Expression
 ```
 
-To check the conditional expression |cond| `?` |t| `:` |e| against expected type |T|:
+To check the conditional expression _cond_ `?` _t_ `:` _e_ against expected type _T_:
 
-* Let |checkedCond| be the result of checking |cond| against `Bool`
-* Let |checkedThen| be the result of checking |t| against |T|
-* Let |checkedElse| be the result of checking |e| against |T|
-* Return the checked expression |checkedCond| `?` |checkedThen| `:` |checkedElse|
+* Let _checkedCond_ be the result of checking _cond_ against `Bool`
+* Let _checkedThen_ be the result of checking _t_ against _T_
+* Let _checkedElse_ be the result of checking _e_ against _T_
+* Return the checked expression _checkedCond_ `?` _checkedThen_ `:` _checkedElse_
 
-To check the conditional expression |ce|:
+To check the conditional expression _ce_:
 
-* Extend the context with a fresh type variable |T|
-* Return the result of checking |ce| against |T|
+* Extend the context with a fresh type variable _T_
+* Return the result of checking _ce_ against _T_
 

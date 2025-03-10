@@ -4,11 +4,11 @@ Storage [storage]
 Concrete Storage Locations [storage.concrete]
 --------------------------
 
-A <dfn>concrete storage location</dfn> with layout *L* for storable type |T| comprises a set of contiguous [=memory locations=], in a single [=address space=], where a value of type |T| with layout *L* can be stored.
+A **concrete storage location** with layout *L* for storable type _T_ comprises a set of contiguous *memory locations*, in a single *address space*, where a value of type _T_ with layout *L* can be stored.
 
 ### Reference Types [storage.concrete.type]
 
-A <dfn>reference type</dfn> is written |m| `ref` |T| where |m| is a [=memory access mode=] and |T| is a storable type.
+A **reference type** is written _m_ `ref` _T_ where _m_ is a *memory access mode* and _T_ is a storable type.
 
 <div class="issue">
 How do we get layout involved here?
@@ -16,36 +16,36 @@ How do we get layout involved here?
 
 #### Type Conversion [storage.concrete.type.conversion]
 
-An expression of reference type `modify` `ref` |T| can be implicitly coerced to type `read` `ref` |S| if |T| is subtype of |S|.
+An expression of reference type `modify` `ref` _T_ can be implicitly coerced to type `read` `ref` _S_ if _T_ is subtype of _S_.
 
-An expression of reference type `modify` `ref` |T| can be implicitly coerced to type `write` `ref` |S| if |S| is subtype of |T|.
+An expression of reference type `modify` `ref` _T_ can be implicitly coerced to type `write` `ref` _S_ if _S_ is subtype of _T_.
 
-An expression of reference type `read` `ref` |T| can be implicitly coerced to type |T|.
+An expression of reference type `read` `ref` _T_ can be implicitly coerced to type _T_.
 
 Abstract Storage Locations [storage.abstract.location]
 --------------------------
 
-An <dfn>abstract storage location</dfn> is a logical place where a value of some proper type |T| can reside.
+An **abstract storage location** is a logical place where a value of some proper type _T_ can reside.
 
-A [=concrete storage location=] is also an [=abstract storage location=].
+A *concrete storage location* is also an *abstract storage location*.
 
-Example: A local variable declaration like `var x : Int;` defines an [=abstract storage location=], and a reference to `x` will have the [=abstract storage reference type=] `read modify Int`.
+Example: A local variable declaration like `var x : Int;` defines an *abstract storage location*, and a reference to `x` will have the *abstract storage reference type* `read modify Int`.
 
 Abstract Storage Access [storage.abstract.access]
 -----------------------
 
-An <dfn>abstract storage access</dfn> is an operation performed by a [=strand=] on an [=abstract storage location=].
-Each [=abstract storage access=] has an [=abstract storage access mode=].
+An **abstract storage access** is an operation performed by a *strand* on an *abstract storage location*.
+Each *abstract storage access* has an *abstract storage access mode*.
 
 Access Mode [storage.abstract.access.mode]
 ------------
 
-An <dfn>abstract storage access mode</dfn> is either `get`, `set`, or a [=memory access mode=].
+An **abstract storage access mode** is either `get`, `set`, or a *memory access mode*.
 
 Abstract Storage References [storage.abstract.reference.type]
 ---------------------------
 
-An <dfn>abstract storage reference type</dfn> is written |m| |T| where |T| is a proper type and |m| is a set of one or more [=abstract storage access modes=].
+An **abstract storage reference type** is written _m_ _T_ where _T_ is a proper type and _m_ is a set of one or more *abstract storage access modes*.
 
 <div class="issue">
 Some of the access types imply others, and it is inconvenient to have to write all explicitly in those cases.
@@ -61,49 +61,49 @@ For example:
 
 ### Type Conversion [storage.abstract.reference.type.conversion]
 
-An expression with [=reference type=] `read` `ref` |T| can be implicitly coerced to an [=abstract storage reference type=] `read` |T|.
+An expression with *reference type* `read` `ref` _T_ can be implicitly coerced to an *abstract storage reference type* `read` _T_.
 
-An expression with [=reference type=] `write` `ref` |T| can be implicitly coerced to an [=abstract storage reference type=] `write` |T|.
+An expression with *reference type* `write` `ref` _T_ can be implicitly coerced to an *abstract storage reference type* `write` _T_.
 
-An expression with [=reference type=] `modify` `ref` |T| can be implicitly coerced to an [=abstract storage reference type=] `read write modify` |T|.
+An expression with *reference type* `modify` `ref` _T_ can be implicitly coerced to an *abstract storage reference type* `read write modify` _T_.
 
-An expression with [=abstract storage reference type=] |a| |T| can be implicitly coerced to [=abstract storage reference type=] |b| |T| if |b| is a subset of |a|.
+An expression with *abstract storage reference type* _a_ _T_ can be implicitly coerced to *abstract storage reference type* _b_ _T_ if _b_ is a subset of _a_.
 
-An expression with an abstract storage type |m| |T| can be implicitly coerced to an abstract storage type |m| |S| if all of the following are true:
+An expression with an abstract storage type _m_ _T_ can be implicitly coerced to an abstract storage type _m_ _S_ if all of the following are true:
 
-* |S| is a subtype of |T| unless |m| does not contain any of `write`, `modify`, and `set`
-* |T| is a subtype of |S| unless |m| does not contain any of `read`, `modify`, and `get`
+* _S_ is a subtype of _T_ unless _m_ does not contain any of `write`, `modify`, and `set`
+* _T_ is a subtype of _S_ unless _m_ does not contain any of `read`, `modify`, and `get`
 
 Containment [storage.location.contain]
 -----------
 
 An abstract storage location may contain other abstract storage locations.
 
-Two [=abstract storage locations=] overlap if they are the same location, or one transitively contains the other.
+Two *abstract storage locations* overlap if they are the same location, or one transitively contains the other.
 
-An abstract storage location of an array type |T|`[`|N|`]` contains |N| storage locations of type |T|, one for each element of the array.
+An abstract storage location of an array type _T_`[`_N_`]` contains _N_ storage locations of type _T_, one for each element of the array.
 
-An abstract storage location of a `struct` type |S| contains a distinct storage location for each of the [=fields=] of |S|.
+An abstract storage location of a `struct` type _S_ contains a distinct storage location for each of the *fields* of _S_.
 
 
 ### Conflicts [storage.access.conflict]
 
-An [=abstract storage access=] performed by a strand begins at some point |b| in the execution of that strand, and ends at some point |e| in the execution of that strand.
-The interval of an [=abstract storage access=] is the half-open interval [|b|, |e|).
+An *abstract storage access* performed by a strand begins at some point _b_ in the execution of that strand, and ends at some point _e_ in the execution of that strand.
+The interval of an *abstract storage access* is the half-open interval [_b_, _e_).
 
 The intervals [|a0|, |a1|) and [|b0|, |b1|) overlap if either:
 
 * |a0| happens-before |b0| and |b0| happens-before |a1|
 * |b0| happens-before |a0| and |a0| happens-before |b1|
 
-Two [=abstract storage accesses=] |A| and |B| overlap if all of the following:
+Two *abstract storage accesses* _A_ and _B_ overlap if all of the following:
 
-* The [=abstract storage location=] of |A| overlaps the [=abstract storage location=] of |B|
-* The interval of |A| overlaps the interval of |B|
+* The *abstract storage location* of _A_ overlaps the *abstract storage location* of _B_
+* The interval of _A_ overlaps the interval of _B_
 
-Two distinct [=abstract storage accesses=] |A| and |B| conflict if all of the following:
+Two distinct *abstract storage accesses* _A_ and _B_ conflict if all of the following:
 
-* |A| and |B| overlap
+* _A_ and _B_ overlap
 * At least one of the accesses is a `write`, `modify`, or `set`
 
 Expressions That Reference Storage [storage.expr]
@@ -120,15 +120,15 @@ Examples of expressions that evaluate to an abstract storage location include:
 
 * An identifier expression that names some variable _v_
 
-* A member-access expression |x|.|m| where |x| is an abstract storage location of some struct type |S| and |m| is a field of |S|
+* A member-access expression _x_._m_ where _x_ is an abstract storage location of some struct type _S_ and _m_ is a field of _S_
 
-* A member-access expression |x|.|p| where |p| is a property
+* A member-access expression _x_._p_ where _p_ is a property
 
-* A subscript exrpession |x|`[`|i|`]` that resolves to an invocation of a `subscript` declaration
+* A subscript exrpession _x_`[`_i_`]` that resolves to an invocation of a `subscript` declaration
 
 Examples of expressions that perform an abstract storage access include:
 
-* An assignment |dst| `=` |src| performs a write to |dst|. It also performs a read from |src| if |src| is an abstract storage location.
+* An assignment _dst_ `=` _src_ performs a write to _dst_. It also performs a read from _src_ if _src_ is an abstract storage location.
 
 * A call `f(... a ... )` where argument `a` is an abstract storage location performs an abstract storage access based on the direction of the corresponding parameter:
 

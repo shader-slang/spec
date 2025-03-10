@@ -14,6 +14,15 @@ var, .meta {
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
+/* Body */
+
+body {
+    max-width: 50em;
+    margin: 0 auto 4em;
+
+    line-height: 1.5;
+}
+
 /* Headings */
 
 h1, h2, h3, h4, h5, h6, dt {
@@ -185,7 +194,7 @@ a {
     text-decoration-color: hsla(0, 0%, 0%, 0.1);
 }
 
-a:not([id]) {
+a[id] {
     text-decoration: none;
 }
 

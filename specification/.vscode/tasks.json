@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-spec",
+            "type": "shell",
+            "command": "python ./jargon/main.py",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            }
+        },
+        {
+            "label": "watch",
+            "type": "shell",
+            "command": ".\\make.bat watch",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            }
+        }
+    ]
+}

@@ -38,6 +38,7 @@ class GrammarDiffExpr(GrammarNode):
     contentSeparator = " - "
 
 class GrammarCharacterClass(GrammarNode):
+    classAttribute = "character-class"
     preTemplate = "["
     postTemplate = "]"
 
@@ -45,9 +46,11 @@ class GrammarCharacterClassRange(GrammarNode):
     pass
 
 class GrammarCharacterClassCharacter(GrammarCharacterClassRange):
+    classAttribute = "character"
     pass
 
 class GrammarCharacterClassCharacterRange(GrammarCharacterClassRange):
+    classAttribute = "character-range"
     contentSeparator = "-"
     pass
 
@@ -160,7 +163,7 @@ character_class_content: character_class_range+
 
 ?character_class_range: character_class_character | character_class_character_range
 
-character_class_character: /[^\\]/
+character_class_character: /[^\\\]]/
 
 character_class_character_range: character_class_character "-" character_class_character
 
@@ -195,13 +198,13 @@ class GrammarTransformer(lark.Transformer):
         return node
 
     def production(self, node):
-        print("production: {0}".format(node))
+        #print("production: {0}".format(node))
         definition = md.Definition([node[0]])
         alternatives = GrammarAlternativeList(node[2])
         return GrammarProduction([definition, alternatives])
 
     def new_style_alternatives(self, node):
-        print("new_style_alternatives: {0}".format(node))
+        #print("new_style_alternatives: {0}".format(node))
         return node
 
     def old_style_alternatives(self, node):
@@ -213,7 +216,7 @@ class GrammarTransformer(lark.Transformer):
         return node
 
     def old_style_alterantives_list_next(self, node):
-        print("old_style_alterantives_list_next: {0}".format(node))
+        #print("old_style_alterantives_list_next: {0}".format(node))
         return node[1]
 
     def old_style_alternative(self, node):
@@ -221,7 +224,7 @@ class GrammarTransformer(lark.Transformer):
         return GrammarAlternative([node[0]])
 
     def alternative(self, node):
-        print("alternative: {0}".format(node))
+        #print("alternative: {0}".format(node))
         return GrammarAlternative([node[1]])
 
     def or_expression(self, node):
@@ -283,7 +286,7 @@ class GrammarTransformer(lark.Transformer):
         return GrammarCharacterClassCharacter(md.TextElement(node[0].value))
 
     def character_class_character_range(self, node):
-        print("character_class_character_range: {0}".format(node))
+        #print("character_class_character_range: {0}".format(node))
         return GrammarCharacterClassCharacterRange(node)
 
     def block_comment(self, node):
@@ -330,16 +333,16 @@ class IdentitySectionIDsTransform(md.Transform):
             return
         text = md.getText(lastChild)
 
-        match = re.match(r"^((.* )?) +\[(.*)\]$", text)
+        match = re.match(r"^((.*[^ ]+)?)[ ]+\[(.*)\]$", text)
         if not match:
             return
 
         remainingText = match.group(1).strip()
         lastChild.text = remainingText
         if remainingText == "":
-            node.children = node.children[:-1]
+            heading.children = heading.children[:-1]
 
-        node.heading.id = match.group(3)
+        node.heading.id = "sec." + match.group(3)
         return node
 
 class IdentityOldStyleCalloutsTransform(md.Transform):
@@ -390,7 +393,9 @@ class CombineSpecialSpansTransform(md.Transform):
                 else:
                     newChildren.append(span)
             return md.CodeSpan(newChildren)
-        raise Exception("Unknown special span: {0}".format(spans))
+
+        # raise Exception("Unknown special span: {0}".format(spans))
+        return None
 
     def __init__(self):
         super().__init__()
@@ -400,7 +405,11 @@ class CombineSpecialSpansTransform(md.Transform):
 
     def _flushSpecialSpans(self):
         if len(self._specialSpans) > 0:
-            self._newChildren.append(self._createCombinedSpecialSpan(self._specialSpans))
+            newSpan = self._createCombinedSpecialSpan(self._specialSpans)
+            if newSpan is not None:
+                self._newChildren.append(newSpan)
+            else:
+                self._newChildren.extend(self._specialSpans)
             self._specialSpans = []
 
     def _flushWhitespaceSpans(self):
@@ -415,9 +424,6 @@ class CombineSpecialSpansTransform(md.Transform):
         self._specialSpans = []
         self._whitespaceSpans = []
         for child in node.children:
-            if md.getText(child) == "stmts":
-                print("special: {0} whitespace: {1} child:{2}".format(len(self._specialSpans), len(self._whitespaceSpans), child.dump()))
-
             if md.getText(child).isspace():
                 self._whitespaceSpans.append(child)
                 continue
@@ -456,6 +462,7 @@ def transformRootDocument(node):
     # assign IDs to definitions
     # link references to their definitions
     # introduce self-link anchors for nodes with IDs
+    # merge consecutive paragraphs that should span a code block, algorithm, etc.
 
     md.generateSectionIDs(node)
     node = md.transformTree(node, md.BuildTableOfContentsTransform(node))

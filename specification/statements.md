@@ -1,7 +1,7 @@
 Statements [stmt]
 ==========
 
-A <dfn>statement</dfn> is an entity in the abstract syntax that describes actions to be taken by a thread.
+A **statement** is an entity in the abstract syntax that describes actions to be taken by a thread.
 Statements are executed for their effect, rather than evaluated to produce a value.
 
 ```.syntax
@@ -26,7 +26,7 @@ Statement :
 Expression Statement [stmt.expr]
 --------------------
 
-An <dfn>expression statement</dfn> evaluates an expression, and then ignores the resulting value.
+An **expression statement** evaluates an expression, and then ignores the resulting value.
 
 ```.syntax
 ExpressionStatement :
@@ -39,12 +39,12 @@ GIVEN e synthesizes type t in context c
 THEN e `;` checks in context c
 ```
 
-An implementation may diagnose a warning when execution of an [=expression statement=] cannot have side effects.
+An implementation may diagnose a warning when execution of an *expression statement* cannot have side effects.
 
 Declaration Statement [expr.decl]
 ---------------------
 
-A <dfn>declaration statement</dfn> introduces a declaration into the current scope.
+A **declaration statement** introduces a declaration into the current scope.
 	
 ```.syntax
 DeclarationStatement :
@@ -57,7 +57,7 @@ GIVEN declaration d checks in context c
 THEN statement d checks in context c
 ```
 	
-Only the following types of declarations may be used in a [=declaration statement=]:
+Only the following types of declarations may be used in a *declaration statement*:
 
 
 * VariableDeclaration
@@ -66,7 +66,7 @@ Only the following types of declarations may be used in a [=declaration statemen
 Block Statement [stmt.block]
 ---------------
 
-A <dfn>block statement</dfn> executes each of its constituent statements in order.
+A **block statement** executes each of its constituent statements in order.
 
 ```.syntax
 BlockStatement :
@@ -83,7 +83,7 @@ GIVEN s0,s1,... check in d
 THEN `{` s0,s1,... `}` checks in c
 ```
 
-Note: Declarations in a [=block statement=] are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
+Note: Declarations in a *block statement* are visible to later statements in the same block, but not to earlier statements in the block, or to code outside the block.	
 
 Empty Statement [stmt.empty]
 ---------------
@@ -105,7 +105,7 @@ Conditional Statements [stmt.cond]
 
 ### If Statement [stmt.if]
 
-An <dfn>if statement</dfn> executes a sub-statement conditionally.
+An **if statement** executes a sub-statement conditionally.
 
 ```.syntax
 IfStatement :
@@ -136,19 +136,19 @@ GIVEN f checks in C
 THEN `if(` e `)` t `else` f checks in c	
 ```
 
-If the condition of an [=if statement=] is an expression, then it is evaluated against an expected type of `Bool` to yield a value |C|.
-If |C| is `true`, then the ThenClause is executed.
-If |C| is `false` and there is a ElseClause, then it is executed.
+If the condition of an *if statement* is an expression, then it is evaluated against an expected type of `Bool` to yield a value _C_.
+If _C_ is `true`, then the ThenClause is executed.
+If _C_ is `false` and there is a ElseClause, then it is executed.
 
 If the condition of an `if` statement is a `let` declaration, then that declaration must have an initial-value expression.
-That initial-value expression is evaluated against an expected type of `Optional<T>`, where |T| is a fresh type variable, to yield a value |D|.
-If |D| is `Some(|C|)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to |C|.
-If |D| is `null` and there is a ElseClause, then it is executed.
+That initial-value expression is evaluated against an expected type of `Optional<T>`, where _T_ is a fresh type variable, to yield a value _D_.
+If _D_ is `Some(_C_)`, then the ThenClause is executed, in an environment where the name of the `let` declaration is bound to _C_.
+If _D_ is `null` and there is a ElseClause, then it is executed.
 
 ### Switch Statement [stmt.switch]
 
 
-A <dfn>`switch` statement</dfn> conditionally executes up to one of its <dfn>alternatives</dfn>, based on the value of an expression.
+A **`switch` statement** conditionally executes up to one of its **alternatives**, based on the value of an expression.
 	
 ```.syntax
 SwitchStatement :
@@ -177,7 +177,7 @@ THEN `switch(` e `) {` a0,a1,... `}` checks in c
 ```
 
 Note:
-A `switch` statement is checked by first checking the expression, and then checking each of the [=alternatives=] against the type of that expression.
+A `switch` statement is checked by first checking the expression, and then checking each of the *alternatives* against the type of that expression.
 
 ```.checking
 GIVEN context c, type t,
@@ -196,7 +196,7 @@ THEN `default:` checks against t in c
 ```
 
 Note:
-A `case` clause is valid if its expression [=checks against=] the type of the control expressio nof the `switch` statement.
+A `case` clause is valid if its expression *checks against* the type of the control expressio nof the `switch` statement.
 
 A `switch` statement may have at most one `default` clause.
 
@@ -216,7 +216,7 @@ Semantically, a `switch` statement is equivalent to an "`if` cascade" that compa
 Loop Statements [stmt.loop]
 ---------------
 
-A <dfn>loop statement</dfn> executes a body statement one or more times.
+A **loop statement** executes a body statement one or more times.
 
 ### For Statement [stmt.for]
 
@@ -281,17 +281,17 @@ Control Transfer Statements [stmt.control]
 
 ### `break` Statement [stmt.break]
 
-A <dfn>break statement</dfn> is used to transfer control out of the context of some enclosing statement.
-A [=break statement=] may optionally provide a <dfn>label</dfn>, to identify the enclosing statement.
+A **break statement** is used to transfer control out of the context of some enclosing statement.
+A *break statement* may optionally provide a **label**, to identify the enclosing statement.
 
 ```.syntax
 BreakStatement :
 	`break` label:Identifier? `;`
 ```
 
-A [[=break statement=]] without a [[=label=]] transfers control to after the end of the closest lexically enclosing [[=switch statement=]] or [[=loop statement=]].
+A *break statement* without a *label* transfers control to after the end of the closest lexically enclosing *switch statement* or *loop statement*.
 
-A [[=break statement=]] with a [[=label=]] transfers control to after the end of the lexically enclosing [[=switch statement=]] or [[=loop statement=]] labeled with a matching [[=label=]].
+A *break statement* with a *label* transfers control to after the end of the lexically enclosing *switch statement* or *loop statement* labeled with a matching *label*.
 
 ```.checking
 GIVEN context c

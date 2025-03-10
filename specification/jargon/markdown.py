@@ -91,6 +91,9 @@ class TextElement(Node):
         super().__init__()
         self.text = text
 
+    def __repr__(self):
+        return self.text.__repr__()
+
     def getText(self):
         return self.text
 
@@ -305,6 +308,10 @@ class IssueCallout(Callout):
     classAttribute = "issue"
     title = "Issue"
 
+class ToDoCallout(Callout):
+    classAttribute = "issue"
+    title = "TODO"
+
 def getText(node):
     if node is None:
         return ""
@@ -436,11 +443,11 @@ class Renderer:
 
         return attributes
 
-    def renderGrammarCharacterClassCharacterRange(self, node):
-        print("renderGrammarCharacterClassCharacterRange: {0}".format(node))
-        text = self.renderElement(node)
-        print("text: {0}".format(text))
-        return text
+#    def renderGrammarCharacterClassCharacterRange(self, node):
+#        print("renderGrammarCharacterClassCharacterRange: {0}".format(node))
+#        text = self.renderElement(node)
+#        print("text: {0}".format(text))
+#        return text
 
     def renderElement(self, node):
         tag = node.tag
@@ -654,7 +661,7 @@ class BuildTableOfContentsTransform(Transform):
     def visitTableOfContents(self, node):
         tableOfContentsListItems = buildTableOfContentsListItems(self.document)
         tableOfContentsList = UnorderedList(tableOfContentsListItems)
-        print("tableOfContentsList: {0}".format(tableOfContentsList))
+        #print("tableOfContentsList: {0}".format(tableOfContentsList))
         node.children = [ tableOfContentsList ]
 
 class GenerateSectionIDsTransform(Transform):
@@ -678,7 +685,7 @@ def getPotentialCalloutHeadingText(node):
         return getText(node.children)
     return None
 
-calloutClasses = [NoteCallout, LexicalCallout, IssueCallout]
+calloutClasses = [NoteCallout, LexicalCallout, IssueCallout, ToDoCallout]
 calloutClassDictionary = {}
 for calloutClass in calloutClasses:
     calloutClassDictionary[calloutClass.title.lower()] = calloutClass

@@ -84,14 +84,14 @@ An  **abstract storage reference type** is written _m_ _T_ where _T_ is a proper
 
 > ###### Issue ######
 >
-> Some of the access types imply others, and it is inconvenient to have to write > all explicitly in those cases.
+> Some of the access types imply others, and it is inconvenient to have to write all explicitly in those cases.
 > For example:
 > 
-> * If you have `read` access, you can also perform a `get` (if the stored type is > copyable).
+> * If you have `read` access, you can also perform a `get` (if the stored type is copyable).
 > * If you have `modify` access, you can also perform a `write`.
-> * If you hae `modify` or `write` access, you can also perform a `set` (if the > stored type is copyable).
+> * If you hae `modify` or `write` access, you can also perform a `set` (if the stored type is copyable).
 > 
-> (Having `modify` access doesn't let you perform a `read` or `get`, because it > implies the possibility of write-back which could in principle conflict with > other accesses)
+> (Having `modify` access doesn't let you perform a `read` or `get`, because it implies the possibility of write-back which could in principle conflict with > other accesses)
 
 Type Conversion  [storage.abstract.reference.type.conversion]
 ---------------

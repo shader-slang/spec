@@ -143,7 +143,7 @@ Member Expression {#expr.member}
 -----------------
 
 ```.syntax
-	MemberExpression}
+	MemberExpression
         Expression `.` Identifier
 ```
 
@@ -210,7 +210,7 @@ This Expression {#expr.this}
 
 ```.syntax
 	ThisExpression
-        \code{this
+                `this`
 ```
 
 ```.checking
@@ -247,10 +247,10 @@ Call Expression {#expr.call}
 
 ```.syntax
 	CallExpression
-        Expression `(` (Argument `,`)* \code{)
+        Expression `(` (Argument `,`)* `)`
 
     Argument
-        Expression \\
+        Expression
         | NamedArgument
 
     NamedArgument
@@ -374,8 +374,8 @@ Assignment Expression {#expr.assign}
 ----------
 
 ```.syntax
-	AssignmentExpression
-        \SynVar[destination]{Expression} `=` \SynVar[source]{Expression}
+AssignmentExpression
+    => destination:Expression `=` source:Expression
 ```
 
 ```.checking
@@ -457,7 +457,7 @@ Issue: The notation here needs a way to express the restrictions on lookup that 
 
 ```.syntax
 	PostfixOperatorExprssion
-        Expression PostfixOperator}
+        Expression PostfixOperator
 
     PostfixOperator
         | `++` // increment in place
@@ -526,8 +526,8 @@ The syntax here should introduce the term: <dfn>infix expression</dfn>.
         | `&=`    	// compound bitwise and/assign
         | `\|=`   	// compound bitwise or/assign
         | `^=`    	// compound bitwise xor/assign
-%        | `=`    	// assignment
-%        | `,`		// sequence
+        | `=`    	// assignment
+        | `,`		// sequence
 
 ```
 
@@ -590,8 +590,8 @@ With the exception of the assignment operator (`=`), an infix operator expressio
 ### Conditional Expression ### {#expr.op.cond}
 
 ```.syntax
-	ConditionalExpression
-        \SynVar[condition]{Expression} `?` \SynVar[then]{Expression} `:` \SynVar[else]{Expression}
+ConditionalExpression
+    => condition:Expression `?` then:Expression `:` else:Expression
 ```
 
 To check the conditional expression |cond| `?` |t| `:` |e| against expected type |T|:

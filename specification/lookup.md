@@ -7,7 +7,7 @@ This chapter needs to document the rules for how names are looked up in two case
 
 
 * Looking up a standalone Identifier as an expression or type expression, we need to look up in the current context.
-* When looking up a name in some type, whether explicitly as part of a MemberExpression}, or implicitly as part of lookup through `this` inside a type body.
+* When looking up a name in some type, whether explicitly as part of a MemberExpression, or implicitly as part of lookup through `this` inside a type body.
 
 
 The first kind of lookup is easily expressed as a recursion over the structure of contexts, but will often bottleneck through lookup in the context of some type (since code is so often nested under a type).

@@ -91,7 +91,7 @@ An  **abstract storage reference type** is written _m_ _T_ where _T_ is a proper
 > * If you have `modify` access, you can also perform a `write`.
 > * If you hae `modify` or `write` access, you can also perform a `set` (if the stored type is copyable).
 > 
-> (Having `modify` access doesn't let you perform a `read` or `get`, because it implies the possibility of write-back which could in principle conflict with > other accesses)
+> (Having `modify` access doesn't let you perform a `read` or `get`, because it implies the possibility of write-back which could in principle conflict with other accesses)
 
 Type Conversion  [storage.abstract.reference.type.conversion]
 ---------------

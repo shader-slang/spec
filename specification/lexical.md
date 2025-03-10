@@ -1,9 +1,9 @@
-Lexical Structure {#CHAPTER.lex}
+Lexical Structure [CHAPTER.lex]
 =================
 
 This chapter describes how a [=source unit=] is decomposed into a sequence of [[=lexemes=]].
 
-Source Units {#lex.source-unit}
+Source Units [lex.source-unit]
 ------------
 
 A <dfn>source unit</dfn> comprises a sequence of zero or more [[=characters=]].
@@ -13,7 +13,7 @@ Note: A Unicode scalar value is a Unicode code point that is not a surrogate cod
 
 Implementations may accept [=source units=] stored as files on disk, buffers in memory, or any appropriate implementation-specified means.
 
-Encoding {#lex.encoding}
+Encoding [lex.encoding]
 --------
 
 Implementations must support [=source units=] encoded using UTF-8, if they support any encoding of [=source units=] as byte sequences.
@@ -22,7 +22,7 @@ Implementations should default to the UTF-8 encoding for all text input/output.
 
 Implementations may support additional implementation-specified encodings.
 
-Phases {#lex.phase}
+Phases [lex.phase]
 ------
 
 Lexical processing of a [[=source unit=]] proceeds *as if* the following steps are executed in order:
@@ -39,7 +39,7 @@ Lexical processing of a [[=source unit=]] proceeds *as if* the following steps a
 
 The final [[=token=]] sequence produced by this process is used as input to subsequent phases of compilation.
 
-Lexemes {#lex.lexeme}
+Lexemes [lex.lexeme]
 -------
 
 A <dfn>lexeme</dfn> is a contiguous sequence of characters in a single [[=source unit=]].
@@ -55,7 +55,7 @@ Lexeme :
   ;
 ```
 
-### Trivia ### {#lex.trivia}
+### Trivia [lex.trivia]
 
 <dfn>Trivia</dfn> are [[=lexemes=]] that do not appear in the abstract syntax; they are only part of the lexical grammar.
 The presence or absence of [[=trivia=]] in a sequence of [[=lexemes=]] has no semantic impact, except where specifically noted in this specification.
@@ -69,7 +69,7 @@ Trivia :
 
 Note: Trivia is either [=whitespace=] or a [=comment=].
 
-#### Whitespace #### {#lex.trivia.space}
+#### Whitespace [lex.trivia.space]
 
 <dfn>Whitespace</dfn> consists of [[=horizontal whitespace=]] and [[=line breaks=]].
 
@@ -86,7 +86,7 @@ Whitespace :
 HorizontalSpace : (' ' | '\t')+ ;
 ```
 
-##### Line Breaks ##### {#lex.trivia.space.line-break}
+##### Line Breaks [lex.trivia.space.line-break]
 
 A <dfn>line break</dfn> consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
 
@@ -96,7 +96,7 @@ A [=source unit=] is split into <dfn>lines</dfn>: non-empty sequences of [[=char
 
 Note: Line breaks are used as [=line=] separators rather than terminators; it is not necessary for a [=source unit=] to end with a line break.
 
-#### Comments #### {#lex.trivia.comment}
+#### Comments [lex.trivia.comment]
 
 A <dfn>comment</dfn> is either a [[=line comment=]] or a [[=block comment=]].
 
@@ -111,7 +111,7 @@ Note: [[=Block comments=]] do not nest.
 
 It is an error if a [[=block comment=]] that begins in a [[=source unit=]] is not terminated in that [[=source unit=]].
 
-### Tokens ### {#lex.token}
+### Tokens [lex.token]
 
 <dfn>Tokens</dfn> are lexemes that are significant to the abstract syntax.
 
@@ -124,7 +124,7 @@ Token :
 ;
 ```
 
-#### Identifiers #### {#lex.token.ident}
+#### Identifiers [lex.token.ident]
 
 ```.lexical
 Identifier :
@@ -148,7 +148,7 @@ The identifier consisting of a single underscore (`_`) is reserved by the langua
 
 Note: There are no other fixed keywords or reserved words recognized by the lexical grammar.
 
-#### Literals #### {#lex.token.lit}
+#### Literals [lex.token.lit]
 
 ```.lexical
 Literal :
@@ -159,7 +159,7 @@ Literal :
 
 TODO: <dfn>literal</dfn>, [=numeric literal=].
 
-##### Numeric Literals ##### {#lex.token.num}
+##### Numeric Literals [lex.token.num]
 
 A <dfn>numeric literal</dfn> is either an [[=integer literal=]] or a [[=floating-point literal=]].
 
@@ -193,7 +193,7 @@ A <dfn>numeric literal suffix</dfn> consists of any sequence of characters that 
 
 Note: A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
 
-#### Integer Literals #### {#lex.token.int}
+#### Integer Literals [lex.token.int]
 
 An <dfn>integer literal</dfn> consists of an optional radix specifier followed by digits and an optional [=numeric literal suffix=].
 
@@ -203,7 +203,7 @@ The suffix on an integer literal may be used to indicate the desired type of the
 * An `l` or `ll` suffix indicates the `Int64` type
 * A `ul` or `ull` suffix indicates the `UInt64` type
 
-#### Floating-Point Literals #### {#lex.token.float}
+#### Floating-Point Literals [lex.token.float]
 
 A <dfn>floating-point literal</dfn> consists of either
 
@@ -217,23 +217,23 @@ The <dfn>exponent</dfn> of a floating-pointer literal consists of either `e` or 
 
 TODO: [=sign=].
 
-### Text Literals ### {#lex.token.text}
+### Text Literals [lex.token.text]
 
 Issue: Need to document supported escape sequences.
 
-#### String Literals #### {#lex.token.string}
+#### String Literals [lex.token.string]
 
 A <dfn>string literal</dfn> consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
 
 TODO: [=string literal=]
 
-#### Character Literals #### {#lex.token.char}
+#### Character Literals [lex.token.char]
 
 A <dfn>character literal</dfn> consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
 
 The sequence of characters within a [=character literal=] must represent a single character.
 
-Operators and Punctuation {#lex.token.punctuation}
+Operators and Punctuation [lex.token.punctuation]
 -------------------------
 
 The following table defines tokens that are used as operators and punctuation in the syntax.
@@ -298,7 +298,7 @@ Operator :
 
 ```
 
-Associating Trivia With Tokens {#lex.token.trivia}
+Associating Trivia With Tokens [lex.token.trivia]
 ------------------------------
 
 Issue: We should define lexing in terms of producing a sequence of tokens-with-trivia instead of just lexemes.

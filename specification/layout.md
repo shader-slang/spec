@@ -1,4 +1,4 @@
-Layout {#SECTION.layout}
+Layout [SECTION.layout]
 ======
 
 <div class="issue">

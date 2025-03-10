@@ -1,4 +1,4 @@
-Visibility Control {#vis}
+Visibility Control [vis]
 ==================
 
 <div class=issue>

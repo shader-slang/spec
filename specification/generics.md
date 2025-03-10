@@ -1,4 +1,4 @@
-Generics {#section.generic}
+Generics [section.generic]
 ========
 
 <div class=issue>

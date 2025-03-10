@@ -1,4 +1,4 @@
-Type Conversions {#conv}
+Type Conversions [conv]
 ================
 
 <div class=issue>

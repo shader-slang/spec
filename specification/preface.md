@@ -1,4 +1,4 @@
-Preface {#preface}
+Preface [preface]
 =======
 
 <div class="issue">

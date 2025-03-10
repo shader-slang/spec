@@ -3,7 +3,7 @@
 
 
 
-Execution {#exec}
+Execution [exec]
 =========
 
 A <dfn>runtime session</dfn> is a context for loading and execution of Slang code.
@@ -22,7 +22,7 @@ When a strand invokes an invocable entity |f|, it executes the body of |f| (a st
 As part of executing a statement, a strand may execute other statements, and evaluate expressions.
 A strand evaluates an expression to yield a value, and also for any side effects that may occur.
 
-Strands {#exec.strand}
+Strands [exec.strand]
 -------
 
 A <dfn>strand</dfn> is a logical runtime entity that executes Slang code.
@@ -38,7 +38,7 @@ Note: An implementation is allowed to "migrate" a strand from one thread to anot
 
 A strand is <dfn>launched</dfn> for some [=invocable=] declaration |D|, with an initial stack comprising a single activation record for |D|, a
 
-Activation Records {#exec.activation}
+Activation Records [exec.activation]
 ------------------
 
 An <dfn>activation record</dfn> represents the state of a single invocation of some [=invocable=] declaration by some strand.
@@ -50,7 +50,7 @@ An [=activation record=] for [=invocable=] declaration |D| by strand |S| consist
 
 * A value for each local variable of |D| that is in scope at |L|
 
-Waves {#exec.wave}
+Waves [exec.wave]
 -----
 
 A <dfn>wave</dfn> is a set of one or more [=strands=] that execute concurrently.
@@ -75,13 +75,13 @@ Two strands that are launched for the same kernel for the same node of the same 
 
 Note: Wave sizes can differ across target platforms, pipeline stages, and even different optimization choices made by a compiler.
 
-Uniformity {#exec.uniformity}
+Uniformity [exec.uniformity]
 ----------
 
 A <dfn>collective</dfn> operation is one that require multiple strands to coordinate.
 A [=collective=] operation is only guaranteed to execute correctly when the required subset of strands all <dfn>participate</dfn> in the operation together.
 
-### Tangle ### {#exec.uniformity.tangle}
+### Tangle [exec.uniformity.tangle]
 
 Any strand begins execution of an entry point as part of a <dfn>tangle</dfn> of strands.
 The [=tangle=] that a strand belongs to can change over the course of its execution.
@@ -111,7 +111,7 @@ The motivation for this choice is that a strand that goes into an infinite loop 
 
 When the strands in a tangle enter a structured control-flow region (|E|, |M|), all of the strands in the tangle that do not break out of that region form a new region at |M|.
 
-### Dynamic Uniformity ### {#exec.uniformity.dynamic}
+### Dynamic Uniformity [exec.uniformity.dynamic]
 
 Uniformity must be defined relative to some granularity of grouping for strands: e.g., per-strand, per-wave, per-block, etc.
 
@@ -119,7 +119,7 @@ When the strands in a tangle evaluate some expression, we say that the result is
 
 We say that a tangle is executing code dynamically per-|G| uniform when for every |G|, either all of the strands in that |G| are in the tangle, or all of them are not in that tangle.
 
-### Static Uniformity ### {#exec.uniformity.static}
+### Static Uniformity [exec.uniformity.static]
 
 A value in a Slang program (such as the result of evaluating an expression) is statically per-|G|, for some granularity of group |G|, if it can be proved, using the rules in this specification, that the value will always be dynamically per-|G| at runtime.
 
@@ -129,9 +129,9 @@ TODO: Okay, now we actually need to write just such rules...
 
 
 
-# GPUs # {#gpu}
+# GPUs [gpu]
 
-## Dispatches ## {#gpu.dispatch}
+## Dispatches [gpu.dispatch]
 
 Work is issued to a GPU device in the form of <dfn>commands</dfn>.
 A <dfn>dispatch</dfn> is a [=command=] that causes a GPU device to execute a specific [=pipeline instance=].
@@ -142,7 +142,7 @@ A dispatch determines:
 * A value for each of the [=dispatch parameters=] of |P|
 * A value for each of the [=uniform shader parameters=] of |P|
 
-### Pipeline Instance ### {#exec.gpu.pipeline}
+### Pipeline Instance [exec.gpu.pipeline]
 
 A <dfn>pipeline instance</dfn> is an instance of some [=pipeline type=], and consists of:
 
@@ -152,7 +152,7 @@ A <dfn>pipeline instance</dfn> is an instance of some [=pipeline type=], and con
 
 The [=kernels=] of any [=programmable=] [=stage instances=] in a [=pipeline instance=] must be compatible with the [=bundle=] of the [=pipeline instance=].
 
-#### Pipeline Types #### {#exec.gpu.pipeline.type}
+#### Pipeline Types [exec.gpu.pipeline.type]
 
 A <dfn>pipeline type</dfn> is a category of workloads that a GPU can support.
 Slang supports the following pipeline types:
@@ -171,7 +171,7 @@ Each [=pipeline type=] |PT| defines:
 
 * Validation rules for [=pipeline instances=] of type |PT|
 
-### Stage Instances ### {#exec.gpu.pipeline.stage}
+### Stage Instances [exec.gpu.pipeline.stage]
 
 A <dfn>stage instance</dfn> is an instance of some [=stage type=] |ST|, and consists of:
 
@@ -179,7 +179,7 @@ A <dfn>stage instance</dfn> is an instance of some [=stage type=] |ST|, and cons
 
 * Values for each of the [=fixed-function parameters=] of |ST| that are not included in |K|
 
-#### Stage Types #### {#exec.gpu.pipeline.stage.type}
+#### Stage Types [exec.gpu.pipeline.stage.type]
 
 A <dfn>stage type</dfn> is a type of stage that may appear in [=pipeline instances=].
 
@@ -191,7 +191,7 @@ A stage has zero or more <dfn>fixed-function parameters</dfn>, each having a nam
 
 A [=stage type=] is either required, optional, or instanceable.
 
-#### Signatures #### {#exec.gpu.pipeline.stage.signature}
+#### Signatures [exec.gpu.pipeline.stage.signature]
 
 The signature of a programmable stage consists of its uniform signature and its varying signature.
 
@@ -226,7 +226,7 @@ The default way to add a parameter |p| to the varying signature of some stage |S
 * If the direction of |p| is `out` or `inout`, then add |p| to the varying output signature of |S|
 
 
-### Records ### {#exec.gpu.pipeline.record}
+### Records [exec.gpu.pipeline.record]
 
 A <dfn>record</dfn> is an instance of an [=associated record type=] of a [=pipeline type=].
 Data is passed between the [=stage instances=] of a [=pipeline instance=] in the form of [=records=].
@@ -247,7 +247,7 @@ The varying signature of a programmable stage along one of its boundaries is a r
 For each [=associated record type=] |R| that a [=pipeline instance=] |P| depends on, if there are [=stage instances=] |A| and |B| in |P| such that |A| outputs |R| and |B| inputs |R|, then the configuration of |R| for |B| must be a prefix of the configuration of |A|.
 
 
-#### Compute #### {#exec.gpu.pipeline.compute}
+#### Compute [exec.gpu.pipeline.compute]
 
 A <dfn>compute pipeline</dfn> instance is a [=pipeline instance=] with a single [=stage instance=] of [=stage type=] `compute`.
 The `compute` [=stage type=] is [=programmable=].
@@ -269,15 +269,15 @@ Typical GPU platforms support grid shapes with ranks up to 3.
 
 The blocks in a grid may be executed concurrently, but this is not guaranteed.
 
-#### Rasterization #### {#exec.gpu.pipeline.raster}
+#### Rasterization [exec.gpu.pipeline.raster]
 
 A <dfn>rasterization pipeline</dfn> instance is a [=pipeline instance=].
 
-##### Index Fetch ##### {#exec.gpu.pipeline.raster.stage.fetch.index}
+##### Index Fetch [exec.gpu.pipeline.raster.stage.fetch.index]
 
 
 
-##### Vertex Fetch ##### {#exec.gpu.pipeline.raster.stage.fetch.vertex}
+##### Vertex Fetch [exec.gpu.pipeline.raster.stage.fetch.vertex]
 
 Vertex fetch is a [=fixed-function=] stage.
 
@@ -285,7 +285,7 @@ This stage takes as input an `VertexIndex` record, and produces as output an `As
 
 * For each attribute of the `AssembledVertex` record, fetch data from the corresponding vertex stream, using either the instance ID or vertex ID (based on configuration).
 
-##### Vertex Shader ##### {#exec.gpu.pipeline.raster.stage.vertex}
+##### Vertex Shader [exec.gpu.pipeline.raster.stage.vertex]
 
 The `vertex` [=stage type=] is [=programmable=].
 
@@ -306,26 +306,26 @@ Given an entry point function for the `vertex` stage:
 
 A given dispatch may invoke the kernel for the `vertex` stage one or more times for each vertex ID and instance ID.
 
-##### Primitive Assembly ##### {#exec.gpu.pipeline.raster.stage.primitive-assembly}
+##### Primitive Assembly [exec.gpu.pipeline.raster.stage.primitive-assembly]
 
 A primitive consists of a primitive topology and N vertices, where N matches the requirements of that primitive topology.
 
 This stage takes as input coarse vertex records from a preceding stage.
 It produces as output primitives of coarse vertex records.
 
-##### Tessellation ##### {#exec.gpu.pipeline.raster.stage.tess}
+##### Tessellation [exec.gpu.pipeline.raster.stage.tess]
 
-###### Hull Shader ###### {#exec.gpu.pipeline.raster.stage.tess.hull}
+###### Hull Shader [exec.gpu.pipeline.raster.stage.tess.hull]
 
 This stage takes as input a patch primitive of coarse vertex records.
 It produces as output a patch primitive of control point records a patch record.
 
-###### Domain Shader ###### {#exec.gpu.pipeline.raster.stage.tess.domain}
+###### Domain Shader [exec.gpu.pipeline.raster.stage.tess.domain]
 
 This stage takes as input a patch primitive of control point records, and a patch record.
 It outputs a fine vertex record.
 
-##### Geometry Shader ##### {#exec.gpu.pipeline.raster.stage.geometry}
+##### Geometry Shader [exec.gpu.pipeline.raster.stage.geometry]
 
 This stage takes as input a primitive of vertex records (either coarse or fine vertices, depending on what preceding stages are enabled).
 As output, a geometry shader may have one or more output streams, each having a coresponding type of record.
@@ -333,34 +333,34 @@ For each output stream, a strand executing a geometry shader may output zero or 
 
 If one of the output streams of the geometry shader is connected to the rasterizer stage, then that output stream corresponds to raster vertex records.
 
-##### Mesh Shading ##### {#exec.gpu.pipeline.raster.stage.mesh}
+##### Mesh Shading [exec.gpu.pipeline.raster.stage.mesh]
 
-##### Rasterizer ##### {#exec.gpu.pipeline.raster.stage.rasterizer}
+##### Rasterizer [exec.gpu.pipeline.raster.stage.rasterizer]
 
 The rasterizer is a [=fixed-function=] stage.
 
 This stage takes as input a primitive of raster vertex records, and determines which pixels in a render target that primitive covers.
 The stage outputs zero or more raster fragment records, one for each covered pixel.
 
-##### Depth/Stencil Test ##### {#exec.gpu.pipeline.raster.stage.depth-stencil-test}
+##### Depth/Stencil Test [exec.gpu.pipeline.raster.stage.depth-stencil-test]
 
-##### Fragment Shader ##### {#exec.gpu.pipeline.raster.stage.fragment}
+##### Fragment Shader [exec.gpu.pipeline.raster.stage.fragment]
 
 This stage takes as input a raster fragment record, and produces as output either:
 
 * One `ShadedFragment` record
 * One `ShadedFragment` record and N `ShadedFragment.Sample` records
 
-##### Blend ##### {#exec.gpu.pipeline.raster.stage.blend}
+##### Blend [exec.gpu.pipeline.raster.stage.blend]
 
 This stage takes as input a `ShadedFragment` record (possibly including its `ShadedFragment.Sample`) and a `Pixel` record, and produces as output a `Pixel` record.
 
-#### Ray Tracing #### {#exec.gpu.pipeline.ray-tracing}
+#### Ray Tracing [exec.gpu.pipeline.ray-tracing]
 
 TODO: define the stages of the <dfn>ray-tracing pipeline</dfn>.
 
 
-Source and Binary Stability {#stability}
+Source and Binary Stability [stability]
 ===========================
 
 <div class="issue">

@@ -1,7 +1,7 @@
-Program Lifecycle {#lifecycle}
+Program Lifecycle [lifecycle]
 =================
 
-Compilation {#lifecyle.compilation}
+Compilation [lifecyle.compilation]
 -----------
 
 A Slang <dfn>compiler</dfn> is a tool that is invoked on Slang source code to produce <dfn>object code</dfn>.
@@ -16,7 +16,7 @@ A [=compiler=] implementation may support being invoked on source code at other 
 
 When compiling code that is part of a Slang module |M|, the output of a compiler implementation must not depend on any non-[=fragile=] information in the modules that |M| depends on.
 
-Linking {#lifecycle.linking}
+Linking [lifecycle.linking]
 -------
 
 A <dfn>static library</dfn> is a unit of code suitable for distribution or re-use.
@@ -38,7 +38,7 @@ A [=linker=] may fail with an error rather than produce an invalid binary.
 Note: In practice, a linked binary has to either contain all of a given Slang module, or none of it.
 The nuance is that [=fragile=] symbols, such as inlinable functions, from a module |M| might get copied into object code for a module |N| that depends on |M|, and thus end up in a binary for |N|.
 
-Loading {#lifecycle.loading}
+Loading [lifecycle.loading]
 -------
 
 A Slang runtime must support <dfn>loading</dfn> [=binaries=] into a [=runtime session=], and resolving dependencies between them.
@@ -54,7 +54,7 @@ If Slang code is stored in a [=binary=] for a [=host=], then that code may be lo
 
 If a [=module=] of Slang code is loaded programmatically, a Slang runtime must return a [=mirror=] reflecting that module.
 
-Runtime Reflection {#lifecyle.reflection}
+Runtime Reflection [lifecyle.reflection]
 ------------------
 
 A Slang runtime may support reflection of [=modules=] that have been loaded into a [=runtime session=].
@@ -75,7 +75,7 @@ A [=mirror=] may reflect:
 
 A [=mirror=] is not the same as the entity it reflects.
 
-Bundling {#lifecycle.bundling}
+Bundling [lifecycle.bundling]
 --------
 
 <div class="issue">

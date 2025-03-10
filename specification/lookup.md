@@ -1,4 +1,4 @@
-Lookup {#lookup}
+Lookup [lookup]
 ======
 
 <div class=issue>

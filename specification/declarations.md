@@ -1,4 +1,4 @@
-Declarations {#decl}
+Declarations [decl]
 ============
 
 A <dfn>declaration</dfn> is a unit of syntax that typically affects what names are visibile in a scope, and how those names are interpreted.
@@ -47,22 +47,22 @@ The output environment of an empty production is its input [=environment=].
 
 When we say that a declaration <dfn>introduces</dfn> a binding, we mean that its output environment is the output environment of its last sub-term extended with that binding.
 
-Shared Concepts {#decl.shared}
+Shared Concepts [decl.shared]
 ---------------
 
 <div class="issue">
 We need to define concepts that are used by traditional-style declarations, including <dfn>type specifiers</dfn>.
 </div>
 
-### Bodies ### {#TODO.decl.body}
+### Bodies [TODO.decl.body]
 
 <div class="issue">
 We need to define that there are two kinds of bodies: <dfn>declaration bodies</dfn> and _statement bodies_.
 </div>
 
-### Bases ### {#TODO.decl.base}
+### Bases [TODO.decl.base]
 
-### Parameters ### {#decl.param}
+### Parameters [decl.param]
 
 A parameters clause defines a sequence of <dfn>parameter declarations</dfn>.
 
@@ -81,7 +81,7 @@ A [=parameter declaration=] must include a type expression; the type of the para
 
 A parameter declaration may include a default-value clause; it it does, the default value for that parameter is the result of evaluating the expression in that clause with an expected type that is the type of the parameter.
 
-#### Directions #### {#dir}
+#### Directions [dir]
 
 Every parameter has a <dfn>direction</dfn>, which determines how an argument provided at a call site is connected to that parameter.
 
@@ -97,23 +97,23 @@ Every parameter has a <dfn>direction</dfn>, which determines how an argument pro
 
 If a parameter declaration includes a [=direction=], then that determines the direction of the parameter; otherwise the direction of the parameter is `in`.
 
-##### `in` ##### {#dir.in}
+##### `in` [dir.in]
 
 The `in` direction indicates typical pass-by-value (copy-in) semantics.
 The parameter in the callee binds to a copy of the argument value passed by the caller.
 
-##### `out` ##### {#out}
+##### `out` [out]
 
 The `out` direction indicates copy-out semantics.
 The parameter in the callee binds to a fresh storage location that is uninitialized on entry.
 When the callee returns, the value in that location is moved to the storage location referenced by the argument.
 
-##### `take` ##### {#take}
+##### `take` [take]
 
 The `take` direction indicates move-in semantics.
 The argument provided by the caller is moved into the parameter of the callee, ending the lifetime of the argument.
 
-##### `borrow` ##### {#borrow}
+##### `borrow` [borrow]
 
 The `borrow` direction indicates immutable borrow semantics.
 
@@ -121,7 +121,7 @@ If the parameter has a noncopyable type, then the parameter in the callee binds 
 
 If the parameter has a copyable type, then the parameter in the callee may, at the discretion of the implementation, bind to either the storage location referenced by the argument, or a copy of the argument value.
 
-##### `inout` ##### {#inout}
+##### `inout` [inout]
 
 The `inout` direction indicates exclusive mutable borrow semantics.
 The syntax `in` `out` is equivalent to `inout`
@@ -135,21 +135,21 @@ If the parameter has a copyable type, then the parameter in the callee may, at t
 * a fresh storage location, in which case that location is initialized with a copy of the argument value on entry, and the value at that location is written to the argument on return from the function.
 
 
-##### `ref` ##### {#ref}
+##### `ref` [ref]
 
 The `ref` direction indicates pass-by-reference semantics.
 The parameter in the callee binds to the storage location referenced by the argument.
 
 
 
-### Accessors ### {#TODO.decl.accessor}
+### Accessors [TODO.decl.accessor]
 
 
-### Invocable Declarations ### {#decl.invocable}
+### Invocable Declarations [decl.invocable]
 
 A declaration that is <dfn>invocable</dfn> can be invoked by a strand during execution.
 
-Patterns {#pattern}
+Patterns [pattern]
 --------
 
 ```.syntax
@@ -173,10 +173,10 @@ TuplePatternInner := `(` (BindingPatternInner `,`)* `)`
 
 ```
 
-Generics {#TODO.decl.generic}
+Generics [TODO.decl.generic]
 --------
 
-Type Declarations {#decl.type}
+Type Declarations [decl.type]
 -----------------
 
 A <dfn>type declaration</dfn> [=introduces=] a binding to a type.
@@ -188,7 +188,7 @@ TypeDeclaration =
     | TypeAliasDeclaration
 ```
 
-### Aggregate Types ### {#decl.agg}
+### Aggregate Types [decl.agg]
 
 ```.syntax
     AggregateTypeDeclaration
@@ -208,7 +208,7 @@ The declarations in the body clause of an [=aggregate type declaration=] are ref
 
 Note: We need rules to define what the members that aren't [=direct members=] are.
 
-#### Instance and Static Members #### {#decl.agg.member.static}
+#### Instance and Static Members [decl.agg.member.static]
 
 Members of an aggregate type may me marked with a `static` modifier, in which case they are <dfn>static members</dfn> of the type.
 Members not marked with `static` are <dfn>instance members</dfn> of the type.
@@ -216,18 +216,18 @@ Members not marked with `static` are <dfn>instance members</dfn> of the type.
 [=Static members=] are referenced through the type itself.
 [=Instance members=] are referened through values that are instances of the type.
 
-#### Fields #### {#field}
+#### Fields [field]
 
 Variable declarations that are instance members of an aggregate type declaration are also referred to as the <dfn>fields</dfn> of the aggregate type declaration.
 
-#### Methods #### {#method}
+#### Methods [method]
 
 [=Function declarations=] that are instance members of an aggregate type declaration are also referred to as <dfn>methods</dfn>.
 
 By default, the implicit `this` parameter of a method acts has a direction of `in`.
 A method of a `struct` type declaration may be modified with the `[mutating]` attribute, in which case the implicit `this` parameter has a direction of `inout`.
 
-### Bases ### {#decl.agg.bases}
+### Bases [decl.agg.bases]
 
 ```.syntax
     BasesClause
@@ -262,22 +262,22 @@ The list of bases of an [=interface declaration=] must consist of:
 * zero or more interface types
 
 
-#### Traditional Syntax #### {#decl.agg.syntax}
+#### Traditional Syntax [decl.agg.syntax]
 
-##### Trailing Semicolon ##### {#decl.agg.syntax.trailing-semicolon}
+##### Trailing Semicolon [decl.agg.syntax.trailing-semicolon]
 
 For compatibility, the body clause of an aggregate type declaration may end with a semicolon (`;`).
 The body clause of an aggregate type declaration must end with a semicolon if there are any tokens between the closing `}` token and the next line break that follows it.
 
 Note: Put more simply: a closing `;` can be left off of an aggregate type declaration so long as there is nothing but trivia after it on the same line.
 
-##### Aggregate Type Specifiers ##### {#decl.agg.type-specifier}
+##### Aggregate Type Specifiers [decl.agg.type-specifier]
 
 An aggregate type declaration may be used as a type specififer in declarations using traditional syntax.
 
 When an aggregate type declaration is used as a type specififer, the closing `}` of its body must be followed by another token on the same line.
 
-### `enum` Declarations ### {#decl.enum}
+### `enum` Declarations [decl.enum]
 
 ```.syntax
     EnumDeclaration
@@ -310,7 +310,7 @@ The underlying type of a traditional [=enum declaration=] must be a built-in int
 
 A modern [=enum declaration=] must not specify an underlying type.
 
-#### Cases #### {#case}
+#### Cases [case]
 
 ```.syntax
     CaseDeclaration :
@@ -338,7 +338,7 @@ Case declarations are implicitly static.
 
 <!-->
 %
-%### Conversions ### {#decl.enum.conv}
+%### Conversions [decl.enum.conv]
 %
 %A value of an enumeration type can be implicitly converted to a value of its tag %type:
 %
@@ -353,7 +353,7 @@ Case declarations are implicitly static.
 %```
 </-->
 
-### Type Aliases ### {#decl.type.alias}
+### Type Aliases [decl.type.alias]
 
 A <dfn>type alias declaration</dfn> introduces a binding that resolves to some other type.
 
@@ -377,7 +377,7 @@ THEN `typealias` n = t `;` checks in c
 ```
     
 
-#### Traditional Syntax #### {#decl.type.alias.syntax.traditional}
+#### Traditional Syntax [decl.type.alias.syntax.traditional]
 
 A type alias may also be declared using a <dfn>traditional type alias declaration</dfn>.
 
@@ -397,7 +397,7 @@ To desguar a [=traditional type alias declaration=] `typedef` |ts| |d| `;`, wher
     * Let |n| be the name of |nd|
     * Return the modern type alias declaration `typealias` |n| `=` |t| `;`
 
-### Associated Types ### {#decl.type.associated}
+### Associated Types [decl.type.associated]
 
 An <dfn>associated type declaration</dfn> introduces a type requirement to an [=interface declaration=].
 
@@ -413,7 +413,7 @@ An [=associated type declaration=] may only appear as a member declaration of an
 
 An associated type is an interface requirement, and different implementations of an interface may provide different types that satisfy the same associated type interface requirement.
 
-Traditional Declarations {#decl.traditional}
+Traditional Declarations [decl.traditional]
 ------------------------
 
 ```.syntax
@@ -443,7 +443,7 @@ The unwrapping of an array declarator |d| `[` |args| `]` for a type expression |
 The unwrapping of a pointer declarator `*` |q| |d| for a type expression |t| is the unwrapping of |d| for `Ptr<(`|q| |t|`)>`
 
 
-Variables {#decl.var}
+Variables [decl.var]
 ---------
 
 ```.syntax
@@ -481,7 +481,7 @@ The type of the variable declaration is the type of |E|, and its initial value i
 If a variable declaration has an InitialValueClause but no TypeAscriptionClause, then let |E| be the value that results from evaluating the expression of the initial value clause in the input environment of the declaration.
 The type of the variable declaration is the type of |E|, and its initial value is |E|.
 
-### Traditional Variable Declarations ### {#decl.var.traditional}
+### Traditional Variable Declarations [decl.var.traditional]
 
 Variable declaration may also be declared using traditional syntax, which is similar to C:
 
@@ -523,13 +523,13 @@ Variables declared using `let` and `var` can be used to fill a similar role.
 
 The variables introduced by a legacy variable declaration are immutable if the declaration has a `const` modifier; otherwise it is mutable.
 
-### Variables at Global Scope ### {#decl.var.global}
+### Variables at Global Scope [decl.var.global]
 
 A variable declaration at global scope may be either a global constant, a static global variable, or a global shader parameter.
 
 Variables declared at global scope may be either a global constant, a static global variables, or a global shader parameters.
 
-#### Global Constants #### {#decl.var.global.const}
+#### Global Constants [decl.var.global.const]
 
 A variable declared at global scope and marked with `static` and `const` is a <dfn>global constant</dfn>.
 
@@ -537,7 +537,7 @@ A [=global constant=] must have an initial-value clause, and the initial-value e
 
 Issue: Need a section to define what a "compile-time constant expression" is.
 
-#### Static Global Variables #### {#decl.var.global.static}
+#### Static Global Variables [decl.var.global.static]
 
 A variable declared at global scope and marked with `static` but not with `const` is a <dfn>static global variable</dfn>.
 
@@ -553,7 +553,7 @@ There is no guarantee that the initial-value expression for a static global vari
 
 Note: The above rules mean that an implementation can perform dead code elimination on static global variables, and can choose between eager and lazy initialization of those variables at its discretion.
 
-#### Global Shader Parameters #### {#global.param}
+#### Global Shader Parameters [global.param]
 
 A variable declared at global scope and not marked with `static` is a <dfn>global shader parameter</dfn>.
 
@@ -567,16 +567,16 @@ Note: An implementation can choose to provide ways to query the initial-value ex
 
 TODO: We need to define <dfn>uniform shader parameters</dfn> somewhere.
 
-### Variables at Function Scope ### {#decl.var.func}
+### Variables at Function Scope [decl.var.func]
 
 Variables declared at <dfn>function scope</dfn> (in the body of a function, initializer, subscript acessor, etc.) may be either a function-scope constant, function-scope static variable, or a local variable.
 
-#### Function-Scope Constants #### {#const}
+#### Function-Scope Constants [const]
 
 A variable declared at [=function scope=] and marked with both `static` and `const` is a <dfn>function-scope constant</dfn>.
 Semantically, a [=function-scope constant=] behaves like a global constant except that its name is only bound in the local scope.
 
-#### Function-Scope Static Variables #### {#static}
+#### Function-Scope Static Variables [static]
 
 A variable declared at function scope and marked with `static` (but not `const`) is a <dfn>function-scope static variable</dfn>.
 Semantically, a [=function-scope static variable=] behaves like a global static variable except that its name is only visible in the local scope.
@@ -584,14 +584,14 @@ Semantically, a [=function-scope static variable=] behaves like a global static 
 The initial-value expression for a function-scope static variable may refer to non-static variables in the body of the function.
 In these cases initialization of the variable is guaranteed not to occur until at least the first time the function body is evaluated for a given invocation.
 
-#### Local Variables #### {#local}
+#### Local Variables [local]
 
 A variable declared at function scope and not marked with `static` (even if marked with `const`) is a <dfn>local variable</dfn>.
 A [=local variable=] has unique storage for each activation of a function.
 
 Note: When a function is called recursively, each call produces a distinct activation with its own copies of local variables.
 
-Functions {#decl.func}
+Functions [decl.func]
 ---------
 
 A <dfn>function declaration</dfn> introduces a binding to a function.
@@ -609,7 +609,7 @@ FunctionDeclaration :
 A function declaration is invocable.
 
 
-### Result Type ### {#decl.func.result}
+### Result Type [decl.func.result]
 
 ```.syntax
 ResultTypeClause :
@@ -619,7 +619,7 @@ ResultTypeClause :
 If a function declaration has a result type clause, then the [=result type=] of the function is the type that results from evaluating the type expression in that clause.
 If a function declaration does not have a result type clause, then the result type of the function is the unit type.
 
-### Body ### {#decl.func.body}
+### Body [decl.func.body]
 
 ```.syntax
 FunctionBodyClause :
@@ -633,7 +633,7 @@ A function declaration with a [=body=] is a <dfn>function definition</dfn>.
 If the function body clause is a block statement, then that statement is the body of the [=function definition=].
 If the function body clause is `;`, then that function declaration has no body.
 
-### Traditional Function Declarations ### {#decl.func.traditional}
+### Traditional Function Declarations [decl.func.traditional]
 
 A <dfn>traditional function declaration</dfn> is a function declaration that uses traditional C-like syntax.
 
@@ -654,13 +654,13 @@ TraditionalParameterDeclaration :
 
 TODO: [=traditional function declaration=]
 
-### Entry Points ### {#decl.func.entry}
+### Entry Points [decl.func.entry]
 
 An <dfn>entry point declaration</dfn> is a function declaration that can be used as the starting point of execution for a thread.
 
 TODO: reference [=entry point declaration=].
 
-Constructors {#decl.init}
+Constructors [decl.init]
 ------------
 
 A <dfn>constructor declaration</dfn> introduces logic for initializing an instance of the enclosing [=type declaration=].
@@ -679,7 +679,7 @@ A constructor declaratin has an implicit `this` parameter, with a direction of `
 
 Note: Slang does not provide any equivalent to C++ destructors, which run automatically when an instance goes out of scope.
 
-Properties {#decl.prop}
+Properties [decl.prop]
 ----------
 
 A <dfn>property declaration</dfn> introduces a binding that can have its behavior for read and write operations customized.
@@ -699,7 +699,7 @@ A <dfn>property declaration</dfn> introduces a binding that can have its behavio
 
 TODO: reference [=property declaration=].
 
-### Accessors ### {#decl.accessor}
+### Accessors [decl.accessor]
 
 ```.syntax
     AccessorDecl
@@ -715,7 +715,7 @@ TODO: reference [=property declaration=].
 
 An accessor declaration is invocable.
 
-Subscripts {#decl.subscript}
+Subscripts [decl.subscript]
 ----------
 
 A <dfn>subscript declaration</dfn> introduces a way for the enclosing type to be used as the base expression of a subscript expression.
@@ -734,7 +734,7 @@ A subscript declaration is invocable.
 
 Note: Unlike a function declaration, a [=subscript declaration=] cannot elide the result type clause.
 
-Extensions {#decl.extension}
+Extensions [decl.extension]
 ----------
 
 An extension declaration is introduced with the `extension` keyword:
@@ -800,7 +800,7 @@ The runtime behavior of programs that include overlapping [=retroactive conforma
 
 Currently, extension declarations can only apply to structure types.
 
-Generics {#decl.generic}
+Generics [decl.generic]
 --------
 
 Many kinds of declarations can be made [=generic=]: structure types, interfaces, extensions, functions, initializers, and subscripts.
@@ -814,7 +814,7 @@ T myFunction<T>(T left, T right, bool condition)
 }
 ```
 
-### Generic Parameters ### {#decl.generic.param}
+### Generic Parameters [decl.generic.param]
 
 A [=generic parameter list=] can include one or more parameters separated by commas.
 The allowed forms for <dfn>generic parameters</dfn> are:
@@ -834,7 +834,7 @@ T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
 For generic type parameters, the default value is a type to use if no argument is specified.
 For generic value parameters, the default value is a value of the same type to use if no argument is specified.
 
-### Explicit Specialization ### {#decl.generic.specialize.explicit}
+### Explicit Specialization [decl.generic.specialize.explicit]
 
 A generic is <dfn>specialized</dfn> by applying it to <dfn>generic arguments</dfn> listed inside angle brackets `<>`:
 
@@ -853,7 +853,7 @@ An explicitly [=specialized=] function, type, etc. may be used wherever a non-ge
 int i = anotherFunction<int,3>( int3(99) );
 ```
 
-### Implicit Specialization ### {#decl.generic.specialize.implicit}
+### Implicit Specialization [decl.generic.specialize.implicit]
 
 If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts <dfn>implicit specialization</dfn>.
 [=Implicit specialization=] infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.
@@ -869,7 +869,7 @@ The compiler will infer the generic arguments `<int, 3>` from the way that `anot
 Note: Inference for generic arguments currently only takes the types of value arguments into account.
 The expected result type does not currently affect inference.
 
-### Syntax Details ### {#decl.generic.syntax}
+### Syntax Details [decl.generic.syntax]
 
 The following examples show how generic declarations of different kinds are written:
 
@@ -893,7 +893,7 @@ interface IGenericInterface<T> : IBase<T>
 
 Note: Currently there is no user-exposed syntax for writing a generic extension.
 
-Traditional Buffer Declarations {#decl.buffer}
+Traditional Buffer Declarations [decl.buffer]
 -------------------------------
 
 A <dfn>traditional buffer declaration</dfn> is a shorthand for declaring a global-scope shader parameter.

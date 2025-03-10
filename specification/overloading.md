@@ -1,4 +1,4 @@
-Overload Resolution {#overload}
+Overload Resolution [overload]
 ===================
 
 <div class=issue>

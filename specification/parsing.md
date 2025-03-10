@@ -1,4 +1,4 @@
-Parsing {#parse}
+Parsing [parse]
 =======
 
 <div class=issue>
@@ -10,7 +10,7 @@ The parsing strategy is necessarily complicated as a result, but we hope to isol
 
 <dfn>Parsing</dfn> is the process of matching a sequence of tokens from the lexical grammar with a rule of the abstract syntax grammar.
 
-Contexts {#parse.context}
+Contexts [parse.context]
 --------
 
 Parsing is always performed with respect to a [=context=], which determines which identifiers are bound, and what they are bound to.
@@ -23,13 +23,13 @@ The initial context also includes bindings for the declarations in the Slang sta
 Implementations may include additional bindings in the initial context.
 
 
-Strategies {#parse.strat}
+Strategies [parse.strat]
 ----------
 
 Parsing is always performed in one of two modes: [=unordered=] or [=ordered=].
 Unless otherwise specified, each grammar rule matches its sub-rules in the same mode.
 
-### Ordered ### {#parse.strat.ordered}
+### Ordered [parse.strat.ordered]
 
 Parsing in <dfn>ordered</dfn> mode interleaves parsing and semantic analysis.
 When the parser is in ordered mode and is about to parse a [=declaration=], [=statement=], or [=expression=], and the lookahead is an Identifier, it first looks up that identifier in the context.
@@ -41,7 +41,7 @@ When the parser is in ordered mode and is about to parse a [=declaration=], [=st
 
 If the parser is in ordered mode and is about to parse a [=declaration body=], it switches to unordered mode before parsing the body, and switches back to ordered mode afterward.
 
-### Unordered ### {#parse.strat.unordered}
+### Unordered [parse.strat.unordered]
 
 In <dfn>unordered</dfn> mode, semantic analysis is deferred.
 
@@ -74,12 +74,12 @@ A <dfn>balanced</dfn> rule in the grammar is one that meets one of the following
 Whenever the parser is in ordered mode and would attempt to match a [=balanced=] rule |r|, it instead matches the [=balanced token=] rule and saves the token sequence that was matched.
 Those tokens are then matched against |r| as part of semantic analysis, using the context that the checking rules specify.
 
-Angle Brackets {#parse.angle}
+Angle Brackets [parse.angle]
 --------------
 
-### Opening Angle Brackets ### {#parse.angle.open}
+### Opening Angle Brackets [parse.angle.open]
 
-#### Ordered Mode #### {#parse.angle.open.ordered}
+#### Ordered Mode [parse.angle.open.ordered]
 
 If the parser is in ordered mode with a lookahead of `<`, and it could match that token as part of either an [=infix expression=] or a [=specialize expression=], then it considers the term that has been matched so far:
 
@@ -87,7 +87,7 @@ If the parser is in ordered mode with a lookahead of `<`, and it could match tha
 * Otherwise the [=infix expression=] case is favored.
 
 
-#### Unordered Mode #### {#parse.angle.open.unordered}
+#### Unordered Mode [parse.angle.open.unordered]
 
 If the parser is in ordered mode with a lookahead of `<`, and it could match that token as part of either an  [=infix expression=] or a [=specialize expression=], then it first attempts to match the [=generic arguments=] rule. If that rule is matched successfully, then the new lookahead token is inspected:
 
@@ -96,6 +96,6 @@ If the parser is in ordered mode with a lookahead of `<`, and it could match tha
 * Otherwise, use the generic arguments already matched as part of matching the [=specialize expression=] rule.
 
 
-### Closing Angle Brackets ### {#parse.angle.close}
+### Closing Angle Brackets [parse.angle.close]
 
 If the parser is attempting to match the closing `>` in the [=generic parameters=] or [=generic arguments=] rules, and the lookahead is any token other than `>` that starts with a `>` character (`>=`, `>>`, or `>>=`), then it splits the opening `>` off and matches it, replacing the lookahead with a token comprised of the remaining characters (`=`, `>`, or `>=`).

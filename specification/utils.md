@@ -11,7 +11,7 @@
 % set a variable and `\Thing` to access its current value.
 %
 \makeatletter
-\newcommand*\DefineVariable[1]{\@namedef{Set#1}##1{\global\@namedef{#1}{##1}}}
+\newcommand*\DefineVariable[1]{\@namedef{Set#1}##1{\global\@namedef[1}{##1}}]
 \makeatother
 %
 
@@ -39,40 +39,40 @@
 %
 \newcommand*{\HeadingPath}[1]{\texorpdfstring{TEX}{PDF}}
 %
-\newcommand*{\Chapter}[2]{\SetChapterLabel{#2}\chapter{#1}\label{\ChapterPath}}
-\newcommand*{\Section}[2]{\SetSectionLabel{#2}\section{#1}\label{\SectionPath}}
-\newcommand*{\SubSection}[2]{\SetSubSectionLabel{#2}\subsection{#1}\label{\SubSectionPath}}
-\newcommand*{\SubSubSection}[2]{\SetSubSubSectionLabel{#2}\subsubsection{#1}\label{\SubSubSectionPath}}
-\newcommand*{\Paragraph}[2]{\SetParagraphLabel{#2}\paragraph{#1}\label{\ParagraphPath}}
-\newcommand*{\SubParagraph}[2]{\SetSubParagraphLabel{#2}\subparagraph{#1}\label{\SubParagraphPath}}
+\newcommand*{\Chapter}[2]{\SetChapterLabel[2}\chapter{#1}\label{\ChapterPath}]
+\newcommand*{\Section}[2]{\SetSectionLabel[2}\section{#1}\label{\SectionPath}]
+\newcommand*{\SubSection}[2]{\SetSubSectionLabel[2}\subsection{#1}\label{\SubSectionPath}]
+\newcommand*{\SubSubSection}[2]{\SetSubSubSectionLabel[2}\subsubsection{#1}\label{\SubSubSectionPath}]
+\newcommand*{\Paragraph}[2]{\SetParagraphLabel[2}\paragraph{#1}\label{\ParagraphPath}]
+\newcommand*{\SubParagraph}[2]{\SetSubParagraphLabel[2}\subparagraph{#1}\label{\SubParagraphPath}]
 %
 
-\titleformat{\chapter}{\sffamily\huge\bfseries}{\thechapter}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\ChapterPath]}}
+\titleformat{\chapter}{\sffamily\huge\bfseries}{\thechapter}{1em}{\sffamily[1}{\hfill}\mdseries\small{[\ChapterPath]}]
 
-\titleformat{\section}{\sffamily\Large\bfseries}{\thesection}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SectionPath]}}
+\titleformat{\section}{\sffamily\Large\bfseries}{\thesection}{1em}{\sffamily[1}{\hfill}\mdseries\small{[\SectionPath]}]
 
-\titleformat{\subsection}{\sffamily\large\bfseries}{\thesubsection}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SubSectionPath]}}
+\titleformat{\subsection}{\sffamily\large\bfseries}{\thesubsection}{1em}{\sffamily[1}{\hfill}\mdseries\small{[\SubSectionPath]}]
 
-\titleformat{\subsubsection}{\sffamily\normalsize\bfseries}{\thesubsubsection}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SubSubSectionPath]}}
+\titleformat{\subsubsection}{\sffamily\normalsize\bfseries}{\thesubsubsection}{1em}{\sffamily[1}{\hfill}\mdseries\small{[\SubSubSectionPath]}]
 
-\titleformat{\paragraph}{\sffamily\normalsize\bfseries}{\theparagraph}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\ParagraphPath]}}
+\titleformat{\paragraph}{\sffamily\normalsize\bfseries}{\theparagraph}{1em}{\sffamily[1}{\hfill}\mdseries\small{[\ParagraphPath]}]
 
-\titleformat{\subparagraph}{\sffamily\normalsize\bfseries}{\thesubparagraph}{1em}{\sffamily{#1}{\hfill}\mdseries\small{[\SubParagraphPath]}}
+\titleformat{\subparagraph}{\sffamily\normalsize\bfseries}{\thesubparagraph}{1em}{\sffamily[1}{\hfill}\mdseries\small{[\SubParagraphPath]}]
 
-%\newcommand*{\Chapter}[2]{\chapter{#1}}
-%\newcommand*{\Section}[2]{\section{#1}}
-%\newcommand*{\SubSection}[2]{\subsection{#1}}
-%\newcommand*{\SubSubSection}[2]{\subsubsection{#1}}
-%\newcommand*{\Paragraph}[2]{\paragraph{#1}}
-%\newcommand*{\SubParagraph}[2]{\subparagraph{#1}}
+%\newcommand*{\Chapter}[2]{\chapter[1}]
+%\newcommand*{\Section}[2]{\section[1}]
+%\newcommand*{\SubSection}[2]{\subsection[1}]
+%\newcommand*{\SubSubSection}[2]{\subsubsection[1}]
+%\newcommand*{\Paragraph}[2]{\paragraph[1}]
+%\newcommand*{\SubParagraph}[2]{\subparagraph[1}]
 
 \newcommand*{\CalloutStyle}{\sffamily\bfseries}
-\newcommand*{\CalloutName}[1]{\text{\CalloutStyle{#1}}}
+\newcommand*{\CalloutName}[1]{\text{\CalloutStyle[1}}]
 
 \newcommand{\DefineCallout}[3]{
-    \newtcolorbox{#1}[1][]{breakable,sharp corners, skin=enhancedmiddle jigsaw,parbox=false,
+    \newtcolorbox[1][1][]{breakable,sharp corners, skin=enhancedmiddle jigsaw,parbox=false,
 boxrule=0mm,leftrule=1mm,boxsep=0mm,arc=0mm,outer arc=0mm,attach title to upper,
-after title={: \\}, coltitle=black,colback=#3,colframe=black, title={#2},
+after title={: \\}, coltitle=black,colback=#3,colframe=black, title=[2],
 fonttitle=\CalloutStyle,##1}}
 
 \definecolor{DescriptiveCalloutColor}{gray}{0.9}
@@ -155,7 +155,7 @@ fonttitle=\CalloutStyle,##1}}
 
 \newcommand{\InlineCodeStyle}[1]{
     \fboxsep2pt
-    \text{\ttfamily\colorbox{CodeBackgroundColor}{#1}}
+    \text{\ttfamily\colorbox{CodeBackgroundColor}[1}]
 }
 
 \newcommand{\code}[1]{\InlineCodeStyle{`#1`}}
@@ -167,18 +167,18 @@ fonttitle=\CalloutStyle,##1}}
 \newcommand{`}`}{`\`}}
 
 % TODO: should make `\SpecRef` link to the definition point.
-\newcommand{\SpecDef}[1]{\text{\emph{#1}}}
-\newcommand{\SpecRef}[1]{#1}
-\newcommand{\SpecDefine}[1]{\SpecDef{#1}}
+\newcommand{\SpecDef}[1]{\text{\emph[1}}]
+\newcommand{\SpecRef}[1][1]
+\newcommand{\SpecDefine}[1]{\SpecDef[1}]
 
-\newcommand{\SynDefine}[1]{\label{syntax:#1}\text{\emph{#1} ::=}}
-\newcommand{\SynRef}[1]{\hyperref[syntax:#1]{\text{\emph{#1}}}}
+\newcommand{\SynDefine}[1]{\label{syntax:#1}\text{\emph[1} ::=}]
+\newcommand{\SynRef}[1]{\hyperref[syntax:#1]{\text{\emph[1}}}]
 \newcommand{|}{\text{ $\vert$ }}
 \newcommand{*}{\text{*}}
 \newcommand{+}{\text{+}}
 \newcommand{?}{\text{?}}
 
-\newcommand{\SynVar}[2][]{\text{\emph{#1:#2}}}
+\newcommand{\SynVar}[2][]{\text{\emph[1:#2}}]
 
 
 \newlist{SynEnvList}{itemize}{1}
@@ -205,10 +205,10 @@ fonttitle=\CalloutStyle,##1}}
 }
 
 
-\newcommand{\MetaDef}[1]{\textbf{$\mathbb{#1}$}}
+\newcommand{\MetaDef}[1]{\textbf{$\mathbb[1}$}]
 \newcommand{\SynComment}[1]{\text{\small{// #1}}}
 
-\newcommand{\MetaVar}[1]{\text{\textbf{$\mathbb{#1}$}}}
+\newcommand{\MetaVar}[1]{\text{\textbf{$\mathbb[1}$}}]
 
 \newcommand{\ContextVarA}{\ensuremath{\Gamma_0}}
 \newcommand{\ContextVarB}{\ensuremath{\Gamma_1}}
@@ -235,47 +235,47 @@ fonttitle=\CalloutStyle,##1}}
 \newcommand{\BreakLabel}{\text{\textsc{Break}}}
 \newcommand{\ContinueLabel}{\text{\textsc{Continue}}}
 
-\newcommand{\RequireCap}[1]{\text{\textsc{Require} \textsc{#1}}}
+\newcommand{\RequireCap}[1]{\text{\textsc{Require} \textsc[1}}]
 
 
-\newcommand{\DerivationRule}[3][]{\ensuremath{\trfrac[#1]{#2}{#3}}}
+\newcommand{\DerivationRule}[3][]{\ensuremath{\trfrac[#1][2}{#3}}]
 
 %
 % Utilities for use in `Checking` callouts:
 %
 
-\newcommand{\SynthExpr}[4]{\ensuremath{#1 \vdash #2 \Rightarrow #3 \vdash #4}}
-\newcommand{\CheckExpr}[4]{\ensuremath{#1 \vdash #2 \Leftarrow #3 \vdash #4}}
+\newcommand{\SynthExpr}[4]{\ensuremath[1 \vdash #2 \Rightarrow #3 \vdash #4}]
+\newcommand{\CheckExpr}[4]{\ensuremath[1 \vdash #2 \Leftarrow #3 \vdash #4}]
 
-\newcommand{\CheckType}[3]{\ensuremath{#1 \vdash \textsc{type}\ #2\ \textsc{ok} \vdash #3}}
+\newcommand{\CheckType}[3]{\ensuremath[1 \vdash \textsc{type}\ #2\ \textsc{ok} \vdash #3}]
 
-\newcommand{\CheckStmt}[3]{\ensuremath{#1 \vdash \textsc{stmt}\ #2\ \textsc{ok} \vdash #3}}
-\newcommand{\CheckStmts}[3]{\ensuremath{#1 \vdash \textsc{stmts}\ #2\ \textsc{ok} \vdash #3}}
-\newcommand{\CheckDecl}[3]{\ensuremath{#1 \vdash \textsc{decl}\ #2\ \textsc{ok} \vdash #3}}
+\newcommand{\CheckStmt}[3]{\ensuremath[1 \vdash \textsc{stmt}\ #2\ \textsc{ok} \vdash #3}]
+\newcommand{\CheckStmts}[3]{\ensuremath[1 \vdash \textsc{stmts}\ #2\ \textsc{ok} \vdash #3}]
+\newcommand{\CheckDecl}[3]{\ensuremath[1 \vdash \textsc{decl}\ #2\ \textsc{ok} \vdash #3}]
 
-\newcommand{\CheckCases}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternatives}(#2, #3)}}
-\newcommand{\CheckCase}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternative}(#2, #3)}}
-\newcommand{\CheckCaseLabel}[3]{\ensuremath{#1 \vdash \textsc{CheckAlternativeLabel}(#2, #3)}}
+\newcommand{\CheckCases}[3]{\ensuremath[1 \vdash \textsc{CheckAlternatives}(#2, #3)}]
+\newcommand{\CheckCase}[3]{\ensuremath[1 \vdash \textsc{CheckAlternative}(#2, #3)}]
+\newcommand{\CheckCaseLabel}[3]{\ensuremath[1 \vdash \textsc{CheckAlternativeLabel}(#2, #3)}]
 
 % Check that the given context contains an entry of the given form.
-\newcommand{\ContextContains}[2]{\ensuremath{#1 \vdash #2}}
+\newcommand{\ContextContains}[2]{\ensuremath[1 \vdash #2}]
 
 % Check that lookup up the given symbol in the context yields the given value/type/whatever.
-\newcommand{\ContextLookup}[3]{\ensuremath{#1 ( #2 ) = #3}}
+\newcommand{\ContextLookup}[3]{\ensuremath[1 ( #2 ) = #3}]
 
 % Check that a type conforms to a given interface in the input context.
 % Yields an output context (which may include additional constraints).
-\newcommand{\CheckConforms}[4]{\ensuremath{#1 \vdash #2\ \textsc{ConformsTo} #3 \vdash #4}}
+\newcommand{\CheckConforms}[4]{\ensuremath[1 \vdash #2\ \textsc{ConformsTo} #3 \vdash #4}]
 
 
 % Check that an attempt to construct an instance of the given type
 % with the given argument list is valid.
-\newcommand{\CheckConstruct}[4]{\ensuremath{#1 \vdash \textsc{Construct}(#2, #3) \vdash #4}}
+\newcommand{\CheckConstruct}[4]{\ensuremath[1 \vdash \textsc{Construct}(#2, #3) \vdash #4}]
 
 % Check/synthesize a call to an expression with arguments.
-\newcommand{\CheckCall}[5]{\ensuremath{#1 \vdash \textsc{Call}(#2, #3) \Leftarrow #4 \vdash #5}}
-\newcommand{\SynthCall}[5]{\ensuremath{#1 \vdash \textsc{Call}(#2, #3) \Rightarrow #4 \vdash #5}}
+\newcommand{\CheckCall}[5]{\ensuremath[1 \vdash \textsc{Call}(#2, #3) \Leftarrow #4 \vdash #5}]
+\newcommand{\SynthCall}[5]{\ensuremath[1 \vdash \textsc{Call}(#2, #3) \Rightarrow #4 \vdash #5}]
 
 % Check/synthesize lookup of a name
-\newcommand{\CheckLookup}[4]{\ensuremath{#1 \vdash \textsc{Lookup}(#2) \Leftarrow #3 \vdash #4}}
-\newcommand{\SynthLookup}[3]{\ensuremath{#1 \vdash \textsc{Lookup}(#2) \Rightarrow #3}}
+\newcommand{\CheckLookup}[4]{\ensuremath[1 \vdash \textsc{Lookup}(#2) \Leftarrow #3 \vdash #4}]
+\newcommand{\SynthLookup}[3]{\ensuremath[1 \vdash \textsc{Lookup}(#2) \Rightarrow #3}]

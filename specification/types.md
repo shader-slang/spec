@@ -1,4 +1,4 @@
-Types and Values {#section.type}
+Types and Values [section.type]
 ================
 
 <div class=issue>
@@ -41,14 +41,14 @@ ImplicitlyTypedValue := /* TODO */
 UntypedValue := /* TODO */
 ```
 
-Level {#value.level}
+Level [value.level]
 -----
 
 Every [=value=] has a positive integer <dfn export>level</dfn>.
 
 Note: Typical values that a Slang program calculates and works with have [=level=] zero.
 
-Types of Types {#type.type}
+Types of Types [type.type]
 --------------
 
 A [=type=] is itself a [=value=].
@@ -69,23 +69,23 @@ A [=type=] whose instances are [=types=] with [=level=] two is a <dfn export>sor
 
 The [=sort=] `Kind` is the [=sort=] of all [=kinds=].
 
-Scalars {#type.scalar}
+Scalars [type.scalar]
 -------
 
 All scalar values have [=level=] zero.
 
-### Unit ### {#type.unit}
+### Unit [type.unit]
 
 The <dfn export>unit type</dfn>, named <a lt="unit type">`Unit`</a>, has a single instance: the <dfn export>unit value</dfn>.
 The name `void` is an alias for the unit type.
 
-### Booleans ### {#type.bool}
+### Booleans [type.bool]
 
 The type `Bool` has two instances: `true` and `false`.
 
-### Numeric Scalars ### {#type.scalar.numeric}
+### Numeric Scalars [type.scalar.numeric]
 
-#### Integers #### {#type.scalar.numeric.int}
+#### Integers [type.scalar.numeric.int]
 
 The <dfn>integer types</dfn> are:
 
@@ -113,7 +113,7 @@ Arithmetic operations on values of integer type (both signed and unsigned) wrap 
 The name `Int` is an alias for the type `Int32`.
 The name `UInt` is an alias for the type `UInt32`.
 
-#### Floating-Point Numbers #### {#type.scalar.numeric.float}
+#### Floating-Point Numbers [type.scalar.numeric.float]
 
 The <dfn>floating-point types</dfn> are:
 
@@ -133,7 +133,7 @@ The instances of a floating-point type are all the values of its IEEE 754 format
 
 The name `Float` is an alias for the `Float32` type.
 
-### Unicode Scalar Values ### {#type.scalar.unicode}
+### Unicode Scalar Values [type.scalar.unicode]
 
 A **unicode scalar** is defined by the Unicode specification.
 
@@ -141,7 +141,7 @@ A **unicode scalar** is defined by the Unicode specification.
 A unicode scalar is a Unicode code point that is not a surrogate code point.
 </div>
 
-Finite Sequences {#type.sequence.finite}
+Finite Sequences [type.sequence.finite]
 ----------------
 
 The <dfn>element count</dfn> of a finite sequence is the number of elements in it.
@@ -154,7 +154,7 @@ The [=level=] of a sequence is the level of its [=element type=].
 Sequence := `{` (Value `,`)* `}`
 ```
 
-Array Types {#type.array}
+Array Types [type.array]
 -----------
 
 ```.semantics
@@ -167,7 +167,7 @@ An <dfn>array type</dfn> |T|`[`|N|`]` is the type of |N|-element [=arrays=] with
 The [=element count=] of an [=array type=] must be a non-negative `Int`.
 
 
-Vectors {#type.vector}
+Vectors [type.vector]
 -------
 
 ```.semantics
@@ -181,7 +181,7 @@ A <dfn>vector type</dfn> `Vector<`|T|`,`|N|`>` is the type of [=vectors=] with |
 
 The [=element count=] of a [=vector type=] must be a non-negative `Int`.
 
-Matrices {#type.matrix}
+Matrices [type.matrix]
 --------
 
 A <dfn>matrix</dfn> is a finite homogenous sequence.
@@ -198,7 +198,7 @@ The <dfn export>column type</dfn> of a matrix with [=scalar type=] |T| and [=col
 
 A <dfn export>matrix type</dfn> `Matrix<`|T|`,`|R|`,`|C|`>` is the type of matrices with |R| [=rows=] of type `Vector<`|C|`,`|T|`>`.
 
-The `Never` Type {#type.never}
+The `Never` Type [type.never]
 ----------------
 
 ```.semantics
@@ -207,7 +207,7 @@ NeverType := `Never`
 
 The type `Never` has no instances.
 
-Declaration References {#decl.ref}
+Declaration References [decl.ref]
 ----------------------
 
 A <dfn export>declaration reference</dfn> is a [=value=] that refers to some [=declaration=].
@@ -219,7 +219,7 @@ DeclarationReference :=
   | SpecializedDeclarationReference
 ```
 
-### Direct Declaration References ### {#decl.ref.direct}
+### Direct Declaration References [decl.ref.direct]
 
 A [=declaration=] serves as a <dfn export>direct declaration reference</dfn> to itself.
 
@@ -227,7 +227,7 @@ A [=declaration=] serves as a <dfn export>direct declaration reference</dfn> to 
 DirectDeclarationReference := Declaration
 ```
 
-### Member Declaration Reference ### {#decl.ref.member}
+### Member Declaration Reference [decl.ref.member]
 
 ```.semantics
 MemberDeclarationReference := base:DeclarationReference `::` member:Declaration
@@ -239,7 +239,7 @@ A [=member declaration reference=] must satisfy the following constraints:
 * The *base* must refer to a declaration with members (TODO: make this precise)
 * The *member* must be a direct member declaration of the *base*
 
-### Specialized Declaration Reference ### {#decl.ref.specialize}
+### Specialized Declaration Reference [decl.ref.specialize]
 
 ```.semantics
 SpecializedDeclarationReference := base:Value `<` (arguments:Value `,`)* `>`
@@ -253,7 +253,7 @@ A [=specialized declaration reference=] must satisfy the following constraints:
 * The number of *arguments* must match the number of parameters of *base*
 * Each of the *arguments* must be an instance of the type of the corresponding parameter of *base*
 
-### Fully-Specialized Declaration References ### {#decl.ref.specialized.fully}
+### Fully-Specialized Declaration References [decl.ref.specialized.fully]
 
 A [=declaration reference=] |r| is <dfn export>unspecialized</dfn> if |r| refers to a generic declaration and |r| is not a [=specialized declaration reference=].
 
@@ -271,19 +271,19 @@ A member declaration reference is fully qualified if its base is.
 A specialization is fully qualified if its base is.
 </div>
 
-Nominal Types {#type.nominal}
+Nominal Types [type.nominal]
 -------------
 
 A <dfn export>nominal type</dfn> is a fully-specialized declaration reference to a [=type declaration=].
 
-`struct` Types {#type.struct}
+`struct` Types [type.struct]
 ---------------
 
 A <dfn export>struct type</dfn> is a fully-specialized declaration reference to a `struct` declaration.
 
 A [=struct type=] is a [=proper type=].
 
-`class` Types {#type.class}
+`class` Types [type.class]
 -------------
 
 A <dfn export>class type</dfn> is a fully-specialized declaration reference to a `class` declaration.
@@ -292,28 +292,28 @@ An instance of a [=class type=] is an <dfn export>object</dfn>.
 
 A [=class type=] is a [=proper type=].
 
-`enum` Types {#type.enum}
+`enum` Types [type.enum]
 ------------
 
 An <dfn export>enum type</dfn> is a fully-specialized declaration reference to an `enum` declaration.
 
 An [=enum type=] is a [=proper type=].
 
-Type Aliases {#type.alias}
+Type Aliases [type.alias]
 ------------
 
 A <dfn export>type alias</dfn> is a fully-specialized declaration reference to an `typealias` declaration.
 
 A [=type alias=] is a [=proper type=].
 
-Associated Types {#type.assoc}
+Associated Types [type.assoc]
 ----------------
 
 An <dfn export>associated type</dfn> is a fully-specialized declaration reference to an `associatedtype` declaration.
 
 An [=associated type=] is a [=proper type=].
 
-Interfaces {#type.interface}
+Interfaces [type.interface]
 ----------
 
 An <dfn export>interface</dfn> is a value that is either:
@@ -328,7 +328,7 @@ An [=interface=] has level two.
 
 The [=sort=] `Interface` is the [=sort=] of all [=interfaces=].
 
-`any` Types {#type.any}
+`any` Types [type.any]
 -----------
 
 ```.semantics
@@ -349,7 +349,7 @@ An instance of `any` |I| is an <dfn export>existential value</dfn>.
 
 The [=level=] of an existential value is zero.
 
-Functions {#type.function}
+Functions [type.function]
 ---------
 
 A <dfn export>function</dfn> is a value that can be called.
@@ -383,7 +383,7 @@ A fully-specialized declaration reference to a function declaration is a [=funct
 
 The level of a function is the maximum of the levels of its parameter types and result types.
 
-Generics {#type.generic}
+Generics [type.generic]
 --------
 
 A <dfn export>generic</dfn> is a value that can be specialized.
@@ -412,7 +412,7 @@ An unspecialized declaration reference to a generic declaration is a [=generic=]
 
 The level of a generic is the maximum of the level of its result type and one greater than the maximul of the levels of its parameter types.
 
-Witnesses {#type.witness}
+Witnesses [type.witness]
 ---------
 
 A <dfn export>proposition</dfn> is a phrase that logically may be either true or false.
@@ -456,18 +456,18 @@ So... I need to do that.
 </div>
 
 
-Module Values {#value.module}
+Module Values [value.module]
 -------------
 
 A [=module=] is a [=value=].
 
-## Text ## {#type.text}
+## Text [type.text]
 
-### Characters ### {#type.text.char}
+### Characters [type.text.char]
 
 A **character** is an ordered sequence of one or more unicode scalar values, matching the definition of a Unicode extended grapheme cluster.
 
-### Strings ### {#type.text.string}
+### Strings [type.text.string]
 
 A **string** is an ordered sequence of zero or unicode scalar values.
 

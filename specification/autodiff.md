@@ -1,4 +1,4 @@
-Automatic Differentiation {#autodiff}
+Automatic Differentiation [autodiff]
 =========================
 
 <div class=issue>

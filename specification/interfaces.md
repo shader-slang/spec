@@ -1,4 +1,4 @@
-Interfaces {#SECTION.interface}
+Interfaces [SECTION.interface]
 ==========
 
 <div class=issue>

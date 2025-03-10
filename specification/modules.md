@@ -1,9 +1,9 @@
-Modules {#sec.module}
+Modules [sec.module]
 =======
 
 A <dfn>module</dfn> is a unit of encapsulation for declarations.
 
-Primary Source Unit {#module.source.primary}
+Primary Source Unit [module.source.primary]
 -------------------
 
 One or more [=source units=] may be compiled together to form a module.
@@ -28,12 +28,12 @@ For example, `#include` directives might be used so that the content of a single
 A [=module declaration=] must always be the first declaration in its [=source unit=].
 A [=module declaration=] must not appear in any [=source unit=] that is not a primary [=source unit=].
 
-Seconary Source Units {#module.source.secondary}
+Seconary Source Units [module.source.secondary]
 ---------------------
 
 Any [=source units=] in a module other than the [=primary source unit=] are <dfn>secondary source units</dfn>.
 
-### Include Declarations ### {#module.include}
+### Include Declarations [module.include]
 
 Secondary [=source units=] are included into a module via <dfn>include declarations</dfn>.
 
@@ -63,7 +63,7 @@ An implementation must use an implementation-specified means to determine if mul
 
 Note: Circular, and even self-referential, `include` declarations are allowed.
 
-### Implementing Declarations ### {#module.implementing}
+### Implementing Declarations [module.implementing]
 
 Secondary [=source units=] must start with an <dfn>implementing declaration</dfn>, naming the module that the [=secondary source unit=] is part of:
 
@@ -80,7 +80,7 @@ An [=implementing declaration=] must always be the first declaration in its [=so
 An [=implementing declaration=] must not appear in any [=source unit=] that is not a secondary [=source unit=].
 
 
-Import Declarations {#module.import}
+Import Declarations [module.import]
 -------------------
 
 Modules may depend on one another via `import` declarations.

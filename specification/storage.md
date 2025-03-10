@@ -1,12 +1,12 @@
-Storage {#storage}
+Storage [storage]
 =======
 
-Concrete Storage Locations {#storage.concrete}
+Concrete Storage Locations [storage.concrete]
 --------------------------
 
 A <dfn>concrete storage location</dfn> with layout *L* for storable type |T| comprises a set of contiguous [=memory locations=], in a single [=address space=], where a value of type |T| with layout *L* can be stored.
 
-### Reference Types ### {#storage.concrete.type}
+### Reference Types [storage.concrete.type]
 
 A <dfn>reference type</dfn> is written |m| `ref` |T| where |m| is a [=memory access mode=] and |T| is a storable type.
 
@@ -14,7 +14,7 @@ A <dfn>reference type</dfn> is written |m| `ref` |T| where |m| is a [=memory acc
 How do we get layout involved here?
 </div>
 
-#### Type Conversion #### {#storage.concrete.type.conversion}
+#### Type Conversion [storage.concrete.type.conversion]
 
 An expression of reference type `modify` `ref` |T| can be implicitly coerced to type `read` `ref` |S| if |T| is subtype of |S|.
 
@@ -22,7 +22,7 @@ An expression of reference type `modify` `ref` |T| can be implicitly coerced to 
 
 An expression of reference type `read` `ref` |T| can be implicitly coerced to type |T|.
 
-Abstract Storage Locations {#storage.abstract.location}
+Abstract Storage Locations [storage.abstract.location]
 --------------------------
 
 An <dfn>abstract storage location</dfn> is a logical place where a value of some proper type |T| can reside.
@@ -31,18 +31,18 @@ A [=concrete storage location=] is also an [=abstract storage location=].
 
 Example: A local variable declaration like `var x : Int;` defines an [=abstract storage location=], and a reference to `x` will have the [=abstract storage reference type=] `read modify Int`.
 
-Abstract Storage Access {#storage.abstract.access}
+Abstract Storage Access [storage.abstract.access]
 -----------------------
 
 An <dfn>abstract storage access</dfn> is an operation performed by a [=strand=] on an [=abstract storage location=].
 Each [=abstract storage access=] has an [=abstract storage access mode=].
 
-Access Mode {#storage.abstract.access.mode}
+Access Mode [storage.abstract.access.mode]
 ------------
 
 An <dfn>abstract storage access mode</dfn> is either `get`, `set`, or a [=memory access mode=].
 
-Abstract Storage References {#storage.abstract.reference.type}
+Abstract Storage References [storage.abstract.reference.type]
 ---------------------------
 
 An <dfn>abstract storage reference type</dfn> is written |m| |T| where |T| is a proper type and |m| is a set of one or more [=abstract storage access modes=].
@@ -59,7 +59,7 @@ For example:
 
 </div>
 
-### Type Conversion ### {#storage.abstract.reference.type.conversion}
+### Type Conversion [storage.abstract.reference.type.conversion]
 
 An expression with [=reference type=] `read` `ref` |T| can be implicitly coerced to an [=abstract storage reference type=] `read` |T|.
 
@@ -74,7 +74,7 @@ An expression with an abstract storage type |m| |T| can be implicitly coerced to
 * |S| is a subtype of |T| unless |m| does not contain any of `write`, `modify`, and `set`
 * |T| is a subtype of |S| unless |m| does not contain any of `read`, `modify`, and `get`
 
-Containment {#storage.location.contain}
+Containment [storage.location.contain]
 -----------
 
 An abstract storage location may contain other abstract storage locations.
@@ -86,7 +86,7 @@ An abstract storage location of an array type |T|`[`|N|`]` contains |N| storage 
 An abstract storage location of a `struct` type |S| contains a distinct storage location for each of the [=fields=] of |S|.
 
 
-### Conflicts ### {#storage.access.conflict}
+### Conflicts [storage.access.conflict]
 
 An [=abstract storage access=] performed by a strand begins at some point |b| in the execution of that strand, and ends at some point |e| in the execution of that strand.
 The interval of an [=abstract storage access=] is the half-open interval [|b|, |e|).
@@ -106,7 +106,7 @@ Two distinct [=abstract storage accesses=] |A| and |B| conflict if all of the fo
 * |A| and |B| overlap
 * At least one of the accesses is a `write`, `modify`, or `set`
 
-Expressions That Reference Storage {#storage.expr}
+Expressions That Reference Storage [storage.expr]
 ----------------------------------
 
 <div class="issue">

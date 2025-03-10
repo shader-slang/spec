@@ -27,7 +27,7 @@ An integer literal expression consists of a single IntegerLiteral token.
 ```.checking
 	\DerivationRule{
 		\begin{trgather}
-        \CheckConforms{\ContextVarA,\alpha}{\alpha}{\code{IFromIntegerLiteral}}{\ContextVarB}
+        \CheckConforms{\ContextVarA,\alpha}{\alpha}{`IFromIntegerLiteral`}{\ContextVarB}
 		\end{trgather}	
 	}{
 		\SynthExpr{\ContextVarA}{i}{\alpha}{\ContextVarB}
@@ -49,7 +49,7 @@ A floating-point literal expression consists of a single FloatingPointLiteral to
 ```.checking
 	\DerivationRule{
 		\begin{trgather}
-        \CheckConforms{\ContextVarA,\alpha}{\alpha}{\code{IFromFloatingPointLiteral}}{\ContextVarB}
+        \CheckConforms{\ContextVarA,\alpha}{\alpha}{`IFromFloatingPointLiteral`}{\ContextVarB}
 		\end{trgather}	
 	}{
 		\SynthExpr{\ContextVarA}{f}{\alpha}{\ContextVarB}
@@ -57,7 +57,7 @@ A floating-point literal expression consists of a single FloatingPointLiteral to
 ```
 
 Note:
-An unsuffixed floating-point literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to \code{IFromFloatingPointLiteral}.
+An unsuffixed floating-point literal synthesizes a type that is a fresh type variable $\alpha$, constrained to conform to `IFromFloatingPointLiteral`.
 
 
 Issue: We need a description of how suffixed floating-point literals have their type derived from their suffix.
@@ -91,7 +91,7 @@ A string literal expressions consists of one or more string literal tokens in a 
 ```.checking
 	\DerivationRule{
 	}{
-		\SynthExpr{\ContextVarA}{\overline{s}}{\code{String}}{\ContextVarA}
+		\SynthExpr{\ContextVarA}{\overline{s}}{`String`}{\ContextVarA}
 	}\\
 ```
 
@@ -101,7 +101,7 @@ Identifier Expressions {#expr.ident}
 ```.syntax
 	IdentifierExpression
         Identifier
-        | \code{operator} Operator
+        | `operator` Operator
 ```
 
 ```.checking
@@ -216,14 +216,14 @@ This Expression {#expr.this}
 ```.checking
 	\DerivationRule{
 	}{
-		\SynthExpr{\ContextVarA}{\code{this}}{\code{This}}{\ContextVarB}
+		\SynthExpr{\ContextVarA}{`this`}{`This`}{\ContextVarB}
 	}	
 ```
 
 
 Note:
 In contexts where a `this` expression is valid, it refers to the implicit instance of the closest enclosing type declaration.
-The type of a `this` expression is always \code{This}.
+The type of a `this` expression is always `This`.
 
 
 Issue: This section needs to deal with the rules for when `this` is mutable vs. immutable.
@@ -302,12 +302,12 @@ Subscript Expression {#expr.subscript}
 
 ```.syntax
 	SubscriptExpression
-		Expression \code{[} (Argument `,`)* \code{]}
+		Expression `[` (Argument `,`)* `]`
 ```
 
 <div class=issue>
-To a first approximation, a subscript expression like \code{base[a0, a1]} is equivalent to something like \code{base.subscript(a0, a1)}.
-That is, we look up the `subscript` members of the \code{base} expression, and then check a call to the result of lookup (which might be overloaded).
+To a first approximation, a subscript expression like `base[a0, a1]` is equivalent to something like `base.subscript(a0, a1)`.
+That is, we look up the `subscript` members of the `base` expression, and then check a call to the result of lookup (which might be overloaded).
 
 Unlike simple function calls, a subscript expression can result in an [=l-value=], based on what accessors the `subscript` declaration that is selected by overload resolution has.
 </div>
@@ -421,18 +421,18 @@ This section defines the terms: <dfn>prefix operator</dfn>.
         PrefixOperator Expression
 
     PrefixOperator
-        \code{+} // identity
+        `+` // identity
         | `-` // arithmetic negation
-        | \code{\~} // bit\-wise Boolean negation
-        | \code{!} // Boolean negation
-        | \code{++} // increment in place
-        | \code{--} // decrement in place
+        | `\~` // bit\-wise Boolean negation
+        | `!` // Boolean negation
+        | `++` // increment in place
+        | `--` // decrement in place
 ```
 
 ```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
+        \SynthCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\SynthExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
@@ -440,7 +440,7 @@ This section defines the terms: <dfn>prefix operator</dfn>.
 
 	\DerivationRule{
         \begin{trgather}
-            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
+            \CheckCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\CheckExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
@@ -448,7 +448,7 @@ This section defines the terms: <dfn>prefix operator</dfn>.
 ```
 
 Note:
-A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the \code{prefix} modifier.
+A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the `prefix` modifier.
 
 
 Issue: The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
@@ -460,14 +460,14 @@ Issue: The notation here needs a way to express the restrictions on lookup that 
         Expression PostfixOperator}
 
     PostfixOperator
-        | \code{++} // increment in place
-        | \code{--} // decrement in place
+        | `++` // increment in place
+        | `--` // decrement in place
 ```
 
 ```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
+        \SynthCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\SynthExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
@@ -475,7 +475,7 @@ Issue: The notation here needs a way to express the restrictions on lookup that 
 
 	\DerivationRule{
         \begin{trgather}
-            \CheckCall{\ContextVarA}{\code{operator}op}{expr}{type}{\ContextVarB
+            \CheckCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\CheckExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
@@ -483,7 +483,7 @@ Issue: The notation here needs a way to express the restrictions on lookup that 
 ```
 
 Note:
-Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the \code{postfix} modifier.
+Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the `postfix` modifier.
 
 
 ### Infix Operator Expressions ### {#expr.op.infix}
@@ -498,34 +498,34 @@ The syntax here should introduce the term: <dfn>infix expression</dfn>.
         Expression InfixOperator Expression
 
     InfixOperator
-        | \code{*} // multiplication
+        | `*` // multiplication
         | `/` // division
-        | \code{\%} // remainder of division
-        | \code{+} // addition
+        | `\%` // remainder of division
+        | `+` // addition
         | `-` // subtraction
-        | \code{<<} // left shift
-        | \code{>>} // right shift
+        | `<<` // left shift
+        | `>>` // right shift
         | `<` // less than
         | `>` // greater than
-        | \code{<=} // less than or equal to
-        | \code{>=} // greater than or equal to
-        | \code{==} // equal to
-        | \code{!=} // not equal to
-        | \code{&} // bitwise and
-        | \code{^} // bitwise exclusive or
-        | \code{|} // bitwise or
-        | \code{&&} // logical and
-        | \code{||} // logical or
-        | \code{+=}		// compound add/assign
-        | \code{-=}    	// compound subtract/assign
-        | \code{*=}    	// compound multiply/assign
-        | \code{/=}    	// compound divide/assign
-        | \code{\%=}    	// compound remainder/assign
-        | \code{<<=}   	// compound left shift/assign
-        | \code{>>=}   	// compound right shift/assign
-        | \code{&=}    	// compound bitwise and/assign
-        | \code{\|=}   	// compound bitwise or/assign
-        | \code{^=}    	// compound bitwise xor/assign
+        | `<=` // less than or equal to
+        | `>=` // greater than or equal to
+        | `==` // equal to
+        | `!=` // not equal to
+        | `&` // bitwise and
+        | `^` // bitwise exclusive or
+        | `|` // bitwise or
+        | `&&` // logical and
+        | `||` // logical or
+        | `+=`		// compound add/assign
+        | `-=`    	// compound subtract/assign
+        | `*=`    	// compound multiply/assign
+        | `/=`    	// compound divide/assign
+        | `\%=`    	// compound remainder/assign
+        | `<<=`   	// compound left shift/assign
+        | `>>=`   	// compound right shift/assign
+        | `&=`    	// compound bitwise and/assign
+        | `\|=`   	// compound bitwise or/assign
+        | `^=`    	// compound bitwise xor/assign
 %        | `=`    	// assignment
 %        | `,`		// sequence
 
@@ -570,7 +570,7 @@ The syntax here should introduce the term: <dfn>infix expression</dfn>.
 ```.checking
 	\DerivationRule{
         \begin{trgather}
-        \SynthCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB
+        \SynthCall{\ContextVarA}{`operator`op}{left right}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\SynthExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
@@ -578,7 +578,7 @@ The syntax here should introduce the term: <dfn>infix expression</dfn>.
 
 	\DerivationRule{
         \begin{trgather}
-            \CheckCall{\ContextVarA}{\code{operator}op}{left right}{type}{\ContextVarB
+            \CheckCall{\ContextVarA}{`operator`op}{left right}{type}{\ContextVarB
         \end{trgather}
 	}{
 		\CheckExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
@@ -591,7 +591,7 @@ With the exception of the assignment operator (`=`), an infix operator expressio
 
 ```.syntax
 	ConditionalExpression
-        \SynVar[condition]{Expression} \code{?} \SynVar[then]{Expression} `:` \SynVar[else]{Expression}
+        \SynVar[condition]{Expression} `?` \SynVar[then]{Expression} `:` \SynVar[else]{Expression}
 ```
 
 To check the conditional expression |cond| `?` |t| `:` |e| against expected type |T|:

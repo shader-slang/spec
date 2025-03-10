@@ -158,13 +158,13 @@ fonttitle=\CalloutStyle,##1}}
     \text{\ttfamily\colorbox{CodeBackgroundColor}{#1}}
 }
 
-\newcommand{\code}[1]{\InlineCodeStyle{\code{#1}}}
+\newcommand{\code}[1]{\InlineCodeStyle{`#1`}}
 
-%\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{\code{#1}}}}
-\newcommand{\kw}[1]{\code{#1}}
+%\newcommand{\code}[1]{\text{\colorbox{CodeBackgroundColor}{`#1`}}}
+\newcommand{\kw}[1]{`#1`}
 
-\newcommand{`{`}{\code{\{}}
-\newcommand{`}`}{\code{\}}}
+\newcommand{`{`}{`\{`}
+\newcommand{`}`}{`\`}}
 
 % TODO: should make `\SpecRef` link to the definition point.
 \newcommand{\SpecDef}[1]{\text{\emph{#1}}}
@@ -229,7 +229,7 @@ fonttitle=\CalloutStyle,##1}}
 \newcommand{\BindingVarX}{\ensuremath{\alpha}}
 \newcommand{\BindingVarY}{\ensuremath{\beta}}
 
-\newcommand{\Char}[1]{\code{#1}}
+\newcommand{\Char}[1]{`#1`}
 
 \newcommand{\ResultType}{\text{\textsc{Return}}}
 \newcommand{\BreakLabel}{\text{\textsc{Break}}}

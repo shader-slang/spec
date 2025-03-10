@@ -14,7 +14,7 @@ The first kind of lookup is easily expressed as a recursion over the structure o
 This kind of lookup also needs to deal with `import` declarations and the visibility rules for [=source units=] in the same module as one another.
 
 The second kind of lookup requires access to a linearization of the type.
-It potentially needs to deal with performing substitutions on the type/signature of a declaration that is found, so that it is adjusted for the \code{This} type it has been looked up through.
+It potentially needs to deal with performing substitutions on the type/signature of a declaration that is found, so that it is adjusted for the `This` type it has been looked up through.
 
 Both kinds of lookup need to deal with the possibility that a name will be \emph{overloaded}.
 At this level, lookup should probably return the full set of all \emph{candidates} when overloading occurs, but retain enough structure in the lookup results that overload resolution can evaluate which should be prioritized over the others, based (e.g., picking members from a more-derived type over those from a base type).

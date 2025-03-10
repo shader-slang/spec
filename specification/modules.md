@@ -68,7 +68,7 @@ Note: Circular, and even self-referential, `include` declarations are allowed.
 Secondary [=source units=] must start with an <dfn>implementing declaration</dfn>, naming the module that the [=secondary source unit=] is part of:
 
 ```.syntax
-ImplementingDeclaration}
+ImplementingDeclaration
     `implementing` PathSpecifier `;`
 ```
 

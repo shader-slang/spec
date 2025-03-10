@@ -259,7 +259,7 @@ Punctuation :
     ;
 
 Operator :
-  | ```     // backtick
+  | '`'     // backtick
   | `!`     // exclamation mark
   | `@`     // at sign
   | `$`     // dollar sign

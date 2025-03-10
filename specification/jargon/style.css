@@ -1,0 +1,195 @@
+/** Fonts *********************************************************************/
+
+/* Font Families */
+
+h1, h2, h3, h4, h5, h6, body, p {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+pre, code, samp {
+    font-family: Menlo, Consolas, "DejaVu Sans Mono", Monaco, monospace;
+}
+
+var, .meta {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Headings */
+
+h1, h2, h3, h4, h5, h6, dt {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    line-height: 1.2;
+    hyphens: manual;
+    font-size: 100%;
+    color: #005a9c;
+}
+
+h2, h3, h4, h5, h6 {
+    margin-top: 3rem;
+}
+
+h1 { font-size: 200%; }
+h2 { font-size: 150%; }
+h3 { font-size: 130%; }
+h4 { font-size: 120%; }
+h5 { font-size: 110%; }
+h6 { font-size: 100%; }
+dt { font-size: 100%; }
+
+.title-heading {
+    font-size: 300%;
+}
+
+/** Subheadings ***************************************************************/
+
+h1 + h2 {
+    margin-top: 0;
+}
+h2 + h3,
+h3 + h4,
+h4 + h5,
+h5 + h6 {
+    margin-top: 1.2em; /* = 1 x line-height */
+}
+
+/* Paragraphs */
+
+p {
+    margin: 1em 0;
+}
+
+ul, ol {
+    margin-left: 0;
+    padding-left: 2em;
+}
+
+li {
+    margin: 0.25em 0 0.5em;
+    padding: 0;
+}
+
+/* Definitions */
+
+strong, dfn {
+    font-weight: bold;
+    font-style: inherit;
+}
+
+/* Variables and Meta-Values */
+
+em, var, .meta {
+    font-weight: inherit;
+    font-style: italic;
+}
+
+/* variables inside of code blocks get styled look like a "hole" in the code */
+code var {
+    padding: 0em 0.2em;
+    border-radius: 0.3em;
+    box-shadow: inset 0 0 0.2em 0 rgba(0, 0, 0, 0.2);
+    background-color: hsla(0, 0%, 100%, 0.75);
+    outline: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+/** General monospace/pre rules ***********************************************/
+
+pre, code, samp {
+    hyphens: none;
+    text-transform: none;
+    text-align: left;
+    text-align: start;
+    font-variant: normal;
+    orphans: 3;
+    widows: 3;
+    page-break-before: avoid;
+}
+pre code,
+code code {
+    font-size: 100%;
+}
+
+pre {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    overflow: auto;
+}
+
+code {
+    padding: 0.1em 0.2em;
+    border-radius: 0.3em;
+}
+
+code, pre {
+    background-color: #e0e0e0;
+}
+
+
+pre>code {
+    padding: none;
+    background: none;
+}
+
+pre.grammar {
+    background: none;
+    outline: none;
+    box-shadow: none;
+}
+
+
+/* Code under a heading shouldn't get the background */
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+    background: none;
+}
+
+/* styling for callouts */
+
+pre, blockquote, .callout {
+    background-color: hsla(0, 0%, 0%, 0.1);
+    padding: 0.5em;
+    border-left: 0.3em solid hsla(0, 0%, 0%, 0.5);
+}
+
+.callout pre {
+    background: none;
+    border: none;
+}
+
+.callout h6 {
+    font-variant: normal;
+    font-weight: bold;
+}
+
+.callout.note {
+    background-color: hsla(120, 100%, 50%, 0.1);
+    border-left-color: hsla(120, 100%, 50%, 0.5);
+}
+
+.callout.grammar {
+    background: none;
+    border-left-color: hsla(240, 100%, 50%, 0.5);
+}
+
+.callout.issue {
+    background-color: hsla(0, 100%, 50%, 0.1);
+    border-left-color: hsla(0, 100%, 50%, 0.5);
+}
+
+/* Links and Anchors */
+
+a {
+    font: inherit;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: hsla(0, 0%, 0%, 0.1);
+}
+
+a:not([id]) {
+    text-decoration: none;
+}
+
+a[href]:hover, a[href]:focus {
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+}

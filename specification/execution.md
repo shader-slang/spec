@@ -65,31 +65,36 @@ A  *concrete storage location* is also an  *abstract storage location*.
 
 Example: A local variable declaration like `var x : Int;` defines an  *abstract storage location*, and a reference to `x` will have the  *abstract storage reference type* `read modify Int`.
 
-## Abstract Storage Access  [storage.abstract.access]
+Abstract Storage Access  [storage.abstract.access]
+-----------------------
 
 An  **abstract storage access** is an operation performed by a  *strand* on an  *abstract storage location*.
 Each  *abstract storage access* has an  *abstract storage access mode*.
 
-## Access Mode  [storage.abstract.access.mode]
+Access Mode  [storage.abstract.access.mode]
+-----------
 
 An  **abstract storage access mode** is either `get`, `set`, or a  *memory access mode*.
 
-## Abstract Storage References  [storage.abstract.reference.type]
+Abstract Storage References  [storage.abstract.reference.type]
+---------------------------
 
 An  **abstract storage reference type** is written _m_ _T_ where _T_ is a proper type and _m_ is a set of one or more  *abstract storage access modes*.
 
-<div class="issue">
-Some of the access types imply others, and it is inconvenient to have to write all explicitly in those cases.
-For example:
 
-* If you have `read` access, you can also perform a `get` (if the stored type is copyable).
-* If you have `modify` access, you can also perform a `write`.
-* If you hae `modify` or `write` access, you can also perform a `set` (if the stored type is copyable).
+> ###### Issue ######
+>
+> Some of the access types imply others, and it is inconvenient to have to write > all explicitly in those cases.
+> For example:
+> 
+> * If you have `read` access, you can also perform a `get` (if the stored type is > copyable).
+> * If you have `modify` access, you can also perform a `write`.
+> * If you hae `modify` or `write` access, you can also perform a `set` (if the > stored type is copyable).
+> 
+> (Having `modify` access doesn't let you perform a `read` or `get`, because it > implies the possibility of write-back which could in principle conflict with > other accesses)
 
-(Having `modify` access doesn't let you perform a `read` or `get`, because it implies the possibility of write-back which could in principle conflict with other accesses)
-</div>
-
-### Type Conversion  [storage.abstract.reference.type.conversion]
+Type Conversion  [storage.abstract.reference.type.conversion]
+---------------
 
 An expression with  *reference type* `read` `ref` _T_ can be implicitly coerced to an  *abstract storage reference type* `read` _T_.
 

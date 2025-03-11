@@ -15,12 +15,26 @@ Fatal = DiagnosticSeverity("fatal", 4)
 diagnosticLevel = Note
 fatalLevel = Error
 
-def getDiagnosticLocation(node):
-    if node is None:
+def getDiagnosticLocation(obj):
+    if object is None:
         return "unknown"
-    if isinstance(node, str):
-        return node
-    return node.__class__.__name__
+    if isinstance(obj, str):
+        return obj
+    if isinstance(obj, Element):
+        if hasattr(obj, "range"):
+            range = obj.range
+            if range is not None:
+                obj = range
+    if isinstance(obj, SourceRange):
+        obj = obj.startLoc
+    if isinstance(obj, SourceLoc):
+        if obj.file is None:
+            return "unknown"
+        if obj.line is None:
+            return obj.file
+        return "{0}({1})".format(obj.file, obj.line)
+
+    return obj.__class__.__name__
 
 def diagnose(node, severity, message, *args, **kwargs):
     if severity.level < diagnosticLevel.level:
@@ -28,7 +42,7 @@ def diagnose(node, severity, message, *args, **kwargs):
 
     location = getDiagnosticLocation(node)
     message = message.format(*args, **kwargs)
-    print("{0}: {1}: {2}".format(location, severity.name, message))
+    print("{0}: {1}: {2}".format(severity.name, location, message))
 
     if severity.level >= fatalLevel.level:
         exit(1)
@@ -79,16 +93,27 @@ def transformChildren(node, transform):
 
     node.children = newChildren
 
+class SourceLoc:
+    def __init__(self, file=None, line=None, col=None):
+        self.file = file
+        self.line = line
+        self.col = col
+
+class SourceRange:
+    def __init__(self, startLoc=None, endLoc=None):
+        self.startLoc = startLoc
+        self.endLoc = endLoc
+
 class Node:
-    def __init__(self):
-        pass
+    def __init__(self, range=None):
+        self.range = range
 
     def dump(self):
         return self.__class__.__name__
 
 class TextElement(Node):
-    def __init__(self, text):
-        super().__init__()
+    def __init__(self, text, **kwargs):
+        super().__init__(**kwargs)
         self.text = text
 
     def __repr__(self):
@@ -123,8 +148,8 @@ class Element(Node):
     contentSeparator = ""
     template = "<{tag}{attributes}>{content}</{tag}>\n"
 
-    def __init__(self, children=[]):
-        super().__init__()
+    def __init__(self, children=[], **kwargs):
+        super().__init__(**kwargs)
 
         children = _collectChildren(children)
 
@@ -154,8 +179,8 @@ class ThematicBreak(LeafBlock):
     tag = "hr"
 
 class Heading(LeafBlock):
-    def __init__(self, children, level):
-        super().__init__(children)
+    def __init__(self, children, level=None, **kwargs):
+        super().__init__(children, **kwargs)
         self.level = level
 
     @property
@@ -171,8 +196,8 @@ class PreBlock(LeafBlock):
     tag = "pre"
 
 class CodeBlock(LeafBlock):
-    def __init__(self, children, language=""):
-        super().__init__(children)
+    def __init__(self, children, language=None, **kwargs):
+        super().__init__(children, **kwargs)
         self.language = language
 
 class Paragraph(LeafBlock):
@@ -205,20 +230,20 @@ class CodeSpan(InlineElement):
 
 class Link(InlineElement):
     tag = "a"
-    def __init__(self, children, target):
-        super().__init__(children)
+    def __init__(self, children, target=None, **kwargs):
+        super().__init__(children, **kwargs)
         self.target = target
 
 class Strong(InlineElement):
     tag = "strong"
-    def __init__(self, children, delimiter):
-        super().__init__(children)
+    def __init__(self, children, delimiter=None, **kwargs):
+        super().__init__(children, **kwargs)
         self.delimiter = delimiter
 
 class Emphasis(InlineElement):
     tag = "em"
-    def __init__(self, children, delimiter):
-        super().__init__(children)
+    def __init__(self, children, delimiter=None, **kwargs):
+        super().__init__(children, **kwargs)
         self.delimiter = delimiter
 
 class LineBreak(InlineElement):
@@ -235,16 +260,14 @@ class EscapeSequence(InlineElement):
 
 # Custom Elements
 
+class Nav(ContainerBlock):
+    tag = "nav"
+
 class Sequence(ContainerBlock):
     tag = None
     template = "{content}"
-    def __init__(self, children):
-        super().__init__(children)
 
 class Section(Sequence):
-    def __init__(self, content):
-        super().__init__(content)
-
     @property
     def heading(self):
         return self.children[0]
@@ -254,28 +277,21 @@ class Section(Sequence):
         return self.heading.children
 
 class Document(Sequence):
-    def __init__(self, content):
-        super().__init__(content)
+    pass
 
 class TitleHeading(Heading):
     classAttribute = "title-heading"
     def __init__(self, content):
-        super().__init__(content, 0)
+        super().__init__(content, level=0)
 
 class Definition(InlineElement):
     tag = "dfn"
-    def __init__(self, children):
-        super().__init__(children)
 
 class Reference(InlineElement):
     tag = "a"
-    def __init__(self, children):
-        super().__init__(children)
 
 class Variable(InlineElement):
     tag = "var"
-    def __init__(self, children):
-        super().__init__(children)
 
 class TableOfContents(ContainerBlock):
     classAttribute = "toc"
@@ -382,22 +398,30 @@ class Converter:
 
 
 
-def convertMistletoeNodeToCustomElement(inputNode, converter):
+def convertMistletoeNodeToCustomElement(path, inputNode, converter):
     methodName = "convert" + inputNode.__class__.__name__
     method = getattr(converter, methodName)
 
     outputNode = None
     if inputNode.children is not None:
-        outputChildren = [convertMistletoeNodeToCustomElement(child, converter) for child in inputNode.children]
-        return method(inputNode, outputChildren)
+        outputChildren = [convertMistletoeNodeToCustomElement(path, child, converter) for child in inputNode.children]
+        outputNode = method(inputNode, outputChildren)
+    else:
+        outputNode = method(inputNode)
 
-    return method(inputNode)
+    if hasattr(inputNode, "line_number"):
+        line = inputNode.line_number
+        if line is not None:
+            loc = SourceLoc(path, line)
+            outputNode.range = loc    
+
+    return outputNode
 
 def readMarkdownFile(filepath):
     with open(filepath, "r") as file:
         content = file.read()
         document = mistletoe.Document(content)
-        converted = convertMistletoeNodeToCustomElement(document, Converter())
+        converted = convertMistletoeNodeToCustomElement(filepath, document, Converter())
         return converted
 
 
@@ -598,6 +622,8 @@ def findTableOfContents(document):
 
     section = sections[0]
     diagnose(section, Trace, "found table of contents section")
+
+    section.__class__ = Nav
     
     #for child in section.children:
     #    print("child: {0}".format(child))
@@ -729,12 +755,12 @@ class IdentifyCalloutsTransform(Transform):
         if len(node.children) == 0:
             return
 
-        print("visitBlockQuote: {0}".format(node))
+        # print("visitBlockQuote: {0}".format(node))
         calloutClass = detectCalloutClass(node.children[0])
         if calloutClass is None:
             return
 
-        print("found callout: {0}".format(calloutClass.title))
+        diagnose(node, Trace, "found callout: {0}", calloutClass.title)
 
         newText = TextElement(calloutClass.title)
 

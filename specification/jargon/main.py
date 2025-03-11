@@ -463,6 +463,7 @@ def transformRootDocument(node):
     # link references to their definitions
     # introduce self-link anchors for nodes with IDs
     # merge consecutive paragraphs that should span a code block, algorithm, etc.
+    # section numbering
 
     md.generateSectionIDs(node)
     node = md.transformTree(node, md.BuildTableOfContentsTransform(node))

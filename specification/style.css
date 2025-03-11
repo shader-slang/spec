@@ -23,6 +23,25 @@ body {
     line-height: 1.5;
 }
 
+/* Table of Contents */
+
+@media print {
+    nav {
+        display: none;
+    }
+}
+
+@media screen {
+    nav {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 24em;
+        overflow: auto;
+    }
+}
+
 /* Headings */
 
 h1, h2, h3, h4, h5, h6, dt {
@@ -38,15 +57,14 @@ h2, h3, h4, h5, h6 {
     margin-top: 3rem;
 }
 
-h1 { font-size: 200%; }
-h2 { font-size: 150%; }
-h3 { font-size: 130%; }
-h4 { font-size: 120%; }
-h5 { font-size: 110%; }
-h6 { font-size: 100%; }
-dt { font-size: 100%; }
+h1 { font-size: 240%; }
+h2 { font-size: 180%; margin-top: 3rem; margin-bottom: 1rem; }
+h3 { font-size: 150%; margin-top: 2rem; margin-bottom: 0.5rem; }
+h4 { font-size: 133%; margin-top: 1rem; margin-bottom: 0.25rem; }
+h5 { font-size: 115%; margin-top: 0.5rem; margin-bottom: 0rem; }
+h6 { font-size: 100%; margin-top: 0.25rem; margin-bottom: 0rem; }
 
-.title-heading {
+h1.title-heading {
     font-size: 300%;
 }
 

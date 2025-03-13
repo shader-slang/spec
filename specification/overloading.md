@@ -1,60 +1,182 @@
-Overload Resolution [overload]
-===================
+Overloading [overload]
+===========
 
-<div class=issue>
-This chapter needs to describe how to disambiguate an overloaded lookup result.
-Overload resolution comes up primarily in two places:
+**Overloading** occurs when a single *name* has multiple meanings in a given context.
 
+Overload Sets [overload.set]
+=============
 
-* When the typing rules attempt to coerce an overloaded expression to some type.
-* When attempting to call an overloaded expression as a function.
+```.semantics
+OverloadSet
+    => `$OverloadSet(` Candidate* `)`
+```
 
+An *overload set* is an *intermediate expression* that represents a set of *candidate* meanings.
 
-(Hypothetically it can also arise for a generic specialization `F<A,B,...>` as well, so the rules need to be ready for that case)
+Simplification [overload.set.simplify]
+--------------
 
-The first of the two cases is the easier one by far, with an outline of it's semantics being:
+The **simplification** of an *overload set* is a *checked expression*.
 
+The compute the *simplification* of an *overload set* _overloadSet_:
 
-* \emph{Filter} the candidates to only those that can be coerced successfully to the desired type.
-* Select the best candidate among the remaining ones, based on priority.
-  *  The relative "distance" of declarations needs to factor in (more derived vs. more base, imported vs. local, etc.)
-  *  Additionally, the relative cost of the type conversions applied (if any) may be relevant.
+* If _overloadSet_ has exactly one *candidate* _c_:
 
+  * Return the value of _c_
 
-The second case (overloaded calls) is superficially similar, in that we can filter the candidates to the applicable ones and then pick the best.
-The definition of ``best'' for an overloaded call is more subtle and needs care to not mess up developer expectations for things like simple infix expressions (since event infix `operator+` is handled as an overloaded call, semantically).
+* If _overloadSet_ has no *candidates*:
 
-A few basic principles that guide intuition:
+  * return `$Error`
 
+* Return _overloadSet_
 
-* For every candidate we should know the conversion/cost associated with each argument position, as well as the conversion/cost associated with the function result position (if we are in a checking rather than synthesis context).
-* One overload candidate is strictly better than another if it is better at at least one position (one argument, or the function result), and not worse at any position.
-* When choosing between candidates that are equally good, a few factors play in:
-  *  The relative "distance" of declarations (as determined by lookup)
-  *  Which candidates required defaulting of arguments (and how many)
-  *  Candidates that required implicit specialization of a generic vs. those that didn't
-  *  For two candidates that required implicit specialization of a generic, which of them is ``more general'' than the other.
+Filtering [lookup.result.filter]
+---------
 
+TODO: Need to specify how to filter an overload set down to only those candidates that satisfy some predicate
 
-Generally, a function $f$ is ``more general'' than another function $g$ if for every set of arguments that $g$ is applicable to, $f$ is also applicable, but not vice versa.
+Candidates [overload.candidate]
+==========
 
-Also: it doesn't exactly belong in this chapter, but something needs to document the rules for when two function declarations are considered to have the same signature (or at least conflicting signatures), so that errors can be diagnosed when trying to redefine a function.
+A *candidate* represents on possible meaning for a *name* or *expression* in a given context.
 
-</div>
+```.semantics
+Candidate
+    => `$Candidate` CheckedExpression Distance* Cost Constraint*
 
-If:
+Cost
+    => `$NoCost`
+    => `$Infinite`
+    => /* need a representation for costs */
 
-* _f_ synthesizes function type `(` _params_ `)` `->` _result_
-* _args_ matches against _params_ with cost _argsCost_
-* _result_ is implicitly convertible to _T_ with cost _resultCost_
+Constraint
+    => /* need a representation for solver constraints */
+```
 
-then the invocation _f_ `(` _args_ `)` checks against _T_ with cost (_argsCost_, _resultCost_)
+Distances [overload.candidate.distance]
+---------
 
-If:
+```.semantics
+Distance
+    => DistanceKey value:Integer
 
-* _g_ synthesizes generic type `<` _genericParams_ `>` `->` _result_
-* _genericArgs_ are fresh solver variables
-* the specialization _g_ `<` _genericArgs `>` synthesizes type _specialized_ with cost _specializationCost_
-* the type `_specialized_
+DistanceKey
+    => UniqueID
+```
 
-then the invocation _g_ `(` )
+Given *candidate* _a_, *candidate* _b_, and *distance key* _k_, _a_ is **closer for** _k_ than _b_ if:
+
+* There exists a *distance* _da_ in _a_ with *key* _k_
+
+* There exists a *distance* _db_ in _b_ with *key* _k_
+
+* The value of _da_ is less than the value of _db_
+
+A *candidate* _a_ is **closer** than _b_ if:
+
+* There exists a _k0_ such that _a_ is *closer for* _k0_ than _b_
+
+* There does not exist any _k1_ such that _b_ is *closer for* _k1_ than _a_
+
+Resolution [overload.resolution]
+==========
+
+TODO: Overload resolution should basically just amount to finding a minimal-cost (or highest-priority, equivalently) element in the set of candidates.
+
+Type Conversion [overload.conversion]
+===============
+
+> When an *overload set* is implicitly converted to a specific *type*, it is possible to filter candidates to only those that can be converted to that type.
+
+To implicitly convert an *overload set* _overloadSet_ to *type* _toType_:
+
+* Let variable _result_ be an empty overload set
+
+* For each *candidate* _fromExpr_ _distances_ _fromCost_ _fromConstraints_ in _overloadSet_:
+
+  * Let _scope_ be a fresh *solver scope*
+
+  * Copy each of the _fromConstraints_ into _scope_
+
+  * With _scope_:
+
+    * let _toExpr_ _toCost_ be the result of implicitly converting _fromExpr_ to _toType_
+
+    * If _toCost_ is not `$Infinite`:
+
+      * let _cost_ be the merge of _toCost_ and _fromCost_
+
+      * let _constraints_ be the constraints of _scope_
+
+      * let _candidate_ be a fresh *candidate* _toExpr_ _distances_ _cost_ _constraints_
+
+      * Add _candidate_ to _result_
+
+* Return _result_
+
+Overloaded Calls [overload.call]
+================
+
+To check a call to an _overloadSet_ on a list of _arguments_:
+
+* Let variable _result_ be an empty overload set
+
+* For each *candidate* _f_ _distances_ _fromCost_ _fromConstraints_ in _overloadSet_:
+
+  * Let _scope_ be a fresh *solver scope*
+
+  * Copy each of the _fromConstraints_ into _scope_
+
+  * With _scope_:
+
+    * Let _candidateCall_ _callCost_ be the result of checking a call to _f_ on _arguments_
+
+    * If _candidateCallCost_ is not `$Infinite`:  
+
+      * let _cost_ be the merge of _callCost_ and _fromCost_
+
+      * let _constraints_ be the constraints of _scope_
+
+      * Add *candidate* _candidateCall_ _distances_ _cost_ _constraints_ to _result_
+
+* Return _result_
+
+Calling a Generic
+=================
+
+To check a call to a *generic declaration reference* _genericDeclRef_ on a list of _arguments_:
+
+* Let _declRef_ be the result of *instantiating* _genericDeclRef_
+
+* Return the result of calling _declRef_ on _arguments_
+
+Calling a Function
+==================
+
+To check a call to a *fully-specialized declaration reference* _f_ on a list of _arguments_, where _f_ refers to a *function declaration*:
+
+* Match the arguments to the parameters by index and/or name (and build a cost model)
+
+* For each _arg_ and its corresponding _param_:
+
+  * Let _convertedArg_ be the result of implicitly converting _arg_ to the type of _param_
+
+  * // Need to take "direction" into account...
+
+  * // Need to accumulate the cost of each _convertedArg_
+
+* // Construct the checked call expression, with its full cost
+
+Calling a Type
+==============
+
+To check a call to a *type* _t_ on a list of _arguments_:
+
+* If there is exactly one element _arg_ in _arguments_:
+
+  * Return the result of *explicitly converting* _arg_ to _t_
+
+* Let _init_ be the result of looking up `$init` in _t_
+
+* Return the result of calling _init_ on _arguments_
+

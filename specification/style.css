@@ -119,6 +119,13 @@ code var {
     outline: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Terminals at the meta-level get special styling */
+.meta.terminal {
+    font-variant: small-caps;
+    font-weight: bold;
+    font-style: normal;
+}
+
 
 /** General monospace/pre rules ***********************************************/
 

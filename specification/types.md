@@ -220,6 +220,8 @@ A *member declaration reference* must satisfy the following constraints:
 * The *base* must refer to a declaration with members (TODO: make this precise)
 * The *member* must be a direct member declaration of the *base*
 
+TODO: The most important case here is when the base is a subtype or conformance witness (aka, a facet), since this operation then amounts to a lookup of the satisfying value for the given requirement in the witness table. It's not 100% clear if we should use distinct representations for the `virtual`-ish case and the pure static member lookup case in general.
+
 ### Specialized Declaration Reference [decl.ref.specialize]
 
 ```.semantics

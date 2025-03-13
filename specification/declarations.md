@@ -54,13 +54,47 @@ Issue: We need to define concepts that are used by traditional-style declaration
 
 ### Bodies [decl.body]
 
-Issue: We need to define that there are two kinds of bodies: **declaration bodies** and _statement bodies_.
+#### Statement Bodies [decl.body.statement]
+
+To check a *statement body* _b_:
+
+* With a *local scope*:
+
+  * Check the statement of _b_
+
+#### Declaration Bodies [decl.body.decl]
+
+To check a *declaration body* _b_:
+
+* For each *declaration* _d_ in _b_:
+
+  * Validate: _d_ is allowed to appear in the current context
+
+  * Check _d_
+
+  * For each *declaration* _e_ in _b_, other than _d_:
+
+    * If the name of _e_ is the same as the name of _d_:
+
+      * Validate: _d_ and _e_ do not conflict
+
+#### Accessor Bodies [decl.body.accessor]
+
+To check an *accessor body* _b_:
+
+* ...
 
 ### Bases [decl.base]
 
-### Parameters [decl.param]
+```.syntax
+BasesClause
+    => `:` (Base `,`)+
 
-A parameters clause defines a sequence of **parameter declarations**.
+Base
+    => TypeExpression
+```
+
+### Parameters [decl.param]
 
 ```.syntax
     ParametersClause
@@ -169,8 +203,53 @@ TuplePatternInner := `(` (BindingPatternInner `,`)* `)`
 
 ```
 
+TODO: patterns belong in the statements section, really...
+
 Generics [decl.generic]
 --------
+
+```.syntax
+GenericParametersClause
+    => `<` GenericParameter+ `>`
+
+GenericParameter
+    => Identifier
+    => Identifier `:` TypeExpression
+```
+
+```.syntax
+WhereClause
+    => `where` WhereConstraint+
+
+WhereConstraint
+    => TypeExpression `:` TypeExpression
+```
+
+A category of declaration is **potentially generic** if its syntax allows for a *generic parameters clause* and/or a *`where` clause*.
+
+It is an error for a *potentially generic* *declaration* to have a *`where` clause* but no *generic parameters clause*.
+
+A declaration is a **generic declaration** if it has a *generic parameters clause* or it has any *implicit generic parameters*.
+
+### Implicit Generic Parameters
+
+TODO: Need to specify the rules for how to determine if a declaration has implicit generic parameters. This basically amounts to scanning its signature (parameters, result type, etc.) for any `some` type expressions.
+
+### Static Semantics
+
+To check a *generic declaration* _d_:
+
+* With a *generic declaration scope* for _d_
+
+  * Check the generic parameters of _d_
+
+  * Check the generic constraints of _d_
+
+  * // accumulate and check implied constraints?
+
+  * Check _d_ as a non-generic declaration
+
+TODO: The phrasing here needs to get precise, so that its clear that this logic wraps the other checking logic.
 
 Type Declarations [decl.type]
 -----------------
@@ -191,7 +270,7 @@ TypeDeclaration =
         (`struct` | `class` | `interface`) Identifier
         GenericParametersClause?
         BasesClause?
-        GenericWhereClause?
+        WhereClause?
         DeclarationBodyClause `;`?
 
     DeclarationBodyClause
@@ -225,13 +304,6 @@ A method of a `struct` type declaration may be modified with the `[mutating]` at
 
 ### Bases [decl.agg.bases]
 
-```.syntax
-    BasesClause
-        `:`Base (`,`Base)*
-
-    Base
-        TypeExpression
-```
 
 An aggregate type declaration has zero or more **bases**.
 If an aggregate type declaration has no bases clause, then it has zero *bases*;
@@ -355,23 +427,19 @@ A **type alias declaration** introduces a binding that resolves to some other ty
 
 ```.syntax
 TypeAliasDeclaration :
-    ModernTypeAliasDeclaration
-    | TraditionalTypeAliasDeclaration
-
-ModernTypeAliasDeclaration :
     `typealias` Identifier
     GenericParametersClause?
     GenericWhereClause?
     `=` TypeExpression `;`
 ```
-TODO: *type alias declaration*
 
-```.checking
-GIVEN identifier n, type t, context c
-GIVEN t checks in c
-THEN `typealias` n = t `;` checks in c
-```
-    
+#### Static Semantics
+
+To check a *type alias declaration* _d_:
+
+* With a *declaration scope* for _d_:
+
+  * Check the type expression of _d_ as a type    
 
 #### Traditional Syntax [decl.type.alias.syntax.traditional]
 
@@ -667,7 +735,8 @@ ConstructorDeclaration :
     `init`
     GenericParametersClause?
     ParametersClause
-    FunctionBodyClause
+    WhereClause?
+    StatementBodyClause
 ```
 
 A constructor declaration is invocable.
@@ -681,19 +750,22 @@ Properties [decl.prop]
 A **property declaration** introduces a binding that can have its behavior for read and write operations customized.
 
 ```.syntax
-    PropertyDeclaration :
-        `property`
-        Identifier
-        GenericParametersClause?
-        TypeAscriptionClause
-        GenericWhereClause
-        PropertyBody
+PropertyDeclaration
+    => `property` Identifier GenericParametersClause? TypeAscriptionClause WhereClause? PropertyBody
 
-    PropertyBody
-        `{` AccessorDecl* `}`
+PropertyBody
+    => `{` AccessorDecl* `}`
 ```
 
-TODO: reference *property declaration*.
+### Static Semantics
+
+To check a *property declaration* _d_:
+
+* With a *declaration scope* for _d_:
+
+  * Check the type expression of _d_
+
+  * Check the body of _d_
 
 ### Accessors [decl.accessor]
 
@@ -730,59 +802,31 @@ A subscript declaration is invocable.
 
 Note: Unlike a function declaration, a *subscript declaration* cannot elide the result type clause.
 
+### Static Semantics
+
+To check a *subscript declaration* _d_ in *context* _C_:
+
+* Validate: _d_ must have at least one parameter
+
+* With a *declaration scope* for _d_:
+
+  * Check the parameters of _d_
+
+  * Let _resultType_ be the result type of _d_
+
+  * Check _resultType_ as a type
+
+  * With an *expected storage type* of _resultType_:
+
+    * Check the body of _d_
+
 Extensions [decl.extension]
 ----------
 
-An extension declaration is introduced with the `extension` keyword:
-
+```.syntax
+ExtensionDecl
+    => `extension` GenericParametersClause? TypeExpression BasesClause? WhereClause? DeclarationBody
 ```
-extension MyVector
-{
-    float getLength() { return sqrt(x*x + y*y); }
-    static int getDimensionality() { return 2; }
-}
-```
-
-An extension declaration adds behavior to an existing type.
-In the example above, the `MyVector` type is extended with an instance method `getLength()`, and a static method `getDimensionality()`.
-
-An extension declaration names the type being extended after the `extension` keyword.
-The body of an extension declaration may include type declarations, functions, initializers, and subscripts.
-
-Note: The body of an extension cannot include variable declarations.
-An extension cannot introduce members that would change the in-memory layout of the type being extended.
-
-The members of an extension are accessed through the type that is being extended.
-For example, for the above extension of `MyVector`, the introduced *methods* are accessed as follows:
-
-```
-MyVector v = ...;
-
-float f = v.getLength();
-int n = MyVector.getDimensionality();
-```
-
-An extension declaration need not be placed in the same module as the type being extended; it is possible to extend a type from third-party or standard-library code.
-The members of an extension are only visible inside of modules that `import` the module declaring the extension;
-extension members are not automatically visible wherever the type being extended is visible.
-
-An extension declaration may include an inheritance clause:
-
-```
-extension MyVector : IPrintable
-{
-    ...
-}
-```
-
-The inheritance clause of an extension declaration may only include interfaces.
-When an extension declaration lists an interface in its inheritance clause, it asserts that the extension introduces a new conformance, such that the type being extended now conforms to the given interface.
-The extension must ensure that the type being extended satisfies all the requirements of the interface.
-Interface requirements may be satisfied by the members of the extension, members of the original type, or members introduced through other extensions visible at the point where the conformance was declared.
-
-It is an error for overlapping conformances (that is, of the same type to the same interface) to be visible at the same point.
-This includes cases where two extensions declare the same conformance, as well as those where the original type and an extension both declare the same conformance.
-The conflicting conformances may come from the same module or difference modules.
 
 <div algorithm>
 In order to avoid problems with conflicting conformances, when a module _M_ introduces a conformance of type _T_ to interface _I_, one of the following should be true:
@@ -796,98 +840,21 @@ The runtime behavior of programs that include overlapping *retroactive conforman
 
 Currently, extension declarations can only apply to structure types.
 
-Generics [decl.generic]
---------
+### Static Semantics
 
-Many kinds of declarations can be made *generic*: structure types, interfaces, extensions, functions, initializers, and subscripts.
+To check an *`extension` declaration* _d_:
 
-A *generic* declaration introduces a **generic parameter list** enclosed in angle brackets `<>`:
+* Let _typeExpr_ be the type expression of _d_
 
-```
-T myFunction<T>(T left, T right, bool condition)
-{
-    return condition ? left : right;
-}
-```
+* With a *type declaration scope* for _d_:
 
-### Generic Parameters [decl.generic.param]
+  * Check _typeExpr_ as a type expression
 
-A *generic parameter list* can include one or more parameters separated by commas.
-The allowed forms for **generic parameters** are:
+  * Check the bases of _d_ // TODO: details
 
-* A single identifier like `T` is used to declare a **generic type parameter** with no constraints.
-* A clause like `T : IFoo` is used to introduce a *generic type parameter* `T` where the parameter is constrained so that it must conform to the `IFoo` interface.
-* A clause like `let N : int` is used to introduce a **generic value parameter** `N`, which takes on values of type `int`.
+  * Check the body of _d_
 
-Note: The syntax for *generic value parameters* is provisional and subject to possible change in the future.
-
-*Generic parameters* may declare a default value with `=`:
-
-```
-T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
-```
-
-For generic type parameters, the default value is a type to use if no argument is specified.
-For generic value parameters, the default value is a value of the same type to use if no argument is specified.
-
-### Explicit Specialization [decl.generic.specialize.explicit]
-
-A generic is **specialized** by applying it to **generic arguments** listed inside angle brackets `<>`:
-
-```
-anotherFunction<int, 3>
-```
-
-Specialization produces a reference to the declaration with all generic parameters bound to concrete arguments.
-
-When specializing a generic, generic type parameters must be matched with type arguments that conform to the constraints on the parameter, if any.
-Generic value parameters must be matched with value arguments of the appropriate type, and that are specialization-time constants.
-
-An explicitly *specialized* function, type, etc. may be used wherever a non-generic function, type, etc. is expected:
-
-```
-int i = anotherFunction<int,3>( int3(99) );
-```
-
-### Implicit Specialization [decl.generic.specialize.implicit]
-
-If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts **implicit specialization**.
-*Implicit specialization* infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.
-
-For example, if a programmer writes:
-
-```
-int i = anotherFunction( int3(99) );
-```
-
-The compiler will infer the generic arguments `<int, 3>` from the way that `anotherFunction` was applied to a value of type `int3`.
-
-Note: Inference for generic arguments currently only takes the types of value arguments into account.
-The expected result type does not currently affect inference.
-
-### Syntax Details [decl.generic.syntax]
-
-The following examples show how generic declarations of different kinds are written:
-
-```
-T genericFunction<T>(T value);
-funct genericFunction<T>(value: T) -> T;
-
-__init<T>(T value);
-
-__subscript<T>(T value) -> X { ... }
-
-struct GenericType<T>
-{
-    T field;
-}
-
-interface IGenericInterface<T> : IBase<T>
-{
-}
-```
-
-Note: Currently there is no user-exposed syntax for writing a generic extension.
+  * // check declared conformances
 
 Traditional Buffer Declarations [decl.buffer]
 -------------------------------

@@ -62,8 +62,9 @@ Each form of expression may define rules for synthesis, checking, or both.
 
 ```.semantics
 CheckedExpression
-    => TypedValue
+    => TypedValue // includes declaration references
     => CheckedExpression `(` CheckedExpression* `)`
+    => `let` Identifier `=` CheckedExpression `in` CheckedExpression
 
 IntermediateExpression
     => CheckedExpression

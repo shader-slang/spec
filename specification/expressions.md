@@ -85,85 +85,59 @@ A string literal expressions consists of one or more string literal tokens in a 
 
 A string literal expression _s_ synthesizes the checked expression _s_ `: @Constant String`.
 
-Identifier Expressions [expr.ident]
+Name Expressions [expr.name]
 ----------------------
 
 ```.syntax
-IdentifierExpression
-    => Identifier
-    => `operator` InfixOperator
-    => `operator` `prefix` PrefixOperator
-    => `operator` `postfix` PostfixOperator
+NameExpression
+    => Name
 ```
 
-An identifier expression _id_ synthesizes _e_ if lookup of _id_ yields _e_.
+To *synthesize* a *name expression* _expr_:
 
-Issue: This presentation delegates the actual semantics of identifier expressions to the lookup judgement, which needs to be explained in detail.
+* Let _overloadSet_ be the result of *looking up* the name of _expr_ in the current context
+
+* Let _simplified_ be the result of *simplifying* _overloadSet_
+
+* If _simplified_ is `$Error`, diagnose an error
+
+* Return _simplified_
 
 Member Expression [expr.member]
 -----------------
 
 ```.syntax
 MemberExpression
-    => Expression `.` Identifier
+    => base:Expression `.` member:Name
+```
+
+To *synthesize* a *member expression* _expr_:
+
+* Let _base_ be the result of synthesizing the base of _expr_
+
+* Let _overloadSet_ be the result of *looking up* the member name of _expr_ in _base_
+
+* Let _simplified_ be the result of *simplifying* _overloadSet_
+
+* Return _simplified_
+
+> Issue:
+>
+> These rules attempt to look up a member in an *intermediate expression*, while the *lookup* rules currently only handle lookup in a *checked expression*.
+> There needs to be some rule to determine what happens when an attempt is made to look up a member in an intermediate expression such as an overload set.
+>
+> The current compiler implementation forces the base expression to resolve before performing lookup, but there is not strictly a reason why this always has to be the approach taken.
+
+### Static Member Expression [expr.member.static]
+
+```.syntax
+StaticMemberExpression
+    => base:Expression `::` member:Name
 ```
 
 > Issue:
 >
-> The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
-> In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:
->
-> * Implicit dereference of pointer-like types.
-> * Swizzles (vector or matrix).
-> * Static vs. instance members.
->
-> In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.
-
-<!--
-%\begin{verbatim}
-%When `base` is a structure type, this expression looks up the field or other %member named by `m`.
-%Just as for an identifier expression, the result of a member expression may be %overloaded, and might be disambiguated based on how it is used.
-%
-%A member expression is an l-value if the base expression is an l-value and the %member it refers to is mutable.
-%
-% ### Implicit Dereference ### {dereference.implicit}
-%
-%If the base expression of a member reference is a _pointer-like type_ such as %`ConstantBuffer<T>`, then a member reference expression will implicitly %dereference the base expression to refer to the pointed-to value (e.g., in the %case of `ConstantBuffer<T>` this is the buffer contents of type `T`).
-%
-% ### Vector Swizzles ### {swizzle.vector}
-%
-%When the base expression of a member expression is of a vector type `vector<T,N>` %then a member expression is a _vector swizzle expression_.
-%The member name must conform to these constraints:
-%
-%* The member name must comprise between one and four ASCII characters
-%* The characters must be come either from the set (`x`, `y`, `z`, `w`) or (`r`, %`g`, `b`, `a`), corresponding to element indics of (0, 1, 2, 3)
-%* The element index corresponding to each character must be less than `N`
-%
-%If the member name of a swizzle consists of a single character, then the %expression has type `T` and is equivalent to a subscript expression with the %corresponding element index.
-%
-%If the member name of a swizzle consists of `M` characters, then the result is a %`vector<T,M>` built from the elements of the base vector with the corresponding %indices.
-%
-%A vector swizzle expression is an l-value if the base expression was an l-value %and the list of indices corresponding to the characeters of the member name %contains no duplicates.
-%
-% ### Matrix Swizzles ### {swizzle.matrix}
-%
-%> Note: The Slang implementation currently doesn't support matrix swizzles.
-%
-% ### Static Member Expressions ### {member.static}
-%
-%When the base expression of a member expression is a type instead of a value, the %result is a _static member expression_.
-%A static member expression can refer to a static field or static method of a %structure type.
-%A static member expression can also refer to a case of an enumeration type.
-%
-%A static member expression (but not a member expression in general) may use the %token `::` instead of `.` to separate the base and member name:
-%
-%```hlsl
-%// These are equivalent
-%Color.Red
-%Color::Red
-%```
-%\end{verbatim}
--->
+> Semantically, there is no reason to treat static member lookup as a special case. All that really gets added here is an assertion that `base` must not be an value-level expression (that is, it must be a type, module, etc.)
 
 This Expression [expr.this]
 ---------------
@@ -177,7 +151,13 @@ ThisExpression
 
 ### Static Semantics
 
-A `this` expression synthesizes _e_ if lookup of `this` yields _e_.
+To *synthesize* a *`this` expression* _expr_:
+
+* Let _overloadSet_ be the result of *looking up* `$this` in the current context
+
+* Let _simplified_ be the result of *simplifying* _overloadSet_
+
+* Return _simplified_
 
 Parenthesized Expression [expr.paren]
 -------------
@@ -415,3 +395,43 @@ A conditional expression _c_ `?` _t_ `:` _e_ checks against expected type _T_ if
 * _c_ checks against `Bool`
 * _t_ checks against _T_
 * _e_ checks against _T_
+
+Fodder
+======
+
+> TODO:
+>
+> * `nullptr` literals
+> * `none` literals
+>
+> * Variadics:
+>   * `expand`
+>   * `each`
+>
+> * `try` expr
+> * `new` expr
+>
+> * `->` operator
+> * `::` operator
+>
+> * expr `is` type
+> * expr `as` type
+>
+> * Layout related:
+>   * `sizeof`
+>   * `alignof`
+>   * `countof`
+>
+> * specialize (with `<>`)
+>
+> * autodiff exprs
+>   * `__fwd_diff`
+>   * `__bwd_diff`
+>   * `no_diff`
+>
+> * type expression cases
+>   * conjunctions: left `&` right
+>   * modifier type
+>   * pointer types: type `*`
+>   * function types: `(` type* `)` `->` type
+>   * tuple types

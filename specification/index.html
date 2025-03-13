@@ -147,7 +147,11 @@
 <li><a href="#sec.module.import">Import Declarations</a></li>
 </ul>
 </li>
-<li><a href="#sec.decl">Declarations</a><ul><li><a href="#sec.decl.shared">Shared Concepts</a><ul><li><a href="#sec.decl.body">Bodies</a></li>
+<li><a href="#sec.decl">Declarations</a><ul><li><a href="#sec.decl.shared">Shared Concepts</a><ul><li><a href="#sec.decl.body">Bodies</a><ul><li><a href="#sec.decl.body.statement">Statement Bodies</a></li>
+<li><a href="#sec.decl.body.decl">Declaration Bodies</a></li>
+<li><a href="#sec.decl.body.accessor">Accessor Bodies</a></li>
+</ul>
+</li>
 <li><a href="#sec.decl.base">Bases</a></li>
 <li><a href="#sec.decl.param">Parameters</a><ul><li><a href="#sec.dir">Directions</a><ul><li><a href="#sec.dir.in"><code>in</code></a></li>
 <li><a href="#sec.out"><code>out</code></a></li>
@@ -164,7 +168,10 @@
 </ul>
 </li>
 <li><a href="#sec.pattern">Patterns</a></li>
-<li><a href="#sec.decl.generic">Generics</a></li>
+<li><a href="#sec.decl.generic">Generics</a><ul><li><a href="#section-implicit-generic-parameters">Implicit Generic Parameters</a></li>
+<li><a href="#section-static-semantics">Static Semantics</a></li>
+</ul>
+</li>
 <li><a href="#sec.decl.type">Type Declarations</a><ul><li><a href="#sec.decl.agg">Aggregate Types</a><ul><li><a href="#sec.decl.agg.member.static">Instance and Static Members</a></li>
 <li><a href="#sec.field">Fields</a></li>
 <li><a href="#sec.method">Methods</a></li>
@@ -179,7 +186,8 @@
 <li><a href="#sec.decl.enum"><code>enum</code>Declarations</a><ul><li><a href="#sec.case">Cases</a></li>
 </ul>
 </li>
-<li><a href="#sec.decl.type.alias">Type Aliases</a><ul><li><a href="#sec.decl.type.alias.syntax.traditional">Traditional Syntax</a></li>
+<li><a href="#sec.decl.type.alias">Type Aliases</a><ul><li><a href="#section-static-semantics">Static Semantics</a></li>
+<li><a href="#sec.decl.type.alias.syntax.traditional">Traditional Syntax</a></li>
 </ul>
 </li>
 <li><a href="#sec.decl.type.associated">Associated Types</a></li>
@@ -206,15 +214,14 @@
 </ul>
 </li>
 <li><a href="#sec.decl.init">Constructors</a></li>
-<li><a href="#sec.decl.prop">Properties</a><ul><li><a href="#sec.decl.accessor">Accessors</a></li>
+<li><a href="#sec.decl.prop">Properties</a><ul><li><a href="#section-static-semantics">Static Semantics</a></li>
+<li><a href="#sec.decl.accessor">Accessors</a></li>
 </ul>
 </li>
-<li><a href="#sec.decl.subscript">Subscripts</a></li>
-<li><a href="#sec.decl.extension">Extensions</a></li>
-<li><a href="#sec.decl.generic">Generics</a><ul><li><a href="#sec.decl.generic.param">Generic Parameters</a></li>
-<li><a href="#sec.decl.generic.specialize.explicit">Explicit Specialization</a></li>
-<li><a href="#sec.decl.generic.specialize.implicit">Implicit Specialization</a></li>
-<li><a href="#sec.decl.generic.syntax">Syntax Details</a></li>
+<li><a href="#sec.decl.subscript">Subscripts</a><ul><li><a href="#section-static-semantics">Static Semantics</a></li>
+</ul>
+</li>
+<li><a href="#sec.decl.extension">Extensions</a><ul><li><a href="#section-static-semantics">Static Semantics</a></li>
 </ul>
 </li>
 <li><a href="#sec.decl.buffer">Traditional Buffer Declarations</a></li>
@@ -247,8 +254,10 @@
 <li><a href="#sec.expr.lit.string">String Literal Expressions</a></li>
 </ul>
 </li>
-<li><a href="#sec.expr.ident">Identifier Expressions</a></li>
-<li><a href="#sec.expr.member">Member Expression</a></li>
+<li><a href="#sec.expr.name">Name Expressions</a></li>
+<li><a href="#sec.expr.member">Member Expression</a><ul><li><a href="#sec.expr.member.static">Static Member Expression</a></li>
+</ul>
+</li>
 <li><a href="#sec.expr.this">This Expression</a><ul><li><a href="#section-syntax">Syntax</a></li>
 <li><a href="#section-static-semantics">Static Semantics</a></li>
 </ul>
@@ -283,11 +292,53 @@
 </ul>
 </li>
 <li><a href="#sec.vis">Visibility Control</a></li>
-<li><a href="#sec.linearization">Type Linearization</a></li>
+<li><a href="#sec.lin">Type Linearization</a><ul><li><a href="#sec.lin.facet">Facets</a></li>
+<li><a href="#sec.lin.algo">Algorithm</a></li>
+<li><a href="#section-merging">Merging</a></li>
+<li><a href="#section-fodder">Fodder</a></li>
+</ul>
+</li>
 <li><a href="#sec.SECTION.interface">Interfaces</a></li>
 <li><a href="#sec.section.generic">Generics</a></li>
-<li><a href="#sec.lookup">Lookup</a></li>
-<li><a href="#sec.overload">Overload Resolution</a></li>
+<li><a href="#sec.lookup">Lookup</a><ul><li><a href="#sec.lookup.name">Names</a></li>
+<li><a href="#sec.lookup.context">Lookup in a Context</a></li>
+<li><a href="#sec.lookup.binding">Bindings</a></li>
+<li><a href="#sec.lookup.scope">Scopes</a><ul><li><a href="#sec.lookup.scope.empty">Empty Scopes</a></li>
+<li><a href="#sec.lookup.scope.layer">Layered Scopes</a></li>
+<li><a href="#sec.lookup.scope.type">Type Scopes</a></li>
+<li><a href="#sec.lookup.scope.instance">Instance Scopes</a></li>
+<li><a href="#sec.lookup.scope.decl">Declaration Scopes</a></li>
+<li><a href="#sec.lookup.scope.file">File Scope</a></li>
+<li><a href="#sec.lookup.scope.module">Module Scope</a></li>
+</ul>
+</li>
+<li><a href="#sec.lookup.member">Member Lookup</a><ul><li><a href="#sec.lookup.member.expr">Expressions</a></li>
+<li><a href="#sec.lookup.member.decl-ref">Declaration References</a></li>
+<li><a href="#sec.lookup.member.generic">Generics</a></li>
+<li><a href="#sec.lookup.member.type">Type</a></li>
+</ul>
+</li>
+<li><a href="#sec.lookup.direct">Direct Lookup</a><ul><li><a href="#sec.lookup.direct.facet">Facets</a></li>
+<li><a href="#sec.lookup.direct.decl">Declarations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec.overload">Overloading</a><ul><li><a href="#sec.overload.set">Overload Sets</a><ul><li><a href="#sec.overload.set.simplify">Simplification</a></li>
+<li><a href="#sec.lookup.result.filter">Filtering</a></li>
+</ul>
+</li>
+<li><a href="#sec.overload.candidate">Candidates</a><ul><li><a href="#sec.overload.candidate.distance">Distances</a></li>
+</ul>
+</li>
+<li><a href="#sec.overload.resolution">Resolution</a></li>
+<li><a href="#sec.overload.conversion">Type Conversion</a></li>
+<li><a href="#sec.overload.call">Overloaded Calls</a></li>
+<li><a href="#section-calling-a-generic">Calling a Generic</a></li>
+<li><a href="#section-calling-a-function">Calling a Function</a></li>
+<li><a href="#section-calling-a-type">Calling a Type</a></li>
+</ul>
+</li>
 <li><a href="#sec.subtype">Subtyping</a></li>
 <li><a href="#sec.conv">Type Conversions</a></li>
 <li><a href="#sec.exec">Execution</a><ul><li><a href="#sec.exec.runtime">Runtime Sessions</a></li>
@@ -1128,6 +1179,7 @@ A <a>member declaration reference</a> must satisfy the following constraints:</p
 <li><p>The <a>member</a> must be a direct member declaration of the <a>base</a></p>
 </li>
 </ul>
+<div class="issue callout">TODO: The most important case here is when the base is a subtype or conformance witness (aka, a facet), since this operation then amounts to a lookup of the satisfying value for the given requirement in the witness table. It's not 100% clear if we should use distinct representations for the <code>virtual</code>-ish case and the pure static member lookup case in general.</div>
 <h3 id="sec.decl.ref.specialize"><a href="#sec.decl.ref.specialize" class="anchor">Specialized Declaration Reference</a></h3>
 <div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">SpecializedDeclarationReference</span></dfn>
 ⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="introducer grammar"><span class="meta">base</span>:<span class="meta">Value</span></span> <code><</code> <span class="grammar">(<span class="grammar"><span class="sequence grammar"><span class="introducer grammar"><span class="meta">arguments</span>:<span class="meta">Value</span></span> <code>,</code></span></span>)</span>* <code>></code></span></span></div>
@@ -1338,7 +1390,8 @@ Each form of expression may define rules for synthesis, checking, or both.</p>
 </div>
 <div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">CheckedExpression</span></dfn>
 ⇒ <span class="alternative grammar"><span class="meta">TypedValue</span></span>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">CheckedExpression</span> <code>(</code> <span class="grammar"><span class="meta">CheckedExpression</span></span>* <code>)</code></span></span></div>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">CheckedExpression</span> <code>(</code> <span class="grammar"><span class="meta">CheckedExpression</span></span>* <code>)</code></span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>let</code> <span class="meta">Identifier</span> <code>=</code> <span class="meta">CheckedExpression</span> <code>in</code> <span class="meta">CheckedExpression</span></span></span></div>
 <div class="grammar production"><dfn><span class="meta">IntermediateExpression</span></dfn>
 ⇒ <span class="alternative grammar"><span class="meta">CheckedExpression</span></span>
 ⇒ <span class="alternative grammar"><span class="sequence grammar"><code>OverloadSet</code> <span class="grammar"><span class="meta">CheckedExpression</span></span>*</span></span>
@@ -1489,10 +1542,45 @@ The output environment of an empty production is its input <a>environment</a>.</
 <h2 id="sec.decl.shared"><a href="#sec.decl.shared" class="anchor">Shared Concepts</a></h2>
 <div class="issue callout">Issue: We need to define concepts that are used by traditional-style declarations, including <dfn>type specifiers</dfn>.</div>
 <h3 id="sec.decl.body"><a href="#sec.decl.body" class="anchor">Bodies</a></h3>
-<div class="issue callout">Issue: We need to define that there are two kinds of bodies: <dfn>declaration bodies</dfn> and <a><var class="meta">statement bodies</var></a>.</div>
+<h4 id="sec.decl.body.statement"><a href="#sec.decl.body.statement" class="anchor">Statement Bodies</a></h4>
+<p>To check a <a>statement body</a> <a><var class="meta">b</var></a>:</p>
+<ul><li><p>With a <a>local scope</a>:</p>
+<ul><li><p>Check the statement of <a><var class="meta">b</var></a></p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="sec.decl.body.decl"><a href="#sec.decl.body.decl" class="anchor">Declaration Bodies</a></h4>
+<p>To check a <a>declaration body</a> <a><var class="meta">b</var></a>:</p>
+<ul><li><p>For each <a>declaration</a> <a><var class="meta">d</var></a> in <a><var class="meta">b</var></a>:</p>
+<ul><li><p>Validate: <a><var class="meta">d</var></a> is allowed to appear in the current context</p>
+</li>
+<li><p>Check <a><var class="meta">d</var></a></p>
+</li>
+<li><p>For each <a>declaration</a> <a><var class="meta">e</var></a> in <a><var class="meta">b</var></a>, other than <a><var class="meta">d</var></a>:</p>
+<ul><li><p>If the name of <a><var class="meta">e</var></a> is the same as the name of <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Validate: <a><var class="meta">d</var></a> and <a><var class="meta">e</var></a> do not conflict</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="sec.decl.body.accessor"><a href="#sec.decl.body.accessor" class="anchor">Accessor Bodies</a></h4>
+<p>To check an <a>accessor body</a> <a><var class="meta">b</var></a>:</p>
+<ul><li><p>...</p>
+</li>
+</ul>
 <h3 id="sec.decl.base"><a href="#sec.decl.base" class="anchor">Bases</a></h3>
+<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">BasesClause</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>:</code> <span class="grammar">(<span class="grammar"><span class="sequence grammar"><span class="meta">Base</span> <code>,</code></span></span>)</span>+</span></span></div>
+<div class="grammar production"><dfn><span class="meta">Base</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">TypeExpression</span></span></div>
+</pre>
+</div>
 <h3 id="sec.decl.param"><a href="#sec.decl.param" class="anchor">Parameters</a></h3>
-<p>A parameters clause defines a sequence of <dfn>parameter declarations</dfn>.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">ParametersClause</span></dfn>
 ⇒ <span class="alternative grammar"><span class="sequence grammar"><code>(</code> <span class="grammar">(<span class="grammar"><span class="sequence grammar"><span class="meta">ParameterDeclaration</span> <code>,</code></span></span>)</span>* <code>)</code></span></span></div>
 <div class="grammar production"><dfn><span class="meta">ParameterDeclaration</span></dfn>
@@ -1567,7 +1655,41 @@ The parameter in the callee binds to the storage location referenced by the argu
 ⇒ <span class="alternative grammar"><span class="sequence grammar"><code>(</code> <span class="grammar">(<span class="grammar"><span class="sequence grammar"><span class="meta">BindingPatternInner</span> <code>,</code></span></span>)</span>* <code>)</code></span></span></div>
 </pre>
 </div>
+<div class="issue callout">TODO: patterns belong in the statements section, really...</div>
 <h2 id="sec.decl.generic"><a href="#sec.decl.generic" class="anchor">Generics</a></h2>
+<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">GenericParametersClause</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code><</code> <span class="grammar"><span class="meta">GenericParameter</span></span>+ <code>></code></span></span></div>
+<div class="grammar production"><dfn><span class="meta">GenericParameter</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">Identifier</span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">Identifier</span> <code>:</code> <span class="meta">TypeExpression</span></span></span></div>
+</pre>
+</div>
+<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">WhereClause</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>where</code> <span class="grammar"><span class="meta">WhereConstraint</span></span>+</span></span></div>
+<div class="grammar production"><dfn><span class="meta">WhereConstraint</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">TypeExpression</span> <code>:</code> <span class="meta">TypeExpression</span></span></span></div>
+</pre>
+</div>
+<p>A category of declaration is <dfn>potentially generic</dfn> if its syntax allows for a <a>generic parameters clause</a> and/or a <a><code>where</code> clause</a>.</p>
+<p>It is an error for a <a>potentially generic</a> <a>declaration</a> to have a <a><code>where</code> clause</a> but no <a>generic parameters clause</a>.</p>
+<p>A declaration is a <dfn>generic declaration</dfn> if it has a <a>generic parameters clause</a> or it has any <a>implicit generic parameters</a>.</p>
+<h3 id="section-implicit-generic-parameters"><a href="#section-implicit-generic-parameters" class="anchor">Implicit Generic Parameters</a></h3>
+<div class="issue callout">TODO: Need to specify the rules for how to determine if a declaration has implicit generic parameters. This basically amounts to scanning its signature (parameters, result type, etc.) for any <code>some</code> type expressions.</div>
+<h3 id="section-static-semantics"><a href="#section-static-semantics" class="anchor">Static Semantics</a></h3>
+<p>To check a <a>generic declaration</a> <a><var class="meta">d</var></a>:</p>
+<ul><li><p>With a <a>generic declaration scope</a> for <a><var class="meta">d</var></a></p>
+<ul><li><p>Check the generic parameters of <a><var class="meta">d</var></a></p>
+</li>
+<li><p>Check the generic constraints of <a><var class="meta">d</var></a></p>
+</li>
+<li><p>// accumulate and check implied constraints?</p>
+</li>
+<li><p>Check <a><var class="meta">d</var></a> as a non-generic declaration</p>
+</li>
+</ul>
+</li>
+</ul>
+<div class="issue callout">TODO: The phrasing here needs to get precise, so that its clear that this logic wraps the other checking logic.</div>
 <h2 id="sec.decl.type"><a href="#sec.decl.type" class="anchor">Type Declarations</a></h2>
 <p>A <dfn>type declaration</dfn> <a>introduces</a> a binding to a type.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TypeDeclaration</span></dfn>
@@ -1578,7 +1700,7 @@ The parameter in the callee binds to the storage location referenced by the argu
 </div>
 <h3 id="sec.decl.agg"><a href="#sec.decl.agg" class="anchor">Aggregate Types</a></h3>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">AggregateTypeDeclaration</span></dfn>
-⇒ <span class="alternative grammar"><span class="sequence grammar">(<span class="grammar"><span class="grammar"><code>struct</code> | <code>class</code> | <code>interface</code></span></span>) <span class="meta">Identifier</span> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="grammar"><span class="meta">BasesClause</span></span>? <span class="grammar"><span class="meta">GenericWhereClause</span></span>? <span class="meta">DeclarationBodyClause</span> <span class="grammar"><code>;</code></span>?</span></span></div>
+⇒ <span class="alternative grammar"><span class="sequence grammar">(<span class="grammar"><span class="grammar"><code>struct</code> | <code>class</code> | <code>interface</code></span></span>) <span class="meta">Identifier</span> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="grammar"><span class="meta">BasesClause</span></span>? <span class="grammar"><span class="meta">WhereClause</span></span>? <span class="meta">DeclarationBodyClause</span> <span class="grammar"><code>;</code></span>?</span></span></div>
 <div class="grammar production"><dfn><span class="meta">DeclarationBodyClause</span></dfn>
 ⇒ <span class="alternative grammar"><span class="sequence grammar"><code>{</code> <span class="grammar"><span class="meta">Declaration</span></span>* <code>}</code></span></span></div>
 </pre>
@@ -1598,12 +1720,6 @@ Members not marked with <code>static</code> are <dfn>instance members</dfn> of t
 <p>By default, the implicit <code>this</code> parameter of a method acts has a direction of <code>in</code>.
 A method of a <code>struct</code> type declaration may be modified with the <code>[mutating]</code> attribute, in which case the implicit <code>this</code> parameter has a direction of <code>inout</code>.</p>
 <h3 id="sec.decl.agg.bases"><a href="#sec.decl.agg.bases" class="anchor">Bases</a></h3>
-<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">BasesClause</span></dfn>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>:</code> <span class="meta">Base</span> <span class="grammar">(<span class="grammar"><span class="sequence grammar"><code>,</code> <span class="meta">Base</span></span></span>)</span>*</span></span></div>
-<div class="grammar production"><dfn><span class="meta">Base</span></dfn>
-⇒ <span class="alternative grammar"><span class="meta">TypeExpression</span></span></div>
-</pre>
-</div>
 <p>An aggregate type declaration has zero or more <dfn>bases</dfn>.
 If an aggregate type declaration has no bases clause, then it has zero <a>bases</a>;
 otherwise, the bases of the aggregate type declaration are the types identified by eachBase in that clause.</p>
@@ -1685,21 +1801,17 @@ If a traditional case declaration does not have an initial-value expression, the
 <h3 id="sec.decl.type.alias"><a href="#sec.decl.type.alias" class="anchor">Type Aliases</a></h3>
 <p>A <dfn>type alias declaration</dfn> introduces a binding that resolves to some other type.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TypeAliasDeclaration</span></dfn>
-⇒ <span class="alternative grammar"><span class="meta">ModernTypeAliasDeclaration</span></span>
-⇒ <span class="alternative grammar"><span class="meta">TraditionalTypeAliasDeclaration</span></span></div>
-<div class="grammar production"><dfn><span class="meta">ModernTypeAliasDeclaration</span></dfn>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>typealias</code> <span class="meta">Identifier</span> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="grammar"><span class="meta">GenericWhereClause</span></span>? <code>=</code></span></span></div>
-<div class="grammar production"><dfn><span class="meta">TypeExpression</span></dfn>
-⇒ <span class="alternative grammar"><code>;</code></span></div>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>typealias</code> <span class="meta">Identifier</span> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="grammar"><span class="meta">GenericWhereClause</span></span>? <code>=</code> <span class="meta">TypeExpression</span> <code>;</code></span></span></div>
 </pre>
 </div>
-<div class="issue callout">TODO: <a>type alias declaration</a></div>
-<pre><code class="language-.checking">GIVEN identifier n, type t, context c
-GIVEN t checks in c
-THEN `typealias` n = t `;` checks in c
-</code></pre>
-<pre><code class="language-">
-</code></pre>
+<h4 id="section-static-semantics"><a href="#section-static-semantics" class="anchor">Static Semantics</a></h4>
+<p>To check a <a>type alias declaration</a> <a><var class="meta">d</var></a>:</p>
+<ul><li><p>With a <a>declaration scope</a> for <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Check the type expression of <a><var class="meta">d</var></a> as a type</p>
+</li>
+</ul>
+</li>
+</ul>
 <h4 id="sec.decl.type.alias.syntax.traditional"><a href="#sec.decl.type.alias.syntax.traditional" class="anchor">Traditional Syntax</a></h4>
 <p>A type alias may also be declared using a <dfn>traditional type alias declaration</dfn>.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TraditionalTypeAliasDeclaration</span></dfn>
@@ -1902,7 +2014,7 @@ If the function body clause is <code>;</code>, then that function declaration ha
 <p>A <dfn>constructor declaration</dfn> introduces logic for initializing an instance of the enclosing <a>type declaration</a>.
 A <a>constructor declaration</a> is implicitly static.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">ConstructorDeclaration</span></dfn>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>init</code> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="meta">ParametersClause</span> <span class="meta">FunctionBodyClause</span></span></span></div>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>init</code> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="meta">ParametersClause</span> <span class="grammar"><span class="meta">WhereClause</span></span>? <span class="meta">StatementBodyClause</span></span></span></div>
 </pre>
 </div>
 <p>A constructor declaration is invocable.
@@ -1911,12 +2023,21 @@ A constructor declaratin has an implicit <code>this</code> parameter, with a dir
 <h2 id="sec.decl.prop"><a href="#sec.decl.prop" class="anchor">Properties</a></h2>
 <p>A <dfn>property declaration</dfn> introduces a binding that can have its behavior for read and write operations customized.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">PropertyDeclaration</span></dfn>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>property</code> <span class="meta">Identifier</span> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="meta">TypeAscriptionClause</span> <span class="meta">GenericWhereClause</span> <span class="meta">PropertyBody</span></span></span></div>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>property</code> <span class="meta">Identifier</span> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="meta">TypeAscriptionClause</span> <span class="grammar"><span class="meta">WhereClause</span></span>? <span class="meta">PropertyBody</span></span></span></div>
 <div class="grammar production"><dfn><span class="meta">PropertyBody</span></dfn>
 ⇒ <span class="alternative grammar"><span class="sequence grammar"><code>{</code> <span class="grammar"><span class="meta">AccessorDecl</span></span>* <code>}</code></span></span></div>
 </pre>
 </div>
-<div class="issue callout">TODO: reference <a>property declaration</a>.</div>
+<h3 id="section-static-semantics"><a href="#section-static-semantics" class="anchor">Static Semantics</a></h3>
+<p>To check a <a>property declaration</a> <a><var class="meta">d</var></a>:</p>
+<ul><li><p>With a <a>declaration scope</a> for <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Check the type expression of <a><var class="meta">d</var></a></p>
+</li>
+<li><p>Check the body of <a><var class="meta">d</var></a></p>
+</li>
+</ul>
+</li>
+</ul>
 <h3 id="sec.decl.accessor"><a href="#sec.decl.accessor" class="anchor">Accessors</a></h3>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">AccessorDecl</span></dfn>
 ⇒ <span class="alternative grammar"><span class="meta">GetAccessorDecl</span></span></div>
@@ -1935,43 +2056,30 @@ A constructor declaratin has an implicit <code>this</code> parameter, with a dir
 </div>
 <p>A subscript declaration is invocable.</p>
 <div class="note callout">Note: Unlike a function declaration, a <a>subscript declaration</a> cannot elide the result type clause.</div>
+<h3 id="section-static-semantics"><a href="#section-static-semantics" class="anchor">Static Semantics</a></h3>
+<p>To check a <a>subscript declaration</a> <a><var class="meta">d</var></a> in <a>context</a> <a><var class="meta">C</var></a>:</p>
+<ul><li><p>Validate: <a><var class="meta">d</var></a> must have at least one parameter</p>
+</li>
+<li><p>With a <a>declaration scope</a> for <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Check the parameters of <a><var class="meta">d</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">resultType</var></a> be the result type of <a><var class="meta">d</var></a></p>
+</li>
+<li><p>Check <a><var class="meta">resultType</var></a> as a type</p>
+</li>
+<li><p>With an <a>expected storage type</a> of <a><var class="meta">resultType</var></a>:</p>
+<ul><li><p>Check the body of <a><var class="meta">d</var></a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <h2 id="sec.decl.extension"><a href="#sec.decl.extension" class="anchor">Extensions</a></h2>
-<p>An extension declaration is introduced with the <code>extension</code> keyword:</p>
-<pre><code class="language-">extension MyVector
-{
-    float getLength() { return sqrt(x*x + y*y); }
-    static int getDimensionality() { return 2; }
-}
-</code></pre>
-<p>An extension declaration adds behavior to an existing type.
-In the example above, the <code>MyVector</code> type is extended with an instance method <code>getLength()</code>, and a static method <code>getDimensionality()</code>.</p>
-<p>An extension declaration names the type being extended after the <code>extension</code> keyword.
-The body of an extension declaration may include type declarations, functions, initializers, and subscripts.</p>
-<div class="note callout">Note: The body of an extension cannot include variable declarations.
-An extension cannot introduce members that would change the in-memory layout of the type being extended.</div>
-<p>The members of an extension are accessed through the type that is being extended.
-For example, for the above extension of <code>MyVector</code>, the introduced <a>methods</a> are accessed as follows:</p>
-<pre><code class="language-">MyVector v = ...;
-
-float f = v.getLength();
-int n = MyVector.getDimensionality();
-</code></pre>
-<p>An extension declaration need not be placed in the same module as the type being extended; it is possible to extend a type from third-party or standard-library code.
-The members of an extension are only visible inside of modules that <code>import</code> the module declaring the extension;
-extension members are not automatically visible wherever the type being extended is visible.</p>
-<p>An extension declaration may include an inheritance clause:</p>
-<pre><code class="language-">extension MyVector : IPrintable
-{
-    ...
-}
-</code></pre>
-<p>The inheritance clause of an extension declaration may only include interfaces.
-When an extension declaration lists an interface in its inheritance clause, it asserts that the extension introduces a new conformance, such that the type being extended now conforms to the given interface.
-The extension must ensure that the type being extended satisfies all the requirements of the interface.
-Interface requirements may be satisfied by the members of the extension, members of the original type, or members introduced through other extensions visible at the point where the conformance was declared.</p>
-<p>It is an error for overlapping conformances (that is, of the same type to the same interface) to be visible at the same point.
-This includes cases where two extensions declare the same conformance, as well as those where the original type and an extension both declare the same conformance.
-The conflicting conformances may come from the same module or difference modules.</p>
+<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">ExtensionDecl</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>extension</code> <span class="grammar"><span class="meta">GenericParametersClause</span></span>? <span class="meta">TypeExpression</span> <span class="grammar"><span class="meta">BasesClause</span></span>? <span class="grammar"><span class="meta">WhereClause</span></span>? <span class="meta">DeclarationBody</span></span></span></div>
+</pre>
+</div>
 <p><div algorithm>
 In order to avoid problems with conflicting conformances, when a module <a><var class="meta">M</var></a> introduces a conformance of type <a><var class="meta">T</var></a> to interface <a><var class="meta">I</var></a>, one of the following should be true:</p>
 <ul><li><p>The type <a><var class="meta">T</var></a> is declared in module <a><var class="meta">M</var></a></p>
@@ -1983,68 +2091,22 @@ In order to avoid problems with conflicting conformances, when a module <a><var 
 The runtime behavior of programs that include overlapping <a>retroactive conformances</a> is currently undefined.
 </div></p>
 <p>Currently, extension declarations can only apply to structure types.</p>
-<h2 id="sec.decl.generic"><a href="#sec.decl.generic" class="anchor">Generics</a></h2>
-<p>Many kinds of declarations can be made <a>generic</a>: structure types, interfaces, extensions, functions, initializers, and subscripts.</p>
-<p>A <a>generic</a> declaration introduces a <dfn>generic parameter list</dfn> enclosed in angle brackets <code><></code>:</p>
-<pre><code class="language-">T myFunction<T>(T left, T right, bool condition)
-{
-    return condition ? left : right;
-}
-</code></pre>
-<h3 id="sec.decl.generic.param"><a href="#sec.decl.generic.param" class="anchor">Generic Parameters</a></h3>
-<p>A <a>generic parameter list</a> can include one or more parameters separated by commas.
-The allowed forms for <dfn>generic parameters</dfn> are:</p>
-<ul><li><p>A single identifier like <code>T</code> is used to declare a <dfn>generic type parameter</dfn> with no constraints.</p>
+<h3 id="section-static-semantics"><a href="#section-static-semantics" class="anchor">Static Semantics</a></h3>
+<p>To check an <a><code>extension</code> declaration</a> <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">typeExpr</var></a> be the type expression of <a><var class="meta">d</var></a></p>
 </li>
-<li><p>A clause like <code>T : IFoo</code> is used to introduce a <a>generic type parameter</a> <code>T</code> where the parameter is constrained so that it must conform to the <code>IFoo</code> interface.</p>
+<li><p>With a <a>type declaration scope</a> for <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Check <a><var class="meta">typeExpr</var></a> as a type expression</p>
 </li>
-<li><p>A clause like <code>let N : int</code> is used to introduce a <dfn>generic value parameter</dfn> <code>N</code>, which takes on values of type <code>int</code>.</p>
+<li><p>Check the bases of <a><var class="meta">d</var></a> // TODO: details</p>
+</li>
+<li><p>Check the body of <a><var class="meta">d</var></a></p>
+</li>
+<li><p>// check declared conformances</p>
 </li>
 </ul>
-<div class="note callout">Note: The syntax for <a>generic value parameters</a> is provisional and subject to possible change in the future.</div>
-<p><a>Generic parameters</a> may declare a default value with <code>=</code>:</p>
-<pre><code class="language-">T anotherFunction<T = float, let N : int = 4>(vector<T,N> v);
-</code></pre>
-<p>For generic type parameters, the default value is a type to use if no argument is specified.
-For generic value parameters, the default value is a value of the same type to use if no argument is specified.</p>
-<h3 id="sec.decl.generic.specialize.explicit"><a href="#sec.decl.generic.specialize.explicit" class="anchor">Explicit Specialization</a></h3>
-<p>A generic is <dfn>specialized</dfn> by applying it to <dfn>generic arguments</dfn> listed inside angle brackets <code><></code>:</p>
-<pre><code class="language-">anotherFunction<int, 3>
-</code></pre>
-<p>Specialization produces a reference to the declaration with all generic parameters bound to concrete arguments.</p>
-<p>When specializing a generic, generic type parameters must be matched with type arguments that conform to the constraints on the parameter, if any.
-Generic value parameters must be matched with value arguments of the appropriate type, and that are specialization-time constants.</p>
-<p>An explicitly <a>specialized</a> function, type, etc. may be used wherever a non-generic function, type, etc. is expected:</p>
-<pre><code class="language-">int i = anotherFunction<int,3>( int3(99) );
-</code></pre>
-<h3 id="sec.decl.generic.specialize.implicit"><a href="#sec.decl.generic.specialize.implicit" class="anchor">Implicit Specialization</a></h3>
-<p>If a generic function/type/etc. is used where a non-generic function/type/etc. is expected, the compiler attempts <dfn>implicit specialization</dfn>.
-<a>Implicit specialization</a> infers generic arguments from the context at the use site, as well as any default values specified for generic parameters.</p>
-<p>For example, if a programmer writes:</p>
-<pre><code class="language-">int i = anotherFunction( int3(99) );
-</code></pre>
-<p>The compiler will infer the generic arguments <code><int, 3></code> from the way that <code>anotherFunction</code> was applied to a value of type <code>int3</code>.</p>
-<div class="note callout">Note: Inference for generic arguments currently only takes the types of value arguments into account.
-The expected result type does not currently affect inference.</div>
-<h3 id="sec.decl.generic.syntax"><a href="#sec.decl.generic.syntax" class="anchor">Syntax Details</a></h3>
-<p>The following examples show how generic declarations of different kinds are written:</p>
-<pre><code class="language-">T genericFunction<T>(T value);
-funct genericFunction<T>(value: T) -> T;
-
-__init<T>(T value);
-
-__subscript<T>(T value) -> X { ... }
-
-struct GenericType<T>
-{
-    T field;
-}
-
-interface IGenericInterface<T> : IBase<T>
-{
-}
-</code></pre>
-<div class="note callout">Note: Currently there is no user-exposed syntax for writing a generic extension.</div>
+</li>
+</ul>
 <h2 id="sec.decl.buffer"><a href="#sec.decl.buffer" class="anchor">Traditional Buffer Declarations</a></h2>
 <p>A <dfn>traditional buffer declaration</dfn> is a shorthand for declaring a global-scope shader parameter.</p>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TraditionalBufferDeclaration</span></dfn>
@@ -2383,74 +2445,49 @@ A string literal expressions consists of one or more string literal tokens in a 
 </pre>
 </div>
 <p>A string literal expression <a><var class="meta">s</var></a> synthesizes the checked expression <code><a><var class="meta">s</var></a> : @Constant String</code>.</p>
-<h2 id="sec.expr.ident"><a href="#sec.expr.ident" class="anchor">Identifier Expressions</a></h2>
-<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">IdentifierExpression</span></dfn>
-⇒ <span class="alternative grammar"><span class="meta">Identifier</span></span>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>operator</code> <span class="meta">InfixOperator</span></span></span>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>operator</code> <code>prefix</code> <span class="meta">PrefixOperator</span></span></span>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><code>operator</code> <code>postfix</code> <span class="meta">PostfixOperator</span></span></span></div>
+<h2 id="sec.expr.name"><a href="#sec.expr.name" class="anchor">Name Expressions</a></h2>
+<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">NameExpression</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">Name</span></span></div>
 </pre>
 </div>
-<p>An identifier expression <a><var class="meta">id</var></a> synthesizes <a><var class="meta">e</var></a> if lookup of <a><var class="meta">id</var></a> yields <a><var class="meta">e</var></a>.</p>
-<div class="issue callout">Issue: This presentation delegates the actual semantics of identifier expressions to the lookup judgement, which needs to be explained in detail.</div>
+<p>To <a>synthesize</a> a <a>name expression</a> <a><var class="meta">expr</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">overloadSet</var></a> be the result of <a>looking up</a> the name of <a><var class="meta">expr</var></a> in the current context</p>
+</li>
+<li><p>Let <a><var class="meta">simplified</var></a> be the result of <a>simplifying</a> <a><var class="meta">overloadSet</var></a></p>
+</li>
+<li><p>If <a><var class="meta">simplified</var></a> is <span class="meta terminal">Error</span>, diagnose an error</p>
+</li>
+<li><p>Return <a><var class="meta">simplified</var></a></p>
+</li>
+</ul>
 <h2 id="sec.expr.member"><a href="#sec.expr.member" class="anchor">Member Expression</a></h2>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">MemberExpression</span></dfn>
-⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">Expression</span> <code>.</code> <span class="meta">Identifier</span></span></span></div>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="introducer grammar"><span class="meta">base</span>:<span class="meta">Expression</span></span> <code>.</code> <span class="introducer grammar"><span class="meta">member</span>:<span class="meta">Name</span></span></span></span></div>
+</pre>
+</div>
+<p>To <a>synthesize</a> a <a>member expression</a> <a><var class="meta">expr</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">base</var></a> be the result of synthesizing the base of <a><var class="meta">expr</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">overloadSet</var></a> be the result of <a>looking up</a> the member name of <a><var class="meta">expr</var></a> in <a><var class="meta">base</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">simplified</var></a> be the result of <a>simplifying</a> <a><var class="meta">overloadSet</var></a></p>
+</li>
+<li><p>Return <a><var class="meta">simplified</var></a></p>
+</li>
+</ul>
+<div class="issue callout"><h6>Issue</h6>
+<p>These rules attempt to look up a member in an <a>intermediate expression</a>, while the <a>lookup</a> rules currently only handle lookup in a <a>checked expression</a>.
+There needs to be some rule to determine what happens when an attempt is made to look up a member in an intermediate expression such as an overload set.</p>
+<p>The current compiler implementation forces the base expression to resolve before performing lookup, but there is not strictly a reason why this always has to be the approach taken.</p>
+</div>
+<h3 id="sec.expr.member.static"><a href="#sec.expr.member.static" class="anchor">Static Member Expression</a></h3>
+<div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">StaticMemberExpression</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="introducer grammar"><span class="meta">base</span>:<span class="meta">Expression</span></span> <code>::</code> <span class="introducer grammar"><span class="meta">member</span>:<span class="meta">Name</span></span></span></span></div>
 </pre>
 </div>
 <div class="issue callout"><h6>Issue</h6>
-<p>The semantics of member lookup are similar in complexity to identifier lookup (and indeed the two share a lot of the same machinery).
-In addition to all the complications of ordinary name lookup (including overloading), member expressions also need to deal with:</p>
-<ul><li><p>Implicit dereference of pointer-like types.</p>
-</li>
-<li><p>Swizzles (vector or matrix).</p>
-</li>
-<li><p>Static vs. instance members.</p>
-</li>
-</ul>
-<p>In both synthesis and checking modes, the base expression should first synthesize a type, and then lookup of the member should be based on that type.</p>
+<p>Semantically, there is no reason to treat static member lookup as a special case. All that really gets added here is an assertion that <code>base</code> must not be an value-level expression (that is, it must be a type, module, etc.)</p>
 </div>
-<p><!--
-%\begin{verbatim}
-%When <code>base</code> is a structure type, this expression looks up the field or other %member named by <code>m</code>.
-%Just as for an identifier expression, the result of a member expression may be %overloaded, and might be disambiguated based on how it is used.
-%
-%A member expression is an l-value if the base expression is an l-value and the %member it refers to is mutable.
-%
-% ### Implicit Dereference ### {dereference.implicit}
-%
-%If the base expression of a member reference is a <a><var class="meta">pointer-like type</var></a> such as %<code>ConstantBuffer<T></code>, then a member reference expression will implicitly %dereference the base expression to refer to the pointed-to value (e.g., in the %case of <code>ConstantBuffer<T></code> this is the buffer contents of type <code>T</code>).
-%
-% ### Vector Swizzles ### {swizzle.vector}
-%
-%When the base expression of a member expression is of a vector type <code>vector<T,N></code> %then a member expression is a <a><var class="meta">vector swizzle expression</var></a>.
-%The member name must conform to these constraints:
-%
-%* The member name must comprise between one and four ASCII characters
-%* The characters must be come either from the set (<code>x</code>, <code>y</code>, <code>z</code>, <code>w</code>) or (<code>r</code>, %<code>g</code>, <code>b</code>, <code>a</code>), corresponding to element indics of (0, 1, 2, 3)
-%* The element index corresponding to each character must be less than <code>N</code>
-%
-%If the member name of a swizzle consists of a single character, then the %expression has type <code>T</code> and is equivalent to a subscript expression with the %corresponding element index.
-%
-%If the member name of a swizzle consists of <code>M</code> characters, then the result is a %<code>vector<T,M></code> built from the elements of the base vector with the corresponding %indices.
-%
-%A vector swizzle expression is an l-value if the base expression was an l-value %and the list of indices corresponding to the characeters of the member name %contains no duplicates.
-%
-% ### Matrix Swizzles ### {swizzle.matrix}
-%
-%> Note: The Slang implementation currently doesn't support matrix swizzles.
-%
-% ### Static Member Expressions ### {member.static}
-%
-%When the base expression of a member expression is a type instead of a value, the %result is a <a><var class="meta">static member expression</var></a>.
-%A static member expression can refer to a static field or static method of a %structure type.
-%A static member expression can also refer to a case of an enumeration type.
-%
-%A static member expression (but not a member expression in general) may use the %token <code>::</code> instead of <code>.</code> to separate the base and member name:
-%
-%<code>hlsl %// These are equivalent %Color.Red %Color::Red %</code>
-%\end{verbatim}
---></p>
 <h2 id="sec.expr.this"><a href="#sec.expr.this" class="anchor">This Expression</a></h2>
 <h3 id="section-syntax"><a href="#section-syntax" class="anchor">Syntax</a></h3>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">ThisExpression</span></dfn>
@@ -2458,7 +2495,14 @@ In addition to all the complications of ordinary name lookup (including overload
 </pre>
 </div>
 <h3 id="section-static-semantics"><a href="#section-static-semantics" class="anchor">Static Semantics</a></h3>
-<p>A <code>this</code> expression synthesizes <a><var class="meta">e</var></a> if lookup of <code>this</code> yields <a><var class="meta">e</var></a>.</p>
+<p>To <a>synthesize</a> a <a><code>this</code> expression</a> <a><var class="meta">expr</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">overloadSet</var></a> be the result of <a>looking up</a> <span class="meta terminal">this</span> in the current context</p>
+</li>
+<li><p>Let <a><var class="meta">simplified</var></a> be the result of <a>simplifying</a> <a><var class="meta">overloadSet</var></a></p>
+</li>
+<li><p>Return <a><var class="meta">simplified</var></a></p>
+</li>
+</ul>
 <h2 id="sec.expr.paren"><a href="#sec.expr.paren" class="anchor">Parenthesized Expression</a></h2>
 <h3 id="section-syntax"><a href="#section-syntax" class="anchor">Syntax</a></h3>
 <div class="syntax grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">ParenthesizedExpression</span></dfn>
@@ -2845,7 +2889,164 @@ This chapter needs to explain the rules for:</p>
 </li>
 </ul>
 <p></div></p>
-<h1 id="sec.linearization"><a href="#sec.linearization" class="anchor">Type Linearization</a></h1>
+<h1 id="sec.lin"><a href="#sec.lin" class="anchor">Type Linearization</a></h1>
+<p>The <dfn>linearization</dfn> of a <a>type</a>, in a given <a>context</a>, comprises a sequence of <a>facets</a>.</p>
+<h2 id="sec.lin.facet"><a href="#sec.lin.facet" class="anchor">Facets</a></h2>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Facet</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="introducer grammar"><span class="meta">descendent</span>:<span class="meta">Value</span></span> <span class="introducer grammar"><span class="meta">ancestor</span>:<span class="meta">DeclarationReference</span></span> <span class="grammar"><span class="meta">PriorityTag</span></span>*</span></span></div>
+</pre>
+</div>
+<blockquote><p>A <a>facet</a> represents the fact that a given type has/provides access to the members of a given declaration.</p>
+</blockquote>
+<div class="note callout">Note: A <a>facet</a> is usable as a <a>witness</a> for the appropriate relationship. For example, a facet for an base type in the linearization of a derived type <a>is</a> the witness for the subtype relationship. Similarly, a facet for an interface in some concrete type <a>is</a> a witness for the conformance relationship.</div>
+<h2 id="sec.lin.algo"><a href="#sec.lin.algo" class="anchor">Algorithm</a></h2>
+<p>To calculate the <a>linearizatin</a> of <a>type declaration reference</a> <a><var class="meta">d</var></a> in <a>context</a> <a><var class="meta">C</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">id</var></a> be a fresh <a>unique id</a></p>
+</li>
+<li><p>Let variable <a><var class="meta">resultLin</var></a> be a an empty list of facets</p>
+</li>
+<li><p>Let <a><var class="meta">directFacet</var></a> be the facet <code><a><var class="meta">d</var></a> <a><var class="meta">d</var></a> [ <a><var class="meta">id</var></a></code> 1 <code>]</code></p>
+</li>
+<li><p>Add <a><var class="meta">directFacet</var></a> to <a><var class="meta">resultLin</var></a></p>
+</li>
+<li><p>For each <a>declared base</a> <a><var class="meta">b</var></a> of <a><var class="meta">d</var></a>:</p>
+<ul><li><p>Let variable <a><var class="meta">baseLin</var></a> be a copy of the <a>linearization</a> of <a><var class="meta">b</var></a> in <a><var class="meta">C</var></a></p>
+</li>
+<li><p>For each <a><var class="meta">baseFacet</var></a> in <a><var class="meta">baseLin</var></a>:</p>
+<ul><li><p>Set the descendent of <a><var class="meta">baseFacet</var></a> to <a><var class="meta">d</var></a></p>
+</li>
+<li><p>Add a <a>priority tag</a> with key <a><var class="meta">id</var></a> and value 0 to <a><var class="meta">baseFacet</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Set <a><var class="meta">resultLin</var></a> to the result of merging <a><var class="meta">resultLin</var></a> and <a><var class="meta">baseLin</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>For each extension declaration <a><var class="meta">extDecl</var></a> that is visible in <a><var class="meta">C</var></a>:</p>
+<ul><li><p>Attempt to apply <a><var class="meta">extDecl</var></a> to <a><var class="meta">d</var></a>:</p>
+<ul><li><p>If the attempt succeeds, yielding <a>extension declaration reference</a> <a><var class="meta">extDeclRef</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">extLin</var></a> be a copy of the <a>linearization</a> of <a><var class="meta">extDeclRef</var></a> in <a><var class="meta">C</var></a></p>
+</li>
+<li><p>For each <a><var class="meta">baseFacet</var></a> in <a><var class="meta">baseLin</var></a>:</p>
+<ul><li><p>Set the descendent of <a><var class="meta">baseFacet</var></a> to <a><var class="meta">d</var></a></p>
+</li>
+<li><p>Add a <a>priority tag</a> with key <a><var class="meta">id</var></a> and value 0 to <a><var class="meta">baseFacet</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Set <a><var class="meta">resultLin</var></a> to the result of merging <a><var class="meta">resultLin</var></a> and <a><var class="meta">baseLin</var></a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">resultLin</var></a></p>
+</li>
+</ul>
+<p>To calculate the <a>linearization</a> of a <a>conjunction</a> type <a><var class="meta">t</var></a>, of the form <span class="meta terminal">And(</span> <code><a><var class="meta">left</var></a> , <a><var class="meta">right</var></a> )</code>:</p>
+<ul><li><p>Let <a><var class="meta">leftLin</var></a> be a copy of the <a>linearization</a> of <a><var class="meta">left</var></a> in <a><var class="meta">C</var></a></p>
+</li>
+<li><p>For each <a><var class="meta">f</var></a> in _leftLin, set the descendent of <a><var class="meta">f</var></a> to <a><var class="meta">t</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">rightLin</var></a> be a copy of the <a>linearization</a> of <a><var class="meta">right</var></a> in <a><var class="meta">C</var></a></p>
+</li>
+<li><p>For each <a><var class="meta">f</var></a> in <a><var class="meta">rightLin</var></a>, set the descendent of <a><var class="meta">f</var></a> to <a><var class="meta">t</var></a></p>
+</li>
+<li><p>Return the result of <a>merging</a> <a><var class="meta">leftLin</var></a> and <a><var class="meta">rightLin</var></a></p>
+</li>
+</ul>
+<h2 id="section-merging"><a href="#section-merging" class="anchor">Merging</a></h2>
+<p>To calculate the merge of <a>linearizations</a> <a><var class="meta">left</var></a> and <a><var class="meta">right</var></a>:</p>
+<ul><li><p>Let variable <a><var class="meta">result</var></a> be an empty linearization</p>
+</li>
+<li><p>Loop:</p>
+<ul><li><p>If <a><var class="meta">left</var></a> is empty:</p>
+<ul><li><p>Return the concanentation of <a><var class="meta">result</var></a> and <a><var class="meta">right</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>If <a><var class="meta">right</var></a> is empty:</p>
+<ul><li><p>Return the concatenation of <a><var class="meta">result</var></a> and <a><var class="meta">left</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Let <a><var class="meta">firstLeft</var></a> be the first element of <a><var class="meta">left</var></a></p>
+</li>
+<li><p>If <a><var class="meta">right</var></a> does not contain a facet with the same ancestor as <a><var class="meta">firstLeft</var></a>:</p>
+<ul><li><p>Pop <a><var class="meta">firstLeft</var></a> from the front of <a><var class="meta">left</var></a></p>
+</li>
+<li><p>Append <a><var class="meta">firstLeft</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+<li><p>Continue</p>
+</li>
+</ul>
+</li>
+<li><p>Let <a><var class="meta">firstRight</var></a> be the first element of <a><var class="meta">right</var></a></p>
+</li>
+<li><p>If <a><var class="meta">left</var></a> does not contain a facet with the same ancestor as <a><var class="meta">firstRight</var></a>:</p>
+<ul><li><p>Pop <a><var class="meta">firstRight</var></a> from the front of <a><var class="meta">right</var></a></p>
+</li>
+<li><p>Append <a><var class="meta">firstRight</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+<li><p>Continue</p>
+</li>
+</ul>
+</li>
+<li><p>Pop <a><var class="meta">firstLeft</var></a> from the front of <a><var class="meta">left</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">matchRight</var></a> be the first facet in <a><var class="meta">right</var></a> with the same ancestor as <a><var class="meta">firstLeft</var></a></p>
+</li>
+<li><p>Remove <a><var class="meta">matchRight</var></a> from <a><var class="meta">right</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">merged</var></a> be the result of merging <a><var class="meta">firstLeft</var></a> and <a><var class="meta">matchRight</var></a></p>
+</li>
+<li><p>Append <a><var class="meta">merged</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+<li><p>Continue</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>To merge <a>facets</a> <a><var class="meta">left</var></a> and <a><var class="meta">right</var></a>:</p>
+<ul><li><p>Assert: <a><var class="meta">left</var></a> and <a><var class="meta">right</var></a> have the same descendent</p>
+</li>
+<li><p>Assert: <a><var class="meta">left</var></a> and <a><var class="meta">right</var></a> have the same ancestor</p>
+</li>
+<li><p>Let <a><var class="meta">d</var></a> be the descendent of <a><var class="meta">left</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">a</var></a> be the ancestor of <a><var class="meta">left</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">leftKeys</var></a> be the set of keys of the priority tags of <a><var class="meta">left</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">rightKeys</var></a> be the set of keys of the priority tags of <a><var class="meta">right</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">keys</var></a> be the union of <a><var class="meta">leftKeys</var></a> and <a><var class="meta">rightKeys</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">tags</var></a> be an empty list of priority tags</p>
+</li>
+<li><p>For each <a><var class="meta">k</var></a> in <a><var class="meta">keys</var></a>:</p>
+<ul><li><p>let <a><var class="meta">val</var></a> be the minimum of:</p>
+<ul><li><p>the value of any priority tag of <a><var class="meta">left</var></a> with key <a><var class="meta">k</var></a></p>
+</li>
+<li><p>the value of any priority tag of <a><var class="meta">right</var></a> with key <a><var class="meta">k</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Add priority tag <a><var class="meta">k</var></a> <a><var class="meta">val</var></a> to <a><var class="meta">tags</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Return the <a>facet</a> <a><var class="meta">d</var></a> <a><var class="meta">a</var></a> <a><var class="meta">tags</var></a></p>
+</li>
+</ul>
+<h2 id="section-fodder"><a href="#section-fodder" class="anchor">Fodder</a></h2>
+<p>If <a>type</a> <a><var class="meta">t</var></a> is a subtype of <a>type</a> <a><var class="meta">s</var></a> in <a>context</a> <a><var class="meta">c</var></a>, and <a><var class="meta">s</var></a> is a <a>declaration reference</a> to a <a>type declaration</a> with a <a>declaration body</a>, then the <a>linearization</a> of <a><var class="meta">t</var></a> in <a><var class="meta">c</var></a> has a <a>facet</a> corresponding to <a><var class="meta">s</var></a>.</p>
+<p>If <a>type</a> <a><var class="meta">t</var></a> implements <a>interface</a> <a><var class="meta">i</var></a> in <a>context</a> <a><var class="meta">c</var></a>, then the <a>linearization</a> of <a><var class="meta">t</var></a> in <a><var class="meta">c</var></a> has a <a>facet</a> corresponding to <a><var class="meta">i</var></a>.</p>
+<div class="issue callout">TODO: need to communicate that if <a><var class="meta">a</var></a> is a subtype of <a><var class="meta">b</var></a>, then <a><var class="meta">a</var></a> will precede <a><var class="meta">b</var></a> in the linearization. And same if interface <a><var class="meta">i</var></a> extends interface <a><var class="meta">j</var></a>; <a><var class="meta">i</var></a> will precede <a><var class="meta">j</var></a>.</div>
+<div class="issue callout">Issue: it may be that it is more effective to define an inhertiance graph (a DAG) first, rather than starting with the linearization. The main reason to do this is so that things like overload resolution won't treat methods from unrelated types <a><var class="meta">x</var></a> and <a><var class="meta">y</var></a> as having a well-defined relative priority order, when they shouldn't.</div>
 <div class="issue callout"><h6>Issue</h6>
 <p>This chapter needs to explain how, given a type, an implementation should derive the \emph{linearization} of that type into an ordered list of \emph{facets}.
 Each facet corresponds to some DeclBody, and thus has a set of declarations in it that may bind certain names.</p>
@@ -2910,88 +3111,476 @@ Basically, if we want to support inference of <code>associatedtype</code>s, then
 </ul>
 </div>
 <h1 id="sec.lookup"><a href="#sec.lookup" class="anchor">Lookup</a></h1>
-<p><div class=issue></p>
-<p>This chapter needs to document the rules for how names are looked up in two cases:</p>
-<ul><li><p>Looking up a standalone Identifier as an expression or type expression, we need to look up in the current context.</p>
+<p><dfn>Lookup</dfn> is an operation that takes a <a>name</a> and maps it to zero or more <a>candidate</a> meanings, in a particular <a>static context</a>.</p>
+<p>Two kinds of <a>lookup</a> may be performed when checking Slang <a>expressions</a>:</p>
+<ul><li><p><dfn>simple lookup</dfn> of a <a>name</a> on its own; for example, as part of a <a>name expression</a></p>
 </li>
-<li><p>When looking up a name in some type, whether explicitly as part of a MemberExpression, or implicitly as part of lookup through <code>this</code> inside a type body.</p>
-</li>
-</ul>
-<p>The first kind of lookup is easily expressed as a recursion over the structure of contexts, but will often bottleneck through lookup in the context of some type (since code is so often nested under a type).
-This kind of lookup also needs to deal with <code>import</code> declarations and the visibility rules for <a>source units</a> in the same module as one another.</p>
-<p>The second kind of lookup requires access to a linearization of the type.
-It potentially needs to deal with performing substitutions on the type/signature of a declaration that is found, so that it is adjusted for the <code>This</code> type it has been looked up through.</p>
-<p>Both kinds of lookup need to deal with the possibility that a name will be \emph{overloaded}.
-At this level, lookup should probably return the full set of all \emph{candidates} when overloading occurs, but retain enough structure in the lookup results that overload resolution can evaluate which should be prioritized over the others, based (e.g., picking members from a more-derived type over those from a base type).</p>
-<p>The lookup rules here should be able to handle lookup of <code>init</code>, and <code>subscript</code> declaration via a synthesized name that cannot conflict with other identifiers (in case, e.g., a user has a struct with an ordinary field named \texttt{subscript}).</p>
-<p>Lookup will also need to interact with visibility, by stripping out non-<code>public</code> bindings from <code>import</code>ed modules.</p>
-<p>Note that this chapter does not need to deal with <code>extension</code> declarations, as they are handled as part of type linearization.</p>
-<p>One important kind of subtlety to lookup is that upon finding a \emph{first} in-scope declaration of a name, we can inspect the category of that declaration to determine if overloading is even possible.
-That is, if the first declaration found is in a category of declaration that doesn't support overloading (basically anything other than a <code>func</code>, <code>init</code>, or <code>subscript</code>), then that result can be used as-is as the result of lookup.</p>
-<p></div></p>
-<h1 id="sec.overload"><a href="#sec.overload" class="anchor">Overload Resolution</a></h1>
-<p><div class=issue>
-This chapter needs to describe how to disambiguate an overloaded lookup result.
-Overload resolution comes up primarily in two places:</p>
-<ul><li><p>When the typing rules attempt to coerce an overloaded expression to some type.</p>
-</li>
-<li><p>When attempting to call an overloaded expression as a function.</p>
+<li><p><dfn>member lookup</dfn> of a <a>name</a> inside of a base <a>expression</a>; for example, as part of a <a>member expression</a></p>
 </li>
 </ul>
-<p>(Hypothetically it can also arise for a generic specialization <code>F<A,B,...></code> as well, so the rules need to be ready for that case)</p>
-<p>The first of the two cases is the easier one by far, with an outline of it's semantics being:</p>
-<ul><li><p>\emph{Filter} the candidates to only those that can be coerced successfully to the desired type.</p>
+<h2 id="sec.lookup.name"><a href="#sec.lookup.name" class="anchor">Names</a></h2>
+<div class="issue callout">TODO: The definition of <a><span class="meta">Name</span></a> really belongs in another section.</div>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Name</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">ParsedName</span></span>
+⇒ <span class="alternative grammar"><span class="meta">SpecialName</span></span></div>
+<div class="grammar production"><dfn><span class="meta">ParsedName</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">Identifier</span></span>
+⇒ <span class="alternative grammar"><code>operator</code></span></div>
+<div class="grammar production"><dfn><span class="meta">InfixOperator</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>operator</code> <code>prefix</code></span></span></div>
+<div class="grammar production"><dfn><span class="meta">PrefixOperator</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>operator</code> <code>postfix</code> <span class="meta">PostfixOperator</span></span></span></div>
+<div class="grammar production"><dfn><span class="meta">SpecialName</span></dfn>
+⇒ <span class="alternative grammar"><code>$init</code></span>
+⇒ <span class="alternative grammar"><code>$subscript</code></span>
+⇒ <span class="alternative grammar"><code>$this</code></span>
+⇒ <span class="alternative grammar"><code>$This</code></span>
+⇒ <span class="alternative grammar"><code>$continue</code></span>
+⇒ <span class="alternative grammar"><code>$break</code></span></div>
+</pre>
+</div>
+<div class="note callout"><h6>Note</h6>
+<p>A <a>parsed name</a> is a name that can appear in Slang source code.
+<a>Parsed names</a> include the ordinary case of simple identifiers, but also allow operators to be named.</p>
+<p>A <a>special name</a> is a name that cannot appear in Slang soure code.
+<a>Special names</a> are used by this specification to allow the mechanisms for lookup and overload resolution to be shared by multiple kinds of declarations.</p>
+</div>
+<h2 id="sec.lookup.context"><a href="#sec.lookup.context" class="anchor">Lookup in a Context</a></h2>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in <a>context</a> <a><var class="meta">c</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">scope</var></a> be the <a>current scope</a> of <a><var class="meta">c</var></a></p>
 </li>
-<li><p>Select the best candidate among the remaining ones, based on priority.</p>
-<ul><li><p>The relative "distance" of declarations needs to factor in (more derived vs. more base, imported vs. local, etc.)</p>
+<li><p>Let <a><var class="meta">result</var></a> be the result of looking up <a><var class="meta">n</var></a> in <a><var class="meta">scope</var></a></p>
 </li>
-<li><p>Additionally, the relative cost of the type conversions applied (if any) may be relevant.</p>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<h2 id="sec.lookup.binding"><a href="#sec.lookup.binding" class="anchor">Bindings</a></h2>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Binding</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">Name</span> <code>=</code> <span class="introducer grammar"><span class="meta">value</span>:<span class="meta">CheckedExpression</span></span></span></span></div>
+</pre>
+</div>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>binding</a> <a><var class="meta">b</var></a>:</p>
+<ul><li><p>If the name of <a><var class="meta">b</var></a> is not <a><var class="meta">n</var></a> return an empty list of <a>candidates</a></p>
+</li>
+<li><p>Otherwise, return the value of <a><var class="meta">b</var></a></p>
+</li>
+</ul>
+<h2 id="sec.lookup.scope"><a href="#sec.lookup.scope" class="anchor">Scopes</a></h2>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Scope</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">EmptyScope</span></span>
+⇒ <span class="alternative grammar"><span class="meta">Binding</span></span>
+⇒ <span class="alternative grammar"><span class="meta">LayeredScope</span></span>
+⇒ <span class="alternative grammar"><span class="meta">TypeScope</span></span>
+⇒ <span class="alternative grammar"><span class="meta">InstanceScope</span></span>
+⇒ <span class="alternative grammar"><span class="meta">DeclarationScope</span></span>
+⇒ <span class="alternative grammar"><span class="meta">FileScope</span></span>
+⇒ <span class="alternative grammar"><span class="meta">ModuleScope</span></span></div>
+</pre>
+</div>
+<h3 id="sec.lookup.scope.empty"><a href="#sec.lookup.scope.empty" class="anchor">Empty Scopes</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar">
+<div class="grammar production"><dfn><span class="meta">EmptyScope</span></dfn>
+⇒ <span class="alternative grammar"><code>$Empty</code></span></div>
+</pre>
+</div>
+<p>The result of <a>looking up</a> a <a>name</a> in an <a>empty scope</a> is an empty list of <a>candidates</a>.</p>
+<h3 id="sec.lookup.scope.layer"><a href="#sec.lookup.scope.layer" class="anchor">Layered Scopes</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">LayeredScope</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="introducer grammar"><span class="meta">inner</span>:<span class="meta">Scope</span></span> <span class="introducer grammar"><span class="meta">outer</span>:<span class="meta">Scope</span></span></span></span></div>
+</pre>
+</div>
+<p>To <a>look up</a> a name <a><var class="meta">n</var></a> in a <a>layered scope</a> <a><var class="meta">s</var></a>:</p>
+<ul><li><p>Let variable <a><var class="meta">innerCandidates</var></a> be the result of <a>looking up</a> <a><var class="meta">n</var></a> in the inner scope <a><var class="meta">s</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">outerDistances</var></a> be the result of <a>looking up</a> <a><var class="meta">n</var></a> in the outer scope of <a><var class="meta">s</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">k</var></a> be a fresh <a>distance key</a></p>
+</li>
+<li><p>For each <a><var class="meta">candidate</var></a> in <a><var class="meta">innerCandidates</var></a>:</p>
+<ul><li><p>Extend <a><var class="meta">candidate</var></a> with a <a>disance</a> with key <a>key</a> and value zero</p>
+</li>
+</ul>
+</li>
+<li><p>For each <a><var class="meta">candidate</var></a> in <a><var class="meta">outerCandidates</var></a>:</p>
+<ul><li><p>Extend <a><var class="meta">candidate</var></a> with a <a>distance</a> with key <a>key</a> and value one</p>
+</li>
+</ul>
+</li>
+<li><p>Return the union of <a><var class="meta">innerCandidates</var></a> and <a><var class="meta">outerCandidates</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.scope.type"><a href="#sec.lookup.scope.type" class="anchor">Type Scopes</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TypeScope</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$ThisType</code> <code>=</code> <span class="introducer grammar"><span class="meta">implicitThisType</span>:<span class="meta">Type</span></span></span></span></div>
+</pre>
+</div>
+<blockquote><p>A <a>type scope</a> represents a scope in which an implicit <code>This</code> type is available.</p>
+</blockquote>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>type scope</a> <a><var class="meta">s</var></a> with <a>distances</a> <a><var class="meta">ds</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">thisType</var></a> be the implicit <code>This</code> type of <a><var class="meta">s</var></a></p>
+</li>
+<li><p>If <a><var class="meta">n</var></a> is <span class="meta terminal">ThisType</span>, return <span class="meta terminal">Candidate(</span> <code><a><var class="meta">thisType</var></a> , <a><var class="meta">ds</var></a> )</code></p>
+</li>
+<li><p>If <a><var class="meta">n</var></a> is <span class="meta terminal">this</span>, return <span class="meta terminal">Candidate(</span> <span class="meta terminal">Error</span> <code>, <a><var class="meta">ds</var></a> )</code></p>
+</li>
+<li><p>Otherwise, return the result of looking up <a><var class="meta">n</var></a> in <a><var class="meta">thisType</var></a> with <a><var class="meta">ds</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.scope.instance"><a href="#sec.lookup.scope.instance" class="anchor">Instance Scopes</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">InstanceScope</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$this</code> <code>=</code> <span class="introducer grammar"><span class="meta">implicitThisParameter</span>:<span class="meta">CheckedExpression</span></span></span></span></div>
+</pre>
+</div>
+<blockquote><p>An <a>instance scope</a> represents a scope in which an implicit <code>this</code> expression is available.</p>
+</blockquote>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in an <a>instance scope</a> <a><var class="meta">s</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">thisExpr</var></a> be the implicit <code>this</code> parasmeter of <a><var class="meta">s</var></a></p>
+</li>
+<li><p>If <a><var class="meta">n</var></a> is <span class="meta terminal">this</span>, return <a><var class="meta">thisExpr</var></a></p>
+</li>
+<li><p>Otherwise, return the result of looing up <a><var class="meta">n</var></a> in <a><var class="meta">thisExpr</var></a> with <a><var class="meta">ds</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.scope.decl"><a href="#sec.lookup.scope.decl" class="anchor">Declaration Scopes</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">DeclarationScope</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$DeclarationScope(</code> <span class="meta">DeclarationReference</span> <code>)</code></span></span></div>
+</pre>
+</div>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>declaration scope</a> <a><var class="meta">s</var></a>:</p>
+<ul><li><p>Return the result of looking up <a><var class="meta">n</var></a> in the declaration reference of <a><var class="meta">s</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.scope.file"><a href="#sec.lookup.scope.file" class="anchor">File Scope</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">FileScope</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$FileScope(</code> <span class="meta">SourceUnit</span> <code>)</code></span></span></div>
+</pre>
+</div>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>file scope</a> <a><var class="meta">s</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">sourceUnit</var></a> be the source unit of <a><var class="meta">s</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">result</var></a> be an empty set of <a>candidates</a></p>
+</li>
+<li><p>For each <a>import declaration</a> <a><var class="meta">importDecl</var></a> in <a><var class="meta">s</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">importedModule</var></a> be the <a>module</a> imported by <a><var class="meta">importDecl</var></a></p>
+</li>
+<li><p>// need to fill out the details here, since visibility matters for this case</p>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<div class="note callout">Note: File scopes only handle lookup of declaration from modules <code>import</code>ed into a particular source unit; they do not do anything around lookup of declarations inside the module itself.</div>
+<h3 id="sec.lookup.scope.module"><a href="#sec.lookup.scope.module" class="anchor">Module Scope</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">ModuleScope</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$ModuleScope(</code> <span class="meta">Module</span> <code>)</code></span></span></div>
+</pre>
+</div>
+<p>To look up a <a><var class="meta">name</var></a> in a <a>module scope</a> <a><var class="meta">s</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">m</var></a> be the module of <a><var class="meta">s</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">result</var></a> be an empty set of <a>candidates</a></p>
+</li>
+<li><p>For each <a><var class="meta">sourceUnit</var></a> in <a><var class="meta">m</var></a></p>
+<ul><li><p>Let <a><var class="meta">suResult</var></a> be the result of looking up <a><var class="meta">name</var></a> in <a><var class="meta">sourceUnit</var></a></p>
+</li>
+<li><p>Set <a><var class="meta">result</var></a> to the union of <a><var class="meta">result</var></a> and <a><var class="meta">suResult</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<div class="note callout">Note: Lookup at module scope can always just return direct declaration references, since no qualification is needed.</div>
+<h2 id="sec.lookup.member"><a href="#sec.lookup.member" class="anchor">Member Lookup</a></h2>
+<h3 id="sec.lookup.member.expr"><a href="#sec.lookup.member.expr" class="anchor">Expressions</a></h3>
+<p>To <a>look up</a> the name <a><var class="meta">n</var></a> in a <a>checked expression</a> <a><var class="meta">e</var></a> that is not a <a>type</a></p>
+<ul><li><p>Let <a><var class="meta">t</var></a> be the type of <a><var class="meta">e</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">typeResult</var></a> be the result of looking up <a><var class="meta">n</var></a> in <a><var class="meta">t</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">result</var></a> be an empty lookup result</p>
+</li>
+<li><p>For each <a>candidate</a> <a><var class="meta">typeCandidate</var></a> in <a><var class="meta">typeResult</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">memberDeclRef</var></a> be the declaration reference of <a><var class="meta">typeCandidate</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">distances</var></a> be the distances of <a><var class="meta">typeCandidate</var></a></p>
+</li>
+<li><p>If the declaration of <a><var class="meta">memberDeclRef</var></a> is <a>effectively static</a>:</p>
+<ul><li><p>Add <a><var class="meta">typeCandidate</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Otherwise:</p>
+<ul><li><p>Let <a><var class="meta">memberRef</var></a> be the <a>checked</a> <a>member expression</a> <code><a><var class="meta">e</var></a> . <a><var class="meta">member</var></a></code></p>
+</li>
+<li><p>Add <span class="meta terminal">Candidate(</span> <code><a><var class="meta">memberRef</var></a> , <a><var class="meta">distances</var></a> )</code> to <a><var class="meta">result</var></a></p>
 </li>
 </ul>
 </li>
 </ul>
-<p>The second case (overloaded calls) is superficially similar, in that we can filter the candidates to the applicable ones and then pick the best.
-The definition of ``best'' for an overloaded call is more subtle and needs care to not mess up developer expectations for things like simple infix expressions (since event infix <code>operator+</code> is handled as an overloaded call, semantically).</p>
-<p>A few basic principles that guide intuition:</p>
-<ul><li><p>For every candidate we should know the conversion/cost associated with each argument position, as well as the conversion/cost associated with the function result position (if we are in a checking rather than synthesis context).</p>
 </li>
-<li><p>One overload candidate is strictly better than another if it is better at at least one position (one argument, or the function result), and not worse at any position.</p>
+<li><p>If <a><var class="meta">t</var></a> is a <a>pointer-like type</a>:</p>
+<ul><li><p>Let <a><var class="meta">pt</var></a> be the pointee type of <a><var class="meta">t</var></a></p>
 </li>
-<li><p>When choosing between candidates that are equally good, a few factors play in:</p>
-<ul><li><p>The relative "distance" of declarations (as determined by lookup)</p>
+<li><p>Let <a><var class="meta">derefExpr</var></a> be the result of <a>dereferencing</a> <a><var class="meta">e</var></a></p>
 </li>
-<li><p>Which candidates required defaulting of arguments (and how many)</p>
+<li><p>Let <a><var class="meta">derefCandidates</var></a> be the result of looking up <a><var class="meta">n</var></a> in <a><var class="meta">derefExpr</var></a></p>
 </li>
-<li><p>Candidates that required implicit specialization of a generic vs. those that didn't</p>
+<li><p>Add all candidates from <a><var class="meta">derefCandidates</var></a> to <a><var class="meta">result</var></a></p>
 </li>
-<li><p>For two candidates that required implicit specialization of a generic, which of them is ``more general'' than the other.</p>
+</ul>
+</li>
+<li><div class="issue callout">TODO: The swizzle cases go here...</div>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.member.decl-ref"><a href="#sec.lookup.member.decl-ref" class="anchor">Declaration References</a></h3>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>fully specialized</a> <a>declaration reference</a> <a><var class="meta">declRef</var></a> that is not a <a>type</a>:</p>
+<ul><li><p>Let <a><var class="meta">memberDecls</var></a> be the result of directly looking up <a><var class="meta">n</var></a> in the declaration of <a><var class="meta">baseDeclRef</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">result</var></a> be an empty set of <a>candidates</a></p>
+</li>
+<li><p>For each <a><var class="meta">memberDecl</var></a> in <a><var class="meta">memberDecls</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">memberDeclRef</var></a> be <span class="meta terminal">StaticMemberRef(</span> <a><var class="meta">baseDeclRef</var></a> <span class="meta terminal">,</span> <a><var class="meta">memberDecl</var></a> <span class="meta terminal">)</span></p>
+</li>
+<li><p>Let <a><var class="meta">memberCandidate</var></a> be <span class="meta terminal">Candidate(</span> _memberDeclRef <span class="meta terminal">, {} )</span></p>
+</li>
+<li><p>Add <a><var class="meta">memberCandidate</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.member.generic"><a href="#sec.lookup.member.generic" class="anchor">Generics</a></h3>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>generic declaration reference</a> <a><var class="meta">genericRef</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">declRef</var></a> be the result of <a>instantiating</a> <a><var class="meta">genericRef</var></a></p>
+</li>
+<li><p>Return the result of <a>looking up</a> <a><var class="meta">n</var></a> in <a><var class="meta">declRef</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.member.type"><a href="#sec.lookup.member.type" class="anchor">Type</a></h3>
+<p>To <a>look up</a> a <a>name</a> <a><var class="meta">n</var></a> in a <a>type</a> <a><var class="meta">t</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">facets</var></a> be the result of <a>linearizing</a> <a><var class="meta">t</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">result</var></a> be an empty lookup result</p>
+</li>
+<li><p>For each <a><var class="meta">facet</var></a> in <a><var class="meta">facets</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">facetResult</var></a> be the result of looking up <a><var class="meta">n</var></a> in <a><var class="meta">facet</var></a></p>
+</li>
+<li><p>Set <a><var class="meta">result</var></a> to the union of <a><var class="meta">result</var></a> and <a><var class="meta">facetResult</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<h2 id="sec.lookup.direct"><a href="#sec.lookup.direct" class="anchor">Direct Lookup</a></h2>
+<div class="note callout">Note: <dfn>Direct</dfn> lookup refers to the case where there is no attempt to perform recursive or hierarchical walks.</div>
+<h3 id="sec.lookup.direct.facet"><a href="#sec.lookup.direct.facet" class="anchor">Facets</a></h3>
+<p>To directly look up name <a><var class="meta">n</var></a> in a <a>facet</a> <a><var class="meta">f</var></a>:</p>
+<ul><li><p>Let <a>declaration reference</a> <a><var class="meta">ancestor</var></a> be the ancestor of <a><var class="meta">f</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">ancestorResult</var></a> (a list of <a>declarations</a>) be the result of directly looking up <a><var class="meta">n</var></a> in <a><var class="meta">ancestor</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">distances</var></a> be the <a>distances</a> of <a><var class="meta">f</var></a></p>
+</li>
+<li><p>Let variable <a><var class="meta">result</var></a> be an empty lookup result</p>
+</li>
+<li><p>For each <a>declaration</a> <a><var class="meta">ancestorDecl</var></a> in <a><var class="meta">ancestorResult</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">derivedDeclRef</var></a> be <span class="meta terminal">MemberLookup</span> <a><var class="meta">f</var></a> <a><var class="meta">ancestorDecl</var></a></p>
+</li>
+<li><p>Let <a><var class="meta">candidate</var></a> be <span class="meta terminal">Candidate(</span> <code><a><var class="meta">derivedDeclRef</var></a> , <a><var class="meta">distances</var></a> )</code></p>
+</li>
+<li><p>Add <a><var class="meta">candidate</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<div class="note callout">Note: Each <a>facet</a> in the <a>linearization</a> of a type <a><var class="meta">t</var></a> already stores <a>distances</a> to represent the relative priority of nodes in the inheritance graph of <a><var class="meta">t</var></a>. By including those distances in the result of lookup, other parts of the specification that need to consider such prioritization do not need to inspect the inheritance graph itself.</div>
+<div class="issue callout">TODO: As described above, a member lookup into the facet (a subtype witness) always gets generated. This really shouldn't be the case, depending on the nature of the facet. A direct facet (representing the type itself) should simply return a static member reference, as should any <code>extension</code> facets. A conformance facet should be the ones to look up a conforming member.</div>
+<h3 id="sec.lookup.direct.decl"><a href="#sec.lookup.direct.decl" class="anchor">Declarations</a></h3>
+<p>To directly look up name <a><var class="meta">n</var></a> in a <a>declaration</a> <a><var class="meta">baseDecl</var></a>:</p>
+<ul><li><p>If <a><var class="meta">baseDecl</var></a> does not have a <a>declaration body</a>:</p>
+<ul><li><p>Return an empty <a>lookup result</a></p>
+</li>
+</ul>
+</li>
+<li><p>Let <a><var class="meta">results</var></a> be an empty set of <a>declarations</a></p>
+</li>
+<li><p>For each <a><var class="meta">memberDecl</var></a> in the declaration body of <a><var class="meta">baseDecl</var></a></p>
+<ul><li><p>let <a><var class="meta">memberName</var></a> be the name of <a><var class="meta">memberDecl</var></a></p>
+</li>
+<li><p>If <a><var class="meta">memberName</var></a> is equal to <a><var class="meta">name</var></a>:</p>
+<ul><li><p>Add <a><var class="meta">memberDecl</var></a> to <a><var class="meta">result</var></a></p>
 </li>
 </ul>
 </li>
 </ul>
-<p>Generally, a function $f$ is ``more general'' than another function $g$ if for every set of arguments that $g$ is applicable to, $f$ is also applicable, but not vice versa.</p>
-<p>Also: it doesn't exactly belong in this chapter, but something needs to document the rules for when two function declarations are considered to have the same signature (or at least conflicting signatures), so that errors can be diagnosed when trying to redefine a function.</p>
-<p></div></p>
-<p>If:</p>
-<ul><li><p><a><var class="meta">f</var></a> synthesizes function type <code>( <a><var class="meta">params</var></a> ) -> <a><var class="meta">result</var></a></code></p>
 </li>
-<li><p><a><var class="meta">args</var></a> matches against <a><var class="meta">params</var></a> with cost <a><var class="meta">argsCost</var></a></p>
-</li>
-<li><p><a><var class="meta">result</var></a> is implicitly convertible to <a><var class="meta">T</var></a> with cost <a><var class="meta">resultCost</var></a></p>
+<li><p>Return <a><var class="meta">result</var></a></p>
 </li>
 </ul>
-<p>then the invocation <code><a><var class="meta">f</var></a> ( <a><var class="meta">args</var></a> )</code> checks against <a><var class="meta">T</var></a> with cost (<a><var class="meta">argsCost</var></a>, <a><var class="meta">resultCost</var></a>)</p>
-<p>If:</p>
-<ul><li><p><a><var class="meta">g</var></a> synthesizes generic type <code>< <a><var class="meta">genericParams</var></a> > -> <a><var class="meta">result</var></a></code></p>
-</li>
-<li><p><a><var class="meta">genericArgs</var></a> are fresh solver variables</p>
-</li>
-<li><p>the specialization <code><a><var class="meta">g</var></a> <</code> _genericArgs <code>></code> synthesizes type <a><var class="meta">specialized</var></a> with cost <a><var class="meta">specializationCost</var></a></p>
-</li>
-<li><p>the type `<a><var class="meta">specialized</var></a></p>
+<h1 id="sec.overload"><a href="#sec.overload" class="anchor">Overloading</a></h1>
+<p><dfn>Overloading</dfn> occurs when a single <a>name</a> has multiple meanings in a given context.</p>
+<h2 id="sec.overload.set"><a href="#sec.overload.set" class="anchor">Overload Sets</a></h2>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">OverloadSet</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$OverloadSet(</code> <span class="grammar"><span class="meta">Candidate</span></span>* <code>)</code></span></span></div>
+</pre>
+</div>
+<p>An <a>overload set</a> is an <a>intermediate expression</a> that represents a set of <a>candidate</a> meanings.</p>
+<h3 id="sec.overload.set.simplify"><a href="#sec.overload.set.simplify" class="anchor">Simplification</a></h3>
+<p>The <dfn>simplification</dfn> of an <a>overload set</a> is a <a>checked expression</a>.</p>
+<p>The compute the <a>simplification</a> of an <a>overload set</a> <a><var class="meta">overloadSet</var></a>:</p>
+<ul><li><p>If <a><var class="meta">overloadSet</var></a> has exactly one <a>candidate</a> <a><var class="meta">c</var></a>:</p>
+<ul><li><p>Return the value of <a><var class="meta">c</var></a></p>
 </li>
 </ul>
-<p>then the invocation <code><a><var class="meta">g</var></a> (</code> )</p>
+</li>
+<li><p>If <a><var class="meta">overloadSet</var></a> has no <a>candidates</a>:</p>
+<ul><li><p>return <span class="meta terminal">Error</span></p>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">overloadSet</var></a></p>
+</li>
+</ul>
+<h3 id="sec.lookup.result.filter"><a href="#sec.lookup.result.filter" class="anchor">Filtering</a></h3>
+<div class="issue callout">TODO: Need to specify how to filter an overload set down to only those candidates that satisfy some predicate</div>
+<h2 id="sec.overload.candidate"><a href="#sec.overload.candidate" class="anchor">Candidates</a></h2>
+<p>A <a>candidate</a> represents on possible meaning for a <a>name</a> or <a>expression</a> in a given context.</p>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Candidate</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>$Candidate</code> <span class="meta">CheckedExpression</span> <span class="grammar"><span class="meta">Distance</span></span>* <span class="meta">Cost</span> <span class="grammar"><span class="meta">Constraint</span></span>*</span></span></div>
+<div class="grammar production"><dfn><span class="meta">Cost</span></dfn>
+⇒ <span class="alternative grammar"><code>$NoCost</code></span>
+⇒ <span class="alternative grammar"><code>$Infinite</code></span>
+⇒ <span class="alternative grammar"><span class="block-comment grammar">/* need a representation for costs */</span></span></div>
+<div class="grammar production"><dfn><span class="meta">Constraint</span></dfn>
+⇒ <span class="alternative grammar"><span class="block-comment grammar">/* need a representation for solver constraints */</span></span></div>
+</pre>
+</div>
+<h3 id="sec.overload.candidate.distance"><a href="#sec.overload.candidate.distance" class="anchor">Distances</a></h3>
+<div class="semantics grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Distance</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">DistanceKey</span> <span class="introducer grammar"><span class="meta">value</span>:<span class="meta">Integer</span></span></span></span></div>
+<div class="grammar production"><dfn><span class="meta">DistanceKey</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">UniqueID</span></span></div>
+</pre>
+</div>
+<p>Given <a>candidate</a> <a><var class="meta">a</var></a>, <a>candidate</a> <a><var class="meta">b</var></a>, and <a>distance key</a> <a><var class="meta">k</var></a>, <a><var class="meta">a</var></a> is <dfn>closer for</dfn> <a><var class="meta">k</var></a> than <a><var class="meta">b</var></a> if:</p>
+<ul><li><p>There exists a <a>distance</a> <a><var class="meta">da</var></a> in <a><var class="meta">a</var></a> with <a>key</a> <a><var class="meta">k</var></a></p>
+</li>
+<li><p>There exists a <a>distance</a> <a><var class="meta">db</var></a> in <a><var class="meta">b</var></a> with <a>key</a> <a><var class="meta">k</var></a></p>
+</li>
+<li><p>The value of <a><var class="meta">da</var></a> is less than the value of <a><var class="meta">db</var></a></p>
+</li>
+</ul>
+<p>A <a>candidate</a> <a><var class="meta">a</var></a> is <dfn>closer</dfn> than <a><var class="meta">b</var></a> if:</p>
+<ul><li><p>There exists a <a><var class="meta">k0</var></a> such that <a><var class="meta">a</var></a> is <a>closer for</a> <a><var class="meta">k0</var></a> than <a><var class="meta">b</var></a></p>
+</li>
+<li><p>There does not exist any <a><var class="meta">k1</var></a> such that <a><var class="meta">b</var></a> is <a>closer for</a> <a><var class="meta">k1</var></a> than <a><var class="meta">a</var></a></p>
+</li>
+</ul>
+<h2 id="sec.overload.resolution"><a href="#sec.overload.resolution" class="anchor">Resolution</a></h2>
+<div class="issue callout">TODO: Overload resolution should basically just amount to finding a minimal-cost (or highest-priority, equivalently) element in the set of candidates.</div>
+<h2 id="sec.overload.conversion"><a href="#sec.overload.conversion" class="anchor">Type Conversion</a></h2>
+<blockquote><p>When an <a>overload set</a> is implicitly converted to a specific <a>type</a>, it is possible to filter candidates to only those that can be converted to that type.</p>
+</blockquote>
+<p>To implicitly convert an <a>overload set</a> <a><var class="meta">overloadSet</var></a> to <a>type</a> <a><var class="meta">toType</var></a>:</p>
+<ul><li><p>Let variable <a><var class="meta">result</var></a> be an empty overload set</p>
+</li>
+<li><p>For each <a>candidate</a> <a><var class="meta">fromExpr</var></a> <a><var class="meta">distances</var></a> <a><var class="meta">fromCost</var></a> <a><var class="meta">fromConstraints</var></a> in <a><var class="meta">overloadSet</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">scope</var></a> be a fresh <a>solver scope</a></p>
+</li>
+<li><p>Copy each of the <a><var class="meta">fromConstraints</var></a> into <a><var class="meta">scope</var></a></p>
+</li>
+<li><p>With <a><var class="meta">scope</var></a>:</p>
+<ul><li><p>let <a><var class="meta">toExpr</var></a> <a><var class="meta">toCost</var></a> be the result of implicitly converting <a><var class="meta">fromExpr</var></a> to <a><var class="meta">toType</var></a></p>
+</li>
+<li><p>If <a><var class="meta">toCost</var></a> is not <span class="meta terminal">Infinite</span>:</p>
+<ul><li><p>let <a><var class="meta">cost</var></a> be the merge of <a><var class="meta">toCost</var></a> and <a><var class="meta">fromCost</var></a></p>
+</li>
+<li><p>let <a><var class="meta">constraints</var></a> be the constraints of <a><var class="meta">scope</var></a></p>
+</li>
+<li><p>let <a><var class="meta">candidate</var></a> be a fresh <a>candidate</a> <a><var class="meta">toExpr</var></a> <a><var class="meta">distances</var></a> <a><var class="meta">cost</var></a> <a><var class="meta">constraints</var></a></p>
+</li>
+<li><p>Add <a><var class="meta">candidate</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<h2 id="sec.overload.call"><a href="#sec.overload.call" class="anchor">Overloaded Calls</a></h2>
+<p>To check a call to an <a><var class="meta">overloadSet</var></a> on a list of <a><var class="meta">arguments</var></a>:</p>
+<ul><li><p>Let variable <a><var class="meta">result</var></a> be an empty overload set</p>
+</li>
+<li><p>For each <a>candidate</a> <a><var class="meta">f</var></a> <a><var class="meta">distances</var></a> <a><var class="meta">fromCost</var></a> <a><var class="meta">fromConstraints</var></a> in <a><var class="meta">overloadSet</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">scope</var></a> be a fresh <a>solver scope</a></p>
+</li>
+<li><p>Copy each of the <a><var class="meta">fromConstraints</var></a> into <a><var class="meta">scope</var></a></p>
+</li>
+<li><p>With <a><var class="meta">scope</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">candidateCall</var></a> <a><var class="meta">callCost</var></a> be the result of checking a call to <a><var class="meta">f</var></a> on <a><var class="meta">arguments</var></a></p>
+</li>
+<li><p>If <a><var class="meta">candidateCallCost</var></a> is not <span class="meta terminal">Infinite</span>:</p>
+<ul><li><p>let <a><var class="meta">cost</var></a> be the merge of <a><var class="meta">callCost</var></a> and <a><var class="meta">fromCost</var></a></p>
+</li>
+<li><p>let <a><var class="meta">constraints</var></a> be the constraints of <a><var class="meta">scope</var></a></p>
+</li>
+<li><p>Add <a>candidate</a> <a><var class="meta">candidateCall</var></a> <a><var class="meta">distances</var></a> <a><var class="meta">cost</var></a> <a><var class="meta">constraints</var></a> to <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Return <a><var class="meta">result</var></a></p>
+</li>
+</ul>
+<h2 id="section-calling-a-generic"><a href="#section-calling-a-generic" class="anchor">Calling a Generic</a></h2>
+<p>To check a call to a <a>generic declaration reference</a> <a><var class="meta">genericDeclRef</var></a> on a list of <a><var class="meta">arguments</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">declRef</var></a> be the result of <a>instantiating</a> <a><var class="meta">genericDeclRef</var></a></p>
+</li>
+<li><p>Return the result of calling <a><var class="meta">declRef</var></a> on <a><var class="meta">arguments</var></a></p>
+</li>
+</ul>
+<h2 id="section-calling-a-function"><a href="#section-calling-a-function" class="anchor">Calling a Function</a></h2>
+<p>To check a call to a <a>fully-specialized declaration reference</a> <a><var class="meta">f</var></a> on a list of <a><var class="meta">arguments</var></a>, where <a><var class="meta">f</var></a> refers to a <a>function declaration</a>:</p>
+<ul><li><p>Match the arguments to the parameters by index and/or name (and build a cost model)</p>
+</li>
+<li><p>For each <a><var class="meta">arg</var></a> and its corresponding <a><var class="meta">param</var></a>:</p>
+<ul><li><p>Let <a><var class="meta">convertedArg</var></a> be the result of implicitly converting <a><var class="meta">arg</var></a> to the type of <a><var class="meta">param</var></a></p>
+</li>
+<li><p>// Need to take "direction" into account...</p>
+</li>
+<li><p>// Need to accumulate the cost of each <a><var class="meta">convertedArg</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>// Construct the checked call expression, with its full cost</p>
+</li>
+</ul>
+<h2 id="section-calling-a-type"><a href="#section-calling-a-type" class="anchor">Calling a Type</a></h2>
+<p>To check a call to a <a>type</a> <a><var class="meta">t</var></a> on a list of <a><var class="meta">arguments</var></a>:</p>
+<ul><li><p>If there is exactly one element <a><var class="meta">arg</var></a> in <a><var class="meta">arguments</var></a>:</p>
+<ul><li><p>Return the result of <a>explicitly converting</a> <a><var class="meta">arg</var></a> to <a><var class="meta">t</var></a></p>
+</li>
+</ul>
+</li>
+<li><p>Let <a><var class="meta">init</var></a> be the result of looking up <span class="meta terminal">init</span> in <a><var class="meta">t</var></a></p>
+</li>
+<li><p>Return the result of calling <a><var class="meta">init</var></a> on <a><var class="meta">arguments</var></a></p>
+</li>
+</ul>
 <h1 id="sec.subtype"><a href="#sec.subtype" class="anchor">Subtyping</a></h1>
 <p><div class=issue></p>
 <p>This chapter needs to define what the subtyping rules are, as something distinct from the conversion/coercion rules (which need their own chapter).</p>

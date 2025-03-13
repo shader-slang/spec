@@ -25,6 +25,9 @@ class MetaValue(MetaNode):
 class MetaTypeNode(MetaValue):
     pass
 
+class MetaTerminal(md.InlineElement):
+    classAttribute = "meta terminal"
+
 class GrammarNode(md.InlineElement):
     classAttribute = "grammar"
 
@@ -112,6 +115,16 @@ class IdentifySpecNodesTransform(md.Transform):
     def visitEmphasis(self, node):
         node = maybeCreateMetaNode(node)
         return md.Reference(node)
+
+    def visitCodeSpan(self, node):
+        text = md.getText(node)
+        match = re.match(r"^\$(.*)$", text)
+        if not match:
+            return
+        
+        newText = match[1]
+        return MetaTerminal(newText)
+
 
 grammarRulesParser = lark.Lark(r"""
 
@@ -464,6 +477,7 @@ def transformRootDocument(node):
     # introduce self-link anchors for nodes with IDs
     # merge consecutive paragraphs that should span a code block, algorithm, etc.
     # section numbering
+    # convert all grammar blocks to new syntax (and then clean up grammar for grammars...)
 
     md.generateSectionIDs(node)
     node = md.transformTree(node, md.BuildTableOfContentsTransform(node))

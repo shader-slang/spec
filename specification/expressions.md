@@ -64,18 +64,13 @@ Issue: We need a description of how suffixed floating-point literals have their 
     
 ### Boolean Literal Expressions [expr.lit.bool]
 
-Note:
-    Boolean literal expressions use the keywords `true` and `false`.
-
-    
 ```.syntax
-	BooleanLiteralExpression
-        `true` | `false`
+BooleanLiteralExpression
+    => `true`
+    => `false`
 ```
 
-The expression `true` resolves to the typed Boolean value `true : Bool`.
-
-The expression `false` resolves to the typed Boolean value `false : Bool`.
+A boolean literal expression _b_ synthesizes the checked expression _b_ `: @Constant Bool`.
 
 ### String Literal Expressions [expr.lit.string]
 
@@ -88,63 +83,29 @@ A string literal expressions consists of one or more string literal tokens in a 
         StringLiteral+
 ```
 
-```.checking
-	\DerivationRule{
-	}{
-		\SynthExpr{\ContextVarA}{\overline{s}}{`String`}{\ContextVarA}
-	}\\
-```
+A string literal expression _s_ synthesizes the checked expression _s_ `: @Constant String`.
 
 Identifier Expressions [expr.ident]
 ----------------------
 
 ```.syntax
-	IdentifierExpression
-        Identifier
-        | `operator` Operator
+IdentifierExpression
+    => Identifier
+    => `operator` InfixOperator
+    => `operator` `prefix` PrefixOperator
+    => `operator` `postfix` PostfixOperator
 ```
 
-```.checking
-	\DerivationRule{
-        \SynthLookup{\ContextVarA}{name}{type}
-	}{
-		\SynthExpr{\ContextVarA}{name}{type}{\ContextVarA}
-	}\vspace{1em}
+An identifier expression _id_ synthesizes _e_ if lookup of _id_ yields _e_.
 
-	\DerivationRule{
-        \CheckLookup{\ContextVarA}{name}{type}{\ContextVarB}
-	}{
-		\CheckExpr{\ContextVarA}{name}{type}{\ContextVarB}
-	}\\
-```
-
-Issue: This presentation delegates the actual semantics of identifier expressions to the \textsc{Lookup} judgement, which needs to be explained in detail.
-
-%\begin{verbatim}
-%When evaluated, this expression looks up `someName` in the environment of the %expression and yields the value of a declaration with a matching name.
-%
-%An identifier expression is an l-value if the declaration it refers to is mutable.
-%
-% ### Overloading ### {overload}
-%
-%It is possible for an identifier expression to be _overloaded_, such that it %refers to one or more candidate declarations with the same name.
-%If the expression appears in a context where the correct declaration to use can be %disambiguated, then that declaration is used as the result of  the name %expression; otherwise use of an overloaded name is an error at the use site.
-%
-% ### Implicit Lookup ### {lookup.implicit}
-%
-%It is possible for a name expression to refer to nested declarations in two ways:
-%
-%* In the body of a method, a reference to `someName` may resolve to `this.%someName`, using the implicit `this` parameter of the method
-%
-%* When a global-scope `cbuffer` or `tbuffer` declaration is used, `someName` may %refer to a field declared inside the `cbuffer` or `tbuffer`
-%\end{verbatim}
+Issue: This presentation delegates the actual semantics of identifier expressions to the lookup judgement, which needs to be explained in detail.
 
 Member Expression [expr.member]
 -----------------
 
 ```.syntax
-	MemberExpression
-        Expression `.` Identifier
+MemberExpression
+    => Expression `.` Identifier
 ```
 
 > Issue:
@@ -207,150 +168,96 @@ Member Expression [expr.member]
 This Expression [expr.this]
 ---------------
 
+### Syntax
+
 ```.syntax
-	ThisExpression
-                `this`
+ThisExpression
+    => `this`
 ```
 
-```.checking
-	\DerivationRule{
-	}{
-		\SynthExpr{\ContextVarA}{`this`}{`This`}{\ContextVarB}
-	}	
-```
+### Static Semantics
 
-
-Note:
-In contexts where a `this` expression is valid, it refers to the implicit instance of the closest enclosing type declaration.
-The type of a `this` expression is always `This`.
-
-
-Issue: This section needs to deal with the rules for when `this` is mutable vs. immutable.
+A `this` expression synthesizes _e_ if lookup of `this` yields _e_.
 
 Parenthesized Expression [expr.paren]
 -------------
 
-Note:
-An expression wrapped in parentheses (`()`) is a parenthesized expression and evaluates to the same value as the wrapped expression.
-
+### Syntax
 
 ```.syntax
-	ParenthesizedExpression := 
-        `(` Expression `)`
+ParenthesizedExpression
+    => `(` Expression `)`
 ```
 
-If expression _e_ resolves to _er_ then the parenthesized expression `(` _e_ `)` resolves to _er_.
+### Static Semantics
+
+The parenthesized expression `(` _e_ `)` synthesizes _s_ if _e_ synthesizes _s_.
 
 Call Expression [expr.call]
 ---------------
 
 ```.syntax
-	CallExpression
-        Expression `(` (Argument `,`)* `)`
+CallExpression
+    => Expression `(` (Argument `,`)* `)`
 
-    Argument
-        Expression
-        | NamedArgument
+Argument
+    => Expression
+    => NamedArgument
 
-    NamedArgument
-        Identifier `:` Expression
+NamedArgument
+    => Identifier `:` Expression
 ```
 
-```.checking
-	\DerivationRule{
-        \CheckCall{\ContextVarA}{f}{\overline{args}}{type}{\ContextVarB}
-	}{
-		\CheckExpr{\ContextVarA}{f `(` \overline{args} `)`}{type}{\ContextVarB}
-	}\vspace{1em}
+The call expression _f_ `(` _args_ `)` synthesizes _scall_ if:
 
-	\DerivationRule{
-        \SynthCall{\ContextVarA}{f}{\overline{args}}{type}{\ContextVarB}
-	}{
-		\SynthExpr{\ContextVarA}{f `(` \overline{args} `)`}{type}{\ContextVarB}
-	}	
-```
-
-Issue: These rules just kick the can down the road and say that synthesis/checking for call expressions bottlenecks through the \textsc{Call} judgements.
-
-%\begin{verbatim}
-%A _call expression_ consists of a base expression and a list of argument %expressions, separated by commas and enclosed in `()`:
-%
-%```hlsl
-%myFunction( 1.0f, 20 )
-%```
-%
-%When the base expression (e.g., `myFunction`) is overloaded, a call expression can %disambiguate the overloaded expression based on the number and type or arguments %present.
-%
-%The base expression of a call may be a member reference expression:
-%
-%```hlsl
-%myObject.myFunc( 1.0f )
-%```
-%
-%In this case the base expression of the member reference (e.g., `myObject` in this %case) is used as the argument for the implicit `this` parameter of the callee.
-%
-% ### Mutability [expr.call.mutable]
-%
-%If a `[mutating]` instance is being called, the argument for the implicit `this` %parameter must be an l-value.
-%
-%The argument expressions corresponding to any `out` or `in out` parameters of the %callee must be l-values.
-%\end{verbatim}
+* _f_ synthesizes _sf_
+* The _args_ synthesize _sargs_
+* Invocation of _sf_ on _sargs_ synthesizes _scall_
 
 Subscript Expression [expr.subscript]
 --------------------
 
 ```.syntax
-	SubscriptExpression
-		Expression `[` (Argument `,`)* `]`
+SubscriptExpression
+    => Expression `[` (Argument `,`)* `]`
 ```
 
-> Issue:
->
-> To a first approximation, a subscript expression like `base[a0, a1]` is equivalent to something like `base.subscript(a0, a1)`.
-> That is, we look up the `subscript` members of the `base` expression, and then check a call to the result of lookup (which might be overloaded).
-> 
-> Unlike simple function calls, a subscript expression can result in an *l-value*, based on what accessors the `subscript` declaration that is selected by overload resolution has.
+The subscript expression _base_ `[` _args_ `]` synthesizes _scall_ if:
 
-%A subscript expression invokes one of the subscript declarations in the type of %the base expression. Which subscript declaration is invoked is resolved based on %the number and types of the arguments.
-%
-%A subscript expression is an l-value if the base expression is an l-value and if %the subscript declaration it refers to has a setter or by-reference accessor.
-%
-%Subscripts may be formed on the built-in vector, matrix, and array types.
+* _base_ synthesizes _sbase_
+* The _args_ synthesize _sargs_
+* Member lookup of `subscript` in _base_ synthesizes _ssub_
+* Invocation of _ssub_ on _sargs_ synthesizes _scall_
 
 Initializer List Expression [expr.init-list]
 ---------------------------
 
 ```.syntax
-	InitializerListExpression
-		`{` (Argument `,`)* `}`
+InitializerListExpression
+    => `{` (Argument `,`)* `}`
 ```
 
-If the sequence of arguments _args_ resolves to _resolvedArgs_, then the initializer list expression `{` _args_ `}` resolves to the resolved initializer list expression `{` _resolvedArgs_ `}`.
+The initializer-list expression `{` _args_ `}` synthesizes `{` _sargs_ `}` if:
 
-Note: An initializer-list expression can only appear in contexts where it will be coerced to an expected type.
+* The _args_ synthesize _sargs_
+
+The initializer-list expression `{` _args_ `}` checks against _t_ if:
+
+* Invocation of _t_ on _args_ checks against _t_
 
 Cast Expression [expr.cast]
 ---------------
 
 ```.syntax
-	CastExpression
-		`(` TypeExpression `)` Expression
+CastExpression
+    => `(` TypeExpression `)` Expression
 ```
 
-Note:
-A **cast expression** attempts to coerce an expression to a desired type.
+A *cast expression* `(` _typeExp_ `)` _exp_ synthesizes _synExp_ if:
 
-To resolve a *cast expression* `(` _t_ `)` _e_:
+* checking _typeExp_ against `TYPE` yields _type_
 
-* Let _checkType_ be the result of checking _t_ as a type
-* Let _checkedExpr_ be the result of checking _e_ against _checkType_
-* Return _checkedExpr_
-
-> Issue:
->
-> The above rule treats a cast exprssion as something closer to a type ascription expression, where it expects the underlying expression to be of the desired type, or something implicitly convertible to it.
->
-> In contrast, we want a cast expression to be able to invoke \emph{explicit} conversions as well, which are currently not something the formalism encodes.
+* explicitly converting _exp_ to _type_ yields _synExp_
 
 ### Legacy: Compatibility Feature [expr.cast.compatiblity]
 
@@ -366,8 +273,6 @@ The semantics of such a cast are equivalent to initialization from an empty init
 MyStruct s = {};
 ```
 
-\end{Legacy}
-
 Assignment Expression [expr.assign]
 ----------
 
@@ -376,34 +281,14 @@ AssignmentExpression
     => destination:Expression `=` source:Expression
 ```
 
-```.checking
-	\DerivationRule{
-        \begin{trgather}
-        \SynthExpr{\ContextVarA}{dst}{`out` type}{\ContextVarB
-        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\SynthExpr{\ContextVarA}{dst `=` src}{`out` type}{\ContextVarB}
-	}
+Checking an assignment expression _dst_ `=` _src_ against type _t_ yields _checkedDst_ `=` _checkedSrc_ if:
 
-	\DerivationRule{
-        \begin{trgather}
-        \CheckExpr{\ContextVarA}{dst}{`out` type}{\ContextVarB
-        \CheckExpr{\ContextVarB}{src}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\CheckExpr{\ContextVarA}{dst `=` src}{type}{\ContextVarB}
-	}
-```
+* Checking _dst_ against `out` _t_ yields _checkedDst_
+* Checking _src_ against _t_ yields _checkedSrc_
 
-Note:
-Assignment expressions support both synthesis and checking judgements.
+Note: Assignment does not have a synthesis rule, so an assignment in a context where an expected type is not available (the typical case) will be checked against a fresh type variable.
 
-In each case, the destination} expression is validated first, and then the source} expression.
-
-
-Issue: The above rules pretend that we can write `out` before a type to indicate that we mean an l-value of that type.
-We will need to expand the formalism to include \emph{qualified} types.
+TODO: The above logic is missing the part where we need to actually invoke property getters/setters
 
 Operator Expressions [expr.op]
 --------------------
@@ -411,74 +296,32 @@ Operator Expressions [expr.op]
 ### Prefix Operator Expressions [expr.op.prefix]
 
 ```.syntax
-	PrefixOperatorExpression
-        PrefixOperator Expression
+PrefixOperatorExpression
+    => PrefixOperator Expression
 
-    PrefixOperator
-        `+` // identity
-        | `-` // arithmetic negation
-        | `\~` // bit\-wise Boolean negation
-        | `!` // Boolean negation
-        | `++` // increment in place
-        | `--` // decrement in place
+PrefixOperator
+    => `+`      // identity
+    => `-`      // arithmetic negation
+    => `\~`     // bit\-wise Boolean negation
+    => `!`      // Boolean negation
+    => `++`     // increment in place
+    => `--`     // decrement in place
 ```
 
-```.checking
-	\DerivationRule{
-        \begin{trgather}
-        \SynthCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\SynthExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
-	}
-
-	\DerivationRule{
-        \begin{trgather}
-            \CheckCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\CheckExpr{\ContextVarA}{op\ expr}{type}{\ContextVarB}
-	}
-```
-
-Note:
-A prefix operator expression is semantically equivalent to a call expression to a function matching the operator, except that lookup for the function name only considers function declarations marked with the `prefix` modifier.
-
-
-Issue: The notation here needs a way to express the restrictions on lookup that are used for prefix/postfix operator names.
+A prefix operator expression _op_ _e_ desugars into `operator` `prefix` _op_ `(` _e_ `)`.
 
 ## Postfix Operator Expressions [expr.op.postfix]
 
 ```.syntax
-	PostfixOperatorExprssion
-        Expression PostfixOperator
+PostfixOperatorExpression
+    => Expression PostfixOperator
 
-    PostfixOperator
-        | `++` // increment in place
-        | `--` // decrement in place
+PostfixOperator
+    => `++` // increment in place
+    => `--` // decrement in place
 ```
 
-```.checking
-	\DerivationRule{
-        \begin{trgather}
-        \SynthCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\SynthExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
-	}
-
-	\DerivationRule{
-        \begin{trgather}
-            \CheckCall{\ContextVarA}{`operator`op}{expr}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\CheckExpr{\ContextVarA}{expr op}{type}{\ContextVarB}
-	}
-```
-
-Note:
-Postfix operator expressions have similar rules to prefix operator expressions, except that in this case the lookup of the operator name will only consider declarations marked with the `postfix` modifier.
-
+A postifx operator expression _e_ _op_ desugars into `operator` `postfix` _op_ `(` _e_ `)`.
 
 ### Infix Operator Expressions [expr.op.infix]
 
@@ -556,25 +399,9 @@ Postfix operator expressions have similar rules to prefix operator expressions, 
 %| `=`       | Assignment  		| assignment |
 %| `,`		| Sequencing  		| sequence |
 
-```.checking
-	\DerivationRule{
-        \begin{trgather}
-        \SynthCall{\ContextVarA}{`operator`op}{left right}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\SynthExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
-	}
+An infix operator expression _left_ _op_ _right_ desugars into `operator` _op_ `(` _left_ `,` _right_ `)`.
 
-	\DerivationRule{
-        \begin{trgather}
-            \CheckCall{\ContextVarA}{`operator`op}{left right}{type}{\ContextVarB
-        \end{trgather}
-	}{
-		\CheckExpr{\ContextVarA}{left op right}{type}{\ContextVarB}
-	}
-```
-
-With the exception of the assignment operator (`=`), an infix operator expression like `left + right` is equivalent to a call expression to a function of the matching name `operator+(left, right)`.
+TODO: The above rule implies incorrect handling of the short-circuiting `&&` and `||` operators.
 
 ### Conditional Expression [expr.op.cond]
 
@@ -583,15 +410,8 @@ ConditionalExpression
     => condition:Expression `?` then:Expression `:` else:Expression
 ```
 
-To check the conditional expression _cond_ `?` _t_ `:` _e_ against expected type _T_:
+A conditional expression _c_ `?` _t_ `:` _e_ checks against expected type _T_ if:
 
-* Let _checkedCond_ be the result of checking _cond_ against `Bool`
-* Let _checkedThen_ be the result of checking _t_ against _T_
-* Let _checkedElse_ be the result of checking _e_ against _T_
-* Return the checked expression _checkedCond_ `?` _checkedThen_ `:` _checkedElse_
-
-To check the conditional expression _ce_:
-
-* Extend the context with a fresh type variable _T_
-* Return the result of checking _ce_ against _T_
-
+* _c_ checks against `Bool`
+* _t_ checks against _T_
+* _e_ checks against _T_

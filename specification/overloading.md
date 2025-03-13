@@ -41,3 +41,20 @@ Generally, a function $f$ is ``more general'' than another function $g$ if for e
 Also: it doesn't exactly belong in this chapter, but something needs to document the rules for when two function declarations are considered to have the same signature (or at least conflicting signatures), so that errors can be diagnosed when trying to redefine a function.
 
 </div>
+
+If:
+
+* _f_ synthesizes function type `(` _params_ `)` `->` _result_
+* _args_ matches against _params_ with cost _argsCost_
+* _result_ is implicitly convertible to _T_ with cost _resultCost_
+
+then the invocation _f_ `(` _args_ `)` checks against _T_ with cost (_argsCost_, _resultCost_)
+
+If:
+
+* _g_ synthesizes generic type `<` _genericParams_ `>` `->` _result_
+* _genericArgs_ are fresh solver variables
+* the specialization _g_ `<` _genericArgs `>` synthesizes type _specialized_ with cost _specializationCost_
+* the type `_specialized_
+
+then the invocation _g_ `(` )

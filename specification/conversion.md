@@ -24,3 +24,31 @@ Type Conversions [conv]
 > The simplest way to avoid such problems is to specif that the overload resolution for the `init` call above uses a modified form where only subtyping, and not implicit coercion, is > allowed for arguments.
 > 
 > Explicit type conversion follows the same overall flow as the implicit case, except it does not filter the candidates down to only those marked as usable for implicit coercion.
+
+To convert *intermediate expression* _fromExp_ to *type* _toType_:
+
+* Switch on the syntactic form of _fromExp_:
+
+  * Case `InitializerList` _args_:
+
+    * Let _checkedCall_ be the result of checking the invocation of _toType_ on _args_
+
+    * Return the result of convertring _checkedCall_ to _toType_
+
+  * Case `OverloadSet` _candidates_:
+
+    * Let _convertedCandidates_ be the result of converting each _candidate_ to _toType_
+
+    * Filter _convertedCandidates_ to contain only the candidates with minimum cost
+
+    * ...
+
+  * Case `OverloadedCall` _f_ `(` _args `)`:
+    
+    * Let _checkedCall_ be the result of checking the invocation of _f_ on _args_ against _toType_
+
+    * ...
+
+  * Case a *checked expression* _checkedFromExpr_ of *type* _fromType_
+
+    * ...

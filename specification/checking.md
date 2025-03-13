@@ -37,7 +37,7 @@ Expressions [check.expr]
 Slang use a variation on a bidirectional type-checking algorithm.
 
 There are two main steps used when checking expressions.
-Each form of expression may define rules for resolving, checking, or both.
+Each form of expression may define rules for synthesis, checking, or both.
 
 > Issue:
 > We need to define what checked expressions, resolved expressions, and (parsed) expressions are.
@@ -60,31 +60,51 @@ Each form of expression may define rules for resolving, checking, or both.
 > 
 > We also need to drill into the representation of types and values...
 
-### Resolving [check.expr.resolve]
+```.semantics
+CheckedExpression
+    => TypedValue
+    => CheckedExpression `(` CheckedExpression* `)`
 
-Resolving an *expression* in a context results in a **resolved expression**.
+IntermediateExpression
+    => CheckedExpression
+    => `OverloadSet` CheckedExpression*
+    => `InitializerList` IntermediateExpression*
+    => `OverloadedCall` IntermediateExpression `(` IntermediateExpression* `)`
 
-Note: Resolving is used in places where an expression needs to have some amount of validation performed, but an expected type for the expression is not available.
+Expression
+    => ParsedExpression
+    => IntermediateExpression
+```
 
-To resolve an *expression* _e_ when the form of _e_ does not define a resolving rule:
 
-* Extend the context with a fresh type variable _T_
-* Return the result of checking _e_ against _T_
+### Synthesis [check.expr.synth]
+
+**Synthesizing** an *expression* in a *context* may yield some *intermediate expression*.
+
+Note: Synthesis is used in places where an expression needs to have some amount of validation performed, but an expected type for the expression is not available.
+
+To *synthesize* an *expression* _e_ in context _c_, when the syntactic form of _e_ does not have an explicit synthesis rule that applies:
+
+* Extend _c_ with a fresh type variable _t_
+* Return the result of checking _e_ against _t_ in _c_
 
 ### Checking [check.check]
 
-Checking a *resolved expression* against a type results in a checked expression.
+**Checking** an *expression* against a *type* in a *context* may yield a *checked expression*.
 
 Note: Checking is used in places where the type that an expression is expected to have is known.
 
 To check an *expression* _e_ against a type _T_ when form of _e_ does not define a checking rule:
 
-* Let _re_ be the result of resolving _e_
-* Return the result of coercing _re_ to _T_
+* Let _se_ be the result of synthesizing _e_
+* Return the result of implicitly coercing _se_ to a _T_
 
-OLD TEXT:
-A **checking judgement** determines that, given a *context* _c_, an *expression* _e_, and a *type* _t_, _e_ **checks against** _t_ in context _c_.
+Type Expressions [check.type]
+----------------
 
+*Type expressions* are syntactically a subset of *expressions*.
+
+To check an expression _e_ **as a type**, check it against the type `TYPE`.
 
 Statements [check.stmt]
 ----------

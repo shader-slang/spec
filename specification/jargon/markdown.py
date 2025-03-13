@@ -153,6 +153,13 @@ class Element(Node):
 
         children = _collectChildren(children)
 
+        # TODO: derive a source range from the children,
+        # if one was not explicitly provided.
+
+        # TODO: if this node *has* a source range, and
+        # any of its children don't, then it should also
+        # apply that source range to its children
+
         self.children = children
         self.id = None
 
@@ -259,6 +266,21 @@ class EscapeSequence(InlineElement):
     template = "{content}"
 
 # Custom Elements
+
+class Table(ContainerBlock):
+    tag = "table"
+
+class TableRow(ContainerBlock):
+    tag = "tr"
+
+class TableCell(ContainerBlock):
+    tag = "td"
+
+class TableHeaderRow(TableRow):
+    pass
+
+class TableHeaderCell(TableCell):
+    tag = "th"
 
 class Nav(ContainerBlock):
     tag = "nav"
@@ -394,6 +416,28 @@ class Converter:
 
     def convertThematicBreak(self, node):
         return ThematicBreak()
+
+    def convertTableHeaderCell(self, node):
+        children = [convertMistletoeNodeToCustomElement(None, child, self) for child in node.children]
+        return TableHeaderCell(children)
+
+    def convertTableHeaderRow(self, node):
+        children = [self.convertTableHeaderCell(child) for child in node.children]
+        return TableHeaderRow(children)
+
+    def convertTable(self, node, children):
+        header = node.header
+        if header is not None:
+            header = self.convertTableHeaderRow(header)
+            children = [header] + children
+
+        return Table(children)
+
+    def convertTableRow(self, node, children):
+        return TableRow(children)
+
+    def convertTableCell(self, node, children):
+        return TableCell(children)
 
 
 

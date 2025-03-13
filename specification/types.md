@@ -1,25 +1,6 @@
 Types and Values [section.type]
 ================
 
-<div class=issue>
-
-
-* An integer value
-* A floating-point value
-* A string value
-* A code point value
-* A Boolean value
-
-A composite value is one of:
-
-* A tuple value
-* An array-like value
-* A structure value
-* An `enum` value
-
-</div>
-
-
 A **type** is a set of **values**;
 the values in that set are **instances** of the type.
 

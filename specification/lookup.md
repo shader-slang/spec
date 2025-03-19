@@ -1,13 +1,14 @@
 Lookup [lookup]
 ======
 
-**Lookup** is an operation that takes a *name* and maps it to zero or more *candidate* meanings, in a particular *static context*.
+**Lookup** is an operation that takes a *name* and maps it to zero or more *candidate* meanings that the *name* has in a particular entity.
+Lookup may be performed in a *static context*, or in a particular *expression* or *declaration*.
 
-Two kinds of *lookup* may be performed when checking Slang *expressions*:
-
-* **simple lookup** of a *name* on its own; for example, as part of a *name expression*
-
-* **member lookup** of a *name* inside of a base *expression*; for example, as part of a *member expression*
+> Note:
+>
+> *Lookup* is performed in a *static context* when a *name* is used by itself as an *expression*.
+>
+> *Lookup* is performed in an *expression* as part of checking a *member expression*.
 
 Names [lookup.name]
 =====
@@ -21,18 +22,18 @@ Name
 
 ParsedName
     => Identifier
-    => `operator` InfixOperator
-    => `operator` `prefix` PrefixOperator
-    => `operator` `postfix` PostfixOperator
+    => `operator` InfixOperator ` `
+    => `operator` `prefix` PrefixOperator ` `
+    => `operator` `postfix` PostfixOperator ` `
 
 SpecialName
     => `$init`
     => `$subscript`
     => `$this`
     => `$This`
-    => `$continue`
-    => `$break`
 ```
+
+TODO: The formatting of the above grammar block is wrong; fixes are required to the script that extracts and formats the grammars.
 
 > Note:
 >
@@ -42,30 +43,145 @@ SpecialName
 > A *special name* is a name that cannot appear in Slang soure code.
 > *Special names* are used by this specification to allow the mechanisms for lookup and overload resolution to be shared by multiple kinds of declarations.
 
+Lookup Predicates [lookup.predicate]
+=================
+
+A **lookup predicate** is a *predicate* on *declarations*.
+
+Lookup Transform [lookup.transform]
+================
+
+A **lookup transform** is a compile-time operation that takes a *declaration reference* as input and returns a *declaration reference* as output.
+
+Lookup Queries [lookup.query]
+==============
+
+A **lookup query** is an object that consists of:
+
+* the *name* being looked up
+
+* an optional *lookup predicate* to be used to filter *candidates*
+
+* a mutable list of *candidates* that have been collected
+
+* a mutable stack of *distances* to apply to candidate values
+
+* a mutable stack of *lookup transforms* to apply to candidate values
+
+To add a *declaration* _d_ to a *lookup query* _q_:
+
+* if _d_ satisfies the *lookup predicate* of _q_
+
+  * let variable _declRef_, a *declaration reference*, be a *direct declaration reference* to _d_
+
+  * for each *lookup transform* _f_ of _q_ in top-down order:
+
+    * set _declRef_ to the result of applying _f_ to _declRef_
+
+  * let _d_ be the distances of _q_
+
+  * let _candidate_ be a *candidate* with _declRef_ and _d_
+
+  * append _candidate_ to the candidtes of _q_
+
+Algorithm [lookup.algo]
+=========
+
+To *look up* a *name* _n_ in some entity _e_ with optional *lookup predicate* _p_:
+
+* if _p_ is absent:
+
+  * set _p_ to a *lookup predicate* that is true for *declarations* that *should be included in default lookup results*
+
+* let _q_ be a fresh *lookup query* with name _n_ and predicate _p_
+
+* with _q_:
+
+  * *collect lookup candidates* from _e_
+
+* let _candidates_ be the candidates of _q_
+
+* if _candidates_ contains a *candidate* _best_ such that _best_ *shadows* all of the other *candidates* in _candidates_
+
+  * return the expression of _best_
+
+* if _candidates_ is empty:
+
+  * fail with an error
+
+* if _candidates_ has a single entry _c_:
+
+  * return the expression of _c_
+
+* otherwise:
+
+  * return an *overload set* with _candidates_
+
+**Collecting lookup candidates** from an entity is an operation performed in context of some *lookup query*.
+
+A *declaration* _d_ **should be included in default lookup results** if all of the following are true:
+
+* _d_ is not an *attribute declaration*
+
+* _d_ is not a *system-value declaration*
+
+* // ...
+
+Shadowing [lookup.shadow]
+=========
+
+A *candidate* _a_ **shadows** a *candidate* _b_ if:
+
+* _a_ is *closer* than _b_
+
+* the expression of _a_ is not *overloadable*
+
+A *checked expression* _e_ is **overloadable** if:
+
+* _e_ is a *declaration reference* to some declaration _d_
+
+* _d_ is one of:
+
+  * a *function declaration*
+
+  * a *constructor declaration*
+
+  * a *subscript declaration*
+
+
+
 Lookup in a Context [lookup.context]
 ===================
 
-To *look up* a *name* _n_ in *context* _c_:
+To *collect lookup candidates* from a *context* _c_:
 
-* Let _scope_ be the *current scope* of _c_
+* let _scope_ be the *current scope* of _c_
 
-* Let _result_ be the result of looking up _n_ in _scope_
-
-* Return _result_
+* *collect lookup candidates* from _scope_
 
 Bindings [lookup.binding]
 ========
 
 ```.semantics
 Binding
-    => Name `=` value:CheckedExpression
+    => Name `=` Declaration
 ```
 
-To *look up* a *name* _n_ in a *binding* _b_:
+> A *binding* associates a *name* with a single meaning (a *declaration*) that it denotes.
 
-* If the name of _b_ is not _n_ return an empty list of *candidates*
+> Note:
+>
+> Many formal type systems have bindings that associate a name with a type, but the representation of *bindings* here assocaites a *name* with a *checked expression* (which has a type).
 
-* Otherwise, return the value of _b_
+To *collect lookup candidates* from a *binding* _b_:
+
+* let _queryName_ be the name of the current *lookup query*
+
+* if the name of _b_ is equal to _queryName_:
+
+  * let _v_ be the value of _b_
+
+  * add _v_ to the current *lookup query*
 
 Scopes [lookup.scope]
 ======
@@ -91,7 +207,7 @@ EmptyScope
     => `$Empty`
 ```
 
-The result of *looking up* a *name* in an *empty scope* is an empty list of *candidates*.
+To *collect lookup candidates* from an *empty scope*, do nothing.
 
 Layered Scopes [lookup.scope.layer]
 --------------
@@ -101,61 +217,65 @@ LayeredScope
     => inner:Scope outer:Scope
 ```
 
-To *look up* a name _n_ in a *layered scope* _s_:
+To *collect lookup candidates* from a *layered scope* _s_:
 
-* Let variable _innerCandidates_ be the result of *looking up* _n_ in the inner scope _s_
+* let _k_ be a fresh *distance key*
 
-* Let variable _outerDistances_ be the result of *looking up* _n_ in the outer scope of _s_
+* with a *distance* with key _k_ and value zero:
 
-* Let _k_ be a fresh *distance key*
+  * *collect lookup candidates* from the inner scope of _s_
 
-* For each _candidate_ in _innerCandidates_:
+* with a *distance* with key _k_ and value one:
 
-  * Extend _candidate_ with a *disance* with key *key* and value zero
+  * *collect lookup candidates* from the outer scope of _s_
 
-* For each _candidate_ in _outerCandidates_:
-
-  * Extend _candidate_ with a *distance* with key *key* and value one
-
-* Return the union of _innerCandidates_ and _outerCandidates_
+> Note:
+>
+> The intention of the algorithm here is that every *candidate* found through the inner *scope* should be considered closer than ever *candidate* find through the outer *scope*.
 
 Type Scopes [lookup.scope.type]
 -----------
 
 ```.semantics
 TypeScope
-    => `$ThisType` `=` implicitThisType:Type
+    => `$ThisType` `=` implicitThisType:Declaration
 ```
 
 > A *type scope* represents a scope in which an implicit `This` type is available.
 
-To *look up* a *name* _n_ in a *type scope* _s_ with *distances* _ds_:
+To *collect lookup candidates* a *type scope* _s_:
 
-* Let _thisType_ be the implicit `This` type of _s_
+* if _n_ is `$ThisType`:
 
-* If _n_ is `$ThisType`, return `$Candidate(` _thisType_ `,` _ds_ `)`
+  * let _thisType_ be the implicit `This` type of _s_
 
-* If _n_ is `$this`, return `$Candidate(` `$Error` `,` _ds_ `)`
+  * add _thisType_ to _q_ to the current *lookup query*
 
-* Otherwise, return the result of looking up _n_ in _thisType_ with _ds_
+* if _n_ is `$this`:
+
+  * add `$thisInStaticContext`  to the current *lookup query*
+
+* *collect lookup candidates* from _thisType_
 
 Instance Scopes [lookup.scope.instance]
 ---------------
 
 ```.semantics
 InstanceScope
-    => `$this` `=` implicitThisParameter:CheckedExpression
+    => `$this` `=` implicitThisParameter:Declaration
 ```
 
 > An *instance scope* represents a scope in which an implicit `this` expression is available.
 
-To *look up* a *name* _n_ in an *instance scope* _s_:
+To *collect lookup candidates* from an *instance scope* _s_:
 
-* Let _thisExpr_ be the implicit `this` parasmeter of _s_
+* if _n_ is `$this`:
 
-* If _n_ is `$this`, return _thisExpr_
+  * let _thisParam_ be the implicit `this` parameter of _s_
 
-* Otherwise, return the result of looing up _n_ in _thisExpr_ with _ds_
+  * add _thisParam_ to _q_
+
+* *collect lookup candidates* from _thisExpr_
 
 Declaration Scopes [lookup.scope.decl]
 ------------------
@@ -165,9 +285,11 @@ DeclarationScope
     => `$DeclarationScope(` DeclarationReference `)`
 ```
 
-To *look up* a *name* _n_ in a *declaration scope* _s_:
+To *collect lookup candidates* from a *declaration scope* _s_:
 
-* Return the result of looking up _n_ in the declaration reference of _s_
+* let _declRef_ be the declaration reference of _s_
+
+* *collect lookup candidates* from _declRef_
 
 File Scope [lookup.scope.file]
 ----------
@@ -177,19 +299,15 @@ FileScope
     => `$FileScope(` SourceUnit `)`
 ```
 
-To *look up* a *name* _n_ in a *file scope* _s_:
+To *collect lookup candidates* from a *file scope* _s_:
 
-* Let _sourceUnit_ be the source unit of _s_
+* let _sourceUnit_ be the source unit of _s_
 
-* Let variable _result_ be an empty set of *candidates*
+* for each *import declaration* _importDecl_ in _sourceUnit_:
 
-* For each *import declaration* _importDecl_ in _s_:
-
-  * Let _importedModule_ be the *module* imported by _importDecl_
+  * let _importedModule_ be the *module* imported by _importDecl_
 
   * // need to fill out the details here, since visibility matters for this case
-
-* Return _result_
 
 Note: File scopes only handle lookup of declaration from modules `import`ed into a particular source unit; they do not do anything around lookup of declarations inside the module itself.
 
@@ -201,20 +319,13 @@ ModuleScope
     => `$ModuleScope(` Module `)`
 ```
 
-To look up a _name_ in a *module scope* _s_:
+To *collect lookup candidates* from a *module scope* _s_:
 
-* Let _m_ be the module of _s_
+* let _m_ be the module of _s_
 
-* Let variable _result_ be an empty set of *candidates*
+* for each _sourceUnit_ in _m_
 
-* For each _sourceUnit_ in _m_
-
-  * Let _suResult_ be the result of looking up _name_ in _sourceUnit_
-
-  * Set _result_ to the union of _result_ and _suResult_
-
-* Return _result_
-
+  * *collect lookup candidates* from _sourceUnit_
 
 Note: Lookup at module scope can always just return direct declaration references, since no qualification is needed.
 
@@ -225,88 +336,68 @@ Member Lookup [lookup.member]
 Expressions [lookup.member.expr]
 -----------
 
-To *look up* the name _n_ in a *checked expression* _e_ that is not a *type*
+To *collect lookup candidates* from a *checked expression* _e_, where _e_ is not a *type*:
 
-* Let _t_ be the type of _e_
+* let _T_ be the type of _e_
 
-* Let _typeResult_ be the result of looking up _n_ in _t_
+* with a *lookup transform* that *tries to bind* a *declaration reference* to _e_:
 
-* Let variable _result_ be an empty lookup result
+  * *collect lookup candidates* from _T_
 
-* For each *candidate* _typeCandidate_ in _typeResult_:
+* if _T_ is a *pointer-like type*:
 
-  * Let _memberDeclRef_ be the declaration reference of _typeCandidate_
+  * let _derefExpr_ be the result of *dereferencing* _e_
 
-  * Let _distances_ be the distances of _typeCandidate_
+  * *collect lookup candidates* from _derefExpr_ for _q_
 
-  * If the declaration of _memberDeclRef_ is *effectively static*:
+* // swizzle cases go here
 
-    * Add _typeCandidate_ to _result_
+To **try to bind** a *declaration reference* _memberDeclRef_ to a *checked expression* _e_:
 
-  * Otherwise:
+* if the *declaration* of _memberDeclRef_ is *effectively static*:
 
-    * Let _memberRef_ be the *checked* *member expression* _e_ `.` _member_
+  * return _memberDeclRef_
 
-    * Add `$Candidate(` _memberRef_ `,` _distances_ `)` to _result_
+* otherwise:
 
-* If _t_ is a *pointer-like type*:
+  * return the *checked* *member expression* _e_ `.` _member_
 
-  * Let _pt_ be the pointee type of _t_
-
-  * Let _derefExpr_ be the result of *dereferencing* _e_
-
-  * Let _derefCandidates_ be the result of looking up _n_ in _derefExpr_
-
-  * Add all candidates from _derefCandidates_ to _result_
-
-* TODO: The swizzle cases go here...
-
-* Return _result_
+TODO: The definition of *effectively static* needs to go somewhere.
 
 Declaration References [lookup.member.decl-ref]
 ----------------------
 
-To *look up* a *name* _n_ in a *fully specialized* *declaration reference* _declRef_ that is not a *type*:
+To *collect lookup candidates* from a *fully-specialized* *declaration reference* _baseDeclRef_, where _baseDeclRef_ is not a *type*:
 
-* Let _memberDecls_ be the result of directly looking up _n_ in the declaration of _baseDeclRef_
+* with a *lookup transform* that *statically binds* a *declaration* to _baseDeclRef_
 
-* Let variable _result_ be an empty set of *candidates*
+  * *collect direct lookup candidates* from the decalration of _baseDeclRef_
 
-* For each _memberDecl_ in _memberDecls_:
+To **statically bind** a *declaration* _memberDecl_ to a *declaration reference* _baseDeclRef_:
 
-  * Let _memberDeclRef_ be `$StaticMemberRef(` _baseDeclRef_ `$,` _memberDecl_ `$)`
+* return a *checked* *static member reference* _baseDeclRef_ `::` _memberDecl_
 
-  * Let _memberCandidate_ be `$Candidate(` _memberDeclRef `$, {} )`
-
-  * Add _memberCandidate_ to _result_
-
-* return _result_
+TODO: This case is being slippery, since a *declaration reference* is itself an *expression*, so some rule needs to explain when this case applies vs. when the instance-member-lookup case applies.
 
 Generics [lookup.member.generic]
 --------
 
-To *look up* a *name* _n_ in a *generic declaration reference* _genericRef_:
+To *collect lookup candidates* from a *generic declaration reference* _genericRef_:
 
-* Let _declRef_ be the result of *instantiating* _genericRef_
+* let _declRef_ be the result of *instantiating* _genericRef_
 
-* Return the result of *looking up* _n_ in _declRef_
+* *collect lookup candidates* from _declRef_
 
 Type [lookup.member.type]
 ----
 
-To *look up* a *name* _n_ in a *type* _t_:
+To *collect lookup candidates* from a *type* _t_:
 
-* Let _facets_ be the result of *linearizing* _t_
+* let _facets_ be the result of *linearizing* _t_
 
-* Let variable _result_ be an empty lookup result
+* for each _facet_ in _facets_:
 
-* For each _facet_ in _facets_:
-
-  * Let _facetResult_ be the result of looking up _n_ in _facet_
-
-  * Set _result_ to the union of _result_ and _facetResult_
-
-* Return _result_
+  * *collect lookup candidates* from _facet_
 
 Direct Lookup [lookup.direct]
 =============
@@ -316,25 +407,19 @@ Note: **Direct** lookup refers to the case where there is no attempt to perform 
 Facets [lookup.direct.facet]
 ------
 
-To directly look up name _n_ in a *facet* _f_:
+To *collect direct lookup candidates* from a *facet* _f_:
 
-* Let *declaration reference* _ancestor_ be the ancestor of _f_
+* let *declaration reference* _ancestorDeclRef_ be the ancestor of _f_
 
-* Let _ancestorResult_ (a list of *declarations*) be the result of directly looking up _n_ in _ancestor_
+* let _ancestorDecl_ be the *declaration* of _ancestorDeclRef_
 
-* Let _distances_ be the *distances* of _f_
+* let _distances_ be the *distances* of _f_
 
-* Let variable _result_ be an empty lookup result
+* with _distances_ pushed on the current *lookup query*
 
-* For each *declaration* _ancestorDecl_ in _ancestorResult_:
-
-  * Let _derivedDeclRef_ be `$MemberLookup` _f_ _ancestorDecl_
-
-  * Let _candidate_ be `$Candidate(` _derivedDeclRef_ `,` _distances_ `)`
-
-  * Add _candidate_ to _result_
-
-* Return _result_
+  * with a *lookup transform* that transforms a *declaration* _d_ into `$DynamicLookup(` _f_ `,` _d_ `)`
+  
+    * *collect direct lookup candidates* from _ancestorDecl_
 
 Note: Each *facet* in the *linearization* of a type _t_ already stores *distances* to represent the relative priority of nodes in the inheritance graph of _t_. By including those distances in the result of lookup, other parts of the specification that need to consider such prioritization do not need to inspect the inheritance graph itself.
 
@@ -343,21 +428,10 @@ TODO: As described above, a member lookup into the facet (a subtype witness) alw
 Declarations [lookup.direct.decl]
 ------------
 
-To directly look up name _n_ in a *declaration* _baseDecl_:
+To *collect direct lookup candidates* from a *declaration* _baseDecl_:
 
-* If _baseDecl_ does not have a *declaration body*:
+* if _baseDecl_ has a *declaration body* _body_:
 
-  * Return an empty *lookup result*
+  * for each _memberDecl_ in _body_:
 
-* Let _results_ be an empty set of *declarations*
-
-* For each _memberDecl_ in the declaration body of _baseDecl_
-
-  * let _memberName_ be the name of _memberDecl_
-
-  * If _memberName_ is equal to _name_:
-
-    * Add _memberDecl_ to _result_
-
-* Return _result_
-
+    * add _memberDecl_ to the current *lookup query*

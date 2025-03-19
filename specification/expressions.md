@@ -18,7 +18,11 @@ Some expressions can yield **l-values**, which allows them to be used on the lef
 Literal Expressions [expr.lit]
 -------------------
 
-Literal expressions are never l-values.
+> TODO:
+>
+> * `nullptr` literals
+> * `none` literals
+
 
 ### Integer Literal Expressions [expr.lit.int]
 
@@ -70,7 +74,11 @@ BooleanLiteralExpression
     => `false`
 ```
 
-A boolean literal expression _b_ synthesizes the checked expression _b_ `: @Constant Bool`.
+#### Static Seamntics
+
+To prepare a *Boolean literal expression* _b_:
+
+* Return the *typed value* _b_ `: @Constant Bool`
 
 ### String Literal Expressions [expr.lit.string]
 
@@ -93,40 +101,31 @@ NameExpression
     => Name
 ```
 
-To *synthesize* a *name expression* _expr_:
+To *prepare* a *name expression* _n_:
 
-* Let _overloadSet_ be the result of *looking up* the name of _expr_ in the current context
-
-* Let _simplified_ be the result of *simplifying* _overloadSet_
-
-* If _simplified_ is `$Error`, diagnose an error
-
-* Return _simplified_
+* Return the result of *looking up* _n_ in the current context
 
 Member Expression [expr.member]
 -----------------
+
+> TODO:
+>
+> * `->` operator
+> * `::` operator
+
 
 ```.syntax
 MemberExpression
     => base:Expression `.` member:Name
 ```
 
-To *synthesize* a *member expression* _expr_:
+To *prepare* a *member expression* _expr_:
 
-* Let _base_ be the result of synthesizing the base of _expr_
+* Let _base_ be the result of preparing the base of _expr_
 
-* Let _overloadSet_ be the result of *looking up* the member name of _expr_ in _base_
+* Let _n_ be the member name of _expr_
 
-* Let _simplified_ be the result of *simplifying* _overloadSet_
-
-* Return _simplified_
-
-> Issue:
->
-> These rules attempt to look up a member in an *intermediate expression*, while the *lookup* rules currently only handle lookup in a *checked expression*.
-> There needs to be some rule to determine what happens when an attempt is made to look up a member in an intermediate expression such as an overload set.
->
-> The current compiler implementation forces the base expression to resolve before performing lookup, but there is not strictly a reason why this always has to be the approach taken.
+* Return the result of *looking up* _n_ in _base_
 
 ### Static Member Expression [expr.member.static]
 
@@ -151,13 +150,9 @@ ThisExpression
 
 ### Static Semantics
 
-To *synthesize* a *`this` expression* _expr_:
+To *prepare* a *`this` expression* _expr_:
 
-* Let _overloadSet_ be the result of *looking up* `$this` in the current context
-
-* Let _simplified_ be the result of *simplifying* _overloadSet_
-
-* Return _simplified_
+* Return the result of *looking up* `$this` in the current context
 
 Parenthesized Expression [expr.paren]
 -------------
@@ -171,7 +166,9 @@ ParenthesizedExpression
 
 ### Static Semantics
 
-The parenthesized expression `(` _e_ `)` synthesizes _s_ if _e_ synthesizes _s_.
+To *prepare* a *parenthesized expression* `(` _e_ `)`:
+
+* Return the result of *preparing* _e_
 
 Call Expression [expr.call]
 ---------------
@@ -188,11 +185,15 @@ NamedArgument
     => Identifier `:` Expression
 ```
 
-The call expression _f_ `(` _args_ `)` synthesizes _scall_ if:
+### Static Semantics
 
-* _f_ synthesizes _sf_
-* The _args_ synthesize _sargs_
-* Invocation of _sf_ on _sargs_ synthesizes _scall_
+To *prepare* a *call expression* _f_ `(` _args_ `)`:
+
+* let _pf_ be the result of preparing _f_
+
+* let _pargs_ be the result of preparing each of _args_
+
+* Return the result of *preparing a call* to _pf_ on _pargs_
 
 Subscript Expression [expr.subscript]
 --------------------
@@ -202,12 +203,17 @@ SubscriptExpression
     => Expression `[` (Argument `,`)* `]`
 ```
 
-The subscript expression _base_ `[` _args_ `]` synthesizes _scall_ if:
+### Static Semantics
 
-* _base_ synthesizes _sbase_
-* The _args_ synthesize _sargs_
-* Member lookup of `subscript` in _base_ synthesizes _ssub_
-* Invocation of _ssub_ on _sargs_ synthesizes _scall_
+To *prepare* a *subscript expression* _base_ `[` _args_ `]`:
+
+* let _pb_ be the result of preparing _base_
+
+* let _pargs_ be the result of preparing each of the _args_
+
+* let _psub_ be the result of looking up `$subscript` in _pb_
+
+* Return the result of *preparing a call* to _psub_ on _pargs_
 
 Initializer List Expression [expr.init-list]
 ---------------------------
@@ -217,13 +223,16 @@ InitializerListExpression
     => `{` (Argument `,`)* `}`
 ```
 
-The initializer-list expression `{` _args_ `}` synthesizes `{` _sargs_ `}` if:
+To *prepare* an *initializer-list expression* `{` _args_ `}`:
 
-* The _args_ synthesize _sargs_
+* let _pargs_ be the result of preparing each of the _args_
 
-The initializer-list expression `{` _args_ `}` checks against _t_ if:
+* return the *prepared expression* `$InitializerList` _pargs_
 
-* Invocation of _t_ on _args_ checks against _t_
+To *check* the expression `$InitializerList` _args_ against *type* _t_:
+
+* Return the result of *checking a call* to _t_ on _args_
+
 
 Cast Expression [expr.cast]
 ---------------
@@ -233,11 +242,13 @@ CastExpression
     => `(` TypeExpression `)` Expression
 ```
 
-A *cast expression* `(` _typeExp_ `)` _exp_ synthesizes _synExp_ if:
+To *prepare* a *cast expression* `(` _typeExp_ `)` _exp_:
 
-* checking _typeExp_ against `TYPE` yields _type_
+* let _type_ be the result of *checking* _typeExp_ *as a type*
 
-* explicitly converting _exp_ to _type_ yields _synExp_
+* let _pexp_ be the result of *preparing* _exp_
+
+* return the result of *explicitly converting* _pexp_ to _type_
 
 ### Legacy: Compatibility Feature [expr.cast.compatiblity]
 
@@ -396,42 +407,105 @@ A conditional expression _c_ `?` _t_ `:` _e_ checks against expected type _T_ if
 * _t_ checks against _T_
 * _e_ checks against _T_
 
-Fodder
-======
+Specialize Expressions [expr.specialize]
+======================
+
+```.syntax
+SpecializeExpression
+    => base:Expression `<` Argument* `>`
+```
+
+## Static Semantics
+
+To prepare a *specialize expression* _base_ `<` _args_ `>`:
+
+* let _pbase_ be the result of *preparing* _base_
+
+* let _pargs_ be the result of *preparing* each of the _args_
+
+* return the result of *specializing* _pbase_ to _pargs_
+
+TODO: this just kicks the can down the road a bit...
+
+Variadics [expr.variadic]
+=========
+
+Expand Expressions [expr.variadic.expand]
+------------------
+
+Each Expressions [expr.variadic.each]
+----------------
+
+`try` Expressions [expr.try]
+=================
+
+`new` Expressions [expr.new]
+=================
+
+Runtime Type Casting and Testing Expressions
+============================================
 
 > TODO:
 >
-> * `nullptr` literals
-> * `none` literals
->
-> * Variadics:
->   * `expand`
->   * `each`
->
-> * `try` expr
-> * `new` expr
->
-> * `->` operator
-> * `::` operator
->
 > * expr `is` type
 > * expr `as` type
+
+Layout-Related Expressions [expr.layout]
+==========================
+
+`sizeof` Expressions [expr.layout.size]
+--------------------
+
+`alignof` Expressions [expr.layout.align]
+--------------------
+
+`countof` Expressions [expr.layout.count]
+--------------------
+
+Type Expressions
+================
+
+Modified Type Expressions
+-------------------------
+
+Interface Conjunction Expressions
+---------------------------------
+
+Pointer Type Expressions
+------------------------
+
+Function Type Expressions
+-------------------------
+
+```.syntax
+FunctionTypeExpression
+    => `(` FunctionTypeParameter* `)` `->` TypeExpression
+
+FunctionTypeParameter
+    => SimpleFunctionTypeParameter
+    => NamedFunctionTypeParameter
+
+NamedFunctionTypeParameter
+    => Identifier `:` SimpleFunctionTypeParameter
+
+SimpleFunctionTypeParameter
+    => Direction? TypeExpression
+```
+
+Tuple Type Expressions
+----------------------
+
+```.syntax
+TupleTypeExpression
+    => `(` TypeExpression (`,` TypeExpression)+ `)`
+```
+
+Automatic Differentiation Expressions [expr.autodiff]
+=====================================
+
+> TODO:
 >
-> * Layout related:
->   * `sizeof`
->   * `alignof`
->   * `countof`
+> * `__fwd_diff`
+> * `__bwd_diff`
+> * `no_diff`
 >
-> * specialize (with `<>`)
->
-> * autodiff exprs
->   * `__fwd_diff`
->   * `__bwd_diff`
->   * `no_diff`
->
-> * type expression cases
->   * conjunctions: left `&` right
->   * modifier type
->   * pointer types: type `*`
->   * function types: `(` type* `)` `->` type
->   * tuple types

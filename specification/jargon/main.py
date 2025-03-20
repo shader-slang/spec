@@ -456,6 +456,196 @@ class CombineSpecialSpansTransform(md.Transform):
         node.children = self._newChildren
         return node
 
+# NFA for lexical grammar
+class LexicalGrammar():
+    class Expr():
+        pass
+
+    class Nothing(Expr):
+        pass
+
+    class Terminal(Expr):
+        def __init__(self, name):
+            super().__init__()
+            self.name = name
+
+    class Range(Expr):
+        def __init__(self, lo, hi):
+            super().__init__()
+            self.lo = lo
+            self.hi = hi
+
+    class Diff(Expr):
+        def __init__(self, left, right):
+            super().__init__()
+            self.left = left
+            self.right = right
+
+    class Or(Expr):
+        def __init__(self, alternatives):
+            super().__init__()
+            self.alternatives = alternatives
+
+    class Seq(Expr):
+        def __init__(self, exprs):
+            super().__init__()
+            self.exprs = exprs
+
+    class OneOrMore(Expr):
+        def __init__(self, inner):
+            super().__init__()
+            self.inner = inner
+
+    def Optional(self, inner):
+        return self.Or([inner, self.Nothing()])
+
+    def ZeroOrMore(self, inner):
+        return self.Optional(self.OneOrMore(inner))
+
+    class Nonterminal(Expr):
+        def __init__(self, name):
+            self.name = name
+            self.definition = None
+
+        def setDefinition(self, definition):
+            if self.definition is not None:
+                raise Exception("duplicate definition for nonterminal")
+            self.definition = definition
+
+    def __init__(self):
+        self.nonterminals = {}
+        pass
+    
+    def getNonterminal(self, name):
+        if name in self.nonterminals:
+            return self.nonterminals[name]
+        
+        nonterminal = self.Nonterminal(name)
+        self.nonterminals[name] = nonterminal
+        return nonterminal
+
+class CollectLexicalGrammarProductionsTransform(md.Transform):
+    def __init__(self, lexicalGrammar):
+        self.lexicalGrammar = lexicalGrammar
+
+    def translateCodeSpan(self, node):
+        name = md.getText(node)
+        return self.lexicalGrammar.Terminal(name)
+
+    def translateMetaTypeNode(self, node):
+        name = md.getText(node)
+        return self.lexicalGrammar.getNonterminal(name)
+
+    def translateGrammarOptional(self, node):
+        inner = self.translateExpr(node.children[0])
+        return self.lexicalGrammar.Optional(inner)
+
+    def translateGrammarOneOrMore(self, node):
+        inner = self.translateExpr(node.children[0])
+        return self.lexicalGrammar.OneOrMore(inner)
+
+    def translateGrammarZeroOrMore(self, node):
+        inner = self.translateExpr(node.children[0])
+        return self.lexicalGrammar.ZeroOrMore(inner)
+
+    def translateGrammarParenthesizedExpression(self, node):
+        inner = self.translateExpr(node.children[0])
+        return inner
+
+    def translateGrammarSequence(self, node):
+        translatedAlternatives = [self.translateExpr(a) for a in node.children]
+        if len(translatedAlternatives) == 0:
+            return self.lexicalGramar.Nothing()
+        if len(translatedAlternatives) == 1:
+            return translatedAlternatives[0]        
+        return self.lexicalGrammar.Seq(translatedAlternatives)
+
+    def translateGrammarOrExpr(self, node):
+        return self.translateAlternatives(node.children)
+
+    def translateGrammarAlternative(self, node):
+        return self.translateExpr(node.children[0])
+
+    def translateGrammarCharacterClass(self, node):
+        return self.translateAlternatives(node.children)
+
+    def translateGrammarCharacterClassCharacterRange(self, node):
+        left = self.translateExpr(node.children[0])
+        right = self.translateExpr(node.children[1])
+        return self.lexicalGrammar.Range(left, right)
+
+    def translateGrammarDiffExpr(self, node):
+        left = self.translateExpr(node.children[0])
+        right = self.translateExpr(node.children[1])
+        return self.lexicalGrammar.Diff(left, right)
+
+    def translateGrammarCharacterClassCharacter(self, node):
+        text = md.getText(node)
+        return self.lexicalGrammar.Terminal(text)
+
+    def translateGrammarAlternativeList(self, node):
+        return self.translateAlternatives(node.children)
+
+    def translateExpr(self, node):
+        className = node.__class__.__name__
+        methodName = "translate" + className
+        method = getattr(self, methodName)
+        return method(node)
+
+    def translateAlternatives(self, alternatives):
+        translatedAlternatives = [self.translateExpr(a) for a in alternatives]
+        if len(translatedAlternatives) == 0:
+            return self.lexicalGramar.Nothing()
+        if len(translatedAlternatives) == 1:
+            return translatedAlternatives[0]        
+        return self.lexicalGrammar.Or(translatedAlternatives)
+
+    def visitGrammarProduction(self, node):
+
+        nonterminalBeingDefined = node.children[0]
+        nonterminalName = md.getText(nonterminalBeingDefined)
+        nonterminal = self.lexicalGrammar.getNonterminal(nonterminalName);
+
+        definition = self.translateExpr(node.children[1])
+
+        nonterminal.setDefinition(definition)
+
+        print("found: ", nonterminalName)
+
+class CollectLexicalGrammarTransform(md.Transform):
+    def __init__(self):
+        self.lexicalGrammar = LexicalGrammar()
+
+    def visitLexicalCallout(self, node):
+        md.transformTree(node,
+            CollectLexicalGrammarProductionsTransform(self.lexicalGrammar))
+
+def collectLexicalGrammar(node):
+    transform = CollectLexicalGrammarTransform()
+    md.transformTree(node, transform)
+
+    lg = transform.lexicalGrammar
+
+    for nt in lg.nonterminals.values():
+        if nt.definition is None:
+            print("nonterminal {0} does not have a definition".format(nt.name))
+
+    # TODO: tag important nonterminals where the terminals that
+    # are their alternatives should be treated as distinct
+    # lexemes, because the abstract syntax will refer to them
+    # as such:
+    #
+    # Operator, Punctuation
+
+
+    # TODO: confirm that the lexical grammar can be represented
+    # as an NFA (basically: it can't have rules that contain themselves)
+
+    # TODO: actually translate to a proper NFA, then to a DFA,
+    # so that we can generate a reference lexer
+
+    return lg
+
 def transformRootDocument(node):
     node = md.transformTree(node, md.CollectRootDocumentSectionsTransform())
     md.includeChapters(node)
@@ -478,6 +668,8 @@ def transformRootDocument(node):
     # merge consecutive paragraphs that should span a code block, algorithm, etc.
     # section numbering
     # convert all grammar blocks to new syntax (and then clean up grammar for grammars...)
+
+    lexicalGramar = collectLexicalGrammar(node)
 
     md.generateSectionIDs(node)
     node = md.transformTree(node, md.BuildTableOfContentsTransform(node))

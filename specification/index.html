@@ -61,8 +61,9 @@
 <li><a href="#sec.lex.token.float">Floating-Point Literals</a></li>
 </ul>
 </li>
-<li><a href="#sec.lex.token.text">Text Literals</a><ul><li><a href="#sec.lex.token.string">String Literals</a></li>
-<li><a href="#sec.lex.token.char">Character Literals</a></li>
+<li><a href="#sec.lex.token.text">Text Literals</a><ul><li><a href="#sec.lex.token.text.escape">Escape Sequences</a></li>
+<li><a href="#sec.lex.token.text.string">String Literals</a></li>
+<li><a href="#sec.lex.token.text.char">Character Literals</a></li>
 </ul>
 </li>
 </ul>
@@ -756,13 +757,33 @@ The presence or absence of <a>trivia</a> in a sequence of <a>lexemes</a> has no 
 ⇒ <span class="alternative grammar"><span class="grammar">(<span class="grammar"><span class="grammar"><code> </code> | <code>\t</code></span></span>)</span>+</span></div>
 </pre>
 </div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">LineBreak</span></dfn>
+⇒ <span class="alternative grammar"><code>\n</code></span>
+⇒ <span class="alternative grammar"><code>\r</code></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>\r</code> <code>\n</code></span></span></div>
+</pre>
+</div>
 <h5 id="sec.lex.trivia.space.line-break"><a href="#sec.lex.trivia.space.line-break" class="anchor">Line Breaks</a></h5>
 <p>A <dfn>line break</dfn> consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).</p>
 <p>An <dfn>escaped line break</dfn> is a backslash (<code>\</code>, U+005C) follow immediately by a <a>line break</a>.</p>
 <p>A <a>source unit</a> is split into <dfn>lines</dfn>: non-empty sequences of <a>characters</a> separated by <a>line breaks</a>.</p>
 <div class="note callout">Note: Line breaks are used as <a>line</a> separators rather than terminators; it is not necessary for a <a>source unit</a> to end with a line break.</div>
 <h4 id="sec.lex.trivia.comment"><a href="#sec.lex.trivia.comment" class="anchor">Comments</a></h4>
-<p>A <dfn>comment</dfn> is either a <a>line comment</a> or a <a>block comment</a>.</p>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">Comment</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">LineComment</span></span>
+⇒ <span class="alternative grammar"><span class="meta">BlockComment</span></span></div>
+</pre>
+</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">LineComment</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>//</code> <span class="grammar">(<span class="grammar"><span class="grammar"><span class="meta">CodePoint</span> - <span class="meta">LineBreak</span></span></span>)</span>*</span></span></div>
+</pre>
+</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">BlockComment</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>/*</code> <span class="meta">BlockCommentContent</span> <code>*/</code></span></span></div>
+<div class="grammar production"><dfn><span class="meta">BlockCommentContent</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="grammar">(<span class="grammar"><span class="grammar">(<span class="grammar"><span class="grammar"><span class="meta">CodePoint</span> - <code>*</code></span></span>) | (<span class="grammar"><span class="sequence grammar"><code>*</code> (<span class="grammar"><span class="grammar"><span class="meta">CodePoint</span> - <code>/</code></span></span>)</span></span>)</span></span>)</span>* <span class="grammar"><code>*</code></span>*</span></span></div>
+</pre>
+</div>
 <p>A <dfn>line comment</dfn> comprises two forward slashes (<code>/</code>, U+002F) followed by zero or more characters that do not contain a <a>line break</a>.
 A <a>line comment</a> extends up to, but does not include, a subsequent <a>line break</a> or the end of the <a>source unit</a>.</p>
 <p>A <dfn>block comment</dfn> begins with a forward slash (<code>/</code>, U+002F) followed by an asterisk (<code>*</code>, U+0052).
@@ -776,7 +797,7 @@ A <a>block comment</a> contains all <a>characters</a> between where it begins an
 ⇒ <span class="alternative grammar"><span class="meta">Identifier</span></span>
 ⇒ <span class="alternative grammar"><span class="meta">Literal</span></span>
 ⇒ <span class="alternative grammar"><span class="meta">Operator</span></span>
-⇒ <span class="alternative grammar"><span class="meta">Puncutation</span></span></div>
+⇒ <span class="alternative grammar"><span class="meta">Punctuation</span></span></div>
 </pre>
 </div>
 <h4 id="sec.lex.token.ident"><a href="#sec.lex.token.ident" class="anchor">Identifiers</a></h4>
@@ -800,7 +821,6 @@ A <a>block comment</a> contains all <a>characters</a> between where it begins an
 ⇒ <span class="alternative grammar"><span class="meta">TextLiteral</span></span></div>
 </pre>
 </div>
-<div class="issue callout">TODO: <dfn>literal</dfn>, <a>numeric literal</a>.</div>
 <h5 id="sec.lex.token.num"><a href="#sec.lex.token.num" class="anchor">Numeric Literals</a></h5>
 <p>A <dfn>numeric literal</dfn> is either an <a>integer literal</a> or a <a>floating-point literal</a>.</p>
 <div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">NumericLiteral</span></dfn>
@@ -808,17 +828,38 @@ A <a>block comment</a> contains all <a>characters</a> between where it begins an
 ⇒ <span class="alternative grammar"><span class="meta">FloatingPointLiteral</span></span></div>
 </pre>
 </div>
-<p>A <dfn>radix specifier</dfn> is one of:</p>
-<ul><li><p><code>0x</code> or <code>0X</code> to specify a <dfn>hexadecimal literal</dfn> (radix 16)</p>
-</li>
-<li><p><code>0b</code> or <code>0B</code> to specify a <dfn>binary literal</dfn> (radix 2)</p>
-</li>
-</ul>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">RadixSpecifier</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">HexadecimalRadixSpecifier</span></span>
+⇒ <span class="alternative grammar"><span class="meta">BinaryRadixSpecifier</span></span></div>
+</pre>
+</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">HexadecimalRadixSpecifier</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>0</code> [<span class="character-class grammar"><span class="character grammar">x</span><span class="character grammar">X</span></span>]</span></span></div>
+</pre>
+</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">BinaryRadixSpecifier</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>0</code> [<span class="character-class grammar"><span class="character grammar">b</span><span class="character grammar">B</span></span>]</span></span></div>
+</pre>
+</div>
 <p>When no radix specifier is present, a numeric literal is a <dfn>decimal literal</dfn> (radix 10).</p>
 <div class="note callout">Note:Octal literals (radix 8) are not supported.
 A <code>0</code> prefix on an integer literal is not used to specify an octal literal as it does in C.
-Implementations might warn on integer literals with a <code>0</code> prefix in case users expect C behavior.</div>
-<p>The grammar of the <dfn>digits</dfn> for a numeric level depend on its radix, as follows:</p>
+Implementations may diagnose a warning on <a>integer literals</a> with a <code>0</code> prefix.</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">DecimalDigits</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">DecimalDigit</span> <span class="grammar">(<span class="grammar"><span class="grammar"><span class="meta">DecimalDigit</span> | <code>_</code></span></span>)</span>*</span></span></div>
+<div class="grammar production"><dfn><span class="meta">HexadecimalDigits</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">HexadecimalDigit</span> <span class="grammar">(<span class="grammar"><span class="grammar"><span class="meta">HexadecimalDigit</span> | <code>_</code></span></span>)</span>*</span></span></div>
+<div class="grammar production"><dfn><span class="meta">BinaryDigits</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">BinaryDigit</span> <span class="grammar">(<span class="grammar"><span class="grammar"><span class="meta">BinaryDigit</span> | <code>_</code></span></span>)</span>*</span></span></div>
+<div class="grammar production"><dfn><span class="meta">DecimalDigit</span></dfn>
+⇒ <span class="alternative grammar">[<span class="character-class grammar"><span class="character-range grammar"><span class="character grammar">0</span>-<span class="character grammar">9</span></span></span>]</span></div>
+<div class="grammar production"><dfn><span class="meta">HexadecimalDigit</span></dfn>
+⇒ <span class="alternative grammar">[<span class="character-class grammar"><span class="character-range grammar"><span class="character grammar">0</span>-<span class="character grammar">9</span></span><span class="character grammar">A</span><span class="character grammar">-</span><span class="character grammar">F</span><span class="character grammar">a</span><span class="character grammar">-</span><span class="character grammar">f</span></span>]</span></div>
+<div class="grammar production"><dfn><span class="meta">BinaryDigit</span></dfn>
+⇒ <span class="alternative grammar">[<span class="character-class grammar"><span class="character-range grammar"><span class="character grammar">0</span>-<span class="character grammar">1</span></span></span>]</span></div>
+</pre>
+</div>
+<p>The grammar of the <a>digits</a> for a numeric level depend on its radix, as follows:</p>
 <ul><li><p>The <a>digits</a> of a <a>decimal literal</a> may include <code>0</code> through <code>9</code></p>
 </li>
 <li><p>The <a>digits</a> of a <a>hexadecimal literal</a> may include <code>0</code> through <code>9</code>, the letters <code>A</code> through <code>F</code> and <code>a</code> through <code>f</code>. The letters represent digit values 10 through 15.</p>
@@ -826,11 +867,17 @@ Implementations might warn on integer literals with a <code>0</code> prefix in c
 <li><p>The <a>digits</a> of a <a>binary literal</a> may include <code>0</code> and <code>1</code></p>
 </li>
 </ul>
-<p>Digits for all numeric literals may also include <code>_</code>, which are ignored and have no semantic impact.</p>
-<p>A <dfn>numeric literal suffix</dfn> consists of any sequence of characters that would be a valid identifier, that does not start with <code>e</code> or <code>E</code>.</p>
-<div class="note callout">Note: A leading <code>-</code> (U+002D) before a numeric literal is <a>not</a> part of the literal, even if there is no whitespace separating the two.</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">NumericLiteralSuffix</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">Identifier</span></span></div>
+</pre>
+</div>
 <h4 id="sec.lex.token.int"><a href="#sec.lex.token.int" class="anchor">Integer Literals</a></h4>
-<p>An <dfn>integer literal</dfn> consists of an optional radix specifier followed by digits and an optional <a>numeric literal suffix</a>.</p>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">IntegerLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">DecimalDigits</span> <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">HexadecimalRadixSpecifier</span> <span class="meta">HexadecimalDigits</span> <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">BinaryRadixSpecifier</span> <span class="meta">BinaryDigits</span> <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span></div>
+</pre>
+</div>
 <p>The suffix on an integer literal may be used to indicate the desired type of the literal:</p>
 <ul><li><p>A <code>u</code> suffix indicates the <code>UInt</code> type</p>
 </li>
@@ -839,24 +886,57 @@ Implementations might warn on integer literals with a <code>0</code> prefix in c
 <li><p>A <code>ul</code> or <code>ull</code> suffix indicates the <code>UInt64</code> type</p>
 </li>
 </ul>
+<div class="issue callout">TODO: The suffixes should be documented in the type-checking rules.</div>
 <h4 id="sec.lex.token.float"><a href="#sec.lex.token.float" class="anchor">Floating-Point Literals</a></h4>
 <p>A <dfn>floating-point literal</dfn> consists of either</p>
-<ul><li><p>An optional <a>radix specifier</a>, followed by digits, followed by a <code>.</code> (U+002E), followed by optional digits, an optional <a>exponent</a>, and an optional numeric literal suffix.</p>
-</li>
-<li><p>An optional <a>radix specifier</a>, followed by digits, an exponent, and an optional numeric literal suffix.</p>
-</li>
-<li><p>A <code>.</code> (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.</p>
-</li>
-</ul>
-<p>A floating-point literal may only use dexicmal or hexadecimal radix.</p>
-<p>The <dfn>exponent</dfn> of a floating-pointer literal consists of either <code>e</code> or <code>E</code>, followed by an optional <dfn>sign</dfn> of <code>+</code> or <code>-</code>, followed by decimal digits.</p>
-<div class="issue callout">TODO: <a>sign</a>.</div>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">FloatingPointLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">DecimalFloatingPointLiteral</span></span></div>
+<div class="grammar production"><dfn><span class="meta">DecimalFloatingPointLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">DecimalDigits</span> <code>.</code> <span class="grammar"><span class="meta">DecimalDigits</span></span>? <span class="grammar"><span class="meta">Exponent</span></span>? <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">DecimalDigits</span> <span class="meta">Exponent</span> <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>.</code> <span class="meta">DecimalDigits</span> <span class="grammar"><span class="meta">Exponent</span></span>? <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span></div>
+<div class="grammar production"><dfn><span class="meta">HexadecimalFloatingPointLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">HexadecimalRadixSpecifier</span> <span class="meta">HexadecimalDigits</span> <code>.</code> <span class="grammar"><span class="meta">HexadecimalDigits</span></span>? <span class="grammar"><span class="meta">Exponent</span></span>? <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="meta">HexadecimalRadixSpecifier</span> <span class="meta">HexadecimalDigits</span> <span class="meta">Exponent</span> <span class="grammar"><span class="meta">NumericLiteralSuffix</span></span>?</span></span></div>
+<div class="grammar production"><dfn><span class="meta">Exponent</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><span class="grammar">[<span class="character-class grammar"><span class="character grammar">e</span><span class="character grammar">E</span></span>]</span>? <span class="grammar"><span class="meta">Sign</span></span>? <span class="meta">DecimalDigits</span></span></span></div>
+<div class="grammar production"><dfn><span class="meta">Sign</span></dfn>
+⇒ <span class="alternative grammar"><code>+</code></span>
+⇒ <span class="alternative grammar"><code>-</code></span></div>
+</pre>
+</div>
 <h3 id="sec.lex.token.text"><a href="#sec.lex.token.text" class="anchor">Text Literals</a></h3>
-<div class="issue callout">Issue: Need to document supported escape sequences.</div>
-<h4 id="sec.lex.token.string"><a href="#sec.lex.token.string" class="anchor">String Literals</a></h4>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TextLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="meta">StringLiteral</span></span>
+⇒ <span class="alternative grammar"><span class="meta">CharacterLiteral</span></span></div>
+</pre>
+</div>
+<h4 id="sec.lex.token.text.escape"><a href="#sec.lex.token.text.escape" class="anchor">Escape Sequences</a></h4>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">TextLiteralEscapeSequence</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>\</code> <code>n</code></span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>\</code> <code>r</code></span></span>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>\</code> <code>t</code></span></span></div>
+</pre>
+</div>
+<div class="issue callout">Issue: This needs to be expanded to include all of the escape sequences.</div>
+<h4 id="sec.lex.token.text.string"><a href="#sec.lex.token.text.string" class="anchor">String Literals</a></h4>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">StringLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>"</code> <span class="grammar"><span class="meta">StringLiteralItem</span></span>* <code>"</code></span></span></div>
+<div class="grammar production"><dfn><span class="meta">StringLiteralItem</span></dfn>
+⇒ <span class="alternative grammar"><span class="grammar"><span class="meta">CodePoint</span> - <code>"</code></span></span>
+⇒ <span class="alternative grammar"><span class="meta">TextLiteralEscapeSequence</span></span></div>
+</pre>
+</div>
 <p>A <dfn>string literal</dfn> consists of a sequence of characters enclosed between two <code>"</code>, with the constraint that any <code>"</code> within the sequence must be escaped with <code>\</code>.</p>
 <div class="issue callout">TODO: <a>string literal</a></div>
-<h4 id="sec.lex.token.char"><a href="#sec.lex.token.char" class="anchor">Character Literals</a></h4>
+<h4 id="sec.lex.token.text.char"><a href="#sec.lex.token.text.char" class="anchor">Character Literals</a></h4>
+<div class="lexical grammar callout"><pre class="lexical grammar"><div class="grammar production"><dfn><span class="meta">CharacterLiteral</span></dfn>
+⇒ <span class="alternative grammar"><span class="sequence grammar"><code>'</code> <span class="grammar"><span class="meta">CharacterLiteralItem</span></span>* <code>'</code></span></span></div>
+<div class="grammar production"><dfn><span class="meta">CharacterLiteralItem</span></dfn>
+⇒ <span class="alternative grammar"><span class="grammar"><span class="meta">CodePoint</span> - <code>'</code></span></span>
+⇒ <span class="alternative grammar"><span class="meta">TextLiteralEscapeSequence</span></span></div>
+</pre>
+</div>
 <p>A <dfn>character literal</dfn> consists of a sequence of characters enclosed between two <code>'</code>, with the constraint that any <code>'</code> within the sequence must be escaped with <code>\</code>.</p>
 <p>The sequence of characters within a <a>character literal</a> must represent a single character.</p>
 <h2 id="sec.lex.token.punctuation"><a href="#sec.lex.token.punctuation" class="anchor">Operators and Punctuation</a></h2>

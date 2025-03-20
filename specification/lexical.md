@@ -86,6 +86,13 @@ Whitespace :
 HorizontalSpace : (' ' | '\t')+ ;
 ```
 
+```.lexical
+LineBreak
+  => '\n'
+  => '\r'
+  => '\r' '\n'
+```
+
 ##### Line Breaks [lex.trivia.space.line-break]
 
 A **line break** consists of a line feed (U+000A), carriage return (U+000D) or a carriage return followed by a line feed (U+000D, U+000A).
@@ -98,7 +105,24 @@ Note: Line breaks are used as *line* separators rather than terminators; it is n
 
 #### Comments [lex.trivia.comment]
 
-A **comment** is either a *line comment* or a *block comment*.
+```.lexical
+Comment
+    => LineComment
+    => BlockComment
+```
+
+```.lexical
+LineComment
+    => `//` (CodePoint - LineBreak)*
+```
+
+```.lexical
+BlockComment
+    => `/*` BlockCommentContent `*/`
+
+BlockCommentContent
+  => ((CodePoint - `*`) | (`*` (CodePoint - `/`)))* `*`*
+```
 
 A **line comment** comprises two forward slashes (`/`, U+002F) followed by zero or more characters that do not contain a *line break*.
 A *line comment* extends up to, but does not include, a subsequent *line break* or the end of the *source unit*.
@@ -120,7 +144,7 @@ Token :
     Identifier
     | Literal
     | Operator
-    | Puncutation
+    | Punctuation
 ;
 ```
 
@@ -157,8 +181,6 @@ Literal :
     ;
 ```
 
-TODO: **literal**, *numeric literal*.
-
 ##### Numeric Literals [lex.token.num]
 
 A **numeric literal** is either an *integer literal* or a *floating-point literal*.
@@ -170,32 +192,67 @@ NumericLiteral :
     ;
 ```
 
-A **radix specifier** is one of:
+```.lexical
+RadixSpecifier
+  => HexadecimalRadixSpecifier
+  => BinaryRadixSpecifier
+```
 
-* `0x` or `0X` to specify a **hexadecimal literal** (radix 16)
-* `0b` or `0B` to specify a **binary literal** (radix 2)
+```.lexical
+HexadecimalRadixSpecifier
+  => `0` [xX]
+```
+
+```.lexical
+BinaryRadixSpecifier
+  => `0` [bB]
+```
 
 When no radix specifier is present, a numeric literal is a **decimal literal** (radix 10).
 
 Note:Octal literals (radix 8) are not supported.
 A `0` prefix on an integer literal is not used to specify an octal literal as it does in C.
-Implementations might warn on integer literals with a `0` prefix in case users expect C behavior.
+Implementations may diagnose a warning on *integer literals* with a `0` prefix.
 
-The grammar of the **digits** for a numeric level depend on its radix, as follows:
+```.lexical
+DecimalDigits
+  => DecimalDigit (DecimalDigit | `_`)*
+
+HexadecimalDigits
+  => HexadecimalDigit (HexadecimalDigit | `_`)*
+
+BinaryDigits
+  => BinaryDigit (BinaryDigit | `_`)*
+
+DecimalDigit
+  => [0-9]
+
+HexadecimalDigit
+  => [0-9A-Fa-f]
+
+BinaryDigit
+  => [0-1]
+```
+
+The grammar of the *digits* for a numeric level depend on its radix, as follows:
 
 * The *digits* of a *decimal literal* may include `0` through `9`
 * The *digits* of a *hexadecimal literal* may include `0` through `9`, the letters `A` through `F` and `a` through `f`. The letters represent digit values 10 through 15.
 * The *digits* of a *binary literal* may include `0` and `1`
 
-Digits for all numeric literals may also include `_`, which are ignored and have no semantic impact.
-
-A **numeric literal suffix** consists of any sequence of characters that would be a valid identifier, that does not start with `e` or `E`.
-
-Note: A leading `-` (U+002D) before a numeric literal is *not* part of the literal, even if there is no whitespace separating the two.
+```.lexical
+NumericLiteralSuffix
+  => Identifier
+```
 
 #### Integer Literals [lex.token.int]
 
-An **integer literal** consists of an optional radix specifier followed by digits and an optional *numeric literal suffix*.
+```.lexical
+IntegerLiteral
+  => DecimalDigits NumericLiteralSuffix?
+  => HexadecimalRadixSpecifier HexadecimalDigits NumericLiteralSuffix?
+  => BinaryRadixSpecifier BinaryDigits NumericLiteralSuffix?
+```
 
 The suffix on an integer literal may be used to indicate the desired type of the literal:
 
@@ -203,31 +260,78 @@ The suffix on an integer literal may be used to indicate the desired type of the
 * An `l` or `ll` suffix indicates the `Int64` type
 * A `ul` or `ull` suffix indicates the `UInt64` type
 
+TODO: The suffixes should be documented in the type-checking rules.
+
 #### Floating-Point Literals [lex.token.float]
 
 A **floating-point literal** consists of either
 
-* An optional *radix specifier*, followed by digits, followed by a `.` (U+002E), followed by optional digits, an optional *exponent*, and an optional numeric literal suffix.
-* An optional *radix specifier*, followed by digits, an exponent, and an optional numeric literal suffix.
-* A `.` (U+002E) followed by digits, an optional exponent, and an optional numeric literal suffix.
+```.lexical
+FloatingPointLiteral
+  => DecimalFloatingPointLiteral
 
-A floating-point literal may only use dexicmal or hexadecimal radix.
+DecimalFloatingPointLiteral
+  => DecimalDigits `.` DecimalDigits? Exponent? NumericLiteralSuffix?
+  => DecimalDigits Exponent NumericLiteralSuffix?
+  => `.` DecimalDigits Exponent? NumericLiteralSuffix?
 
-The **exponent** of a floating-pointer literal consists of either `e` or `E`, followed by an optional **sign** of `+` or `-`, followed by decimal digits.
+HexadecimalFloatingPointLiteral
+  => HexadecimalRadixSpecifier HexadecimalDigits `.` HexadecimalDigits? Exponent? NumericLiteralSuffix?
+  => HexadecimalRadixSpecifier HexadecimalDigits Exponent NumericLiteralSuffix?
 
-TODO: *sign*.
+Exponent
+  => [eE]? Sign? DecimalDigits
+
+Sign
+  => `+`
+  => `-`
+```
 
 ### Text Literals [lex.token.text]
 
-Issue: Need to document supported escape sequences.
+```.lexical
+TextLiteral
+    => StringLiteral
+    => CharacterLiteral
+```
 
-#### String Literals [lex.token.string]
+#### Escape Sequences [lex.token.text.escape]
+
+```.lexical
+TextLiteralEscapeSequence
+    => `\` `n`
+    => `\` `r`
+    => `\` `t`
+```
+
+Issue: This needs to be expanded to include all of the escape sequences.
+
+#### String Literals [lex.token.text.string]
+
+```.lexical
+StringLiteral
+    => `"` StringLiteralItem* `"`
+
+StringLiteralItem
+    => CodePoint - `"`
+    => TextLiteralEscapeSequence
+```
 
 A **string literal** consists of a sequence of characters enclosed between two `"`, with the constraint that any `"` within the sequence must be escaped with `\`.
 
 TODO: *string literal*
 
-#### Character Literals [lex.token.char]
+#### Character Literals [lex.token.text.char]
+
+```.lexical
+CharacterLiteral
+    => `'` CharacterLiteralItem* `'`
+
+CharacterLiteralItem
+    => CodePoint - `'`
+    => TextLiteralEscapeSequence
+```
+
 
 A **character literal** consists of a sequence of characters enclosed between two `'`, with the constraint that any `'` within the sequence must be escaped with `\`.
 

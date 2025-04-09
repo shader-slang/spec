@@ -81,7 +81,6 @@ Cooperative matrices can by loaded and stored from the following buffers:
 * `[RW]StructuredBuffer`
 * `[RW]ByteAddressBuffer`
 * `T*` pointers, which represents physical storage pointers.
-* `ConstBufferPointer<T>`
 * `groupshared` arrays
 
 Loading done using the static member function `load(Buffer buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout)` and through the `coopMatLoad` function.
@@ -94,7 +93,6 @@ CoopMat<T, S, M, N, R> load(RWByteAddressBuffer buffer, uint element, uint strid
 CoopMat<T, S, M, N, R> load(StructuredBuffer<T> buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 CoopMat<T, S, M, N, R> load(RWStructuredBuffer<T> buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 CoopMat<T, S, M, N, R> load(T* buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
-CoopMat<T, S, M, N, R> load(ConstBufferPointer<T> buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 CoopMat<T, S, M, N, R> load<let U : int>(__constref groupshared T[U] buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 ```
 
@@ -105,7 +103,6 @@ The full intrinsics are as so:
 void store(RWByteAddressBuffer buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 void store(RWStructuredBuffer<T> buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 void store(T* buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
-void store(ConstBufferPointer<T> buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 void store(__ref groupshared T[U] buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 ```
 
@@ -171,7 +168,7 @@ As of time of writing, there is no plan to support other targets.
 
 ## References
 
-* SPIRV cooperative matrix extension [specification](https://github.khronos.org/SPIRV-Registry/extensions/KHR/SPV_KHR_cooperative_matrix.html). This specificationcontains more information on what cooperative matrices
+* SPIRV cooperative matrix extension [specification](https://github.khronos.org/SPIRV-Registry/extensions/KHR/SPV_KHR_cooperative_matrix.html). This specification contains more information on what cooperative matrices
 do and how they perform under the hood.
 * GLSL cooperative matrix extension [specification](https://github.com/KhronosGroup/GLSL/blob/main/extensions/khr/GLSL_KHR_cooperative_matrix.txt). This specification contains more detailed information, and the Slang intrinsics
 proposed in this document are an exact one-to-one match with those in GLSL.

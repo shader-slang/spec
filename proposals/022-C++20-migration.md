@@ -53,6 +53,8 @@ For the unlikely possibility that there is a consumer with an unupgradeable old 
 
 The COM interfaces in the slang headers will not immediately change to use any C++20 features.
 
+Specifically checked with Omniverse, their lowest compiler version is gcc11 which is within the C++20 support versions.
+
 ## Compiler Support Matrix
 
 These are the minimum compiler versions we will support.

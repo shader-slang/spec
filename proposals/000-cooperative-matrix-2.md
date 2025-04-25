@@ -164,26 +164,26 @@ void computeMain()
 ByteAddressBuffer input;
 RWStructuredBuffer<float> outputBuffer;
 
-typealias CoopMatType = CoopMat<float, CoopMatScope::Subgroup, 16, 16, CoopMatMatrixUse::MatrixAccumulator>;
+typealias CoopMatType = CoopMat<float, CoopMatScope::Subgroup, 32, 32, CoopMatMatrixUse::MatrixAccumulator>;
 
 [numthreads(32, 1, 1)]
 void computeMain()
 {
     // Create a 2D tensor layout with clamp-to-edge mode
-    CoopMatTensorLayout<2, CoopMatClampMode::ClampToEdge> tl;
-    tl.setDimension(16);
-    tl.setStride(16);
+    CoopMatTensorLayout<2, CoopMatClampMode::ClampToEdge> tensorLayout;
+    tensorLayout = tensorLayout.setDimension(16, 16);
+    tensorLayout = tensorLayout.setStride(1, 32);
 
     // Create a tensor view with explicit dimensions
-    CoopMatTensorView<2, true, 0, 1> tv;
-    tv.setDimension(16);
-    tv.setClip(0, 8, 0, 8);
+    CoopMatTensorView<2, true, 0, 1> tensorView;
+    tensorView = tensorView.setDimension(16, 16);
+    tensorView = tensorView.setClip(0, 8, 0, 8);
 
     // Load a cooperative matrix from a tensor buffer using the layout and view
-    let mat = CoopMatType.load(input, 0, tl, tv);
+    let mat = CoopMatType.load(input, 0, tensorLayout, tensorView);
 
     // Store the matrix back to the buffer
-    mat.store(outputBuffer, 0, tl, tv);
+    mat.store(outputBuffer, 0, tensorLayout, tensorView);
 }
 ```
 

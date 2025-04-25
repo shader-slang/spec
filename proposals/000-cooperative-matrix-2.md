@@ -85,9 +85,9 @@ Similarly, CoopMatTensorView can be thought of as somewhat similar to a "Texture
     - clipColOffset: Offset for the column clipping region.
     - clipColSpan: Span for the column clipping region.
 
-CoopMatEnsorView takes (N + 2) number of generic arguments where N is a value given as a first generic argument. As an example, when the first value is 2, CoopMatTensorView must use 4 generic arguments. More examples will be `CoopMatTensorView<1, false, 0>`, `CoopMatTensorView<2, true, 0, 1>` and `CoopMatTensorView<3, false, 0, 2, 1>`.
+CoopMatTensorView takes (N + 2) number of generic arguments where N is a value given as a first generic argument. As an example, when the first value is 2, CoopMatTensorView must use 4 generic arguments. More examples will be `CoopMatTensorView<1, false, 0>`, `CoopMatTensorView<2, true, 0, 1>` and `CoopMatTensorView<3, false, 0, 2, 1>`.
 
-The first generic argument to `CoopMatTensorView` indicates the dimensionality, and the tailing values indicates the re-ordering of the dimension. A common use cases are `CoopMatTensorView<2, false, 0, 1>` for row-major-matrix load and store, and `CoopMatTensorView<2, false, 1, 0>` for column-major-matrix load and store.
+The first generic argument to `CoopMatTensorView` indicates the dimensionality, and the trailing values indicates the re-ordering of the dimension. A common use cases are `CoopMatTensorView<2, false, 0, 1>` for row-major-matrix load and store, and `CoopMatTensorView<2, false, 1, 0>` for column-major-matrix load and store.
 
 Note that CoopMatTensorLayout and CoopMatTensorView are only for loading and storing of CoopMat instances.
 
@@ -350,7 +350,7 @@ void coopMatReduce(
     out CoopMat<T, S, RM, RN, CoopMatMatrixUse::MatrixAccumulator> result,
     CoopMat<T, S, M, N, CoopMatMatrixUse::MatrixAccumulator> m,
     CoopMatReduceMask reduceMask,
-    DecodeFuncType combineOp);
+    FuncType combineOp);
 ```
 
 `combineOp` is a user-defined function that implements `IFunc<T, T, T>`, which means the function returns a type `T` and it takes two arguments whose types are also `T`. In other words, the function takes two input values and reduces them to one value.
@@ -366,16 +366,28 @@ __generic<
     let M : int,
     let N : int,
     let R : CoopMatMatrixUse,
-    each UserDataTypes,
-    FuncType : IFunc<T, uint32_t, uint32_t, T, expand each UserDataTypes>>
-void coopMatPerElement(
-    out CoopMat<T, S, M, N, R> result,
-    CoopMat<T, S, M, N, R> m,
-    FuncType elemOp,
-    expand each TP userData);
+    each U,
+    FuncType : IFunc<T, uint32_t, uint32_t, expand each U>>
+CoopMat<T, S, M, N, R> coopMatMapElement(
+    expand CoopMat<each U, M, N, R> ms,
+    FuncType mapOp);
 ```
 
-`elemOp` is a user-defined function that implements `IFunc<T, uint32_t, uint32_t, T, ... >`. The return type is `T` and the first and second parameters take row and column values respectively. the third paramter takes a value from the cooperative matrix at the given row and column. The user-defined function can take additional user-data.
+`mapOp` is a user-defined function that implements `IFunc<T, uint32_t, uint32_t, U0, U1, U2, ... >`.
+ - The first parameter is the row index (uint32_t row) of the current matrix element.
+ - The second parameter is the column index (uint32_t col) of the current matrix element.
+ - The next parameters (U0, U1, U2, ...) are the corresponding elements from each input cooperative matrix at position (row, col).
+ - The return value is used as the value for the output matrix at (row, col).
+
+An example of `mapOp` will be as following,
+```
+float myMapOp(uint32_t row, uint32_t col, float a, float b, float c)
+{
+    return (a + b) * c;
+}
+
+let result = coopMatMapElement(matA, matB, matC, myMapOp);
+```
 
 ### Transpose operation
 
@@ -387,7 +399,7 @@ __generic<
     let S : CoopMatScope,
     let M : int,
     let N : int>
-void coopMatTransposeNV(
+void coopMatTranspose(
     out CoopMat<T, S, N, M, CoopMatMatrixUse::MatrixB> result,
     CoopMat<T, S, M, N, CoopMatMatrixUse::MatrixAccumulator> m);
 ```
@@ -406,31 +418,31 @@ struct CoopMatTensorLayout
 __generic<let ClampMode : CoopMatClampMode>
 extension CoopMatTensorLayout<1, ClampMode>
 {
-    void setBlockSize(uint32_t blockSize0);
-    void setStride(uint32_t stride0);
-    void setDimension(uint32_t dim0);
-    void slice(uint32_t offset0, uint32_t span0);
-    void setClampValue(CoopMatClampMode clampMode);
+    This setBlockSize(uint32_t blockSize0);
+    This setStride(uint32_t stride0);
+    This setDimension(uint32_t dim0);
+    This slice(uint32_t offset0, uint32_t span0);
+    This setClampValue(CoopMatClampMode clampMode);
 }
 
 __generic<let ClampMode : CoopMatClampMode>
 extension CoopMatTensorLayout<2, ClampMode>
 {
-    void setBlockSize(uint32_t blockSize0, uint32_t blockSize1);
-    void setStride(uint32_t stride0, uint32_t stride1);
-    void setDimension(uint32_t dim0, uint32_t dim1);
-    void slice(uint32_t offset0, uint32_t span0, uint32_t offset1, uint32_t span1);
-    void setClampValue(CoopMatClampMode clampMode);
+    This setBlockSize(uint32_t blockSize0, uint32_t blockSize1);
+    This setStride(uint32_t stride0, uint32_t stride1);
+    This setDimension(uint32_t dim0, uint32_t dim1);
+    This slice(uint32_t offset0, uint32_t span0, uint32_t offset1, uint32_t span1);
+    This setClampValue(CoopMatClampMode clampMode);
 }
 
 __generic<let ClampMode : CoopMatClampMode>
 extension CoopMatTensorLayout<..., ClampMode>
 {
-    void setBlockSize(uint32_t blockSize0, uint32_t blockSize1, ...);
-    void setStride(uint32_t stride0, uint32_t stride1, ...);
-    void setDimension(uint32_t dim0, uint32_t dim1, ...);
-    void slice(uint32_t offset0, uint32_t span0, uint32_t offset1, uint32_t span1, ...);
-    void setClampValue(CoopMatClampMode clampMode);
+    This setBlockSize(uint32_t blockSize0, uint32_t blockSize1, ...);
+    This setStride(uint32_t stride0, uint32_t stride1, ...);
+    This setDimension(uint32_t dim0, uint32_t dim1, ...);
+    This slice(uint32_t offset0, uint32_t span0, uint32_t offset1, uint32_t span1, ...);
+    This setClampValue(CoopMatClampMode clampMode);
 }
 ```
 
@@ -438,11 +450,11 @@ extension CoopMatTensorLayout<..., ClampMode>
 
 The `CoopMatTensorLayout` class provides a set of functions to define and manipulate the layout of a tensor in a cooperative matrix.
 
-- void setBlockSize(uint32_t blockSize0, ...);
-- void setStride(uint32_t stride0, ...);
-- void setDimension(uint32_t dim0, ...);
-- void slice(uint32_t offset0, uint32_t span0, ...);
-- void setClampValue(CoopMatClampMode clampMode, ...);
+- This setBlockSize(uint32_t blockSize0, ...);
+- This setStride(uint32_t stride0, ...);
+- This setDimension(uint32_t dim0, ...);
+- This slice(uint32_t offset0, uint32_t span0, ...);
+- This setClampValue(CoopMatClampMode clampMode, ...);
 
 The `setBlockSize` function specifies the size of a block, where a block is conceptually similar to a 4x4 block used in texture compression (e.g., DXT).
 
@@ -509,9 +521,9 @@ extension CoopMatTensorView<..., HasDimensions, p0, p1, ...>
 
 Currently CoopMatTensorView is always used with CoopMatTensorLayout for loading and storing CoopMat instances. And CoopMatTensorView overrides the values set for CoopMatTensorLayout.
 
-- void setDimension(uint32_t dim0, ...);
-- void setStride(int stride0, ...);
-- void setClip(uint clipRowOffset, uint clipRowSpan, uint clipColOffset, uint clipColSpan);
+- This setDimension(uint32_t dim0, ...);
+- This setStride(int stride0, ...);
+- This setClip(uint clipRowOffset, uint clipRowSpan, uint clipColOffset, uint clipColSpan);
 
 References
 ----------

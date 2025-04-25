@@ -355,7 +355,7 @@ void coopMatReduce(
 
 `combineOp` is a user-defined function that implements `IFunc<T, T, T>`, which means the function returns a type `T` and it takes two arguments whose types are also `T`. In other words, the function takes two input values and reduces them to one value.
 
-### Per-Element operation
+### Map-Element operation
 
 Applies an operation to each element of a cooperative matrix.
 

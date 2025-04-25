@@ -216,7 +216,7 @@ static This loadAny<U, let V : int>(__constref groupshared U[V] data, uint eleme
 
 - Store
 ```
-void store(RWAnyBuffer buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
+void store(AnyRWBuffer buffer, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 void storeAny<U, let V : int>(__ref groupshared U[V] data, uint element, uint stride, CoopMatMatrixLayout matrixLayout);
 ```
 
@@ -292,7 +292,7 @@ __generic<
     let Dim : uint32_t,
     let ClampMode : CoopMatClampMode>
 void store(
-    AnyBuffer buf,
+    AnyRWBuffer buf,
     uint elementOffset,
     CoopMatTensorLayout<Dim, ClampMode> tensorLayout);
 
@@ -302,7 +302,7 @@ __generic<
     let DimView : uint32_t,
     let HasDimensions : bool>
 void store(
-    AnyBuffer buf,
+    AnyRWBuffer buf,
     uint elementOffset,
     CoopMatTensorLayout<Dim, ClampMode> tensorLayout,
     CoopMatTensorView<DimView, HasDimensions> tensorView);

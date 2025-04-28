@@ -56,10 +56,12 @@ achieve similar results:
 
 A lambda expression will evaluate to an annoymous struct type that implements the `IFunc` interface
 during type checking. The return type of the lambda function is determined by the body expression (in the case
-of the lambda expression contains a simple expression body), or the value of the first return statement in the
-case of a statement body. If the lambda function body contains more than one return statements, and the result
-value specified in any of the return statements cannot coerce to the result type of the first return statement,
-the compiler will diagnose a type mismatch error on the mismatching return statement.
+of the lambda expression contains a simple expression body), or the value of the return statements in the
+case of a statement body. If the lambda function body contains more than one return statements, then the return
+values from all return statements must be exactly the same.
+
+In the future, we will also extend lambda expressions to allow them to conform to other interfaces including
+`IDifferentiableFunc` or `IMutatingFunc`.
 
 Lambda expressions can be used in positions that accepts an `IFunc`:
 
@@ -106,6 +108,64 @@ void test()
 }
 ```
 
+## Environment Capturing
+
+If a lambda expression references a part of the environment variable either explicitly through a member or subscript operation
+or implicitly through `this` dereference, the entire object will be captured in the context. For example, given:
+
+```slang
+struct Composite
+{
+    int member1;
+    float member2;
+}
+
+void test()
+{
+    Composite c = {};
+    let lam = (int x) => x + c.member2;
+    lam(2);
+}
+```
+
+The generated `struct` type for the lambda expression will contain a member whose type is `Composite`, as in the following code:
+
+```slang
+void test()
+{
+    Composite c = {};
+    struct _slang_Lambda_test_0 : IFunc<int, int> {
+        // Lambda captures the entire object instead of just
+        // `member1`.
+        Composite c;
+        __init(Composite in_c) {
+            c = in_c;
+        }
+        int operator()(int x) {
+            return x + c.member1;
+        }
+    }
+    let lam = _slang_Lambda_test_0(c);
+    lam.operator()(2);
+}
+```
+
+The same rules applies to implicit `this` parameter as well:
+
+```slang
+struct Composite
+{
+    int member1;
+    float member2;
+    void apply()
+    {
+        let lam = (int x)=>{
+            return x + member1; // captures the entire `this`.
+        }
+    }
+}
+```
+
 ## Restrictions
 
 Lambda expression in this proposed version can only read captured variables, but not modify them.
@@ -123,11 +183,34 @@ void test()
 }
 ```
 
+Once a mutable variable is captured by a lambda expression, the variable should not be modified
+during the lifetime of the lambda expression, or the behavior is undefined. 
 We plan to allow mutating captured variables in a future proposal.
+
+The lifetime of a lambda expression should not outlive the scope where a lambda expression is defined,
+or the behavior is undefined.
 
 Lambda expression is not allowed to have mutable parameters, such as `inout` or `out` parameters in this version.
 
 A variable whose type is `[NonCopyable]` cannot be captured in a lambda expression.
+
+The type system does not infer the expected parameter or return types of a lambda expression from
+the context where the lambda expression is used. This restriction may be relaxed in the future
+by reworking Slang's type checking to be more bi-directional. For example, the following code is not
+allowed:
+
+```slang
+// Error: cannot infer types of x,y and return type from `lam`'s type.
+IFunc<float, int> lam = (x, y) => return x + y;
+```
+
+Slang also does not support implicit casting of lambda/function types. So the following code is not
+allowed:
+
+```slang
+// Error: cannot convert `IFunc<float, float>` to `IFunc<float, int>`.
+IFunc<float, int> lam = (float x) => x;
+```
 
 # Conclusion
 

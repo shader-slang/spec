@@ -12,7 +12,7 @@ Implementation: [PR 6914](https://github.com/shader-slang/slang/pull/6914)
 
 Author: Yong He
 
-Reviewer: TBD
+Reviewer: Theresa Foley
 
 ## Background
 

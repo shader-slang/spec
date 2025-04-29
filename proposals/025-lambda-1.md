@@ -23,7 +23,7 @@ that needs to be passed around.
 
 This problem can be solved with lambda expressions, which enables the compiler to synthesize such
 boilerplate types automatically. The recent cooperative matrix 2 SPIRV extension introduced several opcodes
-such as Reduce, PerElement, Decode etc. that can expressed naturally with lambda expressions.
+such as Reduce, PerElement, Decode etc. that can be expressed naturally with lambda expressions.
 
 ## Proposal
 

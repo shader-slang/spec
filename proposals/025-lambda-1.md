@@ -12,7 +12,7 @@ Implementation: [PR 6914](https://github.com/shader-slang/slang/pull/6914)
 
 Author: Yong He
 
-Reviewer: Theresa Foley
+Reviewer: Theresa Foley, Jeff Bolz
 
 ## Background
 
@@ -211,6 +211,8 @@ allowed:
 // Error: cannot convert `IFunc<float, float>` to `IFunc<float, int>`.
 IFunc<float, int> lam = (float x) => x;
 ```
+
+Additionally, `throw` statements are currently not allowed in lambda expressions.
 
 # Conclusion
 

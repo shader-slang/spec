@@ -205,6 +205,7 @@ struct CoopMat
 ```
 
 - Transpose operation
+
   `Transpose()` Converts a cooperative matrix to from CoopMatMatrixUse::MatrixAccumulator to CoopMatMatrixUse::MatrixB and transposes the matrix.
 ```
 struct CoopMat
@@ -222,32 +223,27 @@ struct CoopMat
 struct CoopMat
 {
     __generic<
-        let RN : int,
-        FuncType : IFunc<T, T, T>>
+        let RN : int>
     CoopMat<T, S, M, RN, CoopMatMatrixUse::MatrixAccumulator> ReduceRow(
-        FuncType combineOp);
+        functype(T, T) -> T combineOp);
 
     __generic<
-        let RM : int,
-        FuncType : IFunc<T, T, T>>
+        let RM : int>
     CoopMat<T, S, RM, N, CoopMatMatrixUse::MatrixAccumulator> ReduceColumn(
-        FuncType combineOp);
+        functype(T, T) -> T combineOp);
 
     __generic<
         let RM : int,
-        let RN : int,
-        FuncType : IFunc<T, T, T>>
+        let RN : int>
     CoopMat<T, S, RM, RN, CoopMatMatrixUse::MatrixAccumulator> ReduceRowAndColumn(
-        FuncType combineOp);
+        functype(T, T) -> T combineOp);
 
-    __generic<
-        FuncType : IFunc<T, T, T>>
     CoopMat<T, S, M / 2, N / 2, CoopMatMatrixUse::MatrixAccumulator> ReduceTwoByTwo(
-        FuncType combineOp);
+        functype(T, T) -> T combineOp);
 };
 ```
 
-`combineOp` is a user-defined function that implements `IFunc<T, T, T>`, which means the function returns a type `T` and it takes two arguments whose types are also `T`. In other words, the function takes two input values and reduces them to one value.
+`combineOp` is a user-defined function that returns a type `T` and takes two arguments whose types are also `T`. In other words, the function takes two input values and reduces them to one value.
 
 ### CoopMat with TensorLayout and TensorView
 
@@ -286,7 +282,7 @@ struct CoopMat
         AnyBuffer buf,
         uint elementOffset,
         TensorLayout<Dim, ClampMode> tensorLayout,
-        IFunc<T, const U*, uint32_t[Dim], uint32_t[Dim]> decodeFunc);
+        functype(const U*, uint32_t[Dim], uint32_t[Dim]) -> T decodeFunc);
 
     __generic<
         U,
@@ -302,7 +298,7 @@ struct CoopMat
         uint elementOffset,
         TensorLayout<Dim, ClampMode> tensorLayout,
         TensorView<DimView, HasDimensions, p0, p1, ...> tensorView,
-        IFunc<T, U*, uint32_t[Dim], uint32_t[Dim]> decodeFunc);
+        functype(const U*, uint32_t[Dim], uint32_t[Dim]) -> T decodeFunc);
 };
 ```
 
@@ -379,35 +375,47 @@ CoopMat<T, S, M, N, CoopMatMatrixUse::MatrixAccumulator> coopMatMulAdd(
 
 ### Map-Element operation
 
-Applies an operation to each element of a cooperative matrix.
+Applies an operation to each element of cooperative matrices.
+
+There are two variants to perform map-element operation: one is with a member function `CoopMat` type and another is with a member function of `Tuple` type.
 
 ```
-__generic<
-    T : __BuiltinArithmeticType,
-    let S : CoopMatScope,
+struct CoopMat<...>
+{
+    // One matrix case.
+    CoopMat<T, S, M, N, R> MapElement(
+        IFunc<T, uint32_t, uint32_t, T> mapOp);
+};
+
+extension<
+    each Ts : __BuiltinArithmeticType,
     let M : int,
     let N : int,
-    let R : CoopMatMatrixUse,
-    each U>
-CoopMat<T, S, M, N, R> coopMatMapElement(
-    expand CoopMat<each U, M, N, R> ms,
-    IFunc<T, uint32_t, uint32_t, expand each U> mapOp);
+    let R : CoopMatMatrixUse>
+Tuple<expand CoopMat<each Ts, M, N, R>>
+{
+    // For multiple matrices.
+    __generic<
+        T : __BuiltinArithmeticType>
+    CoopMat<T, M, N, R> MapElement(
+        IFunc<T, uint32_t, uint32_t, expand each Ts> mapOp);
+};
 ```
 
-`mapOp` is a user-defined function that implements `IFunc<T, uint32_t, uint32_t, U0, U1, U2, ... >`.
+`mapOp` is a user-defined function that implements `IFunc<T, uint32_t, uint32_t, T0, T1, ...>`.
  - The first parameter is the row index (uint32_t row) of the current matrix element.
  - The second parameter is the column index (uint32_t col) of the current matrix element.
- - The next parameters (U0, U1, U2, ...) are the corresponding elements from each input cooperative matrix at position (row, col); or scalar inputs that match the matrix component type.
+ - The next parameters (T0, T1, ...) are the corresponding elements from each input cooperative matrix at position (row, col).
  - The return value is used as the value for the output matrix at (row, col).
 
 An example of `mapOp` will be as following,
 ```
-float myMapOp(uint32_t row, uint32_t col, float a, float b, float c)
-{
-    return (a + b) * c;
-}
+CoopMat<float, ...> matA, matB, matC;
 
-let result = coopMatMapElement(matA, matB, matC, myMapOp);
+let r1 = matA.MapElement((uint32_t x, uint32_t y, float a) => a * a);
+
+let myMapOp = (uint32_t x, uint32_t y, float a, float b, float c) => (a + b) * c;
+let r2 = (matA, matB, matC).MapElement(myMapOp);
 ```
 
 ### Generic arguments for TensorLayout

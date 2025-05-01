@@ -205,7 +205,7 @@ struct CoopMat
 ```
 
 - Transpose operation
-Converts a cooperative matrix to from CoopMatMatrixUse::MatrixAccumulator to CoopMatMatrixUse::MatrixB and transposes the matrix.
+  `Transpose()` Converts a cooperative matrix to from CoopMatMatrixUse::MatrixAccumulator to CoopMatMatrixUse::MatrixB and transposes the matrix.
 ```
 struct CoopMat
 {
@@ -213,35 +213,38 @@ struct CoopMat
 };
 ```
 
-- Reduce operation
-  - ReduceRow: Reduce across each row of the matrix.
-  - ReduceColumn: Reduce across each column of the matrix.
-  - ReduceRowAndColumn: Reduce across both rows and columns (full matrix reduction).
-  - ReduceTwoByTwo: Reduce over each 2x2 block within the matrix.
+- Reduce operations
+  - `ReduceRow()`: Reduce across each row of the matrix.
+  - `ReduceColumn()`: Reduce across each column of the matrix.
+  - `ReduceRowAndColumn()`: Reduce across both rows and columns (full matrix reduction).
+  - `ReduceTwoByTwo()`: Reduce over each 2x2 block within the matrix.
 ```
-__generic<
-    let RN : int,
-    FuncType : IFunc<T, T, T>>
-CoopMat<T, S, M, RN, CoopMatMatrixUse::MatrixAccumulator> ReduceRow(
-    FuncType combineOp);
+struct CoopMat
+{
+    __generic<
+        let RN : int,
+        FuncType : IFunc<T, T, T>>
+    CoopMat<T, S, M, RN, CoopMatMatrixUse::MatrixAccumulator> ReduceRow(
+        FuncType combineOp);
 
-__generic<
-    let RM : int,
-    FuncType : IFunc<T, T, T>>
-CoopMat<T, S, RM, N, CoopMatMatrixUse::MatrixAccumulator> ReduceColumn(
-    FuncType combineOp);
+    __generic<
+        let RM : int,
+        FuncType : IFunc<T, T, T>>
+    CoopMat<T, S, RM, N, CoopMatMatrixUse::MatrixAccumulator> ReduceColumn(
+        FuncType combineOp);
 
-__generic<
-    let RM : int,
-    let RN : int,
-    FuncType : IFunc<T, T, T>>
-CoopMat<T, S, RM, RN, CoopMatMatrixUse::MatrixAccumulator> ReduceRowAndColumn(
-    FuncType combineOp);
+    __generic<
+        let RM : int,
+        let RN : int,
+        FuncType : IFunc<T, T, T>>
+    CoopMat<T, S, RM, RN, CoopMatMatrixUse::MatrixAccumulator> ReduceRowAndColumn(
+        FuncType combineOp);
 
-__generic<
-    FuncType : IFunc<T, T, T>>
-CoopMat<T, S, M / 2, N / 2, CoopMatMatrixUse::MatrixAccumulator> ReduceTwoByTwo(
-    FuncType combineOp);
+    __generic<
+        FuncType : IFunc<T, T, T>>
+    CoopMat<T, S, M / 2, N / 2, CoopMatMatrixUse::MatrixAccumulator> ReduceTwoByTwo(
+        FuncType combineOp);
+};
 ```
 
 `combineOp` is a user-defined function that implements `IFunc<T, T, T>`, which means the function returns a type `T` and it takes two arguments whose types are also `T`. In other words, the function takes two input values and reduces them to one value.
@@ -251,53 +254,56 @@ CoopMat<T, S, M / 2, N / 2, CoopMatMatrixUse::MatrixAccumulator> ReduceTwoByTwo(
 Load and store can be performed with TensorLayout, TensorView and a user-defined function.
 
 ```
-__generic<
-    let Dim : uint32_t,
-    let ClampMode : CoopMatClampMode>
-static This Load(
-    AnyBuffer buf,
-    uint elementOffset,
-    TensorLayout<Dim, ClampMode> tensorLayout);
+struct CoopMat
+{
+    __generic<
+        let Dim : uint32_t,
+        let ClampMode : CoopMatClampMode>
+    static This Load(
+        AnyBuffer buf,
+        uint elementOffset,
+        TensorLayout<Dim, ClampMode> tensorLayout);
 
-__generic<
-    let Dim : uint32_t,
-    let ClampMode : CoopMatClampMode,
-    let DimView : uint32_t,
-    let HasDimensions : bool,
-    let p0 : uint32_t = 0xff,
-    let p1 : uint32_t = 0xff,
-    ...>
-static This Load(
-    AnyBuffer buf,
-    uint elementOffset,
-    TensorLayout<Dim, ClampMode> tensorLayout,
-    TensorView<DimView, HasDimensions, p0, p1, ...> tensorView);
+    __generic<
+        let Dim : uint32_t,
+        let ClampMode : CoopMatClampMode,
+        let DimView : uint32_t,
+        let HasDimensions : bool,
+        let p0 : uint32_t = 0xff,
+        let p1 : uint32_t = 0xff,
+        ...>
+    static This Load(
+        AnyBuffer buf,
+        uint elementOffset,
+        TensorLayout<Dim, ClampMode> tensorLayout,
+        TensorView<DimView, HasDimensions, p0, p1, ...> tensorView);
 
-__generic<
-    U,
-    let Dim : uint32_t,
-    let ClampMode : CoopMatClampMode>
-static This Load(
-    AnyBuffer buf,
-    uint elementOffset,
-    TensorLayout<Dim, ClampMode> tensorLayout,
-    IFunc<T, const U*, uint32_t[Dim], uint32_t[Dim]> decodeFunc);
+    __generic<
+        U,
+        let Dim : uint32_t,
+        let ClampMode : CoopMatClampMode>
+    static This Load(
+        AnyBuffer buf,
+        uint elementOffset,
+        TensorLayout<Dim, ClampMode> tensorLayout,
+        IFunc<T, const U*, uint32_t[Dim], uint32_t[Dim]> decodeFunc);
 
-__generic<
-    U,
-    let Dim : uint32_t,
-    let ClampMode : CoopMatClampMode,
-    let DimView : uint32_t,
-    let HasDimensions : bool,
-    let p0 : uint32_t = 0xff,
-    let p1 : uint32_t = 0xff,
-    ...>
-static This Load(
-    AnyBuffer buf,
-    uint elementOffset,
-    TensorLayout<Dim, ClampMode> tensorLayout,
-    TensorView<DimView, HasDimensions, p0, p1, ...> tensorView,
-    IFunc<T, U*, uint32_t[Dim], uint32_t[Dim]> decodeFunc);
+    __generic<
+        U,
+        let Dim : uint32_t,
+        let ClampMode : CoopMatClampMode,
+        let DimView : uint32_t,
+        let HasDimensions : bool,
+        let p0 : uint32_t = 0xff,
+        let p1 : uint32_t = 0xff,
+        ...>
+    static This Load(
+        AnyBuffer buf,
+        uint elementOffset,
+        TensorLayout<Dim, ClampMode> tensorLayout,
+        TensorView<DimView, HasDimensions, p0, p1, ...> tensorView,
+        IFunc<T, U*, uint32_t[Dim], uint32_t[Dim]> decodeFunc);
+};
 ```
 
 `decodeFunc` is a user-defined function that allows to decode if it was encoded.
@@ -313,7 +319,7 @@ Currently the decodeFunc is not allowed to be used with sharedmemory.
 An example of `decodeFunc` will be,
 ```
 __generic<
-    T,
+    T : __BuiltinArithmeticType,
     U,
     let Dim : uint32_t>
 T decodeFunc(
@@ -456,15 +462,15 @@ The `TensorLayout` class provides a set of functions to define and manipulate th
 - This Slice(uint32_t offset0, uint32_t span0, ...);
 - This ClampValue(CoopMatClampMode clampMode, ...);
 
-The `setBlockSize` function specifies the size of a block, where a block is conceptually similar to a 4x4 block used in texture compression (e.g., DXT).
+The `BlockSize` function specifies the size of a block, where a block is conceptually similar to a 4x4 block used in texture compression (e.g., DXT).
 
-The `setStride` function defines the number of blocks to the next block in each dimension. For the innermost dimension, the stride will be most likely 1, and the next outer dimension will have a stride equal to the number of columns, and so on.
+The `Stride` function defines the number of blocks to the next block in each dimension. For the innermost dimension, the stride will be most likely 1, and the next outer dimension will have a stride equal to the number of columns, and so on.
 
-The `setDimension` function sets the overall size of the tensor in each dimension.
+The `Dimension` function sets the overall size of the tensor in each dimension.
 
-The `slice` function allows extracting a subset of the tensor by specifying offsets and spans for each dimension, enabling efficient sub-tensor operations.
+The `Slice` function allows extracting a subset of the tensor by specifying offsets and spans for each dimension, enabling efficient sub-tensor operations.
 
-Finally, the `setClampValue` function configures the clamping behavior using the `CoopMatClampMode` enumeration, which determines how out-of-bound accesses are handled.
+Finally, the `ClampValue` function configures the clamping behavior using the `CoopMatClampMode` enumeration, which determines how out-of-bound accesses are handled.
 
 ### Generic arguments for TensorView
 

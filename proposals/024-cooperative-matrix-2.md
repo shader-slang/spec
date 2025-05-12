@@ -8,11 +8,12 @@ Status: Design Review
 
 Implementations:
  - cooperative_matrix is completed with d0b6a0b1ab49b5958015f31364c5ad73d9cd03eb
- - cooperative_matrix_2 is in prototype stage
+ - Reduce and Transpose are implemented in [PR 7027](https://github.com/shader-slang/slang/pull/7027)
+ - TensorLayout and TensorView are implemented in [PR 7060](https://github.com/shader-slang/slang/pull/7060)
 
 Author: Jae Hyuk Kwak
 
-Reviewer: TBD
+Reviewer: Yong He, Jeff Bolz, Darren Wihandi
 
 Background
 ----------
@@ -37,8 +38,6 @@ Proposed Approach
 Introduce new types and functions in Slang to provide first-class support for cooperative matrices and tensors, closely following the new SPIRV features, but integrated with Slang's type system and generics.
 
 Three new types are needed: CoopMat, TensorLayout and TensorView. The types use a few generic arguments whose values must be compile-time constants.
-
-All new types will be placed inside of a namespace, `linalg`.
 
 ### New types
 

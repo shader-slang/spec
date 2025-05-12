@@ -12,6 +12,11 @@ Author: Darren Wihandi
 
 Reviewer: TBD
 
+Update:
+ - the funciton name `load` and `loadAny` are renamed to `Load` to match to HLSL syntax.
+ - the funciton name `store` is renamed to `Store` to match to HLSL syntax.
+ - `CoopMatScope` enum is renamed to `MemoryScope` because it is more generic to outside of CoopMat.
+
 ## Background
 
 This proposal adds cooperative matrix types and operations. These are matrices where storage and computations are spread across a set of invocations such as a subgroup.

@@ -41,6 +41,7 @@ By default, a `dyn` interface is subject to the following restrictions, unless l
 1. It must not define any generic methods.
 1. It must not define any mutating methods.
 1. It cannot contain any methods that has a `some IFoo` return type, or has any `some IFoo` parameters.
+1. A `dyn` interface cannot inherit from any interfaces that are not `dyn`.
 1. A `dyn` interface cannot inherit from `IDifferentiable`, and cannot contain any function requirements that are marked as `[Differentiable]`.
 
 Any type that conforms to one or more `dyn` interface is subject to these restrictions:
@@ -56,12 +57,12 @@ In addition, such types are subject to these restrictions unless language versio
 
 If a variable, a parameter or a struct field is declared to have an interface type or array of interface type, the var decl must be qualified with either the `some` keyword or the `dyn` keyword. If the var decl is not explicitly qualified with `some` or `dyn`, the compiler implicitly qualifieds the type as `some` when language version is 2026 or later, or as `dyn` in language version 2025.
 
-The concrete type of a `some` qualified var decl must be compile-time deducible and will never involve in dynamic dispatch. The concrete type of a `dyn` qualified var decl may not be compile-time deducible and may involve in dynamic dispatch. 
+The concrete type of a `some` qualified var decl must be compile-time deducible to a proper type and will never involve in dynamic dispatch. The concrete type of a `dyn` qualified var decl might not be compile-time deducible and might involve in dynamic dispatch. 
 
 The following rules apply to `some` and `dyn` qualifiers on var decls:
 
 1. A `some IFoo` type is valid only if `IFoo` is an interface type.
-1. A `some IFoo` type can only be used on a function parameter or a local variable. Struct fields or global variables cannot have a `some` type.
+1. A `some IFoo` type can only be used on a function parameter, a function return value or a local variable. Struct fields or global variables cannot have a `some` type.
 1. A `some IFoo` type cannot appear in any complex type expression. For example, `some IFoo*`, `some IFoo[2]`, `Tuple<some IFoo, some IFoo>` etc. are not allowed.
 1. A local variable of `some IFoo` type cannot be assigned or initialized more than once throughout its lifetime.
 1. If a function returns `some IFoo`, then all return statements must return values of exactly the same type.

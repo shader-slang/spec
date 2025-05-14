@@ -20,7 +20,7 @@ Currently, Slang allows interface types to be used directly to declare a variabl
 
 ### Language Version
 
-We introduce Slang language version 2026, which can be enabled with compiler flag -lang 2026. By default, the compiler assumes language version 2025. Many breaking changes in this proposal is behind language version 2026.
+The new syntax and type checking rules are introduced to Slang language version 2026, which can be enabled with compiler flag -lang 2026. By default, the compiler assumes language version 2025 so existing code will continue to compile.
 
 ### Dynamic interface types
 
@@ -41,6 +41,7 @@ By default, a `dyn` interface is subject to the following restrictions, unless l
 1. It must not define any generic methods.
 1. It must not define any mutating methods.
 1. It cannot contain any methods that has a `some IFoo` return type, or has any `some IFoo` parameters.
+1. A `dyn` interface cannot inherit from `IDifferentiable`, and cannot contain any function requirements that are marked as `[Differentiable]`.
 
 Any type that conforms to one or more `dyn` interface is subject to these restrictions:
 
@@ -49,6 +50,7 @@ Any type that conforms to one or more `dyn` interface is subject to these restri
 In addition, such types are subject to these restrictions unless language version is 2025 or `-enable-experimental-dynamic-dispatch` flag is present:
 
 1. The type itself cannot be generic.
+1. Extensions that make types conform to `dyn` interfaces are not allowed.
 
 ### Use of interface types
 
@@ -68,6 +70,7 @@ The following rules apply to `some` and `dyn` qualifiers on var decls:
 1. A `dyn IFoo` type is valid only if `IFoo` is an interface type with `dyn` qualifier.
 1. A value of `dyn` interface type cannot be assigned to a location of `some` interface type, but the opposite direction is OK.
 1. Attempting to use a `dyn` or `some` typed value before initialization is an error.
+
 
 Here is an example demonstrating the rules:
 

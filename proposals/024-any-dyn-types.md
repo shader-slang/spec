@@ -42,7 +42,7 @@ By default, a `dyn` interface is subject to the following restrictions, unless l
 1. It must not define any mutating methods.
 1. It cannot contain any methods that has a `some IFoo` return type, or has any `some IFoo` parameters.
 1. A `dyn` interface cannot inherit from any interfaces that are not `dyn`.
-1. A `dyn` interface cannot inherit from `IDifferentiable`, and cannot contain any function requirements that are marked as `[Differentiable]`.
+1. A `dyn` interface cannot contain any function requirements that are marked as `[Differentiable]`.
 
 Any type that conforms to one or more `dyn` interface is subject to these restrictions:
 

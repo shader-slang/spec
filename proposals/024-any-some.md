@@ -236,3 +236,11 @@ We need to implement a separate check in an IR pass to ensure variables of `some
 Both `dyn` type and `some` type should lower to IR in the same way. That is, `some IFoo` and `dyn IFoo` should both lower to `%IFoo = IRInterfaceType`. Once we reach IR, there is no longer any distinction between `some` or `dyn` type.
 
 The one exception is that variables or parameters of `some` type will be emitted with a IR decoration, so our IR validation pass can identify these variables or parameters and check if they are being written to more than once.
+
+## Alternatives Considered
+
+In this proposal, we made dynamic dispatch an explicit opt-in feature on `interface` types by requiring `dyn` on interfaces that may be used in dynamic dispatch. This allows us to quickly check the interface type itself for additional restrictions without looking at how the interface type itself is used. An alternative is to make this implicit: we validate an interface type with dyanmic-dispatch related restrictions only when we see the interface is used to define a `dyn IFoo` type. We may want to move to this design going forward, but start with an explicit opt-in keyword is a conservative approach.
+
+We can also consider lifting the restriction on interface types to allow any interface type to be used in a `dyn IFoo` type, as long as the none of the dynamic dispatch calls actually uses the unsupported members of the interface. This offers a much greater degree of flexibility, but it also means the check is less structural.
+
+We also decided to perform many `some` type related checks in the type system. Many of the checks can be moved to an IR pass right after lowering, so we can make use of sophiscated dataflow analysis to verify the type of a `some` typed variable remains constant throughout the function, and allow more than one assignments to a `some` typed variable. We would like to start with a simple and more restrictive solution, and relax the restrictions in the future.

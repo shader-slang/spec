@@ -1,4 +1,4 @@
-Error Handling
+SP #026: Error Handling
 ==============
 
 Slang should support a modern system for functions to signal, propagate, and handle errors.
@@ -6,7 +6,13 @@ Slang should support a modern system for functions to signal, propagate, and han
 Status
 ------
 
-In discussion.
+Status: In Experiment.
+
+Implementation: [PR 6619](https://github.com/shader-slang/slang/pull/6619) [PR 6916](https://github.com/shader-slang/slang/pull/6916)
+
+Author: Theresa Foley, Julius Ikkala
+
+Reviewer: TBD
 
 Background
 ----------
@@ -84,16 +90,10 @@ Proposed Approach
 We propose a modest starting point for error handling in Slang that can be extended over time.
 The model borrows heavily from Swift, but also focuses on strongly-typed errors.
 
-The core module will provide a built-in interface for errors, initially empty:
+User code can define their own types (`struct` or `enum`) for use as errors:
 
 ```
-interface IError {}
-```
-
-User code can define their own types (`struct` or `enum`) that conform to `IError`:
-
-```
-enum MyError : IError
+enum MyError
 {
     BadHandle,
     TimedOut,
@@ -217,8 +217,7 @@ Front-end semantic checking should be able to associate each `throw` with the ap
 
 For `throw` sites with no matching `catch`, the operation simply translates to a `return` of the thrown error (because of the way we transformed the function signature).
 
-For `throw` sites with a matching `catch`, we treat the operation a a "`goto` with argument" that jumps to the `catch` clause and passes it the error.
-Note that our IR structure already has a concept of "`goto` with arguments".
+For `throw` sites with a matching `catch`, we proceed similar to failing `try` expressions in the next section.
 
 ### Desugar `catch` Statements
 
@@ -324,8 +323,8 @@ Questions
 
 ### Should we support the superficially simpler case of "untyped" `throws`?
 
-Having an `IError` interface allows us to eventually decide that `throws` without an explicit type is equivalent to `throw IError`.
-It doesn't seem necessary to implement that convenience for a first pass, especially when there are use cases for `throws` that might not want to get into the mess of existential types.
+Adding an `IError` interface and requiring that error types conform to it would allow us to specify that `throws` without an explicit type is equivalent to `throw IError`.
+However, it doesn't seem necessary to implement that convenience for a first pass, especially when there are use cases for `throws` that might not want to get into the mess of existential types.
 
 ### Should we allow `return`, `throw` etc. inside a `defer` block?
 

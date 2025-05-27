@@ -72,9 +72,9 @@ This for loop should continue to work, since the only purpose of these expressio
 side-effect. The change from comma operator to tuple construction only affects the "return" value
 of the expression and will not affect the side-effect.
 
-Apart from their use in `for` loops, use of comma operator in other contexts is uncommon. We expect
+Apart from inside `for` loops, the use of comma operator in other contexts is uncommon. We expect
 this change to have very minimum impact to exising codebases. The benefit of the added convenience
-for tuples out-weights the potential downsides.
+for tuples outweighs the potential downsides.
 
 Future Work -- Type Syntax
 ---------

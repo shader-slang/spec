@@ -39,6 +39,11 @@ version 2026 due to very limited use of the comma operator. Starting from Slang 
 `(a,b,c)` should now mean construction of a tuple, bringing Slang's syntax to be consistent with
 other modern languages.
 
+A special case is the meaning of paranthesis with only one element. The meaning of `(expr)` should
+be unchanged -- no tuple will be constructed if there is no comma in the paranthesis.
+
+`(a,)` means construction of a 1-element tuple, similar to that in Python.
+
 Analysis of Impact
 ---------
 

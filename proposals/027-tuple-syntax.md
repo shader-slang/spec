@@ -73,3 +73,10 @@ of the expression and will not affect the side-effect.
 Apart from their use in `for` loops, use of comma operator in other contexts is uncommon. We expect
 this change to have very minimum impact to exising codebases. The benefit of the added convenience
 for tuples out-weights the potential downsides.
+
+Future Work -- Type Syntax
+---------
+
+This proposal only adds the `()` syntax to construct tuple values but not types. Supporting `()` for
+defining tuple types may introduce nuances and syntax ambiguities that requiers more careful design.
+For this reason, we leave the type syntax as a future work.

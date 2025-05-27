@@ -10,7 +10,7 @@ Implementation: [PR 6565](https://github.com/shader-slang/slang/pull/6565)
 
 Author: Darren Wihandi
 
-Reviewer: TBD
+Reviewer: Yong He
 
 Update:
  - the funciton name `load` and `loadAny` are renamed to `Load` to match to HLSL syntax.

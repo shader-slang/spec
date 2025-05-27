@@ -44,6 +44,8 @@ be unchanged -- no tuple will be constructed if there is no comma in the paranth
 
 `(a,)` means construction of a 1-element tuple, similar to that in Python.
 
+Additionally, `()` means construction of an empty tuple.
+
 Impact to Existing Codebase
 ---------
 

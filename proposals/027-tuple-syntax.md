@@ -78,5 +78,5 @@ Future Work -- Type Syntax
 ---------
 
 This proposal only adds the `()` syntax to construct tuple values but not types. Supporting `()` for
-defining tuple types may introduce nuances and syntax ambiguities that requiers more careful design.
+defining tuple types may introduce nuances and syntax ambiguities that require more careful design.
 For this reason, we leave the type syntax as a future work.

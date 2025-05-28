@@ -1,4 +1,4 @@
-Error Handling
+SP #026: Error Handling
 ==============
 
 Slang should support a modern system for functions to signal, propagate, and handle errors.
@@ -6,7 +6,13 @@ Slang should support a modern system for functions to signal, propagate, and han
 Status
 ------
 
-In discussion.
+Status: In Experiment.
+
+Implementation: [PR 6619](https://github.com/shader-slang/slang/pull/6619) [PR 6916](https://github.com/shader-slang/slang/pull/6916)
+
+Author: Theresa Foley, Julius Ikkala
+
+Reviewer: TBD
 
 Background
 ----------
@@ -19,7 +25,7 @@ Most errors can fit into a few broad categories like:
 
 * Unrecoverable or nearly unrecoverable failures like resource exhaustion (out of memory), or an OS-level signal to terminate the process.
 
-* Incorrct usage of an API in ways that violate invariants. For example, passing a negative value to a function that says it only accepts positive values.
+* Incorrect usage of an API in ways that violate invariants. For example, passing a negative value to a function that says it only accepts positive values.
 
 * Out-of-range or otherwise invalid data coming from program users. For example, a console program asks the user to type a number, but the user enters some string that does not parse as a number.
 
@@ -84,16 +90,10 @@ Proposed Approach
 We propose a modest starting point for error handling in Slang that can be extended over time.
 The model borrows heavily from Swift, but also focuses on strongly-typed errors.
 
-The core module will provide a built-in interface for errors, initially empty:
+User code can define their own types (`struct` or `enum`) for use as errors:
 
 ```
-interface IError {}
-```
-
-User code can define their own types (`struct` or `enum`) that conform to `IError`:
-
-```
-enum MyError : IError
+enum MyError
 {
     BadHandle,
     TimedOut,
@@ -106,7 +106,7 @@ User-defined functions (in both traditional and "modern" syntax) will support a 
 ```
 float f(int x) throws MyError { ... }
 
-func g(x: int) throws -> float MyError { ... }
+func g(x: int) throws MyError -> float { ... }
 ```
 
 Call sites to a `throws` function must wrap any potentially-throwing expression with a `try`:
@@ -118,25 +118,34 @@ float g(int y) throws MyError
 }
 ```
 
-Code can explicitly raise an error using a `throw` expression:
+Code can explicitly raise an error using a `throw` statement:
 
 ```
 throw MyError.TimedOut;
 ```
 
-We will allow `catch` clauses to come at the end of any `{}`-enclosed scope, where they will apply to any errors produced by `throw` or `try` expressions in that scope.
+To catch errors, one or more `catch` clauses must follow a `do {}` block, where they will apply to any errors produced by `throw` or `try` expressions in that block.
+Additionally, a catch without parameters, `catch {}`, can be used to catch an error of any type.
 
 ```
+do
 {
     ...
     try f(...);
     ...
 
-    catch( e: MyError ) { ... }
 }
+catch( e: MyError )
+{ ... }
+catch( e: MyOtherError )
+{ ... }
+catch
+{ ... }
 ```
 
-We will also want to add `defer` statements, as they are defined in Go, Rust, Swift, etc.
+`catch` parameters can also be given in traditional syntax, e.g. `catch(MyError e)`.
+
+We will also add `defer` statements, as they are defined in Go, Rust, Swift, etc.
 The statements under a `defer` will always be run when exiting a scope, even if exiting as part of error propagation.
 
 Detailed Explanation
@@ -154,12 +163,12 @@ float example(int x) throws MyError
     ...
     defer { someCleanup(); }
     ...
+    do
     {
         let y : int = 1 + try g(...);
-
-        catch(e : MyError)
-        { ... }
     }
+    catch(e : MyError)
+    { ... }
     ...
     return someValue;
 }
@@ -169,35 +178,35 @@ We will show how a function in this form can be transformed via incremental step
 
 ### Change Signature
 
-First, we transform the signature of the function so that it returns something akin to an `Optional<MyError>` and returns its result via an `out` parameter, and modify any `return` points to write the `out` parameter and return `null` (the not-present case of `Optional<T>`):
+First, we transform the signature of the function so that it returns a `Result<ReturnType, ErrorType>` and modify any `return` points to create such a result value instead:
 
 ```
-MyError example_modified(int x, out float _result)
+Result<float, MyError> example_modified(int x)
 {
     ...
-
-    _result = someValue;
-    return null;
+    return createResultValue(...);
 }
 ```
 
+Here, `Result<ReturnType, ErrorType>` is a tagged union, with a boolean flag determining whether the error value is carried, and an AnyValue type is used to store the `ReturnType` or `ErrorType`.
+If `ReturnType == void`, `Result<void, ErrorType>` only contains a boolean and an `ErrorType`.
+
 ### Desugar `try` Expressions
 
-Next we can convert any `try` expressions into a more explicit form, to match the transformation of signature. A statement like this:
+Next we can convert any `try` expressions into a more explicit form, to match the transformation of signature. Without a `catch` statement, a `try` expression like this:
 
 ```
 let y : int = 1 + try g(...);
 ```
 
-transforms into something like:
+transforms into something like this, and re-throws the error:
 
 ```
-var _tmp : int;
-let _err : Optional<MyError> = g_modified(..., out _tmp);
-if( _err != null )
-{
-    throw _err.wrappedValue;
-}
+let _result : Result<int, MyError> = g_modified(...);
+if( isError(_result) )
+    throw _result.error;
+
+var _tmp : int = _result.value;
 let y : int = 1 + _tmp;
 ```
 
@@ -208,83 +217,137 @@ Front-end semantic checking should be able to associate each `throw` with the ap
 
 For `throw` sites with no matching `catch`, the operation simply translates to a `return` of the thrown error (because of the way we transformed the function signature).
 
-For `throw` sites with a matching `catch`, we treat the operation a a "`goto` with argument" that jumps to the `catch` clause and passes it the error.
-Note that our IR structure already has a concept of "`goto` with arguments".
+For `throw` sites with a matching `catch`, we proceed similar to failing `try` expressions in the next section.
+
+### Desugar `catch` Statements
+
+Catch statements don't need to exist at the IR level, as the matching catch blocks can already be determined when lowering to IR.
+`try` expressions within a `do-catch` block like this:
+
+```
+do
+{
+    let y : int = 1 + try g(...);
+}
+catch(err: MyError)
+{
+    handleError(err);
+}
+```
+
+transform into:
+
+```
+outer: for (;;)
+{
+    // This is actually a parameter of the handler block
+    var _err : MyError;
+    inner: for (;;)
+    {
+        let _result = Result<int, MyError> = g_modified(...);
+        if( isError(_result) )
+        {
+            _err = _result.error;
+            break inner; // passes _err to handler block
+        }
+
+        var _tmp : int = _result.value;
+        let y : int = 1 + _tmp;
+        break outer;
+    }
+    // Handler block
+    handleError(_err);
+    break outer;
+}
+```
+
+Successive catch clauses behave as if they were nested:
+```
+do
+{
+    do
+    {
+        let x : int = 1 + try f(...);
+        let y : int = 1 + try g(...);
+    }
+    catch(err: MyError)
+    {
+        handleError(err);
+    }
+}
+catch(err: MyOtherError)
+{
+    handleOtherError(err);
+}
+```
+
+If the type of none of the `catch` clauses matches, the error is re-thrown instead.
 
 ### Desugar `defer` Statements
 
-Handling of `defer` statements is actually the hardest part of this proposal, and as such we should probably handle `defer` as a distinct feature that just happens to overlap with what is being proposed here.
-
-### Subtyping: Front-End
-
-We should (at some point) add a `Never` type to the Slang type system, which would be an uninhabitable type suitable for use as the return type of functions that never return:
+Each `defer` block is run before the scope can be exited by e.g. a `return`, failing `try` or `throw` statement.
+The contents of a `defer` block are placed before terminators that escape the surrounding scope:
 
 ```
-func exit(code: int) -> Never; // C `exit()` never returns
+defer
+{
+    releaseResources();
+}
+
+...
+
+if(condition)
+{
+    return;
+}
+
+return;
 ```
 
-`Never` is effectively a subtype of *every* type and, as such, an expression of type `Never` can be implicitly converted to any type.
-
-A `throw` expression has the type `Never`, allowing a user to write code like:
+transforms into:
 
 ```
-// Because `Never` can convert to `int`, this is valid:
-int x = value > 0 ? value : throw MyError.OutOfBounds;
+...
+
+if(condition)
+{
+    releaseResources();
+    return;
+}
+releaseResources();
+return;
 ```
-
-A function without a `throws` clause is semantically equivalent to a function with `throws Never`.
-If we make that equivalence concrete at the type-system level, then a higher-order function can be generic over both throwing and non-throwing functions:
-
-```
-func map<D,R,E>(
-    f: (D) throws E -> R,
-    l: List<D>)
-    throws E -> List<R>;
-```
-
-A function type with `throws X` is a subtype of a function with `throws Y` if `X` is a subtype of `Y`.
-That includes the case where `X` is `Never`, so that a non-`throws` function type is a subtype of any `throws` function type with the same parameter/result signature.
-
-### Subtyping: Low-Level
-
-The subtyping relationship for `Never` *values* is irrelevant to codegen. Any place in the IR that has a `Never` value available to it represents unreachable code.
-
-The subtyping relationship for `Never` in function types is more challenging, both for result types and error types. At the most basic, we can inject trampoline/thunk functions at any points where we have a `Never`-yielding function and need a function that returns `X` to pass along.
-
-If we were doing low-level code generation for a platform where we can define our ABI, it would be possible to have `throws` and non-`throws` functions use distinct calling conventions, such that:
-
-* The orinary parameters and reuslts are passed in the same registers/locations in both conventions.
-
-* The error value (if any) in the `throws` convention is passed via registers/locations that are callee-save in the non-`throws` convention.
-
-Under that model, a call site to a potentially-`throws` function can initialize the registers/locations for the error result to `null`/zero before dispatching to the callee.
-If the callee is actually a non-`throws` function it would not touch those registers, and no error would be detected.
-In that case, a non-`throws` function/closure could be used directly as a `throws` one with no conversion.
-Such calling-convention trickery isn't really possible to implement when emitting code in a high-level language like HLSL/GLSL or C/C++.
 
 Questions
 --------------
 
 ### Should we support the superficially simpler case of "untyped" `throws`?
 
-Having an `IError` interface allows us to eventually decide that `throws` without an explicit type is equivalent to `throw IError`.
-It doesn't seem necessary to implement that convenience for a first pass, especially when there are use cases for `throws` that might not want to get into the mess of existential types.
+Adding an `IError` interface and requiring that error types conform to it would allow us to specify that `throws` without an explicit type is equivalent to `throw IError`.
+However, it doesn't seem necessary to implement that convenience for a first pass, especially when there are use cases for `throws` that might not want to get into the mess of existential types.
 
-### Should the transformations described here be implemented during AST->IR lowering, or at the IR level?
+### Should we allow `return`, `throw` etc. inside a `defer` block?
 
-That's a great question! My guess is that some desugaring will happen during lowering, but we will probably want to keep `throws` functions more explicitly represented in the IR until fairly late, so that we can desugar them differently for different targets (if desired).
+`defer` statements themselves cannot contain terminators that would escape the `defer` block, due to this introducing an ambiguity:
 
-### Do we need `Optional<T>` to be supported to make this work?
+```
+{
+    defer
+    {
+        throw MyError.TimedOut;
+    }
+    defer
+    {
+        throw MyError.OutOfMemory;
+    }
+}
+```
 
-It is unlikely that we'd need it to be a user-visible feature in a first pass, but we might want it at the IR level.
-For this feature to work, we really need `sizeof(Optional<X>)` to be the same as `sizeof(X)` for simple cases where `X` is an `enum` or (for suitable targets) a type that is pointer-based.
+In this case, one of the `defer` blocks would have to fail to run, violating the principle of `defer`red blocks running before exiting their scope.
 
-A first pass at the feature might only support cases where error types are `enum`s and where the zero value is the "no error" case.
+### Should we have a user-visible `Result<T, E>` type akin to what Rust/Swift have? Should a `throws E` function be equivalent to one that returns `Result<T, E>`?
 
-### Should we have a `Result<T, E>` type akin to what Rust/Swift have? Should a `throws E` function be equivalent to one that returns `Result<T, E>`?
-
-That all sounds nice, but for now it seems like overkill.
-Slang doesn't really have any facilities for programming with higher-order functions, pattern matching, etc. so adding types that mostly shine in those cases seems like a stretch.
+That all sounds nice, but for now it seems like overkill. Slang doesn't really have any facilities for programming with higher-order functions, pattern matching, etc. so adding types that mostly shine in those cases seems like a stretch.
 
 Alternatives Considered
 -----------------------

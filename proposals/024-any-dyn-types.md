@@ -68,7 +68,7 @@ The following rules apply to `some` and `dyn` qualifiers on var decls:
 1. If a function returns `some IFoo`, then all return statements must return values of exactly the same type.
 1. If a function contains a `out some IFoo` parameter, then all values assignmened to the parameter must have exactly the same type.
 1. Two different var decls of `some IFoo` type are considered to have **different** types.
-1. A `dyn IFoo` type is valid only if `IFoo` is an interface type with `dyn` qualifier **if slang version 2026 or later**
+1. A `dyn IFoo` type is valid only if `IFoo` is an interface type with `dyn` qualifier **if slang version 2026 or later**.
 1. A value of `dyn` interface type cannot be assigned to a location of `some` interface type, but the opposite direction is OK.
 1. Attempting to use a `dyn` or `some` typed value before initialization is an error.
 

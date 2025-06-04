@@ -4,11 +4,11 @@
 
 Status: Design Review
 
-Implementation: 
+Implementation: [PR 7327](https://github.com/shader-slang/slang/pull/7327)
 
 Author: Yong He
 
-Reviewer:
+Reviewer: 
 
 ## Background
 

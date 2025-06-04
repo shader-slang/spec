@@ -1,4 +1,4 @@
-# Type System for Compile-Time and Run-Time Existential Values
+# SP#024: Type System for Compile-Time and Run-Time Existential Values
 
 This proposal adds `some` and `dyn` keyword for explicitly specifying whether or not an interface type can be used in dynamic dispatch.
 
@@ -10,7 +10,7 @@ Implementation:
 
 Author: Yong He
 
-Reviewer: 
+Reviewer: Theresa Foley, Kai Zhang
 
 ## Background
 

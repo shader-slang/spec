@@ -121,7 +121,6 @@ Vertex<hasNormal, hasColor> vertMain<bool hasNormal, bool hasColor>(VertexIn inp
 It is also possible to use different types for each optional field. For example, we can define a set of helper types as:
 
 ```slang
-```
 interface IConditional<T>
 {
     static const bool hasValue;

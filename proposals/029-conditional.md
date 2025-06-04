@@ -8,7 +8,7 @@ Implementation: [PR 7327](https://github.com/shader-slang/slang/pull/7327)
 
 Author: Yong He
 
-Reviewer: 
+Reviewer: Theresa Foley, Kai Zhang
 
 ## Background
 
@@ -67,11 +67,12 @@ extension<T> Optional<T>
 }
 ```
 
-Highlights:
+## Highlights
 
 1. `Conditional<T>` is implemented with an array whose size might be 0.
 1. `Conditional<T>` can be implicitly converted to/from `Optional<T>`, allowing it to be used in `if (let ...)` statement.
 1. Setting value to `Conditional<T, false>` has no effect.
+1. `Conditional<T, hasValue>` always have the same alignment and size as `T[hasValue?1:0]`.
 
 With `Conditional`, a vertex type can be defined as:
 
@@ -176,4 +177,27 @@ Vertex<Normal, Color> vertMain<Normal : IConditional<float3>, Color : ICondition
 And `vertMain` can then be specialized with `vertMain<Real<float3>, No<float3>>`. This can achieve the same goals, but it is
 less direct and require more complex type signature in specialization arguments.
 
-As of writing, conditional fields that affect the data layout of the type are not known to be supported in any major programming languages.
+The Metal shading language allows structs and entrypoint parameters to be conditional via its `[[function_constant(name)]]` syntax. For example,
+```c++
+constant bool normal_defined [[function_constant(0)]]; 
+constant bool color_defined [[function_constant(1)]]; 
+
+struct Vertex
+{ 
+    float4 position [[attribute(0)]]; 
+    float3 normal   [[attribute(1), 
+                      function_constant(normal_defined)]]; 
+    float3 color    [[attribute(2), 
+                      function_constant(color_defined)]]; 
+}; 
+```
+
+In the code above, `Vertex::normal` is only declared if `normal_defined` is set to `true` during compilation. While this attribute
+based solution achieves the same goal, it leaves out the possibility of writing code that uses the `normal` field while `normal_defined` is
+set to `false`. Since the existence of the value is not encoded in the types, the compiler frontend cannot provide any help to make
+sure the code is not accessing fields that won't exist. Slang's approach of encoding the `hasValue` info as a type parameter and combining
+the support with `Optional<T>` allows the language to ensure all uses of conditional fields are guarded with a static check on the existence
+of the field.
+
+As of writing, conditional fields that affect the data layout of the type are not known to be supported in any major CPU
+programming languages.

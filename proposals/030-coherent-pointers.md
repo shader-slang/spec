@@ -81,7 +81,7 @@ int c = val[10] + *p; //allowed to use coherent and non-coherent simultaneously
 
 ### Support For Coherent Workgroup Memory
 
-Any access through a coherent-pointer to a `groupshared` object is coherent; `groupshared` pointers will only be allowed if `SPV_KHR_variable_pointers` is enabled. Since Slang does not currently support pointers to `groupshared` memory, this proposal will extend the existing `AddressSpace::GroupShared` implementation for pointers as needed.
+Any access through a coherent-pointer to a `groupshared` object is coherent; `groupshared` pointers will cause the extension `SPV_KHR_variable_pointers` and the capability `VariablePointers` to be emitted. Since Slang does not currently support pointers to `groupshared` memory, this proposal will extend the existing `AddressSpace::GroupShared` implementation for pointers as needed.
 
 ### Support For Coherent Cooperative Matrix & Cooperative Vector
 

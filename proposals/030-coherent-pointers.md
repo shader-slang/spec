@@ -1,0 +1,190 @@
+# SP \#30 \- Coherent Pointers
+
+## Status
+
+Status: Design Review  
+Implementation:  
+Author: Ariel Glasroth  
+Reviewer:
+
+## Background
+
+### Introduction
+
+GPUs have a concept known as coherent operations. Coherent operations flush cache for reads/writes so that when **thread A** modifies memory, **thread B** may read that memory, seeing all changes to memory done by a different thread. When flushing cache it is important to note that not all caches will be flushed. If a user wants coherence to `WorkGroup` memory, only the levels of cache up to `WorkGroup` memory will need to be flushed.
+
+### Prior Implementations
+
+* HLSL – `globallycoherent` keyword can be added to declarations (`globallycoherent RWStructuredBuffer<T> buffer`). This keyword ensures coherence with all operations to a tagged object. Memory scope of coherence is device memory. `groupshared` objects are likely coherent, specification does not specify.  
+* GLSL– `coherent` keyword can be added to declarations (`coherent uniform image2D img`). This keyword ensures coherence with all operations to a tagged object. Memory scope of coherence is unspecified. Objects tagged with `shared` are [implicitly](https://www.khronos.org/opengl/wiki/Compute_Shader) `coherent`.  
+* Metal – `memory_coherence::memory_coherence_device` is a generic argument to buffers. This argument ensures coherence with all operations to a tagged object. Memory scope of coherence is device memory.  
+* WGSL – [All operations](https://www.w3.org/TR/WGSL/#private-vs-non-private) are coherent.
+
+### SPIR-V Support For Coherence
+
+Originally, SPIR-V supported coherent objects through the `coherent` type `Decoration`. Modern SPIR-V (`VulkanMemoryModel`) exposes this functionality differently to control coherence as a **per operation** functionality. Coherence is now done per operation through adding the memory operands `MakePointerAvailable`, `MakePointerVisible`, `MakeTexelAvailable`, and `MakeTexelVisible` to load and store operations. Users must additionally specify the memory scope to which an operation is coherent.  
+	  
+`MakePointerAvailable` is for memory stores of non textures, `OpStore`, `OpCooperativeMatrixStoreKHR` and `OpCooperativeVectorStoreNV`.. 
+
+`MakePointerVisible` is for memory loads of non textures, `OpLoad`, `OpCooperativeMatrixLoadKHR` and `OpCooperativeVectorLoadNV`.
+
+ `MakeTexelAvailableKHR` is for memory stores of textures, `OpImageWrite`, `OpImageSparseLoad`.
+
+ `MakeTexelVisibleKHR` is for memory loads of textures, `OpImageRead`, `OpImageSparseRead`.
+
+Additionally,  `MakePointer{Visible,Available}` support usage in `OpCopyMemory` and `OpCopyMemorySized`.
+
+### Example
+
+The simple use-case of this feature can be modeled with the following example: (1) We have **thread1** and **thread2** both reading/writing to the same `RWStructuredBuffer`. (2) **thread1** `OpStore`’s non-coherently into the buffer. (3) if **thread2** uses an `OpLoad` on the texture they may not see the change **thread1** made for 2 reasons:
+
+1) **thread1** does not promise its writes are visible to other threads. Cached writes may not immediately flush to device memory.  
+2) **thread2** may load from a cache, not device memory. This means we will not see the new value because the new value was written to device memory, not the intermediate cache.
+
+If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad`  to the memory scope `QueueFamily` we will solve this problem since we are flushing changes to a memory scope shared by the two threads. This additionally may be faster than the alternative of flushing to `Device` memory since a `QueueFamily` is a tighter scope than `Device`.
+
+## Proposed Solution
+
+### Frontend For Coherent Pointers
+
+We propose to implement coherence on a per-operation level for only SPIR-V targets. This will be accomplished through modifying `Ptr` to include new generic arguments `PointerFlags flags` and `MemoryScope coherentMemoryScope`.
+
+```c#
+
+public enum PointerFlags
+{
+    None = 0,
+    Coherent = 0b1
+}
+
+__generic<T, uint64_t addrSpace=AddressSpace::UserPointer, PointerFlags flags=PointerFlags.None, MemoryScope coherentMemoryScope=MemoryScope.Device>
+struct Ptr
+{
+    ...
+}
+```
+
+If `PointerFlags.Coherent` is present, all accesses to memory through this pointer will be considered coherent. The coherent operation will be coherent to the memory scope `coherentMemoryScope`.
+
+### Support For Coherent Buffers and Textures
+
+Any access through a coherent-pointer to a buffer/texture is coherent.
+
+```c#
+RWStructuredBuffer<int> val; // Texture works as well.   
+Ptr<int, PointerFlags.Coherent, MemoryScope.Subgroup> p = &val[0];
+*p = 10; // coherent store
+p = p+10;
+int b = *p; //coherent load
+int c = val[10] + *p; //allowed to use coherent and non-coherent simultaneously
+```
+
+### Support For Coherent Workgroup Memory
+
+Any access through a coherent-pointer to a `groupshared` object is coherent; `groupshared` pointers will only be allowed if `SPV_KHR_variable_pointers` is enabled. Since Slang does not currently support pointers to `groupshared` memory, this proposal will extend the existing `AddressSpace::GroupShared` implementation for pointers as needed.
+
+### Support For Coherent Cooperative Matrix & Cooperative Vector
+
+`CoopVec` and `CoopMat` load data into their respective data-structures from other objects using `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store`. Due to this design, we will add coherent operations to `CoopVec` and `CoopMat` by modifying `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store` to complete coherent operations if given a `Ptr` with the flag `PointerFlags.Coherent` as a parameter. Syntax required to use the methods will not change.
+
+### Support Casting Pointers With Different Coherent `MemoryScope`
+
+We will allow pointers with different coherent `MemoryScope`’s to freely cast between each other. For example, `Ptr<T, PointerFlags.Coherent, MemoryScope.Device>` will be castable to `Ptr<T, PointerFlags.Coherent, MemoryScope.Workgroup>`.
+
+### Support The `globallycoherent` Keyword
+
+Slang will implement support for use of the `globallycoherent T*` keyword. This will be an alias to `Ptr<T, PointerFlags.Coherent, MemoryScope.Device>`.
+
+### Order of Implementation
+
+1. Support for workgroup memory pointers.  
+2. Frontend for coherent pointers  
+3. Support for coherent buffers and textures  
+4. Support for coherent workgroup memory  
+5. Support for coherent cooperative matrix & cooperative vector  
+6. Support casting pointers with different coherent `MemoryScope`  
+7. Support the `globallycoherent` keyword
+
+## Future Work
+
+### Supporting Aligned Loads
+
+Users may choose to load coherently given a specific alignment. This will be supported through the `[Align(ALIGNMENT)]` decoration.
+
+```c#
+[Align(ALIGNMENT)]
+struct MyType {...}
+
+MyType* p  = ...;
+...
+let a = *p; // should be aligned load;
+let b = p.member; // should be aligned load, with alignment derived from both `MyType` and `member`'s type.
+```
+
+When loading data from a pointer `p` Slang will honor the alignment and emit an `OpLoad` with the SPIR-V `Aligned` memory operand, providing the argument `ALIGNMENT`. This will function alongside `coherent` pointers.
+
+## Alternative Designs Considered
+
+1. Using special methods (part of the `Ptr` type) to access coherent-operation functionality
+
+```c#
+T* ptr1 = bufferPtr1;
+T* ptr2 = bufferPtr2;
+var loadedData = coherentLoad(ptr1, scope = MemoryScope::Device);
+coherentStore(ptr2, loadedData, scope = MemoryScope::Device);
+```
+
+2. Tagging types as coherent through a modifier
+
+```c#
+// Not allowed:
+globallycoherent RWStructuredBuffer<T> bufferPtr1 : register(u0);
+
+cbuffer PtrBuffer
+{
+    // We only allow coherent on pointers
+    globallycoherent int* bufferPtr1;
+}
+```
+
+3. ‘OOP’ approach, get a `CoherentPtr` from a regular `Ptr`. Any operation on a `CoherentPtr` will use the Coherent variant of a store/load.
+
+```c#
+[require(SPV_KHR_vulkan_memory_model)]
+void computeMain()
+{
+    int* ptr = gmemBuffer;
+    CoherentPtr<int, MemoryScope::Workgroup> ptr_workgroup = CoherentPtr<int, MemoryScope::Workgroup>(gmemBuffer);
+    CoherentPtr<int, MemoryScope::Workgroup> ptr_device = CoherentPtr<int, MemoryScope::Workgroup>(gmemBuffer);
+
+
+    ptr_workgroup[0] = output[1];
+    ptr_workgroup = ptr_workgroup + 1;
+    output[2] = ptr_workgroup[0];
+    ptr_workgroup = ptr_workgroup - 1;
+    output[3] = ptr_workgroup[3];
+
+
+    ptr[10] = 10;
+   
+    ptr_device = ptr_device + 3;
+    gmemBuffer[0] = 10;
+    ptr_device[3] = output[3];
+}
+```
+
+4. Modifier with parameter to specify memory-scope
+
+```c#
+cbuffer PtrBuffer
+{
+    int* bufferPtr1;
+}
+int main()
+{
+    coherent<WorkgroupMemory> int* bufferPtrWorkgroup = bufferPtr1;
+    coherent<Device> int* bufferPtrDevice = bufferPtr1;
+}
+```
+
+## 

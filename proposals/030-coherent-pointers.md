@@ -1,4 +1,4 @@
-# SP \#30 \- Coherent Pointers
+# SP\#030: Coherent Pointers
 
 ## Status
 

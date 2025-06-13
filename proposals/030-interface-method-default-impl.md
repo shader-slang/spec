@@ -46,7 +46,7 @@ struct Impl2 : IFoo
 
 Both static and non-static methods can have default implementations.
 
-A default implementation can be marked as `[Diffeerentiable]` for automatic differentiation.
+A default implementation can be marked as `[Differentiable]` for automatic differentiation.
 
 Default implementations is treated as if it is an ordinary function generic on `This` type. The `IFoo` interface above will
 be interpreted by the compiler as:

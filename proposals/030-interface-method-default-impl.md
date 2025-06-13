@@ -71,6 +71,35 @@ struct Impl : IFoo
 }
 ```
 
+An interesting question is what should the expected behavior be when there are overlapping method declarations in interface hierarchies. Consider the following:
+
+```slang
+interface IBase
+{
+    int getVal() { return 0; }
+}
+interface IDerived
+{
+    int getVal() { return 1; }
+}
+sttruct Impl : IDerived {}
+
+int testBase<T:IBase>(T v)
+{
+    return v.getVal();
+}
+void main()
+{
+    Impl impl = {};
+    printf("%d\n", testBase(impl));
+}
+```
+
+Should the output be `0` (calling `IBase.getVal`) or `1` (calling `IDerived.getVal`)? Both behaviors are reasonable.
+For simplicity, the current decision is to treat `IBase.getVal` and
+`IDerived.getVal` as distinct requirements, so calling `testBase(impl)` should return `0`, and calling `testDerived(impl)` should return `1`.
+That is, the existence of `IDerived.getVal` will not override the requirement from `IBase.getVal`.
+
 ## Related Work
 
 Default implementations are proven to be a useful feature and are commonly supported in modern languages. They are allowed in Rust traits Swift protocols, and C# interfaces (since C# 8.0).

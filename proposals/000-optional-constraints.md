@@ -65,11 +65,11 @@ Then, `MyTrait` can be unconditionally required and the optional functionality j
 Proposed Approach
 -----------------
 
-A new `where optionally` syntax is introduced:
+A new `where optional` syntax is introduced:
 
 ```slang
 void release<T>(T t)
-    where optionally T : IThing
+    where optional T : IThing
 {
     t.doThing(); // ERROR, it's possible that T doesn't implement IThing
     if (T is IThing)

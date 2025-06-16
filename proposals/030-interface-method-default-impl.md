@@ -17,7 +17,7 @@ is extended to support an additional feature that is only provided or meaningful
 developer must manually duplicate the trivial implementation for all existing types after extending the interface, which is a laborious process.
 
 This proposal is to allow interface methods to have a default implementation, that will be used by a conforming type to satisfy the interface
-requirement, if the conforming type does not provide its own implementation of the method.
+requirement, if the conforming type does not provide its own implementation of the method. Note that other types of requirements, such as properties, subscript operators, associated types and associated constants are not covered by this proposal and default implementation for these types of requirements will remain unsupported.
 
 ## Proposed Solution
 
@@ -40,7 +40,7 @@ struct Impl : IFoo
 struct Impl2 : IFoo
 {
     // OK, overriding the default implementation.
-    int getVal() { return 1; }
+    override int getVal() { return 1; }
 }
 ```
 
@@ -70,6 +70,8 @@ struct Impl : IFoo
     .getVal := IFoo_getVal_defaultImpl<Impl>;
 }
 ```
+
+Note that a method in a confirming type that overrides the default implementation in the interface must be explicitly marked as `override`. Overriding a function that is not declared in any base interfaces is an error.
 
 An interesting question is what should the expected behavior be when there are overlapping method declarations in interface hierarchies. Consider the following:
 

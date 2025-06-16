@@ -80,7 +80,7 @@ interface IBase
 {
     int getVal() { return 0; }
 }
-interface IDerived
+interface IDerived : IBase
 {
     int getVal() { return 1; }
 }

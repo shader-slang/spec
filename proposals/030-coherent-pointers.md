@@ -123,6 +123,10 @@ let b = p.member; // should be aligned load, with alignment derived from both `M
 
 When loading data from a pointer `p` Slang will honor the alignment and emit an `OpLoad` with the SPIR-V `Aligned` memory operand, providing the argument `ALIGNMENT`. This will function alongside `coherent` pointers.
 
+### Additional Pointer Flags
+
+`Volatile` and `Const` are future flags that pointers should support.
+
 ## Alternative Designs Considered
 
 1. Using special methods (part of the `Ptr` type) to access coherent-operation functionality

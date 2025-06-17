@@ -91,10 +91,6 @@ Any access through a coherent-pointer to a `groupshared` object is coherent; `gr
 
 We will allow pointers with different coherent `MemoryScope`’s to freely cast between each other. For example, `Ptr<T, PointerFlags.Coherent, MemoryScope.Device>` will be castable to `Ptr<T, PointerFlags.Coherent, MemoryScope.Workgroup>`.
 
-### Support The `globallycoherent` Keyword
-
-Slang will implement support for use of the `globallycoherent T*` keyword. This will be an alias to `Ptr<T, PointerFlags.Coherent, MemoryScope.Device>`.
-
 ### Order of Implementation
 
 1. Support for workgroup memory pointers.  
@@ -126,6 +122,24 @@ When loading data from a pointer `p` Slang will honor the alignment and emit an 
 ### Additional Pointer Flags
 
 `Volatile` and `Const` are future flags that pointers should support.
+
+### Simpler Pointer Syntax
+
+The following syntax will be implemented at a later date to simplify syntax
+```c#
+groupshared T* // a pointer to groupshared memory: Ptr<T, AddressSpace::GroupShared>
+T groupshared* // a same as above
+
+coherent T groupshared* // a pointer to groupshared coherent memory: Ptr<T, AddressSpace::GroupShared, PointerFlags.Coherent, MemoryScope::WorkGroup>
+groupshared coherent T* // same as above
+coherent groupshared T* // same as above
+...
+int* groupshared // a groupshared variable that is a global pointer: groupshared Ptr<T, MemoryScope::Device>
+int* coherent groupshared* // a pointer to coherent groupshared memory: Ptr<T, AddressSpace::GroupShared, PointerFlags.Coherent, MemoryScope::WorkGroup>
+int* coherent* groupshared // a groupshared variable that is a pointer to coherent global memory: groupshared Ptr<T, PointerFlags.Coherent, MemoryScope::Device>
+
+globallycoherent T* // pointer which is coherent to global memory: groupshared Ptr<T, PointerFlags.Coherent, MemoryScope::Device>
+```
 
 ## Alternative Designs Considered
 

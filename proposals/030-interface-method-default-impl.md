@@ -73,7 +73,10 @@ struct Impl : IFoo
 
 Note that a method in a confirming type that overrides the default implementation in the interface must be explicitly marked as `override`. Overriding a function that is not declared in any base interfaces is an error.
 
-An interesting question is what should the expected behavior be when there are overlapping method declarations in interface hierarchies. Consider the following:
+### `override` in Interfaces
+
+A method with a default implementation in an interface cannot be marked `override`, and will not 
+override any requirements in the base interfaces. Consider the following:
 
 ```slang
 interface IBase
@@ -101,6 +104,16 @@ Should the output be `0` (calling `IBase.getVal`) or `1` (calling `IDerived.getV
 For simplicity, the current decision is to treat `IBase.getVal` and
 `IDerived.getVal` as distinct requirements, so calling `testBase(impl)` should return `0`, and calling `testDerived(impl)` should return `1`.
 That is, the existence of `IDerived.getVal` will not override the requirement from `IBase.getVal`.
+
+Using `override` keyword on an interface method is considered an error.
+
+### Constructors
+
+For simplicity, constructors/initializers are not allowed to have a defualt implementation in interfaces.
+
+### Storage Accessors
+
+`get`, `set` and other storage accessors for properties or subscript operations are not allowed to have a default implementation in interfaces.
 
 ## Related Work
 

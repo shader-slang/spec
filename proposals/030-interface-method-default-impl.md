@@ -4,11 +4,11 @@
 
 Status: In Experiment
 
-Implementation: [PR 7439](https://github.com/shader-slang/slang/pull/7439)
+Implementation: [PR 7439](https://github.com/shader-slang/slang/pull/7439), [PR 7458](https://github.com/shader-slang/slang/pull/7458), [PR 7465](https://github.com/shader-slang/slang/pull/7465)
 
 Author: Yong He
 
-Reviewer: 
+Reviewer: Theresa Foley
 
 ## Background
 

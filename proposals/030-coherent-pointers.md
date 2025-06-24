@@ -47,24 +47,38 @@ If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad` 
 
 ### Frontend For Coherent Pointers
 
-We propose to implement coherence on a per-operation level for only SPIR-V targets. This will be accomplished through modifying `Ptr` to include new generic arguments `PointerFlags flags` and `MemoryScope coherentMemoryScope`.
+We propose to implement coherence on a per-operation level for only SPIR-V targets. This will be accomplished through modifying `Ptr` to include the new generic argument `CoherentScope coherentScope`.
 
 ```c#
 
-public enum PointerFlags
+public enum CoherentScope
 {
-    None = 0,
-    Coherent = 0b1
+    NotCoherent = 0xFF,
+    CrossDevice = MemoryScope::CrossDevice,
+    Device = MemoryScope::Device,
+    Workgroup = MemoryScope::Workgroup,
+    Subgroup = MemoryScope::Subgroup,
+    Invocation = MemoryScope::Invocation,
+    QueueFamily = MemoryScope::QueueFamily,
+    ShaderCallKHR = MemoryScope::ShaderCallKHR,
+    //...
 }
 
-__generic<T, uint64_t addrSpace=AddressSpace::UserPointer, PointerFlags flags=PointerFlags.None, MemoryScope coherentMemoryScope=MemoryScope.Device>
+__generic<T, uint64_t addrSpace=AddressSpace::UserPointer, CoherentScope coherentScope=CoherentScope.NotCoherent>
 struct Ptr
 {
     ...
 }
 ```
 
-If `PointerFlags.Coherent` is present, all accesses to memory through this pointer will be considered coherent. The coherent operation will be coherent to the memory scope `coherentMemoryScope`.
+If `coherentScope` is not `NotCoherent`, all accesses to memory through this pointer will be considered coherent to the specified memory scope (example: `CoherentScope.Device` is coherent to the memory scope of `Device`).
+
+We will also provide a type alias for user-convenience.
+
+```c#
+__generic<T, CoherentScope coherentScope>
+typealias CoherentPtr = Ptr<T, AddressSpace::UserPointer, coherentScope>;
+```
 
 ### Support For Coherent Buffers and Textures
 
@@ -72,7 +86,7 @@ Any access through a coherent-pointer to a buffer/texture is coherent.
 
 ```c#
 RWStructuredBuffer<int> val; // Texture works as well.   
-Ptr<int, PointerFlags.Coherent, MemoryScope.Subgroup> p = &val[0];
+CoherentPtr<int, CoherentScope.Device> p = &val[0];
 *p = 10; // coherent store
 p = p+10;
 int b = *p; //coherent load
@@ -85,11 +99,11 @@ Any access through a coherent-pointer to a `groupshared` object is coherent; `gr
 
 ### Support For Coherent Cooperative Matrix & Cooperative Vector
 
-`CoopVec` and `CoopMat` load data into their respective data-structures from other objects using `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store`. Due to this design, we will add coherent operations to `CoopVec` and `CoopMat` by modifying `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store` to complete coherent operations if given a `Ptr` with the flag `PointerFlags.Coherent` as a parameter. Syntax required to use the methods will not change.
+`CoopVec` and `CoopMat` load data into their respective data-structures from other objects using `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store`. Due to this design, we will add coherent operations to `CoopVec` and `CoopMat` by modifying `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store` to complete coherent operations if given a `CoherentPtr` as a parameter. Syntax required to use the method(s) will not change.
 
-### Support Casting Pointers With Different Coherent `MemoryScope`
+### Support Casting Pointers With Different `CoherentScope`
 
-We will allow pointers with different coherent `MemoryScope`’s to freely cast between each other. For example, `Ptr<T, PointerFlags.Coherent, MemoryScope.Device>` will be castable to `Ptr<T, PointerFlags.Coherent, MemoryScope.Workgroup>`.
+We will allow pointers with different `CoherentPtr` to be explicitly castable to each other. For example, `CoherentPtr<int, CoherentScope.Device>` will be castable to `CoherentPtr<int, MemoryScope.Workgroup>`.
 
 ### Order of Implementation
 
@@ -119,27 +133,9 @@ let b = p.member; // should be aligned load, with alignment derived from both `M
 
 When loading data from a pointer `p` Slang will honor the alignment and emit an `OpLoad` with the SPIR-V `Aligned` memory operand, providing the argument `ALIGNMENT`. This will function alongside `coherent` pointers.
 
-### Additional Pointer Flags
+### Additional Pointer Arguments
 
-`Volatile` and `Const` are future flags that pointers should support.
-
-### Simpler Pointer Syntax
-
-The following syntax will be implemented at a later date to simplify syntax
-```c#
-groupshared T* // a pointer to groupshared memory: Ptr<T, AddressSpace::GroupShared>
-T groupshared* // a same as above
-
-coherent T groupshared* // a pointer to groupshared coherent memory: Ptr<T, AddressSpace::GroupShared, PointerFlags.Coherent, MemoryScope::WorkGroup>
-groupshared coherent T* // same as above
-coherent groupshared T* // same as above
-...
-int* groupshared // a groupshared variable that is a global pointer: groupshared Ptr<T, MemoryScope::Device>
-int* coherent groupshared* // a pointer to coherent groupshared memory: Ptr<T, AddressSpace::GroupShared, PointerFlags.Coherent, MemoryScope::WorkGroup>
-int* coherent* groupshared // a groupshared variable that is a pointer to coherent global memory: groupshared Ptr<T, PointerFlags.Coherent, MemoryScope::Device>
-
-globallycoherent T* // pointer which is coherent to global memory: groupshared Ptr<T, PointerFlags.Coherent, MemoryScope::Device>
-```
+`Volatile` and `Const` are planned features for `Ptr`.
 
 ## Alternative Designs Considered
 

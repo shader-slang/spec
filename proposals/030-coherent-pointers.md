@@ -50,7 +50,6 @@ If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad` 
 We propose to implement coherence on a per-operation level for only SPIR-V targets. This will be accomplished through modifying `Ptr` to include the new generic argument `CoherentScope coherentScope`.
 
 ```c#
-
 public enum CoherentScope
 {
     NotCoherent = 0xFF,
@@ -71,7 +70,7 @@ struct Ptr
 }
 ```
 
-If `coherentScope` is not `NotCoherent`, all accesses to memory through this pointer will be considered coherent to the specified memory scope (example: `CoherentScope.Device` is coherent to the memory scope of `Device`).
+If `coherentScope` is not `CoherentScope.NotCoherent`, all accesses to memory through this pointer will be considered coherent to the specified memory scope (example: `CoherentScope.Device` is coherent to the memory scope of `Device`).
 
 We will also provide a type alias for user-convenience.
 

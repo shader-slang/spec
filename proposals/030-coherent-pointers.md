@@ -70,13 +70,13 @@ struct Ptr
 }
 ```
 
-If `coherentScope` is not `CoherentScope.NotCoherent`, all accesses to memory through this pointer will be considered coherent to the specified memory scope (example: `CoherentScope.Device` is coherent to the memory scope of `Device`).
+If `coherentScope` is not `CoherentScope.NotCoherent`, all accesses to memory through this pointer will be considered coherent to the specified memory scope (example: `CoherentScope::Device` is coherent to the memory scope of `Device`).
 
 We will also provide a type alias for user-convenience.
 
 ```c#
-__generic<T, CoherentScope coherentScope>
-typealias CoherentPtr = Ptr<T, AddressSpace::UserPointer, coherentScope>;
+__generic<T>
+typealias CoherentPtr = Ptr<T, AddressSpace::UserPointer, CoherentScope::CrossDevice>;
 ```
 
 ### Support For Coherent Buffers and Textures
@@ -85,7 +85,7 @@ Any access through a coherent-pointer to a buffer/texture is coherent.
 
 ```c#
 RWStructuredBuffer<int> val; // Texture works as well.   
-CoherentPtr<int, CoherentScope.Device> p = &val[0];
+CoherentPtr<int, CoherentScope::Device> p = &val[0];
 *p = 10; // coherent store
 p = p+10;
 int b = *p; //coherent load
@@ -102,7 +102,11 @@ Any access through a coherent-pointer to a `groupshared` object is coherent; Sin
 
 ### Support Casting Pointers With Different `CoherentScope`
 
-We will allow pointers with different `CoherentPtr` to be explicitly castable to each other. For example, `CoherentPtr<int, CoherentScope.Device>` will be castable to `CoherentPtr<int, MemoryScope.Workgroup>`.
+We will allow pointers with different `CoherentScope` to be explicitly castable to each other. For example, `CoherentPtr<int, CoherentScope::Device>` will be castable to `CoherentPtr<int, MemoryScope.Workgroup>`.
+
+### Banned keywords
+
+HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed.
 
 ### Order of Implementation
 
@@ -111,8 +115,8 @@ We will allow pointers with different `CoherentPtr` to be explicitly castable to
 3. Support for coherent buffers and textures  
 4. Support for coherent workgroup memory  
 5. Support for coherent cooperative matrix & cooperative vector  
-6. Support casting pointers with different coherent `MemoryScope`  
-7. Support the `globallycoherent` keyword
+6. Support casting between pointers with different `CoherentScope`  
+7. disallow `globallycoherent T*` and `coherent T*`
 
 ## Future Work
 

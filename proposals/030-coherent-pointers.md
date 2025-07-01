@@ -1,4 +1,4 @@
-# SP\#030: Coherent Pointers
+# SP\#030: Coherent Pointers & Pointer Access
 
 ## Status
 
@@ -12,6 +12,8 @@ Reviewer:
 ### Introduction
 
 GPUs have a concept known as coherent operations. Coherent operations flush cache for reads/writes so that when **thread A** modifies memory, **thread B** may read that memory, seeing all changes to memory done by a different thread. When flushing cache it is important to note that not all caches will be flushed. If a user wants coherence to `WorkGroup` memory, only the levels of cache up to `WorkGroup` memory will need to be flushed.
+
+Additionally, pointers will be permitted to be marked as read-only or read/write. A read-only pointer will be immutable (unable to modify the data pointed to).
 
 ### Prior Implementations
 
@@ -45,9 +47,11 @@ If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad` 
 
 ## Proposed Solution
 
-### Frontend For Coherent Pointers
+### Frontend For Coherent Pointers & Pointer Access
 
 We propose to implement coherence on a per-operation level for only SPIR-V targets. This will be accomplished through modifying `Ptr` to include the new generic argument `CoherentScope coherentScope`.
+
+We also propose the new generic argument `Access access` to specify if a pointer is read-only or not.
 
 ```c#
 public enum CoherentScope
@@ -63,7 +67,13 @@ public enum CoherentScope
     //...
 }
 
-__generic<T, uint64_t addrSpace=AddressSpace::UserPointer, CoherentScope coherentScope=CoherentScope::NotCoherent>
+public enum Access
+{
+    ReadWrite = 0, 
+    Read = 1
+}
+
+__generic<T, uint64_t addrSpace=AddressSpace::UserPointer, Access access = Access::ReadWrite, CoherentScope coherentScope=CoherentScope::NotCoherent>
 struct Ptr
 {
     ...
@@ -72,11 +82,14 @@ struct Ptr
 
 If `coherentScope` is not `CoherentScope::NotCoherent`, all accesses to memory through this pointer will be considered coherent to the specified memory scope (example: `CoherentScope::Device` is coherent to the memory scope of `Device`).
 
-We will also provide a type alias for user-convenience.
+If `access` is `Access::ReadWrite` a pointer can read/write to the data pointed to.
+If `access` is `Access::Read`, a pointer will only be allowed to read from the data pointed to.
+
+We will also provide a a type alias for user-convenience.
 
 ```c#
-__generic<T>
-typealias CoherentPtr = Ptr<T, AddressSpace::UserPointer, CoherentScope::CrossDevice>;
+__generic<T, Access access = Access::ReadWrite>
+typealias CoherentPtr = Ptr<T, AddressSpace::UserPointer, access, CoherentScope::Device>;
 ```
 
 ### Support For Coherent Buffers and Textures
@@ -104,19 +117,24 @@ Any access through a coherent-pointer to a `groupshared` object is coherent; Sin
 
 We will allow pointers with different `CoherentScope` to be explicitly castable to each other. For example, `CoherentPtr<int, CoherentScope::Device>` will be castable to `CoherentPtr<int, MemoryScope.Workgroup>`.
 
+### Casting and Pointer access
+
+We will not allow casting between pointers of different `Access`.
+
 ### Banned keywords
 
 HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed.
 
 ### Order of Implementation
 
-1. Support for workgroup memory pointers.  
-2. Frontend for coherent pointers  
-3. Support for coherent buffers and textures  
-4. Support for coherent workgroup memory  
-5. Support for coherent cooperative matrix & cooperative vector  
-6. Support casting between pointers with different `CoherentScope`  
-7. disallow `globallycoherent T*` and `coherent T*`
+* Frontend for coherent pointers & pointer access
+* Logic for pointer access
+* Support for coherent buffers and textures
+* Support casting between pointers with different `CoherentScope`
+* Support for workgroup memory pointers.
+* Support for coherent workgroup memory  
+* Support for coherent cooperative matrix & cooperative vector  
+* disallow `globallycoherent T*` and `coherent T*`
 
 ## Future Work
 

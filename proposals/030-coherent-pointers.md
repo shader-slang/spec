@@ -63,7 +63,7 @@ public enum CoherentScope
     Subgroup = MemoryScope::Subgroup,
     Invocation = MemoryScope::Invocation,
     QueueFamily = MemoryScope::QueueFamily,
-    ShaderCallKHR = MemoryScope::ShaderCallKHR,
+    ShaderCall = MemoryScope::ShaderCallKHR,
     //...
 }
 

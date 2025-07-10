@@ -1,4 +1,4 @@
-# SP\#030: Coherent Pointers & Pointer Access
+# SP\#031: Coherent Pointers & Pointer Access
 
 ## Status
 

@@ -113,13 +113,9 @@ Any access through a coherent-pointer to a `groupshared` object is coherent; Sin
 
 `CoopVec` and `CoopMat` load data into their respective data-structures from other objects using `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store`. Due to this design, we will add coherent operations to `CoopVec` and `CoopMat` by modifying `CoopVec::Load`, `CoopVec::Store`, `CoopMat::Load`, and `CoopMat::Store` to complete coherent operations if given a `CoherentPtr` as a parameter. Syntax required to use the method(s) will not change.
 
-### Support Casting Pointers With Different `CoherentScope`
+### Casting Pointers
 
-We will allow pointers with different `CoherentScope` to be explicitly castable to each other. For example, `CoherentPtr<int, CoherentScope::Device>` will be castable to `CoherentPtr<int, MemoryScope.Workgroup>`.
-
-### Casting and Pointer access
-
-We will not allow casting between pointers of different `Access`.
+All pointers can be casted to each other. Casting must be explicit.
 
 ### Banned keywords
 
@@ -129,12 +125,12 @@ HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed
 
 * Frontend for coherent pointers & pointer access
 * Logic for pointer access
+* Support casting explicitly between pointers
+* Disallow `globallycoherent T*` and `coherent T*`
 * Support for coherent buffers and textures
-* Support casting between pointers with different `CoherentScope`
 * Support for workgroup memory pointers.
 * Support for coherent workgroup memory  
 * Support for coherent cooperative matrix & cooperative vector  
-* disallow `globallycoherent T*` and `coherent T*`
 
 ## Future Work
 

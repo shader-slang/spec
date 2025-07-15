@@ -2,9 +2,9 @@
 
 ## Status
 
-Status: Design Review  
-Implementation:  
-Author: Ariel Glasroth  
+Status: Design Review
+Implementation:
+Author: Ariel Glasroth
 Reviewer:
 
 ## Background
@@ -17,14 +17,14 @@ Additionally, pointers have a topic called 'access', the ability to mark a point
 
 ### Prior Implementations Of Coherence
 
-* HLSL – `globallycoherent` keyword can be added to declarations (`globallycoherent RWStructuredBuffer<T> buffer`). This keyword ensures coherence with all operations to a tagged object. Memory scope of coherence is device memory. `groupshared` objects are likely coherent, specification does not specify.  
-* GLSL – `coherent` keyword can be added to declarations (`coherent uniform image2D img`). This keyword ensures coherence with all operations to a tagged object. Memory scope of coherence is unspecified. Objects tagged with `shared` are [implicitly](https://www.khronos.org/opengl/wiki/Compute_Shader) `coherent`.  
-* Metal – `memory_coherence::memory_coherence_device` is a generic argument to buffers. This argument ensures coherence with all operations to a tagged object. Memory scope of coherence is device memory.  
+* HLSL – `globallycoherent` keyword can be added to declarations (`globallycoherent RWStructuredBuffer<T> buffer`). This keyword ensures coherence with all operations to a tagged object. Memory scope of coherence is device memory. `groupshared` objects are likely coherent, specification does not specify.
+* GLSL – `coherent` keyword can be added to declarations (`coherent uniform image2D img`). This keyword ensures coherence with all operations to a tagged object. Memory scope of coherence is unspecified. Objects tagged with `shared` are [implicitly](https://www.khronos.org/opengl/wiki/Compute_Shader) `coherent`.
+* Metal – `memory_coherence::memory_coherence_device` is a generic argument to buffers. This argument ensures coherence with all operations to a tagged object. Memory scope of coherence is device memory.
 * WGSL – [All operations](https://www.w3.org/TR/WGSL/#private-vs-non-private) are coherent.
 
 ### SPIR-V Support For Coherence
 
-Originally, SPIR-V supported coherent objects through the `coherent` type `Decoration`. Modern SPIR-V (`VulkanMemoryModel`) exposes this functionality differently to control coherence as a **per operation** functionality. Coherence is now done per operation through adding the memory operands `MakePointerAvailable`, `MakePointerVisible`, `MakeTexelAvailable`, and `MakeTexelVisible` to load and store operations. Users must additionally specify the memory scope to which an operation is coherent.  
+Originally, SPIR-V supported coherent objects through the `coherent` type `Decoration`. Modern SPIR-V (`VulkanMemoryModel`) exposes this functionality differently to control coherence as a **per operation** functionality. Coherence is now done per operation through adding the memory operands `MakePointerAvailable`, `MakePointerVisible`, `MakeTexelAvailable`, and `MakeTexelVisible` to load and store operations. Users must additionally specify the memory scope to which an operation is coherent.
 	  
 `MakePointerAvailable` is for memory stores of non textures, `OpStore`, `OpCooperativeMatrixStoreKHR` and `OpCooperativeVectorStoreNV`.. 
 
@@ -40,10 +40,10 @@ Additionally,  `MakePointer{Visible,Available}` support usage in `OpCopyMemory` 
 
 The simple use-case of this feature can be modeled with the following example: (1) We have **thread1** and **thread2** both reading/writing to the same `RWStructuredBuffer`. (2) **thread1** `OpStore`’s non-coherently into the buffer. (3) if **thread2** uses an `OpLoad` on the texture they may not see the change **thread1** made for 2 reasons:
 
-1) **thread1** does not promise its writes are visible to other threads. Cached writes may not immediately flush to device memory.  
+1) **thread1** does not promise its writes are visible to other threads. Cached writes may not immediately flush to device memory.
 2) **thread2** may load from a cache, not device memory. This means we will not see the new value because the new value was written to device memory, not the intermediate cache.
 
-If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad`  to the memory scope `QueueFamily` we will solve this problem since we are flushing changes to a memory scope shared by the two threads. This additionally may be faster than the alternative of flushing to `Device` memory since a `QueueFamily` is a tighter scope than `Device`.
+If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad` to the memory scope `QueueFamily` we will solve this problem since we are flushing changes to a memory scope shared by the two threads. This additionally may be faster than the alternative of flushing to `Device` memory since a `QueueFamily` is a tighter scope than `Device`.
 
 ### Prior Implementations Of Access
 
@@ -233,8 +233,8 @@ HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed
 * Disallowed `const T*` and `T* const`
 * Support for coherent buffers and textures
 * Support for workgroup memory pointers.
-* Support for coherent workgroup memory  
-* Support for coherent cooperative matrix & cooperative vector  
+* Support for coherent workgroup memory
+* Support for coherent cooperative matrix & cooperative vector
 
 ## Alternative Designs Considered
 

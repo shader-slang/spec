@@ -222,8 +222,6 @@ The following keyword use is disallowed:
 * `const T*` and `T* const`
 * `Ptr<const T>`, `Ptr<coherent T>`, and `Ptr<globallycoherent T>`
 
-
-
 ### Explicitly allowed keywords
 
 `const Ptr<int>` is permitted. This means that a `Ptr` is constant, the address the pointer is pointing at will not change.

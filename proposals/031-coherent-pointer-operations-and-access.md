@@ -134,7 +134,7 @@ If a pointer is `Access::Read`, a user program may only read from the given poin
 
 ### Frontend For Coherent Pointer Operations
 
-We propose to implement coherence on a per-operation level for SPIR-V targets. This will be accomplished through new intrinsic methods to handle coherent load/store on a per-operation basis.
+We propose to implement coherence on a per-operation level for SPIR-V targets. This will be accomplished through new intrinsic methods to handle coherent load/store.
 
 ```c#
 public enum MemoryScope : int32_t
@@ -150,8 +150,8 @@ public enum MemoryScope : int32_t
 }
 
 // `ptr` is the value to be loaded.
-// The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
 // The `int alignment` parameter controls the alignment to load from a pointer with.
+// The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
 [ForceInline]
 [require(SPV_KHR_vulkan_memory_model)]
 __generic<T, Access access, AddressSpace addrSpace> 
@@ -179,8 +179,8 @@ CoopMat<T, S, M, N, R> coopMatLoadCoherent(Ptr<T, access, addrSpace> ptr, uint e
 
 // `ptr` is the dst for the store.
 // `val` is the value to store into `ptr`.
-// The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
 // The `int alignment` parameter controls the alignment to load from a pointer with.
+// The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
 [ForceInline]
 [require(SPV_KHR_vulkan_memory_model)]
 __generic<T, AddressSpace addrSpace> 

@@ -214,11 +214,15 @@ Any access through a coherent-pointer to a `groupshared` object is coherent; Sin
 
 All pointers can be casted to each other. Casting must be explicit.
 
-### Banned keywords
+### Banned keyword usage
 
-HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed.
+The following keyword use is disallowed:
+* `globallycoherent T*`
+* `coherent T*`.
+* `const T*` and `T* const`
+* `Ptr<const T>`, `Ptr<coherent T>`, and `Ptr<globallycoherent T>`
 
-`const T*` and `T* const` will be disallowed.
+
 
 ### Explicitly allowed keywords
 

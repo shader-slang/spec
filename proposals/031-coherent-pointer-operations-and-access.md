@@ -48,7 +48,9 @@ If we specify `MakePointerAvailable/MakePointerVisible` with `OpStore`/`OpLoad` 
 ### Prior Implementations Of Access
 
 * C/C++ – `const int* ptr` or `int const*` both mean the underlying data pointed to is constant
-    * This will be equivlent to `Access::Read`
+    * This will be equivalent to `Access::Read`
+* C/C++ – `int* const` means the value of the pointer is constant
+    * This will be equivalent to `const Ptr<T, ...> ptr`
 
 ### Compiler Support For Coherence
 
@@ -173,8 +175,8 @@ __generic<
     let N : int,
     let R : CoopMatMatrixUse,
     let matrixLayout : CoopMatMatrixLayout,
-    Access access,
-    AddressSpace addrSpace>
+    let access : Access,
+    let addrSpace : AddressSpace>
 CoopMat<T, S, M, N, R> coopMatLoadCoherent(Ptr<T, access, addrSpace> ptr, uint element, uint stride, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
 
 // `ptr` is the dst for the store.
@@ -202,13 +204,13 @@ __generic<
     let N : int,
     let R : CoopMatMatrixUse,
     let matrixLayout : CoopMatMatrixLayout,
-    AddressSpace addrSpace>
+    let addrSpace : AddressSpace>
 void coopMatLoadCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, CoopMat<T, S, M, N, R> val, uint element, uint stride, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
 ```
 
 ### Support For Coherent Workgroup Memory
 
-Any access through a coherent-pointer to a `groupshared` object is coherent; Since Slang does not currently support pointers to `groupshared` memory, this proposal will extend the existing `AddressSpace::GroupShared` implementation for pointers as needed.
+Any access through a coherent-pointer to a `groupshared` object is coherent; since Slang does not currently support pointers to `groupshared` memory, this proposal will extend the existing `AddressSpace::GroupShared` implementation for pointers as needed.
 
 ### Casting Pointers
 
@@ -218,7 +220,7 @@ All pointers can be casted to each other. Casting must be explicit.
 
 HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed.
 
-`const T*` and `T* const` will be disallowed.
+`const T*`, `T* const`, and `T const*` will be disallowed.
 
 ### Explicitly allowed keywords
 
@@ -230,7 +232,7 @@ HLSL style `globallycoherent T*` and GLSL style `coherent T*` will be disallowed
 * Logic for pointer access
 * Support casting explicitly between pointers
 * Disallow `globallycoherent T*` and `coherent T*`
-* Disallowed `const T*` and `T* const`
+* Disallow `const T*`, `T const*`, and `T* const`
 * Support for coherent buffers and textures
 * Support for workgroup memory pointers.
 * Support for coherent workgroup memory

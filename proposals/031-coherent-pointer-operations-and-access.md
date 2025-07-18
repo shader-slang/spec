@@ -151,6 +151,8 @@ public enum MemoryScope : int32_t
     //...
 }
 
+//// Ptr<>
+
 // `ptr` is the value to be loaded.
 // The `int alignment` parameter controls the alignment to load from a pointer with.
 // The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
@@ -159,11 +161,36 @@ public enum MemoryScope : int32_t
 __generic<T, Access access, AddressSpace addrSpace> 
 T loadCoherent(Ptr<T, access, addrSpace> ptr, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
 
+// `ptr` is the dst for the store.
+// `val` is the value to store into `ptr`.
+// The `int alignment` parameter controls the alignment to load from a pointer with.
+// The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
+[ForceInline]
+[require(SPV_KHR_vulkan_memory_model)]
+__generic<T, AddressSpace addrSpace> 
+void storeCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, T val, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
+
+//// CoopVec<>
+
 // Return a `CoopVec`, loaded from `ptr`.
 [ForceInline]
 [require(SPV_KHR_vulkan_memory_model, cooperative_vector)]
 __generic<T : __BuiltinArithmeticType, let N : int, Access access, AddressSpace addrSpace>
 CoopVec<T, N> coopVecLoadCoherent(Ptr<T, access, addrSpace> ptr, int offset, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
+
+// As a method to `CoopVec`, keep consistent with how `CoopVec` is defined
+struct CoopVec<T, ...>
+{
+...
+    // Store into `ptr` given `val`.
+    [ForceInline]
+    [require(SPV_KHR_vulkan_memory_model, cooperative_vector)]
+    __generic<AddressSpace addrSpace>
+    void storeCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, int offset, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
+...
+}
+
+//// CoopMat<>
 
 // Return a `CoopMat`, loaded from `ptr`.
 [ForceInline]
@@ -179,33 +206,17 @@ __generic<
     let addrSpace : AddressSpace>
 CoopMat<T, S, M, N, R> coopMatLoadCoherent(Ptr<T, access, addrSpace> ptr, uint element, uint stride, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
 
-// `ptr` is the dst for the store.
-// `val` is the value to store into `ptr`.
-// The `int alignment` parameter controls the alignment to load from a pointer with.
-// The `MemoryScope scope` parameter controls the memory scope that an operation is coherent to.
-[ForceInline]
-[require(SPV_KHR_vulkan_memory_model)]
-__generic<T, AddressSpace addrSpace> 
-void storeCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, T val, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
-
-// Store into `ptr` given `val`.
-[ForceInline]
-[require(SPV_KHR_vulkan_memory_model, cooperative_vector)]
-__generic<T : __BuiltinArithmeticType, let N : int, AddressSpace addrSpace>
-void coopVecStoreCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, CoopVec<T, N> val, int offset, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
-
-// Store into `ptr` given `val`.
-[ForceInline]
-[require(SPV_KHR_vulkan_memory_model, cooperative_matrix)]
-__generic<
-    T : __BuiltinArithmeticType,
-    let S : MemoryScope,
-    let M : int,
-    let N : int,
-    let R : CoopMatMatrixUse,
-    let matrixLayout : CoopMatMatrixLayout,
-    let addrSpace : AddressSpace>
-void coopMatLoadCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, CoopMat<T, S, M, N, R> val, uint element, uint stride, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
+// As a method to `CoopMat`, keep consistent with how `CoopMat` is defined
+struct CoopMat<T, ...>
+{
+...
+    // Store into `ptr` given `val`.
+    [ForceInline]
+    [require(SPV_KHR_vulkan_memory_model, cooperative_matrix)]
+    __generic<AddressSpace addrSpace>
+    void storeCoherent(Ptr<T, Access::ReadWrite, addrSpace> ptr, uint element, uint stride, int alignment, constexpr MemoryScope scope = MemoryScope::Device);
+...
+}
 ```
 
 ### Support For Coherent Workgroup Memory
@@ -239,6 +250,10 @@ The following keyword use is disallowed:
 * Support for workgroup memory pointers.
 * Support for coherent workgroup memory
 * Support for coherent cooperative matrix & cooperative vector
+
+### Potential Next Steps
+
+`coopVecLoadCoherent` and `coopMatLoadCoherent` should have a member-function version inside `CoopVec`/`CoopMat` (`loadCoherent`).
 
 ## Alternative Designs Considered
 

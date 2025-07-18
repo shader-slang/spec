@@ -30,9 +30,9 @@ Originally, SPIR-V supported coherent objects through the `coherent` type `Decor
 
 `MakePointerVisible` is for memory loads of non textures, `OpLoad`, `OpCooperativeMatrixLoadKHR` and `OpCooperativeVectorLoadNV`.
 
- `MakeTexelAvailableKHR` is for memory stores of textures, `OpImageWrite`, `OpImageSparseLoad`.
+`MakeTexelAvailableKHR` is for memory stores of textures, `OpImageWrite`, `OpImageSparseLoad`.
 
- `MakeTexelVisibleKHR` is for memory loads of textures, `OpImageRead`, `OpImageSparseRead`.
+`MakeTexelVisibleKHR` is for memory loads of textures, `OpImageRead`, `OpImageSparseRead`.
 
 Additionally,  `MakePointer{Visible,Available}` support usage in `OpCopyMemory` and `OpCopyMemorySized`.
 

@@ -232,7 +232,7 @@ All pointers can be casted to each other. Casting must be explicit.
 The following keyword use is disallowed:
 * `globallycoherent T*`
 * `coherent T*`.
-* `const T*`, `T const*`, and `T* const`
+* `const T*`, `T const*`
 * `Ptr<const T>`, `Ptr<coherent T>`, and `Ptr<globallycoherent T>`
 
 ### Explicitly allowed keywords
@@ -245,7 +245,7 @@ The following keyword use is disallowed:
 * Logic for pointer access
 * Support casting explicitly between pointers
 * Disallow `globallycoherent T*` and `coherent T*`
-* Disallow `const T*`, `T const*`, and `T* const`
+* Disallow `const T*`, `T const*`
 * Support for coherent buffers and textures
 * Support for workgroup memory pointers.
 * Support for coherent workgroup memory

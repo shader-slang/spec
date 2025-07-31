@@ -110,6 +110,8 @@ The features we propose to deprecate are:
 
 * type `SlangDiagnosticCallback`
 
+* method `slang::IGlobalSession::addBuiltins`
+
 * method `slang::IGlobalSession::setDownstreamCompilerPrelude`
 
 * method `slang::IGlobalSession::getDownstreamCompilerPrelude`

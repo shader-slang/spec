@@ -1,11 +1,11 @@
-# SP\#031: Coherent Pointer Operations & Pointer Access
+# SP#031: Coherent Pointer Operations & Pointer Access
 
 ## Status
 
 Status: Design Review
-Implementation:
+Implementation: [PR 7848](https://github.com/shader-slang/slang/pull/7848)
 Author: Ariel Glasroth
-Reviewer:
+Reviewer: Yong He, Theresa Foley, Kai Zhang
 
 ## Background
 

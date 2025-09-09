@@ -11,7 +11,7 @@ entry point parameters:
 - It proposes to make `uniform` universally mean "push constants" at entry points across all backends 
   and pipeline stages with Slang version 2026. Where push constants are not first-class, Slang maps 
   them to the closest equivalent (e.g., D3D root constants or a small constant buffer; OptiX launch parameters).
-- It suggests introducing new types such as `PushConstant<T>`, `ShaderRecord<T>`, and `HitAttribute<T>`, 
+- It suggests introducing new types such as `Payload<T>`, `ShaderRecord<T>`, and `HitAttribute<T>`, 
   which can be used to unify compile-time mappings across APIs like Direct3D and Vulkan. These new types act 
   as clearer, more consistent markers of data binding points, compared to the over-loaded semantics
   of `uniform` parameters today.

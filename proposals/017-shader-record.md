@@ -1,29 +1,40 @@
-SP #017: Disambiguate `uniform` via `[[push_constant]]` and `[[shader_record]]` 
-=======================================================================
+SP #017: Disambiguate `uniform` via `Payload<T>`, `HitAttribute<T>`, and `ShaderRecord<T>`
+============================================================================================
 
 This document proposes a first step toward resolving ambiguities and bugs that
 arise from the current usage of `uniform` (and to a lesser extent, `varying`)
 in Slang, particularly in ray tracing pipelines.
 
-<!-- It suggests introducing new types such as `PushConstant<T>` and
-`ShaderRecord<T>`, which can be used to unify compile-time mappings across APIs
-like Direct3D and Vulkan. These new types act as clearer, more consistent
-markers of data binding points, compared to the over-loaded semantics
-of `uniform` parameters today. -->
+This document proposes two concrete shifts to remove ambiguity around `uniform` and ray-tracing
+entry point parameters:
 
-It suggests promoting Vulkan's `[[push_constant]] uniform T` and 
+- It proposes to make `uniform` universally mean "push constants" at entry points across all backends 
+  and pipeline stages with Slang version 2026. Where push constants are not first-class, Slang maps 
+  them to the closest equivalent (e.g., D3D root constants or a small constant buffer; OptiX launch parameters).
+- It suggests introducing new types such as `PushConstant<T>`, `ShaderRecord<T>`, and `HitAttribute<T>`, 
+  which can be used to unify compile-time mappings across APIs like Direct3D and Vulkan. These new types act 
+  as clearer, more consistent markers of data binding points, compared to the over-loaded semantics
+  of `uniform` parameters today.
+
+Together, these changes provide clear, explicit markers of data binding points without overloading
+`uniform`, `in`, `out`, and `inout` semantics on ray tracing entry points.
+
+<!-- Previously, we were considering [[annotations]], but with some discussion, Type<T> would enable future
+language improvements like pipeline interfaces. -->
+
+<!-- It suggests promoting Vulkan's `[[push_constant]] uniform T` and 
 `[[shader_record]] uniform T` global annotations to more universal `[[push_constant]] T` and 
 `[[shader_record]] T` entrypoint parameter annotations. These annotations can then be used 
 to unify compile-time mappings across APIs like Direct3D, Vulkan, OptiX, etc. These 
 new annotations act as clearer, more consistent markers of data binding points, 
-compared to the over-loaded semantics of `uniform` parameters today.
+compared to the over-loaded semantics of `uniform` parameters today. -->
 
-Additionally, this document proposes annotations to more clearly distinguish between 
+<!-- Additionally, this document proposes annotations to more clearly distinguish between 
 payload and hit attribute entry point parameters, extending the use of `[[payload]] T` and 
 by introducing `[[hit_attribute]] T` respectively. This would allow users to more explicitly 
 mark payload parameters as being constant, eg `void anyhit([[payload]] in MyConstPayload p)`, 
 where current usage, `void anyhit(in MyConstPayload p)`, would otherwise incorrectly map 
-`p` to hit attribute, and `void anyhit(MyConstPayload p)` would map `p` to the shader record. 
+`p` to hit attribute, and `void anyhit(MyConstPayload p)` would map `p` to the shader record.  -->
 
 Status
 ------
@@ -140,13 +151,37 @@ in complexity.
   Global attributed uniform buffers prevent more localized and reduced usage of 
   per-dispatch constant values. 
 
-The following attempts to disambiguate the two overloaded uses of `uniform` that 
-Slang users face today.
+The following attempts to disambiguate the overloaded uses of `uniform`, `in`, `out`, and 
+`inout` that Slang users face today.
 
 Proposed Approach
 -----------------
 
-<!-- 1. **Introduce `PushConstant<T>`**   -->
+1. Define `uniform` as push constants everywhere
+   - At entry points, `uniform` parameters always map to push-constant-like storage.
+     Where the target lacks native push constants, Slang lowers to the closest equivalent
+     (e.g., a small `ConstantBuffer<T>` with root constants on D3D, or OptiX launch parameters).
+   - This removes stage- and backend-dependent ambiguity. Developers keep using `uniform` for
+     per-dispatch/draw constants with identical semantics across ray tracing, compute, and graphics.
+
+2. Introduce `ShaderRecord<T>` for per-shader-record data
+   - `ShaderRecord<T>` is a first-class generic type valid only on ray-tracing entry points.
+   - Entry point parameters typed as `ShaderRecord<T>` designate data that lives in the
+     per-shader record (Vulkan/OptiX SBT; D3D local root signature). Slang reflects this intent so
+     applications can bind appropriately on each backend.
+   - Parameters of type `ShaderRecord<T>` are input-only. Using `out`/`inout` is illegal.
+
+3. Introduce `HitAttribute<T>` for hit attributes
+   - `HitAttribute<T>` is a first-class generic type valid only on ray-tracing entry points that
+     maps to hit-attribute registers provided by built-in or user geometry intersectors.
+   - Parameters of type `HitAttribute<T>` are input-only. Using `out`/`inout` is illegal.
+
+4. Introduce `Payload<T>` for ray and callable payloads
+   - `Payload<T>` is a first-class generic type valid only on callable and ray-tracing entry points 
+     that maps to user-controlled payload registers.
+   - `in`, `out`, and `inout` are all okay and legal on `Payload<T>` parameters. The default is `inout`.
+
+<!--
 1. **Extend the use of `[[push_constant]] T` to entry point parameters**  
    We would extend the use of `[[push_constant]]` to become semantically equivalent to:
    ```
@@ -182,7 +217,7 @@ Proposed Approach
    behavior across targets. The annotation being universal would then signal that behavior is well defined across 
    all possible backends, rather than specifically to Vulkan.
 
-<!-- 2. **Introduce `ShaderRecord<T>`** -->
+ 2. **Introduce `ShaderRecord<T>`**
 2. **Extend the use of `[[shader_record]] T`**
     Likewise, we would extend the use of `[[shader_record]]` to become systematically equivalent to:
     ```
@@ -249,20 +284,29 @@ Proposed Approach
     `inout` being the default. 
     
     This would resolve the ambiguity regarding `in` and implicit `uniform` incorrectly mapping to hit attributes
-    and shader records. 
+    and shader records.  -->
 
 
 Detailed Explanation
 --------------------
-1. **Language-Level Model**
+<!-- 1. **Language-Level Model**
     In a future ideal version of Slang, we might introduce explicit syntax for 
     specifying data "rates," e.g. `[[thread_group]]`, `[[wave]]`, `[[lane]]`, or more. 
     This is consistent with advanced GPU programming models that differentiate per-thread, 
     per-wavefront, per-group, per-dispatch, etc. However, this proposal focuses on 
     disambiguating push constant uniforms from shader record uniforms, as these are the most 
-    pressing distinction.
+    pressing distinction. -->
 
-2. **Entry-Point Parameter Rules**
+1. **Entry-Point Parameter Rules**
+    * Parameters declared `uniform` at entry points always map to push-constant-like storage
+      (push constants, root constants, or a small constant buffer) regardless of stage/backend.
+    * Parameters typed as `ShaderRecord<T>` map to per-shader-record data (Vulkan/OptiX SBT;
+      D3D local root signature).
+    * Parameters typed as `Payload<T>` map to payload registers. `in`, `out`, and `inout` apply,
+      with `inout` as the default.
+    * Parameters typed as `HitAttribute<T>` map to hit-attribute registers and are input-only.
+
+<!-- 2. **Entry-Point Parameter Rules**
     * If an entry point parameter is annotated with `[[push_constant]]`, Slang recognizes it as 
     data bound as push constants (Vulkan), launch parameters (OptiX), or root constants (D3D).
     Any additional `uniform` attribute following `[[push_constant]]` is optional, as `uniform` is 
@@ -275,11 +319,9 @@ Detailed Explanation
     above explicit types, the compiler may insert an "implicit" `[[push_constant]]` to optimize
     performance based on the target language. 
     * Default functionality of `uniform` will be to map to `[[push_constant]]` for all entry point 
-    types. 
+    types.  -->
 
-3. **IR and Reflection Impact**
-    * For Vulkan, the compiler can remap annotations to the necessary `[[vk::push_constant]]` or 
-    `[[vk::shader_record]]` attributes under the hood.
+2. **IR and Reflection Impact**
     * For D3D, the compiler would still produce a `ConstantBuffer<T>` or resource 
     binding in reflection metadata, but with an additional 
     `slang::TypeReflection::Kind::PushConstant` or `slang::TypeReflection::Kind::ShaderRecord` hint. 
@@ -287,8 +329,21 @@ Detailed Explanation
     signatures. 
     <!--- I'm not very knowledgeable of Slang's reflection capabilities. This probably 
     needs a second look... --->
-    
+
 4. **Migration Strategy**
+    * Existing Slang code using `[[vk::push_constant]] ConstantBuffer<T>` remains valid but is
+      encouraged to migrate to `uniform` entry point parameters for clarity and portability.
+    * Existing code using `[[vk::shader_record]] ConstantBuffer<T>` remains valid; `ShaderRecord<T>`
+      entry point parameters are the recommended form. 
+    * If either `[[vk::shader_record]]` or `[[vk::push_constant]]` or `[[shader_record]]` or `[[push_constant]]`
+      appear on entrypoint parameters, these will become "syntax sugar" which is transformed by slang into
+      the appropriate wrapper type. `[[hit_attribute]]` might be considered for addition to allow for consistency.
+    * Legacy usage of bare (non-`uniform`) parameters in ray tracing entry points should result in a warning, telling
+      the user to explicitly mark the parameter with one of: `uniform`, `ShaderRecord<T>`, `Payload<T>`, or `HitAttribute<T>`.
+    * Default behavior of `uniform` will occur with Slang version 2026. Otherwise, a compiler flag will be added to 
+      enable switching default uniform behavior for RT entrypoints.
+
+<!-- 4. **Migration Strategy**
     * Existing Slang code using `[[vk::push_constant]] ConstantBuffer<T>` or 
     `[[vk::shader_record]] ConstantBuffer<T>` remains valid; it just becomes a more 
     verbose variant of the promoted annotations.
@@ -297,7 +352,7 @@ Detailed Explanation
     be respected.)
     * Legacy usage of bare uniform parameters in ray tracing entry points is rare. Still, 
     we might want to emit a warning and guidance on migration to more rate-specific annotations 
-    while the change is new.
+    while the change is new. -->
 
 5. **Example**
 Rather than this:
@@ -311,27 +366,24 @@ void myAnyHitShader(
 ) {...}
 ```
 
-We would now support the following:
+We support the following, with explicit types and unambiguous `uniform`:
 
 ```
 [shader("anyhit")]
 void myAnyHitShader(
-    [[hit_attribute]] T1 a, 
-    [[payload]] inout T2 b, 
-    [[push_constant]] T3 c, 
-    [[shader_record]] T4 d
+    HitAttribute<T1> a, 
+    Payload<T2> b, 
+    uniform T3 c, 
+    ShaderRecord<T4> d
 ) {...}
 ```
 
-* On Vulkan, constant "uniform" data is now compiled to two distinct binding regions:
-    * `T3` in the push constant region 
-    * `T4` in the shader binding table record
-* On D3D, the same code would reflect as two `ConstantBuffer<T>` regions, with 
-reflection metadata marking them as "intended for push constant" vs. "intended 
-for shader record."
-* `[[payload]]` and `[[hit_attribute]]` distinguish which registers map to `T1` and `T2`
-* Any remaining unannotated parameters would default to `[[push_constant]]`, which would match
-current behavior with other entry point types.  
+* On Vulkan, `uniform T3` maps to the push-constant region; `ShaderRecord<T4>` maps to the SBT.
+* On D3D, reflection shows `T3` as push-constant-like and `T4` as shader-record-like data so apps
+  can bind via root signatures accordingly.
+* `Payload<T2>` and `HitAttribute<T1>` explicitly select payload and hit-attribute registers.
+* Any remaining unannotated parameters should be made explicit; `uniform` is preferred for
+  per-dispatch constants.
 
 It would also now be possible to specify different push constant structures in a mixed ray tracing
 entrypoint setup. 
@@ -364,8 +416,14 @@ Alternatives Considered
     Still, extending `[[push_constant]]` might be a more natural approach, seeing as we already have 
     this annotation. 
 
-By extending `[[push_constant]]` and `[[shader_record]]` annotations, we offer a clearer 
-language-level model that reduces the ambiguity around uniform and bridges the gap 
-across GPU backends and pipeline stages. This proposal is a stepping stone toward a 
-more comprehensive "rates" system in Slang, while providing immediate, practical 
-improvements to developers.
+4. `[[shader_record]]`, `[[payload]]`, `[[push_constant]]`, and ``[[hit_attribute]]`
+    * Early versions of this language proposal suggested to leverage Slang's attribute annotations
+    to disambiguate `uniform`, `in`, `out`, etc on RT entrypoints. After some internal discussion,
+    we decided that a `WrapperType<T>` would be a better fit, as this would open the door for 
+    pipeline-scale use of Slang's interfaces. For example, intersection entrypoints conforming to 
+    an LSS interface might be required to accept a standardized payload structure type. 
+
+By redefining `uniform` as push constants and introducing `Payload<T>`, `HitAttribute<T>`, and
+`ShaderRecord<T>`, we offer a clearer language model that removes ambiguity and
+bridges the gap across GPU backends and pipeline stages. This is a stepping stone toward a more
+comprehensive "rates" system in Slang, while providing immediate, practical improvements.

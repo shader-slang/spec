@@ -234,7 +234,7 @@ A Slang runtime must support <dfn>loading</dfn> [=binaries=] into a [=runtime se
 It is valid to load a binary containing fragile symbols from module |M| even if other binaries containing one or more of those symbols has already been loaded, and even if the definitions of those fragile symbols differ between the binaries.
 References to fragile symbols may resolve at runtime to any definition of those symbols that was compiled into object code that made its way into the binaries that are loaded.
 
-If Slang code is stored in a [=binary=] for a [=host=], then that code may be loaded as part of initialization of a [=process=] for a [=host=] [=executable].
+If Slang code is stored in a [=binary=] for a [=host=], then that code may be loaded as part of initialization of a [=process=] for a [=host=] [=executable=].
 
 If a [=module=] of Slang code is loaded programmatically, a Slang runtime must return a [=mirror=] reflecting that module.
 

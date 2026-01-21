@@ -80,17 +80,25 @@ A new generic parameter should be added to the `Ptr` type, indicating the
 data layout used when accessing data through the pointer. The type parameter
 should satisfy `IBufferDataLayout` and default to `DefaultDataLayout`.
 
+A pointer type explicity using the Std430 data layout would then look like
+`Ptr<Foo, Access.ReadWrite, AddressSpace.Device, Std430DataLayout>`.
+
 Detailed Explanation
 --------------------
 
 Instead of assuming the native layout for pointers, backends should determine
-the layout from the pointer type. `DefaultDataLayout` should retain current
-behavior in order to make this change non-breaking.
+the layout from the pointer type. If the layout is `DefaultDataLayout`, the
+backends should retain their current behavior in order to make this change
+non-breaking.
 
 Support should be added on all targets that support both pointers and data
 layouts; that is, SPIR-V and LLVM. Support is excluded from C++ and CUDA targets
 because they do not support non-default data layouts. HLSL, GLSL, MSL and WGSL
 targets are excluded as they do not support pointers.
+
+The LLVM emitter currently attempts to deduce the layout of a pointer by
+tracing where it came from. That logic should be removed and replaced by just
+using the layout parameter of the pointer type.
 
 Alternatives Considered
 -----------------------
@@ -107,24 +115,23 @@ struct Foo
 }
 ```
 
-Then, `Ptr<Foo>` would always use `ScalarDataLayout`. While this approach is
-attractive for the mental model where a type fully defines the memory layout
-and matches what most other languages opt for, it is not in line with existing
-language features. In particular, `RWStructuredBuffer<T, IBufferDataLayout>`
-allows defining the data layout used for `T` externally; both
-`RWStructuredBuffer<Foo, Std430DataLayout>` and
-`RWStructuredBuffer<Foo, ScalarDataLayout>` are legal.
+Then, `Ptr<Foo>` would always use `ScalarDataLayout`. While this approach fits
+the mental model where a type fully defines its memory layout and matches what
+most other languages opt for, it is not in line with existing language features.
+`RWStructuredBuffer<T, IBufferDataLayout>` already allows defining the data
+layout used for `T` externally; both `RWStructuredBuffer<Foo, Std430DataLayout>`
+and `RWStructuredBuffer<Foo, ScalarDataLayout>` are legal.
 
-The proposed approach is instead more in line with how buffer types define their
-data layouts. This is crucial, because one motivation for this feature is the
+The proposed approach is more in line with how buffer types define their data
+layouts. This is crucial, because one motivation for this feature is the
 lowering of buffer types to pointers on targets where such a transformation is
 possible (CPU targets).
 
-Still, it may be possible to add a `[DefaultLayout(...)]` in a separate proposal
-later on that would allow defining the layout in the type declaration similar
-to C or Rust. Such an annotation would override the meaning of
-`DefaultDataLayout`. This is deferred to a separate proposal due to the 
-complications involved with semantics that require more careful design:
+It may be possible to add a `[DefaultLayout(...)]` in a separate proposal later
+on that would allow defining the layout in the type declaration similar to C or
+Rust. Such an annotation would override the meaning of `DefaultDataLayout`.
+This is deferred to a separate proposal due to the complications involved with
+the semantics that require more careful design:
 
 ```slang
 [DefaultLayout(ScalarDataLayout)]

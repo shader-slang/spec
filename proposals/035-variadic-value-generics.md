@@ -1,4 +1,4 @@
-SP #033: Variadic Generic Value Parameters
+SP #035: Variadic Generic Value Parameters
 ==========================================
 
 This proposal extends Slang's variadic generics (SP #007) to support variadic *value* parameters in addition to variadic type parameters. A variadic value parameter declares a pack of compile-time integer (or enum) values that can be used in generic types and functions.

@@ -1,0 +1,16 @@
+version = 1
+SPDX-PackageName = "Slang Language Reference"
+SPDX-PackageSupplier = "The Khronos Group, Inc."
+SPDX-PackageDownloadLocation = "https://github.com/shader-slang/spec"
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 The Khronos Group, Inc."
+SPDX-License-Identifier = "Apache-2.0 WITH LLVM-exception"
+
+[[annotations]]
+path = ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "README.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 The Khronos Group, Inc."
+SPDX-License-Identifier = "CC-BY-4.0"

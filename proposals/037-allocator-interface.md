@@ -80,7 +80,7 @@ Introduce an `IAllocator` interface in the core module, that would define functi
 to allocate, deallocate and resize memory allocations. It provides three
 user-facing functions:
 * `Ptr<T> allocate<T>(count)` for allocating an array `T[count]` 
-* `void deallocate<T>(Ptr<T> data)` for deallocating a previous allocation
+* `void free<T>(Ptr<T> data)` for deallocating a previous allocation
 * `Ptr<T> reallocate<T>(Ptr<T> data, size_t oldCount, size_t newCount)` for resizing a previous allocation
 
 It is possible to create user-defined allocators conforming to the `IAllocator`
@@ -104,37 +104,52 @@ The following use cases were considered when designing the below `IAllocator` in
 
 Add `IAllocator` interface that defines methods for dynamic memory allocations:
 ```slang
+public enum AllocationError
+{
+    OutOfMemory
+}
+
 public interface IAllocator<AddressSpace addrSpace>
 {
-    Ptr<void, Access.ReadWrite, addrSpace> rawAllocate(size_t bytes, uint alignment);
+    Ptr<void, Access.ReadWrite, addrSpace>
+        rawAllocate(size_t bytes, uint alignment) throws AllocationError;
 
     Ptr<void, Access.ReadWrite, addrSpace> rawReallocate(
         Ptr<void, Access.ReadWrite, addrSpace> prevPtr,
         size_t prevBytes,
         size_t bytes,
         uint alignment
-    ){
-        // default impl deferring to rawAllocate & rawDeallocate
+    ) throws AllocationError {
+        // default impl deferring to rawAllocate & rawFree
     }
 
-    void rawDeallocate(Ptr<void, Access.ReadWrite, addrSpace> data)
+    void rawFree(Ptr<void, Access.ReadWrite, addrSpace> data)
     {
         // default no-op impl
     }
 
-    Ptr<T, Access.ReadWrite, addrSpace, L> allocate<T, L:IBufferDataLayout = DefaultDataLayout>(int count = 1)
+    Ptr<T, Access.ReadWrite, addrSpace, L>
+        allocate<T, L:IBufferDataLayout = DefaultDataLayout>(int count = 1) throws AllocationError
     {
         // default impl deferring to rawAllocate
     }
 
-    Ptr<T, Access.ReadWrite, addrSpace, L> reallocate<T, L:IBufferDataLayout = DefaultDataLayout>(Ptr<T, Access.ReadWrite, addrSpace, L> oldPtr, size_t oldCount, size_t newCount)
-    {
+    Ptr<T, Access.ReadWrite, addrSpace, L> reallocate<T, L:IBufferDataLayout = DefaultDataLayout>(
+        Ptr<T, Access.ReadWrite, addrSpace, L> oldPtr,
+        size_t oldCount,
+        size_t newCount
+    ) throws AllocationError {
         // default impl deferring to rawReallocate
     }
 
-    void deallocate<T, L:IBufferDataLayout = DefaultDataLayout>(Ptr<T, Access.ReadWrite, addrSpace, L> data)
+    void free<T, L:IBufferDataLayout = DefaultDataLayout>(Ptr<T, Access.ReadWrite, addrSpace, L> data)
     {
-        // default impl deferring to rawDeallocate
+        // default impl deferring to rawFree
+    }
+
+    void close()
+    {
+        // default no-op impl
     }
 }
 
@@ -148,13 +163,15 @@ allocations are expected to be made in device memory, so as a convenience, we
 can provide an `IDeviceAllocator` type alias.
 
 The only function that needs to be implemented by an allocator is
-`rawAllocate(size_t bytes, uint alignment)`. `rawDeallocate()` is optional, and
+`rawAllocate(size_t bytes, uint alignment)`. `rawFree()` is optional, and
 the default implementation should be a no-op. This is necessary for stack and
 arena allocators, where deallocation is handled in bulk instead of per-pointer.
 
 `reallocate()` can also have a default implementation. Typed allocation
 functions can be implemented with untyped allocators, by resolving the stride
 and alignment of `T`.
+
+`close()` should reset the allocator and de-allocate everything.
 
 A `StackAllocator` implementation should be added. It should define a `static`
 implementation for `rawAllocate`. `rawAllocate` should lower to `kIROp_Alloca`,
@@ -200,4 +217,3 @@ interface is useful.
 The `L:IBufferDataLayout` parameter could be removed, and `DefaultDataLayout`
 could be assumed. This is less flexible, but it is unclear if there's really a
 need to be able to allocate types in any other layout than the default.
-

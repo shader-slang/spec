@@ -187,6 +187,208 @@ When `Tail` is empty, `EvalHelper` resolves to `EvalLeaf<Head>`. When `Tail` is
 non-empty, it resolves to `EvalNode<Head, Tail>`, and that recursive case is
 well-typed because the `nonempty(Tail)` fact is available while checking it.
 
+Examples
+--------
+
+The following examples illustrate the most important intended uses of
+`__packBranch`.
+
+### Basic Type Selection and Shared Facets
+
+```slang
+interface IStaticInt
+{
+    static int get();
+}
+
+struct IntConst<let N : int> : IStaticInt
+{
+    static int get() { return N; }
+}
+
+int chooseType<let each S : int>()
+{
+    // If `S` is empty, the selected type is `IntConst<1>`.
+    // If `S` is non-empty, the selected type is `IntConst<2>`.
+    //
+    // Both branches conform to `IStaticInt`, so the PackBranch type
+    // also supports `::get()` before specialization picks a branch.
+    return __packBranch(S, IntConst<1>, IntConst<2>)::get();
+}
+
+// chooseType<>()    -> 1
+// chooseType<4>()   -> 2
+```
+
+### Branch-Local Non-Empty Assumption
+
+```slang
+interface IStaticInt
+{
+    static int get();
+}
+
+struct IntConst<let N : int> : IStaticInt
+{
+    static int get() { return N; }
+}
+
+typealias HeadOrZero<let each D : int> =
+    __packBranch(
+        D,
+        IntConst<0>,          // Used when `D` is empty.
+        IntConst<__first(D)>  // Valid here because this branch is checked
+                              // under the assumption that `D` is non-empty.
+    );
+
+// HeadOrZero<>        -> IntConst<0>
+// HeadOrZero<7, 9>    -> IntConst<7>
+```
+
+This is the essential semantic rule of the feature: the non-empty branch can use
+non-empty-only pack queries on the tested pack.
+
+### Recursive Node Chain
+
+```slang
+interface INode
+{
+    __init();
+    int sum();
+}
+
+struct EmptyNode : INode
+{
+    __init() {}
+    int sum() { return 0; }
+}
+
+struct EvalNode<let Head : int, let each Tail : int> : INode
+{
+    int headValue;
+
+    __init()
+    {
+        headValue = Head;
+    }
+
+    // If `Tail` is empty, recursion stops with `EmptyNode`.
+    // Otherwise we recurse on the first tail element and the trimmed tail.
+    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimHead(Tail)>) rest = {};
+
+    int sum()
+    {
+        return headValue + rest.sum();
+    }
+}
+
+// EvalNode<4>         -> 4 + 0
+// EvalNode<4, 8, 16>  -> 4 + 8 + 16 + 0
+```
+
+This is a direct example of structurally decreasing recursion over a pack. Each
+non-empty step consumes one element from `Tail`, so specialization makes
+progress toward the empty branch.
+
+### Recursive Value Aggregation
+
+```slang
+interface IEval
+{
+    static const int value;
+}
+
+struct Empty : IEval
+{
+    static const int value = 0;
+}
+
+struct SumNode<let Head : int, let each Tail : int> : IEval
+{
+    typealias Next = __packBranch(
+        Tail,
+        Empty,                                  // Base case: no more values to add.
+        SumNode<__first(Tail), __trimHead(Tail)> // Recursive case: add the head
+                                                 // and continue with the tail.
+    );
+
+    static const int value = Head + Next.value;
+}
+
+typealias Sum<let each vals : int> =
+    __packBranch(
+        vals,
+        Empty,                                   // Sum<> = 0
+        SumNode<__first(vals), __trimHead(vals)> // Sum<1,2,3,4> = 1 + Sum<2,3,4>
+    );
+
+static const int sum = Sum<1, 2, 3, 4>.value; // folds to 10
+```
+
+This example shows that `__packBranch` also supports recursive compile-time
+value computation, not just recursive field or associated-type structure. It is
+also a useful tooling case: editors and language services should still be able
+to surface the folded result of expressions like `Sum<1, 2, 3, 4>.value`.
+
+### MLP-Style Recursive Layer Chain
+
+```slang
+interface ILayerChain<let InSize : int>
+{
+    associatedtype Output;
+    __init();
+    Output eval(int[InSize] input);
+}
+
+struct EmptyNode<let N : int> : ILayerChain<N>
+{
+    typealias Output = int[N];
+
+    __init() {}
+
+    Output eval(int[N] input)
+    {
+        // The empty chain is the base case: it returns its input unchanged.
+        return input;
+    }
+}
+
+struct EvalNode<let Head : int, let each Tail : int> : ILayerChain<Head>
+    where nonempty(Tail)
+{
+    typealias Rest = __packBranch(
+        __trimHead(Tail),
+        EmptyNode<__first(Tail)>,                 // Exactly one layer size remains.
+        EvalNode<__first(Tail), __trimHead(Tail)> // More than one size remains.
+    );
+
+    typealias Output = Rest::Output;
+
+    Layer<Head, __first(Tail)> firstLayer = {};
+    Rest restLayers = {};
+
+    __init() {}
+
+    Output eval(int[Head] input)
+    {
+        // Apply the first layer, then recurse through the rest of the chain.
+        return restLayers.eval(firstLayer.eval(input));
+    }
+}
+
+struct MLP<let Head : int, let each Tail : int>
+{
+    // `Tail` determines whether the network is just the base case or a
+    // recursive chain of layers.
+    typealias Layers = __packBranch(Tail, EmptyNode<Head>, EvalNode<Head, Tail>);
+    typealias Output = Layers::Output;
+}
+```
+
+This example shows why the feature needs to work for real recursive types, not
+just for one-step pack inspection. The result type and the field layout both
+depend on recursively branching over the remaining pack of layer sizes.
+
 Detailed Explanation
 --------------------
 

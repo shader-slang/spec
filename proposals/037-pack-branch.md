@@ -179,7 +179,7 @@ typealias EvalHelper<let Head : int, let each Tail : int> =
 struct EvalNode<let Head : int, let each Tail : int> : IEvalNode where nonempty(Tail)
 {
     typealias Next = EvalHelper<__first(Tail), __trimHead(Tail)>;
-    typealias Result = Next::Result;
+    typealias Result = Next.Result;
 }
 ```
 
@@ -212,8 +212,8 @@ int chooseType<let each S : int>()
     // If `S` is non-empty, the selected type is `IntConst<2>`.
     //
     // Both branches conform to `IStaticInt`, so the PackBranch type
-    // also supports `::get()` before specialization picks a branch.
-    return __packBranch(S, IntConst<1>, IntConst<2>)::get();
+    // also supports `.get()` before specialization picks a branch.
+    return __packBranch(S, IntConst<1>, IntConst<2>).get();
 }
 
 // chooseType<>()    -> 1
@@ -362,7 +362,7 @@ struct EvalNode<let Head : int, let each Tail : int> : ILayerChain<Head>
         EvalNode<__first(Tail), __trimHead(Tail)> // More than one size remains.
     );
 
-    typealias Output = Rest::Output;
+    typealias Output = Rest.Output;
 
     Layer<Head, __first(Tail)> firstLayer = {};
     Rest restLayers = {};
@@ -381,7 +381,7 @@ struct MLP<let Head : int, let each Tail : int>
     // `Tail` determines whether the network is just the base case or a
     // recursive chain of layers.
     typealias Layers = __packBranch(Tail, EmptyNode<Head>, EvalNode<Head, Tail>);
-    typealias Output = Layers::Output;
+    typealias Output = Layers.Output;
 }
 ```
 

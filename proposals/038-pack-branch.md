@@ -1,4 +1,4 @@
-SP #037: Pack Branch
+SP #038: Pack Branch
 ====================
 
 This proposal introduces a built-in type form:

@@ -31,8 +31,8 @@ Reviewer: Theresa Foley
 
 Background
 ----------
-
-Slang already supports variadic generics, pack expansion, and pack queries such
+Slang already supports variadic generics, pack expansion, and pack queries
+(introduced in [SP 036](036-variadic-pack-queries.md)) such
 as `__first`, `__last`, `__trimFirst`, and `__trimLast`. It also supports
 `where nonempty(P)` constraints for packs. Those features are enough to talk
 about packs, but they do not provide a way to express a recursive type that

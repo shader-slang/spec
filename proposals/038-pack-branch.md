@@ -15,7 +15,7 @@ is assumed to be non-empty.
 
 That branch-local assumption is the missing piece that makes recursive
 metaprogramming over variadic packs practical in Slang. It allows users to write
-natural recursive shapes over `__first(...)` and `__trimHead(...)` without
+natural recursive shapes over `__first(...)` and `__trimFirst(...)` without
 forcing the compiler to guess whether those operations are valid.
 
 Status
@@ -33,7 +33,7 @@ Background
 ----------
 
 Slang already supports variadic generics, pack expansion, and pack queries such
-as `__first`, `__last`, `__trimHead`, and `__trimTail`. It also supports
+as `__first`, `__last`, `__trimFirst`, and `__trimLast`. It also supports
 `where nonempty(P)` constraints for packs. Those features are enough to talk
 about packs, but they do not provide a way to express a recursive type that
 stops when a pack becomes empty.
@@ -47,7 +47,7 @@ struct EmptyNode {}
 
 struct EvalNode<let Head : int, let each Tail : int>
 {
-    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimHead(Tail)>) rest;
+    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimFirst(Tail)>) rest;
 }
 ```
 
@@ -62,7 +62,7 @@ shape terminates:
 However, the compiler must validate the recursive branch before specialization
 finishes. That means it needs a symbolic way to say "the recursive branch only
 exists when `Tail` is non-empty." Without such a mechanism, the compiler cannot
-justify that `__first(Tail)` and `__trimHead(Tail)` are valid in the recursive
+justify that `__first(Tail)` and `__trimFirst(Tail)` are valid in the recursive
 branch.
 
 This limitation also appears in more interesting pack-driven programs. For
@@ -76,9 +76,9 @@ struct EvalNode<let Head : int, let each Tail : int> : ILayerChain<Head>
     where nonempty(Tail)
 {
     typealias Rest = __packBranch(
-        __trimHead(Tail),
+        __trimFirst(Tail),
         EmptyNode<__first(Tail)>,
-        EvalNode<__first(Tail), __trimHead(Tail)>);
+        EvalNode<__first(Tail), __trimFirst(Tail)>);
 
     Layer<Head, __first(Tail)> firstLayer;
     Rest restLayers;
@@ -166,8 +166,8 @@ valid on that specific pack:
 
 - `__first(pack)`
 - `__last(pack)`
-- `__trimHead(pack)`
-- `__trimTail(pack)`
+- `__trimFirst(pack)`
+- `__trimLast(pack)`
 - `nonempty(pack)`
 
 That rule makes patterns like the following valid:
@@ -178,7 +178,7 @@ typealias EvalHelper<let Head : int, let each Tail : int> =
 
 struct EvalNode<let Head : int, let each Tail : int> : IEvalNode where nonempty(Tail)
 {
-    typealias Next = EvalHelper<__first(Tail), __trimHead(Tail)>;
+    typealias Next = EvalHelper<__first(Tail), __trimFirst(Tail)>;
     typealias Result = Next.Result;
 }
 ```
@@ -274,7 +274,7 @@ struct EvalNode<let Head : int, let each Tail : int> : INode
 
     // If `Tail` is empty, recursion stops with `EmptyNode`.
     // Otherwise we recurse on the first tail element and the trimmed tail.
-    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimHead(Tail)>) rest = {};
+    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimFirst(Tail)>) rest = {};
 
     int sum()
     {
@@ -308,7 +308,7 @@ struct SumNode<let Head : int, let each Tail : int> : IEval
     typealias Next = __packBranch(
         Tail,
         Empty,                                  // Base case: no more values to add.
-        SumNode<__first(Tail), __trimHead(Tail)> // Recursive case: add the head
+        SumNode<__first(Tail), __trimFirst(Tail)> // Recursive case: add the head
                                                  // and continue with the tail.
     );
 
@@ -319,7 +319,7 @@ typealias Sum<let each vals : int> =
     __packBranch(
         vals,
         Empty,                                   // Sum<> = 0
-        SumNode<__first(vals), __trimHead(vals)> // Sum<1,2,3,4> = 1 + Sum<2,3,4>
+        SumNode<__first(vals), __trimFirst(vals)> // Sum<1,2,3,4> = 1 + Sum<2,3,4>
     );
 
 static const int sum = Sum<1, 2, 3, 4>.value; // folds to 10
@@ -357,9 +357,9 @@ struct EvalNode<let Head : int, let each Tail : int> : ILayerChain<Head>
     where nonempty(Tail)
 {
     typealias Rest = __packBranch(
-        __trimHead(Tail),
+        __trimFirst(Tail),
         EmptyNode<__first(Tail)>,                 // Exactly one layer size remains.
-        EvalNode<__first(Tail), __trimHead(Tail)> // More than one size remains.
+        EvalNode<__first(Tail), __trimFirst(Tail)> // More than one size remains.
     );
 
     typealias Output = Rest.Output;
@@ -457,10 +457,10 @@ hidden side information, IR makes it explicit:
 ```text
 NonEmptyPackWitness(pack)
 ExtractFirstFromPack(pack, NonEmptyPackWitness(pack))
-TrimHeadOfPack(pack, NonEmptyPackWitness(pack))
+TrimFirstOfPack(pack, NonEmptyPackWitness(pack))
 ```
 
-and similarly for `__last` and `__trimTail`.
+and similarly for `__last` and `__trimLast`.
 
 This design also matches generic constraints. A `where nonempty(P)` constraint
 is represented as requiring an explicit witness value for `P`, so generic
@@ -478,7 +478,7 @@ Consider:
 ```slang
 struct EvalNode<let Head : int, let each Tail : int>
 {
-    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimHead(Tail)>) rest;
+    __packBranch(Tail, EmptyNode, EvalNode<__first(Tail), __trimFirst(Tail)>) rest;
 }
 ```
 
@@ -486,7 +486,7 @@ When specializing `EvalNode<4, 8, 16>`, the compiler should take the non-empty
 branch for `Tail = (8, 16)`, then compute:
 
 - `__first((8, 16)) -> 8`
-- `__trimHead((8, 16)) -> (16)`
+- `__trimFirst((8, 16)) -> (16)`
 
 and continue with a strictly smaller pack.
 
@@ -572,7 +572,7 @@ Those entities do not have a fixed type across all iterations:
 - the type of `currentAggregator` after step `i` depends on the first `i`
   elements of the pack,
 - the type of `restOfPack` changes on every step,
-- and operations like `__first(restOfPack)` or `__trimHead(restOfPack)` are only
+- and operations like `__first(restOfPack)` or `__trimFirst(restOfPack)` are only
   legal when `restOfPack` is known to be non-empty at that particular step.
 
 In other words, checking `fold` would require the compiler to verify a whole
@@ -615,7 +615,7 @@ requirement for the motivating use cases.
 Suppose a user writes:
 
 ```slang
-type_if(nonempty(P), EvalNode<__first(P), __trimHead(P)>, EmptyNode)
+type_if(nonempty(P), EvalNode<__first(P), __trimFirst(P)>, EmptyNode)
 ```
 
 The true branch is only well-typed if the checker is allowed to assume that

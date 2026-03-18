@@ -3,7 +3,7 @@ SP #036: Variadic Pack Queries and `nonempty(...)`
 
 We should add built-in pack-query operators to Slang so that code can inspect
 and structurally decompose type packs and value packs. In particular, this
-proposal adds `__first(P)`, `__last(P)`, `__trimHead(P)`, and `__trimTail(P)`,
+proposal adds `__first(P)`, `__last(P)`, `__trimFirst(P)`, and `__trimLast(P)`,
 along with a `where nonempty(P)` generic constraint that can be used to prove
 that a pack is non-empty.
 
@@ -56,7 +56,7 @@ terms of a value pack of layer sizes:
 struct Layer<int InSize, int OutSize> { ... }
 
 typealias MLP<let each D : int> =
-    Tuple<expand Layer<each __trimTail(D), each __trimHead(D)>>;
+    Tuple<expand Layer<each __trimLast(D), each __trimFirst(D)>>;
 ```
 
 This pattern requires a way to talk about the pack with its first or last
@@ -86,7 +86,7 @@ indexing a variadic sequence:
   level are oriented around template metaprogramming rather than Slang's
   first-class pack values and types.
 - Functional languages commonly model sequence decomposition using
-  "head"/"tail"-style operations. The proposed `__first` and `__trimHead`
+  "head"/"tail"-style operations. The proposed `__first` and `__trimFirst`
   operators deliberately mirror that style because it is direct and familiar.
 - Swift's variadic generics provide strong prior art for pack-shaped generic
   programming, which also informed proposal [007](007-variadic-generics.md).
@@ -101,8 +101,8 @@ We propose to add four built-in pack-query operators:
 
 - `__first(P)`
 - `__last(P)`
-- `__trimHead(P)`
-- `__trimTail(P)`
+- `__trimFirst(P)`
+- `__trimLast(P)`
 
 These operators are available on:
 
@@ -125,11 +125,11 @@ The intent is:
 
 - `__first(P)` returns the first element of `P`
 - `__last(P)` returns the last element of `P`
-- `__trimHead(P)` returns `P` with its first element removed
-- `__trimTail(P)` returns `P` with its last element removed
+- `__trimFirst(P)` returns `P` with its first element removed
+- `__trimLast(P)` returns `P` with its last element removed
 
 `__first(P)` and `__last(P)` are partial operations and therefore require the
-compiler to prove that `P` is non-empty. `__trimHead(P)` and `__trimTail(P)` are
+compiler to prove that `P` is non-empty. `__trimFirst(P)` and `__trimLast(P)` are
 total operations and yield an empty pack when applied to an empty pack.
 
 The operators use reserved builtin names with a leading `__` instead of plain
@@ -148,8 +148,8 @@ The pack-query operators use the following syntax:
 pack-query-expr
     ::= '__first' '(' expr ')'
      |  '__last' '(' expr ')'
-     |  '__trimHead' '(' expr ')'
-     |  '__trimTail' '(' expr ')'
+     |  '__trimFirst' '(' expr ')'
+     |  '__trimLast' '(' expr ')'
 ```
 
 The `expr` operand is interpreted according to context. In expression context it
@@ -177,14 +177,14 @@ The operand `P` of a pack-query operator may denote any of the following:
 - a tuple type,
 - a tuple value,
 - a pack-shaped expression formed from `expand`,
-- a pack query result such as `__trimHead(P)`.
+- a pack query result such as `__trimFirst(P)`.
 
 The result category follows the operand:
 
 - If `P` is a type pack or tuple type, then `__first(P)` and `__last(P)` yield a
-  type, while `__trimHead(P)` and `__trimTail(P)` yield a type pack.
+  type, while `__trimFirst(P)` and `__trimLast(P)` yield a type pack.
 - If `P` is a value pack or tuple value, then `__first(P)` and `__last(P)` yield
-  a value, while `__trimHead(P)` and `__trimTail(P)` yield a value pack.
+  a value, while `__trimFirst(P)` and `__trimLast(P)` yield a value pack.
 
 ### Semantics on Empty Packs
 
@@ -192,20 +192,20 @@ These operators have the following abstract behavior on a pack `[p0, p1, ..., pn
 
 - `__first([p0, p1, ..., pn]) = p0`
 - `__last([p0, p1, ..., pn]) = pn`
-- `__trimHead([p0, p1, ..., pn]) = [p1, ..., pn]`
-- `__trimTail([p0, p1, ..., pn]) = [p0, ..., p(n-1)]`
+- `__trimFirst([p0, p1, ..., pn]) = [p1, ..., pn]`
+- `__trimLast([p0, p1, ..., pn]) = [p0, ..., p(n-1)]`
 
 For the empty pack `[]`:
 
 - `__first([])` is invalid
 - `__last([])` is invalid
-- `__trimHead([]) = []`
-- `__trimTail([]) = []`
+- `__trimFirst([]) = []`
+- `__trimLast([]) = []`
 
 For singleton packs `[p0]`:
 
-- `__trimHead([p0]) = []`
-- `__trimTail([p0]) = []`
+- `__trimFirst([p0]) = []`
+- `__trimLast([p0]) = []`
 
 If the compiler can prove that a pack operand is empty, then `__first(P)` and
 `__last(P)` are diagnosed as errors.
@@ -228,7 +228,7 @@ particular:
 - `where nonempty(T)` is valid when `T` is a type pack parameter
 - `where nonempty(D)` is valid when `D` is a value pack parameter
 - `where nonempty(int)` is invalid
-- `where nonempty(__trimHead(T))` is invalid
+- `where nonempty(__trimFirst(T))` is invalid
 - `where nonempty(P)` is invalid if `P` comes from an outer generic rather than
   the current one
 
@@ -340,7 +340,7 @@ lookup and type parsing. A user-defined declaration named `first` could shadow
 the builtin form in expression contexts, and type parsing would need extra
 special cases to keep `Foo<first(T)>` working reliably.
 
-Using `__first`, `__last`, `__trimHead`, and `__trimTail` makes the syntax
+Using `__first`, `__last`, `__trimFirst`, and `__trimLast` makes the syntax
 unambiguous and preserves the ability for users to define their own `first`,
 `last`, etc. without affecting the builtin forms.
 

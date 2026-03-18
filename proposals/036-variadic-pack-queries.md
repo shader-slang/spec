@@ -20,6 +20,7 @@ Status
 Status: Implemented
 
 Implementation: [PR 10444](https://github.com/shader-slang/slang/pull/10444)
+                [PR 10579](https://github.com/shader-slang/slang/pull/10579)
 
 Author: Yong He
 
@@ -249,7 +250,7 @@ __last(Tuple<C, D>).Nested<int>
 ```
 
 This is an important part of the feature. A queried type should behave like any
-other type expression in the grammar, including post-fixed by a member lookup with `.`.
+other type expression in the grammar, such as post-fixed by a member lookup with `.`.
 
 If `__first(T)` is known to conform to some interface, then associated-type
 lookup through that interface should work the same way it would for any other

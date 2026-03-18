@@ -23,7 +23,7 @@ Implementation: [PR 10444](https://github.com/shader-slang/slang/pull/10444)
 
 Author: Yong He
 
-Reviewer: TBD
+Reviewer: Theresa Foley
 
 Background
 ----------
@@ -244,16 +244,12 @@ Examples:
 
 ```slang
 __first(T).Element
-__first(Tuple<A, B>)::Nested
-__last(Tuple<C, D>)::Nested<int>
+__first(Tuple<A, B>).Nested
+__last(Tuple<C, D>).Nested<int>
 ```
 
 This is an important part of the feature. A queried type should behave like any
-other type expression in the grammar, including:
-
-- instance-style type member lookup with `.`,
-- static member type lookup with `::`,
-- generic application with `<...>`.
+other type expression in the grammar, including post-fixed by a member lookup with `.`.
 
 If `__first(T)` is known to conform to some interface, then associated-type
 lookup through that interface should work the same way it would for any other
@@ -331,8 +327,8 @@ We considered surface syntax without a builtin prefix:
 ```slang
 first(T)
 last(T)
-trimHead(T)
-trimTail(T)
+trimFirst(T)
+trimLast(T)
 ```
 
 This alternative is superficially nicer, but it interacts poorly with name
@@ -379,7 +375,7 @@ Future Directions
 This proposal does not attempt to solve all pack metaprogramming use cases.
 Possible follow-on work includes:
 
-- a fold or reduction form over packs,
+- a fold or a recursion structure on variadic packs,
 - richer compile-time reasoning about pack cardinality,
 - additional pack queries such as length-dependent slicing,
 - generalized structural constraints over packs beyond non-emptiness.

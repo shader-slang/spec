@@ -4,9 +4,9 @@
 
 Author: Chris Cummings, Benedikt Bitterli, Sai Bangaru, Yong He
 
-Status: Design Review
+Status: Implemented
 
-Implementation:
+Implementation: [shader-slang/slangpy](https://github.com/shader-slang/slangpy)
 
 Reviewed by:
 

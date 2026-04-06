@@ -4,7 +4,7 @@ This proposal introduces support for cooperative matrices in Slang.
 
 ## Status
 
-Status: Design Review
+Status: Implemented
 
 Implementation: [PR 6565](https://github.com/shader-slang/slang/pull/6565)
 

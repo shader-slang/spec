@@ -4,9 +4,9 @@ This proposal outlines a plan to upgrade the Slang codebase from C++17 to C++20,
 
 ## Status
 
-Status: Design Review
+Status: Implemented
 
-Implementation: Not yet implemented
+Implementation: [PR 3040](https://github.com/shader-slang/slang/pull/3040)
 
 Author: Ellie Hermaszewska
 

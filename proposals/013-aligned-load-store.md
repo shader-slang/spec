@@ -1,7 +1,7 @@
 SP #013: Aligned load store
 =========================================
 
-Status: Experimental
+Status: In Experiment
 
 Implementation: [PR 5736](https://github.com/shader-slang/slang/pull/5736)
 

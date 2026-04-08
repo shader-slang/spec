@@ -11,7 +11,7 @@ A proposal for a Slang language/compiler feature or system should start with a c
 Status
 ------
 
-Status: Design Review/Planned/Implementation In-Progress/Implemented/Partially Implemented. Note here whether the proposal is unimplemented, in-progress, has landed, etc.
+Status: Design Review/Planned/In Experiment/Implementation In-Progress/Implemented/Partially Implemented. "In Experiment" denotes a feature that has landed behind an experimental flag or without full design commitment.
 
 Implementation: [PR 000] [PR 001] ... (list links to PRs)
 

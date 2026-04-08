@@ -2,7 +2,7 @@
 
 ## Status
 
-Status: Design Review
+Status: Implemented
 
 Implementation: [PR 7327](https://github.com/shader-slang/slang/pull/7327)
 

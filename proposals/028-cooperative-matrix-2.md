@@ -4,7 +4,7 @@ SP #028: Cooperative Matrix and Tensor Types
 Status
 ------
 
-Status: Design Review
+Status: Partially Implemented
 
 Implementations:
  - cooperative_matrix is completed with d0b6a0b1ab49b5958015f31364c5ad73d9cd03eb

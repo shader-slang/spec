@@ -4,9 +4,9 @@ This proposal introduces support for cooperative vectors in Slang.
 
 ## Status
 
-Status: Design Review
+Status: Implemented
 
-Implementation: N/A
+Implementation: [PR 6223](https://github.com/shader-slang/slang/pull/6223), [PR 6228](https://github.com/shader-slang/slang/pull/6228), [PR 7108](https://github.com/shader-slang/slang/pull/7108)
 
 Author: Ellie Hermaszewska
 

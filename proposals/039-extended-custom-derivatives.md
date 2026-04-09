@@ -6,7 +6,9 @@ At the time of this proposal, the primary use-case for this is to define custom 
 
 The current approach uses decorators (e.g. `[BackwardDerivativeOf(func)]`) to link related functions together, but this is limited in flexibility. Our auto-diff backend allow much more flexible derivatives to be defined, but there is no language mechanism to leverage this.
 
-The new version proposes custom derivatives that can run the forward and backward passes separately by returning continuations that can store captured intermediate values.
+The new version proposes a way to define custom derivatives that: 
+1. can provide separate forward and backward passes separately by returning continuations from the forward pass that can store captured intermediate values.
+2. can, like types, be defined conditionally on type constraints.
 
 For example:
 ```slang

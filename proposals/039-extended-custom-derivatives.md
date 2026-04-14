@@ -18,36 +18,40 @@ __func_extension fwd_diff(foo)(DifferentialPair<float>) -> DifferentialPair<floa
     return diffPair(foo(x), 3.0 * x * x);
 }
 
+struct FooContext
+{
+    float sqr;
+
+    // This defines the backward pass
+    void operator()(out float dx, float out_grad)
+    {
+        dx = out_grad * 3.0 * sqr;
+    }
+}
+
 // "New style" backward derivative that can return a continuation.
-__func_extension apply(foo)(float x) -> Tuple<float, IFunc<void, out float, float>>
+__func_extension apply(foo)(float x) -> Tuple<float, FooContext>
 { 
     float sqr = x * x;
     return makeTuple(
         sqr * x, 
-        (out float x_grad, float out_grad) => {
-            x_grad = out_grad * 3.0 * sqr;
-        });
+        // Context captures the intermediate value of x*x, which is needed for the backward pass;
+        FooContext(sqr)); 
 }
 
-//
-// Note: the example assumes that lambdas can have out parameters (they currently can't, and
-// IFunc's operator() doesn't support out parameters either). This is a vision for how 
-// this system could work in the future with extensions to both lambdas and IFunc. 
-// For now, the user will define a separate struct with operator() and return that.
-//
 ```
 
 
 Status
 ------
 
-Status: Design Review
+Status: Approved
 
 Implementation: Pending
 
 Author: Sai Praveen Bangaru
 
-Reviewer: 
+Reviewers: Yong He, Sami Kiminiki, James Helferty, Gangzheng Tong
 
 Background
 ----------

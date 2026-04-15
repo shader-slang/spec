@@ -1,6 +1,8 @@
 SP #039: `__func_extension` Shorthand for Function Extensions
 ====================
 
+Note: Currently **experimental**.
+
 This PR proposes a special way of defining a function that is associated with another function. 
 At the time of this proposal, the primary use-case for this is to define custom derivatives for the auto-diff system.
 
@@ -174,7 +176,7 @@ To keep things contained in the codebase, we propose a new keyword and an associ
 
 The proposed syntax is as follows:
 ```
-__func_extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> 
+__func_extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
 {
     <function_body>
 }
@@ -393,3 +395,61 @@ extension foo : IBackwardDifferentiable<foo>
 extension FooContext : IBwdCallable<foo>
 { /* operator() will get pulled from the struct definition */ }
 ```
+
+### Alternative Syntax (also potential syntax for when `__func_extension` is moved from experimental to full support)
+
+#### 1. Reuse `func`
+```slang
+func<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
+{ <function_body> }
+```
+e.g.
+```slang
+func<T : IFloat> fwd_diff(sqr<T>)(DifferentialPair<T> dpx) -> DifferentialPair<T>
+    where T.Differential == T { /* body */ }
+```
+
+Upsides: 
+- Fewer new keywords. 
+- More obvious that a function is being defined.
+
+Downsides:
+- Conflicts with how `func` is normally used, where generic defs are on the function name and not `func`
+
+#### 2. Reuse both `func` and `extension`
+```slang
+func extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
+{ <function_body> }
+```
+e.g.
+```slang
+func extension<T : IFloat> fwd_diff(sqr<T>)(DifferentialPair<T> dpx) -> DifferentialPair<T>
+    where T.Differential == T { }
+```
+
+Upsides:
+- Fewer new keywords.
+- Explicit that a function is being extended (not just defined)
+Downsides:
+- More complex parsing (have to look-ahead to determine if type extension or func extension)
+
+#### 3. Reuse both `func` and `extension`; C-style return type
+
+```slang
+func extension<?generic_definition> <return_type> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) <?where-clauses>
+{ <function_body> }
+```
+e.g.
+```slang
+func extension<T : IFloat> DifferentialPair<T> fwd_diff(sqr<T>)(DifferentialPair<T> dpx)
+    where T.Differential == T { }
+```
+
+Upsides:
+- Fewer new keywords. 
+- More obvious that a function is being defined.
+- Sticks to familiar C-style syntax over return type at the end.
+
+Downsides:
+- More complex parsing (look-ahead)
+- Harder to make return type optional/inferred (maybe through an `auto` keyword)

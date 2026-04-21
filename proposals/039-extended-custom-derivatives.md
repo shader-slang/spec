@@ -176,7 +176,7 @@ To keep things contained in the codebase, we propose a new keyword and an associ
 
 The proposed syntax is as follows:
 ```
-__func_extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
+<?decorators> <?visibility> __func_extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
 {
     <function_body>
 }
@@ -400,7 +400,7 @@ extension FooContext : IBwdCallable<foo>
 
 #### 1. Reuse `func`
 ```slang
-func<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
+<?decorators> <?visibility> func<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
 { <function_body> }
 ```
 e.g.
@@ -418,7 +418,7 @@ Downsides:
 
 #### 2. Reuse both `func` and `extension`
 ```slang
-func extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
+<?decorators> <?visibility> func extension<?generic_definition> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) -> <?return_type> <?where-clauses>
 { <function_body> }
 ```
 e.g.
@@ -436,7 +436,7 @@ Downsides:
 #### 3. Reuse both `func` and `extension`; C-style return type
 
 ```slang
-func extension<?generic_definition> <return_type> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) <?where-clauses>
+<?decorators> <?visibility> func extension<?generic_definition> <return_type> <builtin_operator>(<?base_type>::<func_name><?generic_specializations>)(<parameters>) <?where-clauses>
 { <function_body> }
 ```
 e.g.

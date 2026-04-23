@@ -3,8 +3,8 @@ SP #037: IAllocator interface for dynamic memory allocation
 
 An `IAllocator` interface should be added into the core module. This interface
 would provide various dynamic memory allocation operations. Along with the
-interface, two CPU-target-only implementations should be added: `StackAllocator`
-and `HeapAllocator`.
+interface, two CPU-target-only implementations should be added: `StackFrameAllocator`
+and `SystemHeapAllocator`.
 
 Currently, there is no direct way to allocate memory in the CPU targets, other
 than manually forward-declaring the C standard library function `malloc()` and
@@ -15,21 +15,22 @@ perform stack allocations on CPU targets.
 Status
 ------
 
-Status: Design Review
+Status: Implemented
 
-Implementation: TBD
+Implementation: [PR 10608](https://github.com/shader-slang/slang/pull/10608)
 
 Author: Julius Ikkala
 
-Reviewer: TBD
+Reviewer: Yong He
 
 Background
 ----------
 
-With the deprecation of the unary `&`-operator, the CPU targets (whether C++ or
-LLVM-based) are in trouble when needing to call foreign C functions that use
-pointers for return values. Previously, one would typically just declare a local
-variable and use the `&`-operator to get a pointer to it.
+With the [deprecation of the unary `&`-operator](https://github.com/shader-slang/slang/pull/10280),
+the CPU targets (whether C++ or LLVM-based) are in trouble when needing to call
+foreign C functions that use pointers for return values. Previously, one would
+typically just declare a local variable and use the `&`-operator to get a
+pointer to it.
 
 Considering typical GPU hardware architectures, it makes sense that one cannot
 have a pointer to a local variable. Registers aren't usually addressable and
@@ -77,74 +78,70 @@ Proposed Approach
 -----------------
 
 Introduce an `IAllocator` interface in the core module, that would define functions
-to allocate, deallocate and resize memory allocations. It provides three
-user-facing functions:
-* `Ptr<T> allocate<T>(count)` for allocating an array `T[count]` 
+to allocate, deallocate and resize memory allocations. It provides six methods:
+
+* `Ptr<T> allocate<T>(size_t count)` for allocating an array `T[count]`
 * `void free<T>(Ptr<T> data)` for deallocating a previous allocation
 * `Ptr<T> reallocate<T>(Ptr<T> data, size_t oldCount, size_t newCount)` for resizing a previous allocation
+* `Ptr<void> alignedAllocate(size_t bytes, uint alignment)` for allocations with dynamic alignment requirements
+* `void alignedFree(Ptr<void> data)` for deallocating memory acquired via `alignedAllocate`
+* `void close()` for deallocating all allocated memory
 
 It is possible to create user-defined allocators conforming to the `IAllocator`
 interface.
 
-A `StackAllocator` is added so that the user can perform allocations in
-the stack frame of the function where `StackAllocator.allocate<T>(count)` is
-called. It behaves similarly to `(T*)alloca(size * sizeof(T))` in C.
+A `StackFrameAllocator` is added so that the user can perform allocations in
+the stack frame of the function where `StackFrameAllocator.allocate<T>(count)`
+is called. It behaves similarly to `(T*)alloca(size * sizeof(T))` in C.
 
-A `HeapAllocator` is added to perform heap allocations. It can be called
-as `HeapAllocator.allocate<T>(count)`. `HeapAllocator` provides functionality
-equivalent to `malloc()`, `free()` and `realloc()` in C.
+A `SystemHeapAllocator` is added to perform heap allocations. It can be called
+as `SystemHeapAllocator.allocate<T>(count)`. `SystemHeapAllocator` provides
+functionality equivalent to `malloc()`, `free()` and `realloc()` in C.
 
 Detailed Explanation
 --------------------
 
 The following use cases were considered when designing the below `IAllocator` interface:
+
 * Generic heap allocators on CPUs
 * Stack allocations on CPUs
 * Arena/region allocators on GPUs and CPUs
 
 Add `IAllocator` interface that defines methods for dynamic memory allocations:
 ```slang
-public enum AllocationError
+public enum MemoryAllocationError
 {
-    OutOfMemory
+    OutOfMemory,
+    AlignmentIsTooLarge
 }
 
 public interface IAllocator<AddressSpace addrSpace>
 {
-    Ptr<void, Access.ReadWrite, addrSpace>
-        rawAllocate(size_t bytes, uint alignment) throws AllocationError;
-
-    Ptr<void, Access.ReadWrite, addrSpace> rawReallocate(
-        Ptr<void, Access.ReadWrite, addrSpace> prevPtr,
-        size_t prevBytes,
-        size_t bytes,
-        uint alignment
-    ) throws AllocationError {
-        // default impl deferring to rawAllocate & rawFree
-    }
-
-    void rawFree(Ptr<void, Access.ReadWrite, addrSpace> data)
-    {
-        // default no-op impl
-    }
-
     Ptr<T, Access.ReadWrite, addrSpace, L>
-        allocate<T, L:IBufferDataLayout = DefaultDataLayout>(int count = 1) throws AllocationError
-    {
-        // default impl deferring to rawAllocate
-    }
+        allocate<T, L:IBufferDataLayout = DefaultDataLayout>(int count = 1) throws MemoryAllocationError;
 
     Ptr<T, Access.ReadWrite, addrSpace, L> reallocate<T, L:IBufferDataLayout = DefaultDataLayout>(
         Ptr<T, Access.ReadWrite, addrSpace, L> oldPtr,
         size_t oldCount,
         size_t newCount
     ) throws AllocationError {
-        // default impl deferring to rawReallocate
+        // default impl deferring to allocate<T> and free<T>.
     }
 
     void free<T, L:IBufferDataLayout = DefaultDataLayout>(Ptr<T, Access.ReadWrite, addrSpace, L> data)
     {
-        // default impl deferring to rawFree
+        // default no-op impl
+    }
+
+    Ptr<void, Access.ReadWrite, addrSpace>
+        alignedAllocate(size_t bytes, uint alignment) throws MemoryAllocationError
+    {
+        // default impl using allocate<T> and aligning manually
+    }
+
+    void alignedFree(Ptr<void, Access.ReadWrite, addrSpace> data)
+    {
+        // default impl using free<T>
     }
 
     void close()
@@ -152,40 +149,40 @@ public interface IAllocator<AddressSpace addrSpace>
         // default no-op impl
     }
 }
-
-public typealias IDeviceAllocator = IAllocator<AddressSpace.Device>;
 ```
 
 The address space is specified as a generic parameter of the allocator, because
 it is conceivable that someone could want an allocator for e.g. shared memory,
-once shared memory pointers are in a better shape. However, typically
-allocations are expected to be made in device memory, so as a convenience, we 
-can provide an `IDeviceAllocator` type alias.
+once shared memory pointers are in a better shape.
 
 The only function that needs to be implemented by an allocator is
-`rawAllocate(size_t bytes, uint alignment)`. `rawFree()` is optional, and
-the default implementation should be a no-op. This is necessary for stack and
-arena allocators, where deallocation is handled in bulk instead of per-pointer.
+`allocate(size_t count)`. `free()` is optional, and the default
+implementation should be a no-op. This is necessary for stack and arena
+allocators, where deallocation is handled in bulk instead of per-pointer.
 
-`reallocate()` can also have a default implementation. Typed allocation
-functions can be implemented with untyped allocators, by resolving the stride
-and alignment of `T`.
+`reallocate()` also has a default implementation that simply allocates a new
+pointer, copies old data and releases the old pointer.
 
 `close()` should reset the allocator and de-allocate everything.
 
-A `StackAllocator` implementation should be added. It should define a `static`
-implementation for `rawAllocate`. `rawAllocate` should lower to `kIROp_Alloca`,
+`alignedAllocate(size_t bytes, size_t alignment)` should allocate a pointer that
+is aligned to the given `alignment`. Such aligned pointers are not compatible
+with `free()` or `reallocate()`, and must be freed using `alignedFree(Ptr<T>)`.
+
+A `StackFrameAllocator` implementation should be added. It should define a
+`static` implementation for `allocate`. `allocate` should lower to `kIROp_Alloca`,
 which should be extended to accept an alignment operand as well. Reliance on an
-IR instruction is likely required, as the `alloca` instruction needs to be
-generated directly in the existing function. Implementing that with inline LLVM
-IR may not work correctly.
+IR instruction is required, as the `alloca` instruction needs to be generated
+directly in the existing function. Implementing that with inline LLVM IR is not
+possible at the moment.
 
-A `HeapAllocator` should be added in a similar way, with the interface
+A `SystemHeapAllocator` should be added in a similar way, with the interface
 implemented with static functions and no data members. It can be implemented
-using inline C++ and LLVM IR and call `aligned_alloc()` and friends.
+using inline C++ and LLVM IR and call `malloc()` and friends.
 
-Both `StackAllocator` and `HeapAllocator` must `[require(cpp_llvm)]`, at least
-for now. They should conform to `IDeviceAllocator`.
+Both `StackFrameAllocator` and `SystemHeapAllocator` must
+`[require(cpp_cuda_llvm)]`. They should conform to
+`IAllocator<AddressSpace.Device>`.
 
 With the allocators and deprecation of `&` in place, the LLVM emitter can be
 simplified considerably. As local variables are no longer addressable, their
@@ -200,13 +197,10 @@ There are many alterations that could be made to the allocator interface. The
 arguments for or against these alternatives may clear up during the
 implementation of the feature.
 
-The `alignment` parameter could be made optional and just set to whatever is the
-maximum alignment expected by any instruction on the host. This is the path
-partially taken by GCC and Clang when one calls `alloca()` or `malloc()`; both
-align the address to 16 bytes on x86 CPUs.
-
-Alternatively, alignment could always be inferred from `T` and
-`IAlloca.rawAllocate()` could be removed.
+We could rely on `alignedAllocate` and `alignedFree` to implement `allocate` and
+`free`; however, that prevents some potential optimizations, as those functions
+operate with a runtime-specified alignment, whereas `allocate` knows the type
+and its alignment at compile-time.
 
 The `IAllocator` interface itself may be considered unnecessary and similar
 functionality could be added as free functions, such as `__alloca()`,
@@ -216,4 +210,8 @@ interface is useful.
 
 The `L:IBufferDataLayout` parameter could be removed, and `DefaultDataLayout`
 could be assumed. This is less flexible, but it is unclear if there's really a
-need to be able to allocate types in any other layout than the default.
+need to be able to allocate types in any other layout than the default. However,
+there's not really any cost to supporting other layouts other than making the
+interface slightly uglier. The user of the interface will also not need to
+interact with the layout parameter if they don't care about it, as
+`DefaultDataLayout` can be specified as the default value for `L`.

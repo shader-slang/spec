@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Tag list reachability problem">
+  <style>
+    .title { font: 700 18px sans-serif; fill: #202020; }
+    .label { font: 14px sans-serif; fill: #202020; }
+    .small { font: 12px sans-serif; fill: #333333; }
+    .trace { fill: #f8fbff; stroke: #336699; stroke-width: 1.5; rx: 7; }
+    .host { fill: #f3fff6; stroke: #2f7d45; stroke-width: 1.5; rx: 7; }
+    .stage { fill: #fffaf2; stroke: #a65f00; stroke-width: 1.5; rx: 7; }
+    .warn { fill: #fff4f4; stroke: #b42318; stroke-width: 1.5; rx: 7; }
+    .arrow { stroke: #333333; stroke-width: 1.8; marker-end: url(#arrow2); fill: none; }
+    .dash { stroke: #b42318; stroke-width: 1.8; stroke-dasharray: 6 4; marker-end: url(#arrow2); fill: none; }
+  </style>
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333333"/>
+    </marker>
+  </defs>
+
+  <text x="35" y="35" class="title">Existing model: trace call and intersection shader are not connected in source</text>
+  <rect x="45" y="80" width="220" height="70" class="trace"/>
+  <text x="70" y="108" class="label">RayGen TraceRay</text>
+  <text x="70" y="130" class="small">needs Metal tags: instancing, triangle_data</text>
+
+  <rect x="335" y="80" width="210" height="70" class="host"/>
+  <text x="375" y="108" class="label">Host SBT binding</text>
+  <text x="364" y="130" class="small">decides reachable hit group</text>
+
+  <rect x="620" y="55" width="220" height="55" class="stage"/>
+  <text x="652" y="83" class="label">intersectionA</text>
+  <text x="652" y="101" class="small">uses triangle_data</text>
+
+  <rect x="620" y="140" width="220" height="55" class="warn"/>
+  <text x="652" y="168" class="label">intersectionB</text>
+  <text x="652" y="186" class="small">uses curve_data</text>
+
+  <path d="M265 115 L335 115" class="arrow"/>
+  <path d="M545 115 C575 95 590 82 620 82" class="arrow"/>
+  <path d="M545 115 C575 135 590 168 620 168" class="dash"/>
+  <text x="347" y="220" class="small">The compiler needs a source-level contract for this reachability.</text>
+</svg>

@@ -1,4 +1,4 @@
-SP #000: Pipeline Ray Tracing API Structural Dispatch
+SP #041: Pipeline Ray Tracing API Structural Dispatch
 =====================================================
 
 This proposal sketches a new Slang ray tracing API that treats Metal as a first-class target
@@ -96,7 +96,7 @@ model. Metal needs generated ordinary control flow after `intersect`, but the cu
 source does not provide enough structured information to synthesize that control flow in a robust
 way.
 
-![D3D and Vulkan SBT dispatch compared with Metal user-specified post-trace miss and closest-hit dispatch](figures/ray-tracing-api/dispatch-model-gap.svg)
+![D3D and Vulkan SBT dispatch compared with Metal user-specified post-trace miss and closest-hit dispatch](figures/041-ray-tracing-api/dispatch-model-gap.svg)
 
 ### 1.2 Metal Tag List And Reachability
 
@@ -146,7 +146,7 @@ The host may bind `intersectionA` into the hit group reached by the trace call. 
 Metal tag mismatch, but the old source shape has no type-level relationship that lets Slang
 validate the mismatch early or generate the correct Metal decoration with confidence.
 
-![Tag list reachability problem](figures/ray-tracing-api/tag-list-reachability.svg)
+![Tag list reachability problem](figures/041-ray-tracing-api/tag-list-reachability.svg)
 
 ### 1.3 Reserved Challenges
 
@@ -175,7 +175,7 @@ The group declarations are the source-level conceptual SBT. They are visible to 
 to reflection. D3D and Vulkan use that information to build or validate native SBT records. Metal
 uses it to generate the post-trace dispatch switch.
 
-![API overview](figures/ray-tracing-api/api-overview.svg)
+![API overview](figures/041-ray-tracing-api/api-overview.svg)
 
 ### 2.2 Detailed Component Descriptions
 
@@ -393,7 +393,7 @@ This gives the compiler a source-level relationship:
 - Every `HitGroup` in `PrimaryProgram.HitGroups` is constrained to that trace context.
 - Any-hit and intersection stage structs receive input types derived from the same context.
 
-![Context connects ray tracer and hit shaders](figures/ray-tracing-api/context-reachability.svg)
+![Context connects ray tracer and hit shaders](figures/041-ray-tracing-api/context-reachability.svg)
 
 This does not prove that arbitrary host data is correct. If the host builds an SBT or Metal
 function table that violates the reflected `TraceProgram`, the program can still be wrong. The

@@ -187,7 +187,7 @@ Metal tags, or emits tags inferred from the wrong trace site, the generated Meta
 pipeline build. The old source shape has no type-level relationship that lets Slang determine
 which trace call can reach which AnyHit or Intersection shader.
 
-![Tag list reachability problem](figures/041-ray-tracing-api/tag-list-reachability.svg)
+![Metal tag-list reachability problem for Slang AnyHit and Intersection lowering](figures/041-ray-tracing-api/tag-list-reachability.svg)
 
 ### 1.3 Reserved Challenges
 

@@ -120,10 +120,50 @@ bool primaryIntersection(...)
 }
 ```
 
-The issue in the existing Slang model is that the trace call and the intersection shader are
-independent entry points. The trace call is written in ray-generation code. The intersection
-shader is selected through host-side SBT state. The compiler can see both declarations, but the
-source language does not state which trace call can reach which intersection shader.
+If a Metal program binds an incompatible custom intersection function to an intersector, the
+mismatch is still detectable. However, it can only be detected when the pipeline is built, because
+that is the point where all shader functions, intersector tag requirements, and binding
+information are available together. This is acceptable for native Metal because the user already
+writes the tag list on each `[[intersection(...)]]` function. The Metal compiler or pipeline
+builder has concrete tags to validate.
+
+Slang has a harder problem. The existing Slang ray tracing API does not expose a Metal-style tag
+system in user source. To lower AnyHit or Intersection entry points to Metal, Slang would need to
+synthesize the `[[intersection(...)]]` tag list for each generated Metal function.
+
+Consider a Slang program with several candidate hit shaders:
+
+```slang
+[shader("anyhit")]       void AnyHit1()       { ... }
+[shader("anyhit")]       void AnyHit2()       { ... }
+[shader("anyhit")]       void AnyHit3()       { ... }
+[shader("intersection")] void Intersection1() { ... }
+[shader("intersection")] void Intersection2() { ... }
+[shader("intersection")] void Intersection3() { ... }
+```
+
+and two trace sites that must lower to different Metal intersector tag sets:
+
+```slang
+void rayGen()
+{
+    // Lowers to a Metal intersector with tag set A.
+    intersector1.intersect(...);
+
+    // Lowers to a Metal intersector with tag set B.
+    intersector2.intersect(...);
+}
+```
+
+The compiler needs to decide whether `AnyHit1`, `AnyHit2`, `Intersection1`, etc. should receive
+tag set A, tag set B, or some other tag set. In the existing pipeline model, that reachability is
+not stated in shader source. The trace call is written in ray-generation code, while AnyHit and
+Intersection shaders are selected through host-side SBT or function-table state.
+
+The host may bind `Intersection1` to the hit group reached by `intersector1`, and bind
+`Intersection2` to the hit group reached by `intersector2`. That information is only available to
+host code. Slang does not see it when compiling the shader module, so it cannot reliably
+synthesize the required Metal tags for each generated custom intersection function.
 
 Problem-shaped Slang:
 
@@ -142,9 +182,10 @@ void intersectionA()
 }
 ```
 
-The host may bind `intersectionA` into the hit group reached by the trace call. That can create a
-Metal tag mismatch, but the old source shape has no type-level relationship that lets Slang
-validate the mismatch early or generate the correct Metal decoration with confidence.
+The host may bind `intersectionA` into the hit group reached by the trace call. If Slang emits no
+Metal tags, or emits tags inferred from the wrong trace site, the generated Metal code can fail at
+pipeline build. The old source shape has no type-level relationship that lets Slang determine
+which trace call can reach which AnyHit or Intersection shader.
 
 ![Tag list reachability problem](figures/041-ray-tracing-api/tag-list-reachability.svg)
 

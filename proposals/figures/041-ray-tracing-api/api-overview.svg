@@ -77,11 +77,11 @@
   <text x="970" y="315" class="small">from reflected slots</text>
 
   <path d="M815 145 C860 114 905 108 950 108" class="orangeArrow"/>
-  <text x="854" y="117" class="tiny">reflected</text>
-  <text x="854" y="132" class="tiny">groups</text>
+  <text x="850" y="88" class="tiny">reflected</text>
+  <text x="850" y="103" class="tiny">groups</text>
   <path d="M815 197 C862 236 905 260 950 279" class="orangeArrow"/>
-  <text x="872" y="253" class="tiny">reflected</text>
-  <text x="872" y="268" class="tiny">groups</text>
+  <text x="866" y="205" class="tiny">reflected</text>
+  <text x="866" y="220" class="tiny">groups</text>
 
   <rect x="265" y="335" width="250" height="68" class="source"/>
   <text x="390" y="374" class="label" text-anchor="middle">RayTracer&lt;TraceProgram&gt;.trace</text>

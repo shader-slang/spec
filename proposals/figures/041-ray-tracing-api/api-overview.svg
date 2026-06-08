@@ -1,49 +1,99 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="API overview">
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="500" viewBox="0 0 1180 500" role="img" aria-label="API overview showing TraceProgram reflection building host SBT and Metal function tables">
   <style>
-    .title { font: 700 18px sans-serif; fill: #202020; }
-    .label { font: 14px sans-serif; fill: #202020; }
+    .title { font: 700 22px sans-serif; fill: #202020; }
+    .label { font: 700 14px sans-serif; fill: #202020; }
     .small { font: 12px sans-serif; fill: #333333; }
-    .box { fill: #f8fbff; stroke: #336699; stroke-width: 1.5; rx: 7; }
-    .group { fill: #f3fff6; stroke: #2f7d45; stroke-width: 1.5; rx: 7; }
-    .target { fill: #fffaf2; stroke: #a65f00; stroke-width: 1.5; rx: 7; }
-    .arrow { stroke: #333333; stroke-width: 1.8; marker-end: url(#arrow3); fill: none; }
+    .tiny { font: 11px sans-serif; fill: #333333; }
+    .source { fill: #f8fbff; stroke: #336699; stroke-width: 1.5; rx: 7; }
+    .program { fill: #f3fff6; stroke: #2f7d45; stroke-width: 2; rx: 8; }
+    .reflect { fill: #f7f3ff; stroke: #6d4db3; stroke-width: 2; rx: 8; }
+    .host { fill: #fffaf2; stroke: #a65f00; stroke-width: 1.5; rx: 7; }
+    .target { fill: #ffffff; stroke: #555555; stroke-width: 1.5; rx: 7; }
+    .note { fill: #fff4f4; stroke: #b42318; stroke-width: 2; rx: 8; }
+    .arrow { stroke: #333333; stroke-width: 1.8; marker-end: url(#arrow); fill: none; }
+    .greenArrow { stroke: #2f7d45; stroke-width: 2; marker-end: url(#arrowGreen); fill: none; }
+    .purpleArrow { stroke: #6d4db3; stroke-width: 2; marker-end: url(#arrowPurple); fill: none; }
+    .orangeArrow { stroke: #a65f00; stroke-width: 2; marker-end: url(#arrowOrange); fill: none; }
+    .greenText { font: 700 13px sans-serif; fill: #276738; }
+    .purpleText { font: 700 13px sans-serif; fill: #56389a; }
+    .redText { font: 700 13px sans-serif; fill: #8a1f17; }
   </style>
   <defs>
-    <marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
       <path d="M0,0 L0,6 L9,3 z" fill="#333333"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f7d45"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#6d4db3"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#a65f00"/>
     </marker>
   </defs>
 
-  <text x="35" y="35" class="title">Proposed Slang source structure</text>
+  <text x="36" y="38" class="title">Proposed API overview: grouping logic moves into shader source</text>
 
-  <rect x="50" y="70" width="190" height="65" class="box"/>
-  <text x="76" y="98" class="label">Trace context</text>
-  <text x="75" y="119" class="small">payload, AS kind, tags</text>
+  <rect x="45" y="80" width="220" height="75" class="source"/>
+  <text x="75" y="108" class="label">Trace context</text>
+  <text x="70" y="132" class="small">payload, AS kind, tags</text>
 
-  <rect x="50" y="165" width="190" height="65" class="box"/>
-  <text x="74" y="193" class="label">Stage structs</text>
-  <text x="73" y="214" class="small">operator() implements logic</text>
+  <rect x="45" y="190" width="220" height="98" class="source"/>
+  <text x="75" y="218" class="label">Stage structs</text>
+  <text x="70" y="243" class="small">Miss / ClosestHit</text>
+  <text x="70" y="263" class="small">AnyHit / Intersection</text>
 
-  <rect x="305" y="95" width="250" height="115" class="group"/>
-  <text x="366" y="125" class="label">TraceProgram</text>
-  <text x="333" y="150" class="small">MissGroupList&lt;...&gt;</text>
-  <text x="333" y="173" class="small">HitGroupList&lt;Slot0, Slot1, ...&gt;</text>
-  <text x="333" y="196" class="small">reflection-friendly conceptual SBT</text>
+  <rect x="330" y="102" width="260" height="160" class="program"/>
+  <text x="410" y="132" class="label">TraceProgram</text>
+  <text x="360" y="162" class="small">TraceContext</text>
+  <text x="360" y="184" class="small">MissGroupList&lt;slots...&gt;</text>
+  <text x="360" y="206" class="small">HitGroupList&lt;slots...&gt;</text>
+  <text x="360" y="235" class="greenText">source-level grouping contract</text>
 
-  <rect x="620" y="55" width="220" height="65" class="target"/>
-  <text x="665" y="83" class="label">D3D / Vulkan</text>
-  <text x="650" y="104" class="small">native SBT and pipeline stages</text>
+  <path d="M265 118 L330 145" class="arrow"/>
+  <path d="M265 239 L330 205" class="arrow"/>
 
-  <rect x="620" y="170" width="220" height="65" class="target"/>
-  <text x="692" y="198" class="label">Metal</text>
-  <text x="651" y="219" class="small">generated post-trace dispatch</text>
+  <rect x="654" y="105" width="235" height="132" class="reflect"/>
+  <text x="704" y="134" class="label">Slang reflection</text>
+  <text x="682" y="162" class="small">groups, slots, contexts</text>
+  <text x="682" y="184" class="small">stage entry symbols</text>
+  <text x="682" y="206" class="small">target-specific metadata</text>
 
-  <rect x="305" y="260" width="250" height="55" class="box"/>
-  <text x="349" y="293" class="label">RayTracer&lt;TraceProgram&gt;.trace</text>
+  <path d="M590 180 L654 180" class="purpleArrow"/>
+  <text x="599" y="157" class="purpleText">query once</text>
+  <text x="599" y="174" class="purpleText">from shader source</text>
 
-  <path d="M240 103 L305 135" class="arrow"/>
-  <path d="M240 198 L305 175" class="arrow"/>
-  <path d="M555 145 C590 115 590 88 620 88" class="arrow"/>
-  <path d="M555 165 C590 180 590 202 620 202" class="arrow"/>
-  <path d="M430 210 L430 260" class="arrow"/>
+  <rect x="920" y="62" width="220" height="112" class="host"/>
+  <text x="967" y="90" class="label">D3D / Vulkan host</text>
+  <text x="948" y="118" class="small">build native SBT</text>
+  <text x="948" y="140" class="small">miss records + hit groups</text>
+  <text x="948" y="160" class="small">from reflected slots</text>
+
+  <rect x="920" y="218" width="220" height="122" class="host"/>
+  <text x="1003" y="246" class="label">Metal host</text>
+  <text x="948" y="274" class="small">build function table</text>
+  <text x="948" y="296" class="small">or function buffer</text>
+  <text x="948" y="318" class="small">from reflected slots</text>
+
+  <path d="M889 145 C900 118 908 107 920 107" class="orangeArrow"/>
+  <text x="904" y="126" class="tiny">reflection data</text>
+  <path d="M889 197 C905 235 910 261 920 279" class="orangeArrow"/>
+  <text x="902" y="241" class="tiny">reflection data</text>
+
+  <rect x="330" y="335" width="260" height="68" class="source"/>
+  <text x="360" y="374" class="label">RayTracer&lt;TraceProgram&gt;.trace</text>
+
+  <rect x="654" y="320" width="235" height="96" class="target"/>
+  <text x="705" y="348" class="label">Target lowering</text>
+  <text x="682" y="376" class="small">D3D/Vulkan: native trace</text>
+  <text x="682" y="397" class="small">Metal: post-trace dispatch</text>
+
+  <path d="M460 262 L460 335" class="greenArrow"/>
+  <path d="M590 369 L654 369" class="arrow"/>
+
+  <rect x="45" y="340" width="220" height="82" class="note"/>
+  <text x="68" y="368" class="redText">No duplicated grouping logic</text>
+  <text x="68" y="392" class="small">Change the shader-level</text>
+  <text x="68" y="412" class="small">TraceProgram; host reads it.</text>
 </svg>

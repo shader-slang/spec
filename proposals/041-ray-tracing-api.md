@@ -115,14 +115,15 @@ The proposed API asks shader authors to describe a trace program in source:
 4. Use `rt::RayTracer<TProgram>` and `rt::RayDispatch` from ray-generation code.
 
 The group declarations are the source-level conceptual SBT. They are visible to the compiler and
-to reflection. D3D and Vulkan use that information to build or validate native SBT records. Metal
-uses it to generate the post-trace dispatch switch. Figure 5 gives a high-level view of the API
+to reflection. Host code can query `TraceProgram` reflection to build D3D/Vulkan SBT records or
+Metal function tables/function buffers from the same grouping contract, so the grouping logic does
+not need to be duplicated outside shader source. Figure 5 gives a high-level view of this API
 shape.
 
 <a id="fig-api-overview"></a>
 ![API overview](figures/041-ray-tracing-api/api-overview.svg)
 
-*Figure 5. Proposed API overview: users define contexts, stage structs, and grouped dispatch metadata, and `RayTracer<TraceProgram>` lowers to target-specific dispatch mechanisms.*
+*Figure 5. Proposed API overview: users define contexts, stage structs, and grouped dispatch metadata in `TraceProgram`; host code uses reflection of that same `TraceProgram` to build D3D/Vulkan SBT records and Metal function tables/function buffers.*
 
 ### 2.2 Detailed Component Descriptions
 

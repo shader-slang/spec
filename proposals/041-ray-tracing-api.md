@@ -100,6 +100,14 @@ way.
 
 ### 1.2 Metal Tag List And Reachability
 
+This proposal uses the term **reachability** to describe the shader binding table entries that a
+single trace call can access. A trace call does not directly call an AnyHit, Intersection,
+ClosestHit, or Miss shader in source. Instead, the trace call supplies dispatch parameters, the
+runtime traversal finds geometry and instance contributions, and the target selects one of the SBT
+records. Those selectable records are the entries reachable from that trace call.
+
+![Reachability is the set of SBT entries that one trace call can select](figures/041-ray-tracing-api/reachability-definition.svg)
+
 Metal also has a tag-list requirement that current Slang cannot express directly. The Metal
 `intersector` type is specialized by semantic tags, and custom intersection functions reachable
 from that intersector must be declared with compatible tags.

@@ -35,65 +35,68 @@
 
   <text x="36" y="38" class="title">Proposed API overview: grouping logic moves into shader source</text>
 
-  <rect x="45" y="80" width="220" height="75" class="source"/>
-  <text x="75" y="108" class="label">Trace context</text>
-  <text x="70" y="132" class="small">payload, AS kind, tags</text>
+  <rect x="35" y="80" width="170" height="66" class="source"/>
+  <text x="55" y="106" class="label">Trace context</text>
+  <text x="50" y="128" class="small">payload, AS kind, tags</text>
 
-  <rect x="45" y="190" width="220" height="98" class="source"/>
-  <text x="75" y="218" class="label">Stage structs</text>
-  <text x="70" y="243" class="small">Miss / ClosestHit</text>
-  <text x="70" y="263" class="small">AnyHit / Intersection</text>
+  <rect x="35" y="190" width="170" height="88" class="source"/>
+  <text x="55" y="216" class="label">Stage structs</text>
+  <text x="50" y="240" class="small">Miss / ClosestHit</text>
+  <text x="50" y="260" class="small">AnyHit / Intersection</text>
 
-  <rect x="330" y="102" width="260" height="160" class="program"/>
-  <text x="410" y="132" class="label">TraceProgram</text>
-  <text x="360" y="162" class="small">TraceContext</text>
-  <text x="360" y="184" class="small">MissGroupList&lt;slots...&gt;</text>
-  <text x="360" y="206" class="small">HitGroupList&lt;slots...&gt;</text>
-  <text x="360" y="235" class="greenText">source-level grouping contract</text>
+  <rect x="265" y="102" width="250" height="160" class="program"/>
+  <text x="343" y="132" class="label">TraceProgram</text>
+  <text x="295" y="162" class="small">TraceContext</text>
+  <text x="295" y="184" class="small">MissGroupList&lt;slots...&gt;</text>
+  <text x="295" y="206" class="small">HitGroupList&lt;slots...&gt;</text>
+  <text x="295" y="235" class="greenText">source-level grouping contract</text>
 
-  <path d="M265 118 L330 145" class="arrow"/>
-  <path d="M265 239 L330 205" class="arrow"/>
+  <path d="M205 113 L265 145" class="arrow"/>
+  <path d="M205 234 L265 205" class="arrow"/>
 
-  <rect x="654" y="105" width="235" height="132" class="reflect"/>
-  <text x="704" y="134" class="label">Slang reflection</text>
-  <text x="682" y="162" class="small">groups, slots, contexts</text>
-  <text x="682" y="184" class="small">stage entry symbols</text>
-  <text x="682" y="206" class="small">target-specific metadata</text>
+  <rect x="595" y="105" width="235" height="132" class="reflect"/>
+  <text x="645" y="134" class="label">Slang reflection</text>
+  <text x="623" y="162" class="small">groups, slots, contexts</text>
+  <text x="623" y="184" class="small">stage entry symbols</text>
+  <text x="623" y="206" class="small">target-specific metadata</text>
 
-  <path d="M590 180 L654 180" class="purpleArrow"/>
-  <text x="599" y="157" class="purpleText">query once</text>
-  <text x="599" y="174" class="purpleText">from shader source</text>
+  <path d="M515 180 L595 180" class="purpleArrow"/>
+  <text x="525" y="96" class="purpleText">query TraceProgram</text>
+  <text x="545" y="112" class="purpleText">reflection</text>
 
-  <rect x="920" y="62" width="220" height="112" class="host"/>
-  <text x="967" y="90" class="label">D3D / Vulkan host</text>
-  <text x="948" y="118" class="small">build native SBT</text>
-  <text x="948" y="140" class="small">miss records + hit groups</text>
-  <text x="948" y="160" class="small">from reflected slots</text>
+  <rect x="935" y="62" width="220" height="112" class="host"/>
+  <text x="982" y="90" class="label">D3D / Vulkan host</text>
+  <text x="963" y="118" class="small">build native SBT</text>
+  <text x="963" y="140" class="small">miss records + hit groups</text>
+  <text x="963" y="160" class="small">from reflected slots</text>
 
-  <rect x="920" y="218" width="220" height="122" class="host"/>
-  <text x="1003" y="246" class="label">Metal host</text>
-  <text x="948" y="274" class="small">build function table</text>
-  <text x="948" y="296" class="small">or function buffer</text>
-  <text x="948" y="318" class="small">from reflected slots</text>
+  <rect x="935" y="218" width="220" height="122" class="host"/>
+  <text x="1018" y="246" class="label">Metal host</text>
+  <text x="963" y="274" class="small">build function table</text>
+  <text x="963" y="296" class="small">or function buffer</text>
+  <text x="963" y="318" class="small">from reflected slots</text>
 
-  <path d="M889 145 C900 118 908 107 920 107" class="orangeArrow"/>
-  <text x="904" y="126" class="tiny">reflection data</text>
-  <path d="M889 197 C905 235 910 261 920 279" class="orangeArrow"/>
-  <text x="902" y="241" class="tiny">reflection data</text>
+  <path d="M830 145 C865 114 900 108 935 108" class="orangeArrow"/>
+  <text x="858" y="86" class="tiny">reflected</text>
+  <text x="858" y="101" class="tiny">groups</text>
+  <path d="M830 197 C866 236 900 260 935 279" class="orangeArrow"/>
+  <text x="858" y="303" class="tiny">reflected</text>
+  <text x="858" y="318" class="tiny">groups</text>
 
-  <rect x="330" y="335" width="260" height="68" class="source"/>
-  <text x="360" y="374" class="label">RayTracer&lt;TraceProgram&gt;.trace</text>
+  <rect x="265" y="335" width="250" height="68" class="source"/>
+  <text x="290" y="374" class="label">RayTracer&lt;TraceProgram&gt;.trace</text>
 
-  <rect x="654" y="320" width="235" height="96" class="target"/>
-  <text x="705" y="348" class="label">Target lowering</text>
-  <text x="682" y="376" class="small">D3D/Vulkan: native trace</text>
-  <text x="682" y="397" class="small">Metal: post-trace dispatch</text>
+  <rect x="595" y="320" width="235" height="96" class="target"/>
+  <text x="645" y="348" class="label">Target lowering</text>
+  <text x="623" y="376" class="small">D3D/Vulkan: native trace</text>
+  <text x="623" y="397" class="small">Metal: post-trace dispatch</text>
 
-  <path d="M460 262 L460 335" class="greenArrow"/>
-  <path d="M590 369 L654 369" class="arrow"/>
+  <path d="M390 262 L390 335" class="greenArrow"/>
+  <path d="M515 369 L595 369" class="arrow"/>
 
-  <rect x="45" y="340" width="220" height="82" class="note"/>
-  <text x="68" y="368" class="redText">No duplicated grouping logic</text>
-  <text x="68" y="392" class="small">Change the shader-level</text>
-  <text x="68" y="412" class="small">TraceProgram; host reads it.</text>
+  <rect x="35" y="340" width="170" height="92" class="note"/>
+  <text x="50" y="366" class="redText">No duplicated</text>
+  <text x="50" y="384" class="redText">grouping logic</text>
+  <text x="50" y="407" class="small">Change TraceProgram;</text>
+  <text x="50" y="426" class="small">host reads it.</text>
 </svg>

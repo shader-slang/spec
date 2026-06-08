@@ -100,16 +100,16 @@
   <text x="684" y="563" class="code">generatedAnyHit()</text>
   <text x="684" y="590" class="redText">Which tag set?</text>
 
-  <rect x="920" y="458" width="185" height="148" class="host"/>
-  <text x="948" y="485" class="label">Host bindings</text>
-  <text x="943" y="515" class="small">slot tables decide:</text>
-  <text x="943" y="540" class="small">A -> Intersection2</text>
-  <text x="943" y="562" class="small">B -> AnyHit1</text>
-  <text x="943" y="587" class="redText">Available later</text>
+  <rect x="950" y="458" width="185" height="148" class="host"/>
+  <text x="978" y="485" class="label">Host bindings</text>
+  <text x="973" y="515" class="small">slot tables decide:</text>
+  <text x="973" y="540" class="small">A -> Intersection2</text>
+  <text x="973" y="562" class="small">B -> AnyHit1</text>
+  <text x="973" y="587" class="redText">Available later</text>
 
   <path d="M315 531 L365 531" class="dash"/>
   <path d="M610 532 L660 532" class="purpleArrow"/>
-  <path d="M920 532 C900 532 890 532 870 532" class="redArrow"/>
+  <path d="M950 532 C920 532 900 532 870 532" class="redArrow"/>
   <text x="880" y="521" class="redText">too late</text>
 
   <rect x="165" y="650" width="860" height="96" class="warn"/>
@@ -120,5 +120,5 @@
 
   <path d="M488 612 C492 628 520 641 560 650" class="redArrow"/>
   <path d="M765 606 C760 626 735 641 700 650" class="redArrow"/>
-  <path d="M1012 606 C1000 636 955 648 900 650" class="redArrow"/>
+  <path d="M1042 606 C1015 636 960 648 900 650" class="redArrow"/>
 </svg>

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="390" viewBox="0 0 1080 390" role="img" aria-label="Reachability definition: the SBT entries a trace call can select">
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="450" viewBox="0 0 1080 450" role="img" aria-label="Reachability definition: the SBT entries a trace call can select">
   <style>
     .title { font: 700 20px sans-serif; fill: #202020; }
     .label { font: 700 14px sans-serif; fill: #202020; }
@@ -15,6 +15,7 @@
     .arrow { stroke: #333333; stroke-width: 1.7; marker-end: url(#arrow); fill: none; }
     .greenArrow { stroke: #2f7d45; stroke-width: 1.9; marker-end: url(#arrowGreen); fill: none; }
     .orangeArrow { stroke: #a65f00; stroke-width: 1.8; marker-end: url(#arrowOrange); fill: none; }
+    .redArrow { stroke: #b42318; stroke-width: 2; marker-end: url(#arrowRed); fill: none; }
     .bracket { stroke: #2f7d45; stroke-width: 2.2; fill: none; }
     .greenText { font: 700 14px sans-serif; fill: #276738; }
     .redText { font: 700 13px sans-serif; fill: #8a1f17; }
@@ -28,6 +29,9 @@
     </marker>
     <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
       <path d="M0,0 L0,6 L9,3 z" fill="#a65f00"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#b42318"/>
     </marker>
   </defs>
 
@@ -94,4 +98,10 @@
   <text x="870" y="170" class="small">the trace call's tag set.</text>
 
   <path d="M836 154 C854 151 858 144 870 132" class="orangeArrow"/>
+
+  <path d="M715 342 L715 362" class="redArrow"/>
+  <rect x="590" y="362" width="448" height="74" class="warn"/>
+  <text x="612" y="386" class="redText">Existing model: host determines reachability</text>
+  <text x="612" y="407" class="small">Shader compile sees the trace call, but not the host SBT records</text>
+  <text x="612" y="426" class="small">or the binding edges to AnyHit/Intersection entries.</text>
 </svg>

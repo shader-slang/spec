@@ -106,6 +106,11 @@ ClosestHit, or Miss shader in source. Instead, the trace call supplies dispatch 
 runtime traversal finds geometry and instance contributions, and the target selects one of the SBT
 records. Those selectable records are the entries reachable from that trace call.
 
+In existing D3D/Vulkan-style ray tracing models, this reachability is determined by host-created
+binding data. The shader source contains the trace call, but the SBT records and the binding edges
+from those records to AnyHit, Intersection, ClosestHit, and Miss shaders are provided by host code.
+Therefore, the complete reachability set is not known from shader source at ordinary compile time.
+
 ![Reachability is the set of SBT entries that one trace call can select](figures/041-ray-tracing-api/reachability-definition.svg)
 
 Metal also has a tag-list requirement that current Slang cannot express directly. The Metal

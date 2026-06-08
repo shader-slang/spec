@@ -26,75 +26,19 @@ scope for this first design.
 
 ### 1.1 Dispatch Model Gap
 
-D3D and Vulkan expose ray tracing as a pipeline-stage model. A ray-generation shader calls
-`TraceRay` or `OpTraceRayKHR`, and the driver or hardware uses SBT parameters to select miss,
-any-hit, intersection, and closest-hit shaders.
+D3D and Vulkan expose ray tracing as a pipeline-stage model. A trace call enters traversal, and
+the driver or hardware uses host-created SBT records to select miss, any-hit, intersection, and
+closest-hit shaders. The closest-hit function is not directly called from ray-generation source.
 
-In simplified D3D/Vulkan-shaped Slang:
+Metal exposes a different model. `intersector.intersect(...)` returns an `intersection_result`.
+AnyHit and custom Intersection behavior can still be dispatched during traversal through Metal's
+function table or function buffer, but Miss and ClosestHit are ordinary post-trace shader logic
+written by the user.
 
-```slang
-[shader("raygeneration")]
-void rayGen()
-{
-    RadiancePayload payload;
-
-    TraceRay(
-        scene,
-        rayFlags,
-        instanceMask,
-        rayContributionToHitGroupIndex,
-        multiplierForGeometryContributionToHitGroupIndex,
-        missShaderIndex,
-        ray,
-        payload);
-}
-
-[shader("closesthit")]
-void closestHit(inout RadiancePayload payload, BuiltInTriangleIntersectionAttributes attr)
-{
-    payload.color = shadeTriangle(attr);
-}
-```
-
-The closest-hit function is not called directly by `rayGen`. The host builds an SBT, and the
-trace call supplies the parameters that are used to select a record:
-
-```text
-hitGroupSlot =
-    instanceContribution +
-    geometryContribution * sbtStride +
-    sbtOffset
-```
-
-Metal exposes a different programming model. A ray is traced by calling `intersector.intersect`,
-which returns an `intersection_result`. The user then writes ordinary shader code to decide what
-to do with that result.
-
-In simplified Metal-shaped code:
-
-```metal
-kernel void rayGen(...)
-{
-    intersector<instancing, triangle_data> tracer;
-
-    intersection_result<instancing, triangle_data> result =
-        tracer.intersect(ray, scene, intersectionFunctions, payload);
-
-    if (result.type == intersection_type::none)
-    {
-        miss(payload);
-    }
-    else
-    {
-        closestHit(payload, result);
-    }
-}
-```
-
-The practical problem is that current Slang ray tracing assumes the native D3D/Vulkan dispatch
-model. Metal needs generated ordinary control flow after `intersect`, but the current shader
-source does not provide enough structured information to synthesize that control flow in a robust
-way. Figure 1 summarizes the dispatch ownership gap.
+Figure 1 shows the key mismatch: D3D/Vulkan assign stage dispatch to the host SBT and the
+driver/hardware, while Metal assigns Miss and ClosestHit dispatch to shader code after
+`intersect(...)` returns. A portable Slang API needs enough structure to synthesize that Metal
+post-trace dispatch without changing the native D3D/Vulkan model.
 
 <a id="fig-dispatch-model-gap"></a>
 ![D3D and Vulkan SBT dispatch compared with Metal user-specified post-trace miss and closest-hit dispatch](figures/041-ray-tracing-api/dispatch-model-gap.svg)
@@ -104,109 +48,37 @@ way. Figure 1 summarizes the dispatch ownership gap.
 ### 1.2 Metal Tag List And Reachability
 
 This proposal uses the term **reachability** to describe the shader binding table entries that a
-single trace call can access. A trace call does not directly call an AnyHit, Intersection,
-ClosestHit, or Miss shader in source. Instead, the trace call supplies dispatch parameters, the
-runtime traversal finds geometry and instance contributions, and the target selects one of the SBT
-records. Those selectable records are the entries reachable from that trace call.
+single trace call can access. The trace call supplies dispatch parameters, traversal contributes
+geometry and instance information, and the target selects one of the SBT records. Those selectable
+records are the entries reachable from that trace call.
 
 In existing D3D/Vulkan-style ray tracing models, this reachability is determined by host-created
 binding data. The shader source contains the trace call, but the SBT records and the binding edges
 from those records to AnyHit, Intersection, ClosestHit, and Miss shaders are provided by host code.
-Therefore, the complete reachability set is not known from shader source at ordinary compile time.
-Figure 2 defines this term graphically.
+Therefore, as shown in Figure 2, the complete reachability set is not known from shader source at
+ordinary compile time.
 
 <a id="fig-reachability-definition"></a>
 ![Reachability is the set of SBT entries that one trace call can select](figures/041-ray-tracing-api/reachability-definition.svg)
 
 *Figure 2. Reachability definition: the reachable entries are the SBT records one trace call can select at runtime, but in the existing model that set is determined by host-created binding data.*
 
-Metal also has a tag-list requirement that current Slang cannot express directly. The Metal
-`intersector` type is specialized by semantic tags, and custom intersection functions reachable
-from that intersector must be declared with compatible tags.
+Metal adds a second constraint: each custom intersection function reachable from an intersector
+must have a compatible `[[intersection(...)]]` tag list. Native Metal can validate a mismatch at
+pipeline build time because the user writes both the intersector tags and the function tags in
+source.
 
-For example, a Metal program may have a tracer with one tag set:
+Slang does not currently expose that Metal tag system. When lowering AnyHit or Intersection entry
+points to Metal, Slang must synthesize `[[intersection(...)]]` tags for the generated Metal
+functions. The compiler can see trace sites and stage entry points, but in the existing model it
+cannot see the host binding edges that determine which stage entries are reachable from each trace
+site.
 
-```metal
-intersector<instancing, triangle_data> primaryTracer;
-```
-
-The reachable custom intersection functions need matching semantic declarations:
-
-```metal
-[[intersection(bounding_box, instancing, triangle_data)]]
-bool primaryIntersection(...)
-{
-    ...
-}
-```
-
-If a Metal program binds an incompatible custom intersection function to an intersector, the
-mismatch is still detectable. However, it can only be detected when the pipeline is built, because
-that is the point where all shader functions, intersector tag requirements, and binding
-information are available together. This is acceptable for native Metal because the user already
-writes the tag list on each `[[intersection(...)]]` function. The Metal compiler or pipeline
-builder has concrete tags to validate.
-
-Slang has a harder problem. The existing Slang ray tracing API does not expose a Metal-style tag
-system in user source. To lower AnyHit or Intersection entry points to Metal, Slang would need to
-synthesize the `[[intersection(...)]]` tag list for each generated Metal function.
-
-Consider a Slang program with several candidate hit shaders:
-
-```slang
-[shader("anyhit")]       void AnyHit1()       { ... }
-[shader("anyhit")]       void AnyHit2()       { ... }
-[shader("anyhit")]       void AnyHit3()       { ... }
-[shader("intersection")] void Intersection1() { ... }
-[shader("intersection")] void Intersection2() { ... }
-[shader("intersection")] void Intersection3() { ... }
-```
-
-and two trace sites that must lower to different Metal intersector tag sets:
-
-```slang
-void rayGen()
-{
-    // Lowers to a Metal intersector with tag set A.
-    intersector1.intersect(...);
-
-    // Lowers to a Metal intersector with tag set B.
-    intersector2.intersect(...);
-}
-```
-
-The compiler needs to decide whether `AnyHit1`, `AnyHit2`, `Intersection1`, etc. should receive
-tag set A, tag set B, or some other tag set. In the existing pipeline model, that reachability is
-not stated in shader source. The trace call is written in ray-generation code, while AnyHit and
-Intersection shaders are selected through host-side SBT or function-table state.
-
-The host may bind `Intersection1` to the hit group reached by `intersector1`, and bind
-`Intersection2` to the hit group reached by `intersector2`. That information is only available to
-host code. Slang does not see it when compiling the shader module, so it cannot reliably
-synthesize the required Metal tags for each generated custom intersection function.
-
-Problem-shaped Slang:
-
-```slang
-[shader("raygeneration")]
-void rayGen()
-{
-    // This trace needs tags equivalent to instancing + triangle_data.
-    TraceRay(scene, flags, mask, offset, stride, missIndex, ray, payload);
-}
-
-[shader("intersection")]
-void intersectionA()
-{
-    // This shader body might require curve_data instead.
-}
-```
-
-The host may bind `intersectionA` into the hit group reached by the trace call. If Slang emits no
-Metal tags, or emits tags inferred from the wrong trace site, the generated Metal code can fail at
-pipeline build. The old source shape has no type-level relationship that lets Slang determine
-which trace call can reach which AnyHit or Intersection shader. Figure 3 shows this information
-flow problem.
+Figure 3 shows the information-flow problem. If two trace sites lower to different Metal tag
+sets, and several AnyHit or Intersection entries may be bound by the host, the compiler cannot
+know whether a generated function needs tag set A, tag set B, or another tag set. Emitting no tag,
+or emitting a tag inferred from the wrong trace site, can make the generated Metal pipeline fail
+to build.
 
 <a id="fig-tag-list-reachability"></a>
 ![Metal tag-list reachability problem for Slang AnyHit and Intersection lowering](figures/041-ray-tracing-api/tag-list-reachability.svg)

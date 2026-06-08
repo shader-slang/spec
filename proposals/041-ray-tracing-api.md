@@ -66,7 +66,13 @@ ordinary compile time.
 Metal adds a second constraint: each custom intersection function reachable from an intersector
 must have a compatible `[[intersection(...)]]` tag list. Native Metal can validate a mismatch at
 pipeline build time because the user writes both the intersector tags and the function tags in
-source.
+source. Figure 3 shows why this works: pipeline build sees the intersector tags, function tags,
+and host bindings together.
+
+<a id="fig-native-metal-tag-validation"></a>
+![Native Metal can validate explicit intersector and custom intersection function tags at pipeline build time](figures/041-ray-tracing-api/native-metal-tag-validation.svg)
+
+*Figure 3. Native Metal tag validation: the user-authored tag lists give pipeline build enough information to reject incompatible host bindings.*
 
 Slang does not currently expose that Metal tag system. When lowering AnyHit or Intersection entry
 points to Metal, Slang must synthesize `[[intersection(...)]]` tags for the generated Metal
@@ -74,16 +80,16 @@ functions. The compiler can see trace sites and stage entry points, but in the e
 cannot see the host binding edges that determine which stage entries are reachable from each trace
 site.
 
-Figure 3 shows the information-flow problem. If two trace sites lower to different Metal tag
+Figure 4 shows the information-flow problem. If two trace sites lower to different Metal tag
 sets, and several AnyHit or Intersection entries may be bound by the host, the compiler cannot
 know whether a generated function needs tag set A, tag set B, or another tag set. Emitting no tag,
 or emitting a tag inferred from the wrong trace site, can make the generated Metal pipeline fail
 to build.
 
-<a id="fig-tag-list-reachability"></a>
-![Metal tag-list reachability problem for Slang AnyHit and Intersection lowering](figures/041-ray-tracing-api/tag-list-reachability.svg)
+<a id="fig-slang-tag-synthesis-gap"></a>
+![Slang cannot synthesize Metal intersection tags when host binding data owns reachability](figures/041-ray-tracing-api/slang-tag-synthesis-gap.svg)
 
-*Figure 3. Metal tag-list reachability problem: native Metal can validate explicit tags at pipeline build time, but Slang must synthesize those tags before host binding data reveals which AnyHit or Intersection entries are reachable.*
+*Figure 4. Slang tag synthesis gap: Slang must emit Metal `[[intersection(...)]]` tags before host binding data reveals which AnyHit or Intersection entries are reachable from each trace site.*
 
 ### 1.3 Reserved Challenges
 
@@ -110,13 +116,13 @@ The proposed API asks shader authors to describe a trace program in source:
 
 The group declarations are the source-level conceptual SBT. They are visible to the compiler and
 to reflection. D3D and Vulkan use that information to build or validate native SBT records. Metal
-uses it to generate the post-trace dispatch switch. Figure 4 gives a high-level view of the API
+uses it to generate the post-trace dispatch switch. Figure 5 gives a high-level view of the API
 shape.
 
 <a id="fig-api-overview"></a>
 ![API overview](figures/041-ray-tracing-api/api-overview.svg)
 
-*Figure 4. Proposed API overview: users define contexts, stage structs, and grouped dispatch metadata, and `RayTracer<TraceProgram>` lowers to target-specific dispatch mechanisms.*
+*Figure 5. Proposed API overview: users define contexts, stage structs, and grouped dispatch metadata, and `RayTracer<TraceProgram>` lowers to target-specific dispatch mechanisms.*
 
 ### 2.2 Detailed Component Descriptions
 
@@ -334,13 +340,13 @@ This gives the compiler a source-level relationship:
 - Every `HitGroup` in `PrimaryProgram.HitGroups` is constrained to that trace context.
 - Any-hit and intersection stage structs receive input types derived from the same context.
 
-Figure 5 shows how the `TraceProgram` context connects the trace call to the grouped stage
+Figure 6 shows how the `TraceProgram` context connects the trace call to the grouped stage
 structs.
 
 <a id="fig-context-reachability"></a>
 ![Context connects ray tracer and hit shaders](figures/041-ray-tracing-api/context-reachability.svg)
 
-*Figure 5. Context reachability contract: the `TraceProgram` connects `RayTracer<TProgram>`, the trace-wide context, hit groups, and stage input types so the compiler has a source-visible relationship.*
+*Figure 6. Context reachability contract: the `TraceProgram` connects `RayTracer<TProgram>`, the trace-wide context, hit groups, and stage input types so the compiler has a source-visible relationship.*
 
 This does not prove that arbitrary host data is correct. If the host builds an SBT or Metal
 function table that violates the reflected `TraceProgram`, the program can still be wrong. The

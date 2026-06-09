@@ -22,6 +22,23 @@ Scope
 Scope: pipeline ray tracing only. Inline ray tracing and ray queries are intentionally out of
 scope for this first design.
 
+Catalog
+-------
+
+- [1. Challenges Extending Current Slang Ray Tracing To Metal](#1-challenges-extending-current-slang-ray-tracing-to-metal)
+  - [1.1 Dispatch Model Gap](#11-dispatch-model-gap)
+  - [1.2 Metal Tag List And Reachability](#12-metal-tag-list-and-reachability)
+  - [1.3 Reserved Challenges](#13-reserved-challenges)
+- [2. Proposed API Sketch](#2-proposed-api-sketch)
+  - [2.1 Overview](#21-overview)
+  - [2.2 Detailed Component Descriptions](#22-detailed-component-descriptions)
+  - [2.3 Writing Stages As Interface-Conforming Types](#23-writing-stages-as-interface-conforming-types)
+- [3. Migration Examples](#3-migration-examples)
+  - [3.1 Migrating Existing Metal Code To The New API](#31-migrating-existing-metal-code-to-the-new-api)
+  - [3.2 Migrating Existing Slang D3D/Vulkan Ray Tracing Code](#32-migrating-existing-slang-d3dvulkan-ray-tracing-code)
+  - [3.3 Host Reflection Patterns](#33-host-reflection-patterns)
+- [4. Open Design Questions](#4-open-design-questions)
+
 ## 1. Challenges Extending Current Slang Ray Tracing To Metal
 
 ### 1.1 Dispatch Model Gap

@@ -133,6 +133,12 @@ where-clause
      |  'countof' '(' pack-param ')' '==' int-expr
 ```
 
+This is a specialized where-clause form, not a general boolean constraint
+expression. The accepted spelling is intentionally a subset of what a future
+boolean-constraint system might accept, so code written for this proposal could
+remain valid if Slang later treats `countof(T) == N` as an ordinary boolean
+constraint and optimizes the same pack-count shape for overload resolution.
+
 The syntax is deliberately oriented. The `countof(...)` operand must appear on
 the left side:
 
@@ -442,20 +448,23 @@ The compiler should diagnose at least the following cases:
 Alternatives Considered
 -----------------------
 
-### General integer equality constraints
+### General boolean and integer equality constraints
 
-We considered a more general constraint form:
+We considered a more general boolean-constraint system in which `where` could
+accept arbitrary compile-time boolean expressions. Under that model, the
+pack-count rule could be written as one integer equality:
 
 ```slang
 where IntExpr == IntExpr
 ```
 
-Under that model, `countof(Pack) == N` would merely be one special case of
-integer equality.
+and `countof(Pack) == N` would merely be one special case.
 
 This is attractive mechanically because `countof(Pack)` already folds to an
-`IntVal`. However, it opens the door to expectations that the compiler can
-perform algebraic proof search. For example:
+`IntVal`, and overload resolution could still recognize and optimize this exact
+shape. However, exposing the feature as general boolean or integer equality
+also opens the door to expectations that the compiler can perform algebraic
+proof search. For example:
 
 ```slang
 void bar<let N : int, each T>()

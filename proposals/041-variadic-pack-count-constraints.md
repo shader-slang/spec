@@ -35,7 +35,47 @@ Those features make it possible to define APIs over an arbitrary number of type
 or value arguments, but they do not provide a way for an API to require an exact
 pack size that is itself generic.
 
-For example:
+Motivation
+----------
+
+A real-world example is a tensor API whose rank is tracked by a generic integer.
+The tensor wants a single `load` method that accepts exactly one integer index
+per dimension:
+
+```slang
+struct Tensor<T, let Dimension : int>
+{
+    T load<each Index>(Index indices)
+        where Index == int
+        where countof(Index) == Dimension
+    {
+        ...
+    }
+}
+```
+
+Without an exact pack-count constraint, the library has to spell a separate
+extension for each supported rank:
+
+```slang
+extension<T> Tensor<T, 1>
+{
+    T load(int i0) { ... }
+}
+
+extension<T> Tensor<T, 2>
+{
+    T load(int i0, int i1) { ... }
+}
+
+// ...and so on for every supported dimension.
+```
+
+That workaround bloats tensor libraries with repetitive overloads, expands the
+overload set the compiler must consider, and slows compilation for an API whose
+real requirement is simply "the number of indices equals the tensor dimension."
+
+A smaller standalone example has the same shape:
 
 ```slang
 void load<let N : int, each TIndex>(TIndex indices)

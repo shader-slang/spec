@@ -79,22 +79,6 @@ during overload resolution, so candidates whose variadic argument pack cannot
 match the requested rank can be discarded without relying on a long list of
 rank-specific overloads.
 
-A smaller standalone example has the same shape:
-
-```slang
-void load<let N : int, each TIndex>(TIndex indices)
-    where countof(TIndex) == N
-{
-    ...
-}
-
-void test()
-{
-    load<3>(1, 2, 3); // OK.
-    load<2>(1, 2, 3); // Error: expected 2 pack elements, got 3.
-}
-```
-
 The same issue appears when checking generic bodies before specialization. A
 generic function may know abstractly that the pack `I` has count `N`, and it
 should be able to forward that proof to another generic that requires the same

@@ -74,6 +74,10 @@ extension<T> Tensor<T, 2>
 That workaround bloats tensor libraries with repetitive overloads, expands the
 overload set the compiler must consider, and slows compilation for an API whose
 real requirement is simply "the number of indices equals the tensor dimension."
+With a pack-count constraint, the compiler has a direct shape fact it can use
+during overload resolution, so candidates whose variadic argument pack cannot
+match the requested rank can be discarded without relying on a long list of
+rank-specific overloads.
 
 A smaller standalone example has the same shape:
 
@@ -116,10 +120,11 @@ substitution.
 Related Work
 ------------
 
-C++ templates can express similar relationships using non-type template
-parameters and template constraints, but those constraints are evaluated in the
-template instantiation model rather than Slang's first-class generic and witness
-system.
+C++ templates can express similar relationships using the `sizeof...` operator,
+non-type template parameters, and template constraints. For example, a C++
+template can require `sizeof...(Rest) + 1 == N` before accepting a variadic
+argument list. Those constraints are evaluated in the template instantiation
+model rather than Slang's first-class generic and witness system.
 
 Swift's variadic generics motivate Slang's `each`/`expand` model, but Swift's
 pack shape model is not directly applicable to Slang's existing generic value
@@ -220,8 +225,11 @@ struct Outer<let each D : int>
 
 ### Expected Count Expression
 
-The right side must be a compile-time integer expression that folds to an
-`IntVal`.
+The right side uses the same expression grammar and checking rules as an
+ordinary compile-time integer generic argument, such as the expression in
+`Foo<expr>`. This proposal does not introduce a separate expression grammar for
+constraints. The expression must check as a compile-time integer expression and
+fold to an `IntVal`.
 
 Examples:
 
@@ -230,10 +238,30 @@ where countof(T) == 3
 where countof(T) == N
 where countof(T) == countof(OuterPack)
 where countof(T) == N - 1
+where countof(T) == (N - 1)
 ```
 
-The last example is allowed only as an exact expected-count expression. The
-compiler does not derive algebraically equivalent facts from it.
+Parentheses, member references, and other expression forms are allowed exactly
+to the extent they are already allowed in compile-time integer generic argument
+positions and fold to an `IntVal`. For example, `countof(T) ==
+U<countof(T)>.Member` is valid only if that member access would already be a
+valid compile-time integer generic argument expression. A syntax form such as
+`N + {1}` is not accepted by this feature unless it is accepted by the existing
+compile-time expression grammar.
+
+The arithmetic examples above are allowed only as exact expected-count
+expressions. The compiler does not derive algebraically equivalent facts from
+them.
+
+The right side may itself mention `countof(...)`, including the same pack:
+
+```slang
+where countof(T) == countof(T)
+```
+
+Such a constraint is legal but still follows the oriented witness rule: it
+declares a proof about the left-side pack `T`; it does not create a general
+symmetric equality theorem.
 
 ### Concrete and Declared Witnesses
 
@@ -472,6 +500,28 @@ where countof(T) == N - 1
 If a user writes the direct oriented fact, the compiler can carry it as a
 declared witness. If the user writes an algebraically related fact, the compiler
 does not derive a new one.
+
+### General value-parameter constraints
+
+We also considered whether a limited value-constraint form could cover this
+feature by requiring the left side to be a generic value parameter:
+
+```slang
+where N == IntExpr
+```
+
+That direction may be useful in the future, but it does not directly model the
+proof needed here. A pack-count constraint is a fact about a pack parameter:
+`bar<N, I>()` needs a witness that the substituted pack `I` has count `N`, and
+the witness must be forwarded through generic substitution. A constraint on the
+value parameter `N` would answer a different question: it would constrain or
+define the value argument, and would still need additional rules to turn that
+fact into an oriented proof about a particular pack.
+
+Keeping the left side as `countof(Pack)` therefore keeps the proof object tied
+to the pack whose shape is being constrained. It also leaves room for a future
+general value-constraint or boolean-constraint system to accept compatible
+surface syntax without requiring this feature to define such a system now.
 
 ### Symmetric spelling
 

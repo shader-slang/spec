@@ -22,12 +22,6 @@ declare a conceptual shader binding table, or SBT, as structured Slang types. D3
 continue to use the native host-created SBT. Metal can use the same structure to synthesize the
 post-trace closest-hit and miss dispatch logic that Metal programmers normally write by hand.
 
-The prototype API sketch is being iterated in the Slang implementation repository under:
-
-- `docs/design/rt-api-workspace/design-static-dispatch-table/rt_static_dispatch_extend.slang`
-- `docs/design/rt-api-workspace/design-static-dispatch-table/rt_static_dispatch_table_extend.slang`
-- `docs/design/rt-api-workspace/design-static-dispatch-table/rt_static_dispathc_table_example_extend.slang`
-
 Catalog
 -------
 

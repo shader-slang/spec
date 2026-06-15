@@ -448,6 +448,38 @@ The compiler should diagnose at least the following cases:
 Alternatives Considered
 -----------------------
 
+### Arity-bound pack parameter declarations
+
+We considered encoding the pack count at the pack parameter declaration site
+instead of as a separate `where` clause. For example, a declaration could use a
+new dependent pack form such as:
+
+```slang
+void foo<let N : int, each[N] I>()
+{}
+```
+
+rather than:
+
+```slang
+void foo<let N : int, each I>()
+    where countof(I) == N
+{}
+```
+
+This is a plausible direction, and it may enable richer dependent pack patterns
+than can be expressed by `where countof(Pack) == IntExpr` alone. However, it is
+a broader language change than this proposal is trying to make. In particular,
+it would require specifying what names and expressions are in scope inside the
+bracketed arity expression, how those expressions participate in generic
+signature checking and substitution, and which dependent pack shapes are valid
+at declaration sites.
+
+The current proposal keeps the scope expansion minimal by adding one oriented
+constraint form to the existing `where`-clause machinery. It standardizes the
+pack-count fact needed by existing APIs without also designing a more general
+dependent pack-parameter system.
+
 ### General boolean and integer equality constraints
 
 We considered a more general boolean-constraint system in which `where` could

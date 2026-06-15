@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="500" viewBox="0 0 1180 500" role="img" aria-label="API overview showing TraceProgram reflection building host SBT and Metal function tables">
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="500" viewBox="0 0 1180 500" role="img" aria-label="API overview showing TraceProgramLayout reflection building host SBT and Metal function tables">
   <style>
     .title { font: 700 22px sans-serif; fill: #202020; }
     .label { font: 700 14px sans-serif; fill: #202020; }
@@ -45,10 +45,10 @@
   <text x="50" y="260" class="small">AnyHit / Intersection</text>
 
   <rect x="265" y="102" width="250" height="160" class="program"/>
-  <text x="343" y="132" class="label">TraceProgram</text>
+  <text x="325" y="132" class="label">TraceProgramLayout</text>
   <text x="295" y="162" class="small">TraceContext</text>
-  <text x="295" y="184" class="small">MissGroupList&lt;slots...&gt;</text>
-  <text x="295" y="206" class="small">HitGroupList&lt;slots...&gt;</text>
+  <text x="295" y="184" class="small">MissGroupList&lt;groups...&gt;</text>
+  <text x="295" y="206" class="small">HitGroupList&lt;groups...&gt;</text>
   <text x="295" y="235" class="greenText">source-level grouping contract</text>
 
   <path d="M205 113 L265 145" class="arrow"/>
@@ -61,7 +61,7 @@
   <text x="637" y="211" class="small">target-specific metadata</text>
 
   <path d="M515 180 L610 180" class="purpleArrow"/>
-  <text x="525" y="78" class="purpleText">query TraceProgram</text>
+  <text x="525" y="78" class="purpleText">query ProgramLayout</text>
   <text x="557" y="94" class="purpleText">reflection</text>
 
   <rect x="950" y="62" width="195" height="108" class="host"/>
@@ -84,7 +84,7 @@
   <text x="866" y="220" class="tiny">groups</text>
 
   <rect x="265" y="335" width="250" height="68" class="source"/>
-  <text x="390" y="374" class="label" text-anchor="middle">RayTracer&lt;TraceProgram&gt;.trace</text>
+  <text x="390" y="374" class="label" text-anchor="middle">RayTracer&lt;ProgramLayout&gt;.trace</text>
 
   <rect x="610" y="320" width="205" height="96" class="target"/>
   <text x="661" y="348" class="label">Target lowering</text>
@@ -97,6 +97,6 @@
   <rect x="35" y="340" width="170" height="92" class="note"/>
   <text x="50" y="366" class="redText">No duplicated</text>
   <text x="50" y="384" class="redText">grouping logic</text>
-  <text x="50" y="407" class="small">Change TraceProgram;</text>
+  <text x="50" y="407" class="small">Change layout;</text>
   <text x="50" y="426" class="small">host reads it.</text>
 </svg>

@@ -18,12 +18,12 @@
 
   <rect x="45" y="90" width="190" height="65" class="box"/>
   <text x="83" y="118" class="label">RayTracer</text>
-  <text x="66" y="139" class="small">RayTracer&lt;PrimaryProgram&gt;</text>
+  <text x="66" y="139" class="small">RayTracer&lt;ProgramLayout&gt;</text>
 
   <rect x="310" y="70" width="230" height="105" class="group"/>
-  <text x="371" y="100" class="label">PrimaryProgram</text>
+  <text x="333" y="100" class="label">PrimaryTraceProgramLayout</text>
   <text x="342" y="125" class="small">TraceContext = PrimaryTraceContext</text>
-  <text x="342" y="148" class="small">HitGroups = slot-indexed list</text>
+  <text x="342" y="148" class="small">HitGroups = ordered group list</text>
 
   <rect x="615" y="40" width="220" height="55" class="stage"/>
   <text x="647" y="68" class="label">ClosestHitInput</text>

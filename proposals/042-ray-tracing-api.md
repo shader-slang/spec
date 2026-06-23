@@ -258,39 +258,46 @@ For D3D and Vulkan, these fields are mostly descriptive:
 For Metal, this API becomes executable structure:
 
 - Slang lowers `RayTracer<ProgramLayout>.trace(...)` to `intersector.intersect(...)`.
-- Slang uses `RayTraversalDesc.missIndex` to synthesize miss dispatch.
-- Slang synthesizes the internal hit-group slot calculation to dispatch closest-hit.
+- Slang uses `RayTraversalDesc.missIndex` to index generated Miss visible-function dispatch.
+- Slang synthesizes the internal hit-group slot calculation to index generated ClosestHit
+  visible-function dispatch.
 - Slang uses the same hit-group list slots to validate and emit Metal function-table or
   function-buffer entries for any-hit and custom intersection functions.
 
 Conceptual Metal lowering:
 
 ```slang
+// Internal lowering pseudocode, not user-visible rt API.
 let result = metalIntersector.intersect(desc.ray, scene, descriptor, payload);
 
-if (!result.isNone)
+if (result.isNone)
+{
+    let missFn = descriptor.__generatedMissVisibleFunctions[desc.missIndex];
+    missFn(makeMissInput(...));
+}
+else
 {
     uint geometryContribution = __rtGetGeometryContribution<ProgramLayout>(result);
     uint instanceContribution = __rtGetInstanceContribution<ProgramLayout>(result);
     uint slot = instanceContribution + geometryContribution * desc.sbtStride + desc.sbtOffset;
 
-    switch (slot)
-    {
-    case 0:
-        PrimaryTriangleClosestHit().invoke(makeClosestHitInput(...));
-        break;
-    case 1:
-        PrimaryCurveClosestHit().invoke(makeClosestHitInput(...));
-        break;
-    case 2:
-        PrimarySphereClosestHit().invoke(makeClosestHitInput(...));
-        break;
-    }
+    let closestHitFn = descriptor.__generatedClosestHitVisibleFunctions[slot];
+    closestHitFn(makeClosestHitInput(...));
 }
 ```
 
 The important property is that Metal closest-hit dispatch is not invented independently. It is
 generated from the same conceptual SBT slots that the host uses for D3D and Vulkan.
+
+The generated Metal dispatch should not normally be emitted as a literal `switch` over every
+reachable Miss or ClosestHit body. A switch keeps all selected stage bodies in the same Metal
+shader compilation unit, so an expensive ClosestHit path that is unreachable for a given
+instance can still increase register pressure for a lightweight ClosestHit path compiled in the
+same function. The preferred Metal lowering is therefore to use generated visible-function tables
+for Miss and ClosestHit dispatch. This keeps the source model close to SBT dispatch while giving
+Metal a separate callable target for each reflected stage body. A switch remains useful as
+semantic pseudocode or as a restricted fallback for very small programs or targets where
+visible-function dispatch is not available.
 
 Alternative considered: require users to write a structural Metal-like dispatch function.
 
@@ -317,6 +324,8 @@ harder compiler problem:
 - Reflection depends on successful control-flow analysis.
 - Dynamic dispatch tables, buffer lookups, and helper functions complicate extraction.
 - Small shader-code changes could affect host reflection in surprising ways.
+- If lowered as a literal switch, heavy and light stage bodies can be forced into the same Metal
+  shader compilation unit and interfere through register allocation.
 
 The proposed design chooses the reverse direction: users declare the SBT structure directly, then
 Slang synthesizes Metal dispatch. This is simpler to validate and easier to reflect.
@@ -336,8 +345,8 @@ function-buffer path, the useful mental model is a pair of physical inputs:
 
 - a function-buffer table indexed by traversal, where each selected entry names one custom
   intersection function;
-- a user-data buffer that can carry records, generated slot maps, bindless resources, and callable
-  visible-function-table values.
+- generated resources that carry records, generated slot maps, bindless resources, and
+  visible-function tables used for Miss, ClosestHit, and callable dispatch.
 
 This section focuses on the `intersection_function_buffer_arguments` path because it is the more
 general form for the proposed portable abstraction. Metal's `intersection_function_table` is a
@@ -351,14 +360,14 @@ host-side database with separate hit-group, miss, and callable sections. A hit-g
 name ClosestHit, AnyHit, and Intersection shaders together, while the miss and callable sections
 are one-dimensional lists.
 
-Figure 6 compares the two binding models. The Metal panel shows a shader-visible function buffer
-and user-data buffer. The D3D/Vulkan panel shows the SBT as one host-side object with hit-group,
-miss, and callable sections.
+Figure 6 compares the two binding models. The Metal panel shows a shader-visible function buffer,
+descriptor-side data, and generated visible-function dispatch resources. The D3D/Vulkan panel
+shows the SBT as one host-side object with hit-group, miss, and callable sections.
 
 <a id="fig-binding-resource-comparison"></a>
 ![Metal function buffer compared with D3D and Vulkan shader binding table](figures/042-ray-tracing-api/binding-resource-comparison.svg)
 
-*Figure 6. Binding resource comparison: (a) Metal uses a shader-visible function buffer plus user data; (b) D3D/Vulkan use one host-side SBT object with hit-group, miss, and callable sections, and no shader binding point.*
+*Figure 6. Binding resource comparison: (a) Metal uses a shader-visible function buffer plus descriptor-side data and visible-function dispatch resources; (b) D3D/Vulkan use one host-side SBT object with hit-group, miss, and callable sections, and no shader binding point.*
 
 The previous subsection already makes the two sides share the same conceptual layout: the shader
 source declares a `ProgramLayout`, and host code can reflect that layout to build the target-side
@@ -381,9 +390,10 @@ the reflected program layout.
 
 On Metal, `TraceProgramDescriptor<ProgramLayout>` lowers to the physical resources needed by the
 selected Metal traversal path. For the general function-buffer path, that means a function buffer
-plus generated user data, matching the Metal panel in Figure 6. Host code binds those physical Metal
-resources to the opaque Slang descriptor and uses reflection of `ProgramLayout` to populate the
-custom intersection functions, record data, generated slot maps, bindless resources, and callable
+plus generated descriptor-side data and visible-function tables, matching the Metal panel in
+Figure 6. Host code binds those physical Metal resources to the opaque Slang descriptor and uses
+reflection of `ProgramLayout` to populate the custom intersection functions, record data,
+generated slot maps, bindless resources, Miss and ClosestHit visible-function entries, and callable
 visible-function-table values.
 
 On D3D and Vulkan, `TraceProgramDescriptor<ProgramLayout>` does not need to lower to a shader-visible
@@ -554,8 +564,8 @@ struct PrimarySphereIntersection
 The compiler is responsible for lowering these structs to the target form:
 
 - D3D and Vulkan: generated native entry points and hit groups, connected to SBT records.
-- Metal: generated intersection functions for any-hit/custom-intersection behavior, plus a
-  generated post-trace closest-hit dispatch switch.
+- Metal: generated intersection functions for any-hit/custom-intersection behavior, plus generated
+  post-trace Miss and ClosestHit visible-function dispatch.
 
 The user writes one source-level model. The target backend chooses the appropriate pipeline shape.
 
@@ -670,7 +680,8 @@ void rayGen()
 
 For Metal, Slang generates code that is equivalent to the user's old post-trace dispatch, but the
 source of truth is now `PrimaryTraceProgramLayout.HitGroups` and
-`PrimaryTraceProgramLayout.MissGroups`.
+`PrimaryTraceProgramLayout.MissGroups`. The generated dispatch should use Metal visible functions
+for Miss and ClosestHit rather than emitting one large switch containing every stage body.
 
 Metal host migration:
 
@@ -678,7 +689,9 @@ Metal host migration:
 2. For each hit group list position, discover its any-hit and intersection stage structs.
 3. Build the Metal intersection function buffer or function table using the reflected slot
    mapping.
-4. For function-buffer dispatch, configure Metal's index calculation consistently with
+4. Populate the generated Miss and ClosestHit visible-function tables inside the
+   `TraceProgramDescriptor` lowering using the reflected miss and hit-group list positions.
+5. For function-buffer dispatch, configure Metal's index calculation consistently with
    `RayTraversalDesc`:
 
 ```metal
@@ -687,7 +700,7 @@ intersector.set_base_id(desc.sbtOffset);
 ```
 
 This keeps Metal's any-hit and custom-intersection dispatch aligned with Slang's generated
-closest-hit dispatch.
+visible-function ClosestHit dispatch.
 
 ### 3.2 Migrating Existing Slang D3D/Vulkan Ray Tracing Code
 
@@ -839,8 +852,19 @@ Pattern B: Metal intersection function buffer.
 ```cpp
 auto programLayout = reflection->findTraceProgramLayout("PrimaryTraceProgramLayout");
 
+for (auto miss : programLayout.missGroups)
+{
+    descriptor.setGeneratedMissVisibleFunction(
+        miss.slot,
+        miss.generatedMissEntryPoint);
+}
+
 for (auto hit : programLayout.hitGroups)
 {
+    descriptor.setGeneratedClosestHitVisibleFunction(
+        hit.slot,
+        hit.generatedClosestHitEntryPoint);
+
     if (hit.generatedAnyHitEntryPoint || hit.generatedIntersectionEntryPoint)
     {
         functionBuffer.setFunction(
@@ -850,9 +874,10 @@ for (auto hit : programLayout.hitGroups)
 }
 ```
 
-The generated Metal ray-generation code uses the same slot to dispatch closest-hit after
-`intersect(...)`. The host does not need to provide a separate closest-hit dispatch table for
-Metal because closest-hit dispatch is synthesized by Slang.
+The generated Metal ray-generation code uses the same slot to select a generated ClosestHit
+visible function after `intersect(...)`. The host does not author custom post-trace dispatch logic
+for Metal, but the `TraceProgramDescriptor` lowering may expose generated visible-function table
+resources that the host or Slang runtime populates from the reflected program layout.
 
 Pattern C: Metal intersection function table.
 

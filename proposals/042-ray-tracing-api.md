@@ -881,7 +881,8 @@ kernel void rayGen(...)
 ```
 
 With the proposed API, the user moves the manually dispatched operations into stage structs and
-declares the trace program layout structurally. The list order defines the slots:
+declares the trace program layout structurally. The list order defines the portable logical hit
+slots:
 
 ```slang
 struct PrimaryMissGroup : rt::IMissGroup
@@ -949,7 +950,7 @@ void rayGen()
     desc.ray = makeRay();
     desc.instanceMask = 0xff;
     desc.sbtOffset = 0;
-    desc.sbtStride = 3;
+    desc.sbtStride = 1;
     desc.missIndex = 0;
 
     rt::RayTracer<PrimaryTraceProgramLayout> tracer;
@@ -959,27 +960,28 @@ void rayGen()
 
 For Metal, Slang generates code that is equivalent to the user's old post-trace dispatch, but the
 source of truth is now `PrimaryTraceProgramLayout.HitGroups` and
-`PrimaryTraceProgramLayout.MissGroups`. The generated dispatch should use Metal visible functions
-for Miss and ClosestHit rather than emitting one large switch containing every stage body.
+`PrimaryTraceProgramLayout.MissGroups`. The generated dispatch uses Metal visible functions for
+Miss and ClosestHit rather than emitting one large switch containing every stage body.
 
 Metal host migration:
 
 1. Query `PrimaryTraceProgramLayout` through Slang reflection.
-2. For each hit group list position, discover its any-hit and intersection stage structs.
-3. Build the Metal intersection function buffer or function table using the reflected slot
-   mapping.
-4. Populate the generated Miss and ClosestHit visible-function tables inside the
-   `TraceProgramDescriptor` lowering using the reflected miss and hit-group list positions.
-5. For function-buffer dispatch, configure Metal's index calculation consistently with
-   `RayTraversalDesc`:
+2. Populate the generated Miss and ClosestHit visible-function tables in the
+   `TraceProgramDescriptor` lowering from the reflected miss and hit-group slots.
+3. Populate the candidate-hit dispatch resource from the reflected hit groups:
+   AnyHit and custom Intersection stages go into either an
+   `intersection_function_buffer_arguments` lowering or an ordinary `intersection_function_table`
+   lowering.
+4. If the lowering uses `intersection_function_buffer_arguments`, lay out the candidate-hit table
+   by the same logical hit slots that `RayTraversalDesc` computes. In this example,
+   `geometry_id` values `0`, `1`, and `2` map directly to logical hit slots `0`, `1`, and `2`.
+5. If the lowering uses ordinary `intersection_function_table`, choose native Metal IFT indices
+   for each reachable logical hit slot and build acceleration-structure function-table offsets so
+   traversal selects the corresponding native index. The native IFT index and logical hit slot do
+   not need to be numerically equal, but the mapping must be 1:1.
 
-```metal
-intersector.set_geometry_multiplier(desc.sbtStride);
-intersector.set_base_id(desc.sbtOffset);
-```
-
-This keeps Metal's any-hit and custom-intersection dispatch aligned with Slang's generated
-visible-function ClosestHit dispatch.
+This keeps Metal's AnyHit/custom-Intersection dispatch aligned with Slang's generated visible
+function dispatch for Miss and ClosestHit.
 
 ### 3.2 Migrating Existing Slang D3D/Vulkan Ray Tracing Code
 
@@ -1045,6 +1047,8 @@ struct PrimaryTriangleClosestHit
 The old trace parameters map directly to fields in `RayTraversalDesc`:
 
 ```slang
+rt::TraceProgramDescriptor<PrimaryTraceProgramLayout> gPrimaryDescriptor;
+
 rt::RayTraversalDesc desc;
 desc.ray = ray;
 desc.instanceMask = instanceMask;
@@ -1061,11 +1065,15 @@ D3D/Vulkan host migration:
 1. Query `PrimaryTraceProgramLayout` through Slang reflection.
 2. For each reflected miss group, add a miss record at its list position.
 3. For each reflected hit group, add a hit group record at its list position.
-4. Use the same application data that previously produced `rayContributionToHitGroupIndex`,
+4. Populate any reflected shader-record or local-root data associated with the miss, hit, and
+   callable groups.
+5. Use the same application data that previously produced `rayContributionToHitGroupIndex`,
    `multiplierForGeometryContributionToHitGroupIndex`, and `missShaderIndex`.
 
-The native SBT model is not replaced. The new shader declarations make the intended SBT layout
-visible to Slang, which enables Metal lowering and gives host code a single reflected contract.
+The native SBT model is not replaced, and `TraceProgramDescriptor<PrimaryTraceProgramLayout>` does
+not need to become a shader-visible resource on D3D/Vulkan. The new shader declarations make the
+intended SBT layout visible to Slang, which enables Metal lowering and gives host code a single
+reflected contract.
 
 ### 3.3 Host Reflection Patterns
 
@@ -1083,13 +1091,17 @@ struct ReflectedTraceProgramLayout
 struct ReflectedMissGroup
 {
     int slot;
+    TypeReflection* contextType;
+    TypeReflection* recordType;
     EntryPointReflection* generatedMissEntryPoint;
 };
 
 struct ReflectedHitGroup
 {
     int slot;
-    TypeReflection* hitContextType;
+    TypeReflection* contextType;
+    TypeReflection* recordType;
+    TypeReflection* intersectionAttributesType;
     EntryPointReflection* generatedClosestHitEntryPoint;
     EntryPointReflection* generatedAnyHitEntryPoint;
     EntryPointReflection* generatedIntersectionEntryPoint;
@@ -1098,10 +1110,14 @@ struct ReflectedHitGroup
 struct ReflectedCallableGroup
 {
     int slot;
-    TypeReflection* callableContextType;
+    TypeReflection* contextType;
+    TypeReflection* recordType;
     EntryPointReflection* generatedCallableEntryPoint;
 };
 ```
+
+The helper names in the following examples are illustrative; the reflection API shape and runtime
+ownership model are still open design questions.
 
 Pattern A: D3D/Vulkan native SBT.
 
@@ -1110,7 +1126,10 @@ auto programLayout = reflection->findTraceProgramLayout("PrimaryTraceProgramLayo
 
 for (auto miss : programLayout.missGroups)
 {
-    sbt.setMissRecord(miss.slot, miss.generatedMissEntryPoint);
+    sbt.setMissRecord(
+        miss.slot,
+        miss.generatedMissEntryPoint,
+        buildShaderRecordData(miss.recordType));
 }
 
 for (auto hit : programLayout.hitGroups)
@@ -1119,12 +1138,22 @@ for (auto hit : programLayout.hitGroups)
         hit.slot,
         hit.generatedClosestHitEntryPoint,
         hit.generatedAnyHitEntryPoint,
-        hit.generatedIntersectionEntryPoint);
+        hit.generatedIntersectionEntryPoint,
+        buildShaderRecordData(hit.recordType));
+}
+
+for (auto callable : programLayout.callableGroups)
+{
+    sbt.setCallableRecord(
+        callable.slot,
+        callable.generatedCallableEntryPoint,
+        buildShaderRecordData(callable.recordType));
 }
 ```
 
 The application still controls geometry contribution, instance contribution, stride, and offset.
-The reflected slots tell the application which shader group belongs at each slot.
+The reflected slots tell the application which shader group belongs at each SBT slot, while the
+reflected record types tell it what local-root/shader-record data each record expects.
 
 Pattern B: Metal intersection function buffer.
 
@@ -1136,6 +1165,9 @@ for (auto miss : programLayout.missGroups)
     descriptor.setGeneratedMissVisibleFunction(
         miss.slot,
         miss.generatedMissEntryPoint);
+    descriptor.setMissRecordData(
+        miss.slot,
+        buildShaderRecordData(miss.recordType));
 }
 
 for (auto hit : programLayout.hitGroups)
@@ -1148,15 +1180,29 @@ for (auto hit : programLayout.hitGroups)
     {
         functionBuffer.setFunction(
             hit.slot,
-            hit.generatedIntersectionOrAnyHitFunction);
+            buildGeneratedCandidateHitFunction(hit));
     }
+
+    descriptor.setHitRecordData(
+        hit.slot,
+        buildShaderRecordData(hit.recordType));
+}
+
+for (auto callable : programLayout.callableGroups)
+{
+    descriptor.setGeneratedCallableVisibleFunction(
+        callable.slot,
+        callable.generatedCallableEntryPoint);
+    descriptor.setCallableRecordData(
+        callable.slot,
+        buildShaderRecordData(callable.recordType));
 }
 ```
 
-The generated Metal ray-generation code uses the same slot to select a generated ClosestHit
-visible function after `intersect(...)`. The host does not author custom post-trace dispatch logic
-for Metal, but the `TraceProgramDescriptor` lowering may expose generated visible-function table
-resources that the host or Slang runtime populates from the reflected program layout.
+For function-buffer lowering, the candidate-hit table is organized by the same logical slots used
+by generated ClosestHit dispatch. The host does not author custom post-trace dispatch logic for
+Metal, but the `TraceProgramDescriptor` lowering may expose generated visible-function table and
+record resources that the host or Slang runtime populates from the reflected program layout.
 
 Pattern C: Metal intersection function table.
 
@@ -1174,6 +1220,9 @@ for (auto miss : programLayout.missGroups)
     descriptor.setGeneratedMissVisibleFunction(
         miss.slot,
         miss.generatedMissEntryPoint);
+    descriptor.setMissRecordData(
+        miss.slot,
+        buildShaderRecordData(miss.recordType));
 }
 
 for (auto hit : programLayout.hitGroups)
@@ -1184,19 +1233,39 @@ for (auto hit : programLayout.hitGroups)
 
     if (hit.generatedAnyHitEntryPoint || hit.generatedIntersectionEntryPoint)
     {
-        uint metalIFTIndex = engineLayout.getMetalFunctionTableIndexForHitSlot(hit.slot);
+        uint metalIFTIndex = engineLayout.chooseMetalFunctionTableIndex(hit.slot);
         functionTable.setFunction(
             metalIFTIndex,
-            hit.generatedIntersectionOrAnyHitFunction);
+            buildGeneratedCandidateHitFunction(hit));
+
+        engineLayout.recordMetalFunctionTableMapping(
+            hit.slot,
+            metalIFTIndex);
     }
+
+    descriptor.setHitRecordData(
+        hit.slot,
+        buildShaderRecordData(hit.recordType));
+}
+
+for (auto callable : programLayout.callableGroups)
+{
+    descriptor.setGeneratedCallableVisibleFunction(
+        callable.slot,
+        callable.generatedCallableEntryPoint);
+    descriptor.setCallableRecordData(
+        callable.slot,
+        buildShaderRecordData(callable.recordType));
 }
 ```
 
 This is valid when the engine also builds geometry and instance acceleration-structure metadata
 so traversal selects the same `metalIFTIndex` for primitives that post-trace dispatch will map to
 `hit.slot`. The mapping from `metalIFTIndex` to `hit.slot` must be 1:1, but the numbers do not
-need to be equal. The proposal does not yet define an API for choosing ordinary function-table
-lowering versus function-buffer lowering; that is left as a backend/runtime policy to revisit.
+need to be equal. Callable and Miss visible-function tables do not use this hit-slot mapping:
+Miss is indexed by `missIndex`, and Callable is indexed by the callable index. The proposal does
+not yet define an API for choosing ordinary function-table lowering versus function-buffer
+lowering; that is left as a backend/runtime policy to revisit.
 
 Pattern D: Manual host construction without reflection.
 

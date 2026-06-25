@@ -35,6 +35,8 @@ Catalog
   - [2.2 Detailed Component Descriptions](#22-detailed-component-descriptions)
     - [2.2.1 Resolving The Dispatch Model Gap With A Conceptual SBT](#221-resolving-the-dispatch-model-gap-with-a-conceptual-sbt)
     - [2.2.2 Resolving The Metal Function Table And Function Buffer Resource Mismatch With TraceProgramDescriptor](#222-resolving-the-metal-function-table-and-function-buffer-resource-mismatch-with-traceprogramdescriptor)
+      - [2.2.2.1 Lowering To `intersection_function_table`](#2221-lowering-to-intersection_function_table)
+      - [2.2.2.2 Lowering To `intersection_function_buffer_arguments`](#2222-lowering-to-intersection_function_buffer_arguments)
     - [2.2.3 Resolving The Metal Tag-List Issue With Context Types](#223-resolving-the-metal-tag-list-issue-with-context-types)
   - [2.3 Writing Stages As Interface-Conforming Types](#23-writing-stages-as-interface-conforming-types)
 - [3. Migration Examples](#3-migration-examples)
@@ -68,11 +70,11 @@ post-trace dispatch without changing the native D3D/Vulkan model.
 
 ### 1.2 Metal Function Table And Function Buffer Resource Mismatch
 
-Metal introduces `intersection_function_table` and `intersection_function_buffer` resource types
-that are visible to shader code and must be bound from host code when traversal needs custom
-intersection behavior. This is different from the D3D/Vulkan SBT model. The SBT is built by host
-code, but it is not a shader-visible resource and shader code does not declare a binding point for
-it.
+Metal introduces `intersection_function_table` resource objects and
+`intersection_function_buffer_arguments` values that are visible to shader code and must be bound
+from host code when traversal needs custom intersection behavior. This is different from the
+D3D/Vulkan SBT model. The SBT is built by host code, but it is not a shader-visible resource and
+shader code does not declare a binding point for it.
 
 This creates an asymmetric programming model. Metal shader code may need a parameter that
 represents a function table or function buffer. D3D/Vulkan shader code has no corresponding
@@ -332,27 +334,10 @@ Slang synthesizes Metal dispatch. This is simpler to validate and easier to refl
 
 #### 2.2.2 Resolving The Metal Function Table And Function Buffer Resource Mismatch With TraceProgramDescriptor
 
-Metal introduces `intersection_function_table` and `intersection_function_buffer` as resource
-types that can be visible to shader code and bound from host code. D3D and Vulkan instead use an
-SBT. The SBT is also built by host code, but it is not a shader-visible resource, so shader code
-does not declare an SBT binding point.
-
-Before defining the Slang abstraction, it is useful to review the structure of these target
-objects. Metal's `intersection_function_table` is a host-bound resource-object table containing
-custom intersection function entries and resource bindings visible to those functions. Metal's
-`intersection_function_buffer` is the buffer form of the same candidate-hit dispatch idea. In the
-function-buffer path, the useful mental model is a pair of physical inputs:
-
-- a function-buffer table indexed by traversal, where each selected entry names one custom
-  intersection function;
-- generated resources that carry records, generated slot maps, bindless resources, and
-  visible-function tables used for Miss, ClosestHit, and callable dispatch.
-
-This section focuses on the `intersection_function_buffer_arguments` path because it is the more
-general form for the proposed portable abstraction. Metal's `intersection_function_table` is a
-special-case resource type relative to `intersection_function_buffer_arguments`; it follows the
-same candidate-hit dispatch idea, and support for it can be added as a restricted lowering path
-without changing the core `TraceProgramDescriptor<ProgramLayout>` model.
+Metal introduces `intersection_function_table` resource objects and
+`intersection_function_buffer_arguments` values that can be visible to shader code and bound from
+host code. D3D and Vulkan instead use an SBT. The SBT is also built by host code, but it is not a
+shader-visible resource, so shader code does not declare an SBT binding point.
 
 D3D and Vulkan do not expose an equivalent shader-visible function table or function buffer.
 Their comparable structure is the host-created SBT. It is useful to view the SBT as one
@@ -360,14 +345,13 @@ host-side database with separate hit-group, miss, and callable sections. A hit-g
 name ClosestHit, AnyHit, and Intersection shaders together, while the miss and callable sections
 are one-dimensional lists.
 
-Figure 6 compares the two binding models. The Metal panel shows a shader-visible function buffer,
-descriptor-side data, and generated visible-function dispatch resources. The D3D/Vulkan panel
-shows the SBT as one host-side object with hit-group, miss, and callable sections.
+Figure 6 shows the SBT baseline that the portable layout is trying to preserve. The native
+D3D/Vulkan SBT is one host-side object with hit-group, miss, and callable sections.
 
-<a id="fig-binding-resource-comparison"></a>
-![Metal function buffer compared with D3D and Vulkan shader binding table](figures/042-ray-tracing-api/binding-resource-comparison.svg)
+<a id="fig-d3d-vulkan-sbt-layout"></a>
+![D3D and Vulkan shader binding table layout](figures/042-ray-tracing-api/d3d-vulkan-sbt-layout.svg)
 
-*Figure 6. Binding resource comparison: (a) Metal uses a shader-visible function buffer plus descriptor-side data and visible-function dispatch resources; (b) D3D/Vulkan use one host-side SBT object with hit-group, miss, and callable sections, and no shader binding point.*
+*Figure 6. D3D/Vulkan SBT layout: one host-side object contains hit-group, miss, and callable sections, and shader code has no SBT binding point.*
 
 The previous subsection already makes the two sides share the same conceptual layout: the shader
 source declares a `ProgramLayout`, and host code can reflect that layout to build the target-side
@@ -388,19 +372,314 @@ struct TraceProgramDescriptor<ProgramLayout>
 declare the trace context. Its job is to represent the target-specific descriptor object derived from
 the reflected program layout.
 
-On Metal, `TraceProgramDescriptor<ProgramLayout>` lowers to the physical resources needed by the
-selected Metal traversal path. For the general function-buffer path, that means a function buffer
-plus generated descriptor-side data and visible-function tables, matching the Metal panel in
-Figure 6. Host code binds those physical Metal resources to the opaque Slang descriptor and uses
-reflection of `ProgramLayout` to populate the custom intersection functions, record data,
-generated slot maps, bindless resources, Miss and ClosestHit visible-function entries, and callable
-visible-function-table values.
-
 On D3D and Vulkan, `TraceProgramDescriptor<ProgramLayout>` does not need to lower to a shader-visible
-resource. The native SBT remains a host-side object, as shown in the D3D/Vulkan panel in Figure 6.
+resource. The native SBT remains a host-side object, as shown in Figure 6.
 Host code still uses the same `ProgramLayout` reflection to build hit-group, miss, and callable
 SBT records, but shader code does not receive a Metal-style function-table or function-buffer
 object.
+
+On Metal, `TraceProgramDescriptor<ProgramLayout>` lowers to the physical resources needed by the
+selected Metal traversal path. This proposal does not yet expose an API for users to choose the
+Metal lowering form. For now, assume the Slang compiler and runtime can lower the same opaque
+descriptor to either an ordinary `intersection_function_table` shape or an
+`intersection_function_buffer_arguments` shape. The two shapes have the same source-level contract
+but different target-side binding structure.
+
+##### 2.2.2.1 Lowering To `intersection_function_table`
+
+An ordinary Metal `intersection_function_table` is a shader-visible resource-object table. Figure
+7 shows both the resource layout and the dispatch relationship that Slang needs to synthesize.
+
+<a id="fig-intersection-function-table-layout"></a>
+![Metal intersection function table resource layout with closest-hit dispatch zoom](figures/042-ray-tracing-api/intersection-function-table-layout.svg)
+
+*Figure 7. Ordinary intersection function table lowering: the left side shows the whole IFT resource, including function entries, buffer bindings, and three visible-function tables; the right side zooms into the paired dispatch between the ClosestHit visible-function table and IFT entries. A 1:1 mapping connects native IFT entries to logical hit slots. Miss and Callable visible-function tables use independent indices.*
+
+**Native Layout**
+
+The ordinary function-table layout has two conceptually separate parts:
+
+```text
+intersection_function_table<generatedTags>
+    function entries:
+        entry metalIFTIndex -> generated candidate-hit function
+                               // AnyHit / custom Intersection behavior only
+                               // mapped 1:1 to a logicalHitSlot
+
+    resource bindings:
+        buffer slot 0 -> generated descriptor data
+                         // records, slot maps, bindless resource handles
+
+        visible-function table slot 0 -> generated Miss functions
+        visible-function table slot 1 -> generated ClosestHit functions
+                                         // indexed by logicalHitSlot
+        visible-function table slot 2 -> generated Callable functions
+```
+
+There are at most three generated visible-function tables associated with the function table:
+`visible_function_table_0` is the Miss table, `visible_function_table_1` is the ClosestHit table,
+and `visible_function_table_2` is the Callable table. These visible-function tables are resource
+bindings of the ordinary Metal function table; they are not the native IFT entries themselves.
+
+**Lowering Strategy**
+
+When the compiler lowers `TraceProgramDescriptor<ProgramLayout>` to this ordinary function-table
+path, it can be thought of as:
+
+```text
+TraceProgramDescriptor<ProgramLayout>
+    intersection_function_table<generatedTags>:
+        function entries -> generated candidate-hit functions
+        buffer slot 0 -> generated descriptor data
+        visible-function table slot 0 -> generated Miss functions
+        visible-function table slot 1 -> generated ClosestHit functions
+        visible-function table slot 2 -> generated Callable functions
+```
+
+The generated Metal-side use can be thought of as:
+
+```slang
+// Internal Metal-shaped pseudocode.
+let table = descriptor.__intersectionFunctionTable;
+let descriptorData = table.get_buffer<__RTDescriptorData*>(0);
+let missFns = table.get_visible_function_table<__RTMissFn>(0);
+let closestHitFns = table.get_visible_function_table<__RTClosestHitFn>(1);
+
+let result = metalIntersector.intersect(desc.ray, scene, table, payload);
+
+if (result.isNone)
+{
+    missFns[desc.missIndex](payload, descriptorData, desc.missIndex);
+}
+else
+{
+    uint logicalHitSlot =
+        instanceOffset + geometryId * desc.sbtStride + desc.sbtOffset;
+
+    closestHitFns[logicalHitSlot](payload, descriptorData, logicalHitSlot, result);
+}
+```
+
+**Gaps, Fixes, And Constraints**
+
+- **Gap 1: Native function-table entries do not dispatch every ray-tracing stage.** The native
+  entries dispatch only candidate-hit behavior: AnyHit filtering and custom Intersection logic.
+  They do not dispatch Miss or ClosestHit. Slang fixes this by lowering Miss and ClosestHit to
+  generated visible-function tables stored as function-table resource bindings.
+
+  **Constraint:** the host or Slang runtime must populate those generated visible-function tables
+  as part of the `TraceProgramDescriptor` lowering. The Miss, ClosestHit, and Callable entries can
+  be queried from the `ProgramLayout` reflection data described in the previous section. Miss uses
+  `desc.missIndex`, ClosestHit uses `logicalHitSlot`, and Callable uses its own callable index.
+
+- **Gap 2: Native function-table indexing is not the portable hit-slot formula.** Ordinary
+  `intersection_function_table` traversal does not use `RayTraversalDesc.sbtOffset` or
+  `RayTraversalDesc.sbtStride` when selecting candidate-hit functions. Metal selects an IFT entry
+  from acceleration-structure offsets:
+
+  ```text
+  metalIFTIndex =
+      geometryIntersectionFunctionTableOffset +
+      instanceIntersectionFunctionTableOffset
+  ```
+
+  Slang treats `logicalHitSlot` as the portable identity of the hit group:
+
+  ```text
+  logicalHitSlot = instanceOffset + geometryId * desc.sbtStride + desc.sbtOffset
+  ```
+
+  **Constraint:** the host must construct acceleration-structure function-table offsets and function
+  table contents so every `metalIFTIndex` selected by traversal maps to exactly one
+  `logicalHitSlot`. The numbers do not need to be equal. What matters is that the selected
+  candidate-hit function and the generated ClosestHit visible function represent the same logical
+  hit group:
+
+  ```text
+  intersection_function_table[metalIFTIndex]
+      -> generated AnyHit / custom Intersection candidate function
+      -> maps to logicalHitSlot
+
+  visible_function_table_1[logicalHitSlot]
+      -> generated ClosestHit function
+  ```
+
+  Separate `TraceProgramDescriptor` values per ray type are also a natural way to keep this
+  mapping simple.
+
+**Concrete Example**
+
+Suppose one trace call uses `desc.sbtStride = 2`, `desc.sbtOffset = 1`, and logical
+`instanceOffset = 0`. The portable logical slots are:
+
+```text
+logicalHitSlot(geometry 0) = 0 + geometryId 0 * 2 + 1 = 1
+logicalHitSlot(geometry 1) = 0 + geometryId 1 * 2 + 1 = 3
+```
+
+The Metal IFT indices do not need to be `1` and `3`. They only need a 1:1 mapping back to logical
+slots `1` and `3`:
+
+```text
+instance:
+    instanceIntersectionFunctionTableOffset = 8
+
+geometry 0:
+    geometryIntersectionFunctionTableOffset = 0
+    metalIFTIndex = 0 + 8 = 8
+    maps to logicalHitSlot 1
+
+geometry 1:
+    geometryIntersectionFunctionTableOffset = 4
+    metalIFTIndex = 4 + 8 = 12
+    maps to logicalHitSlot 3
+
+intersection_function_table[8]  -> candidate function for logicalHitSlot 1
+intersection_function_table[12] -> candidate function for logicalHitSlot 3
+
+visible_function_table_1[1] -> ClosestHit for logicalHitSlot 1
+visible_function_table_1[3] -> ClosestHit for logicalHitSlot 3
+```
+
+##### 2.2.2.2 Lowering To `intersection_function_buffer_arguments`
+
+The Metal 4 function-buffer path represents candidate-hit dispatch with an
+`intersection_function_buffer_arguments` value rather than an ordinary resource-object table.
+Figure 8 shows both the function-buffer layout and the descriptor-side data needed for generated
+Miss, ClosestHit, and Callable dispatch.
+
+<a id="fig-intersection-function-buffer-layout"></a>
+![Metal intersection function buffer arguments layout](figures/042-ray-tracing-api/intersection-function-buffer-layout.svg)
+
+*Figure 8. Metal function-buffer lowering: `intersection_function_buffer_arguments` carries the candidate-hit table, while descriptor-side data carries records and visible-function dispatch resources for Miss, ClosestHit, and Callable dispatch.*
+
+**Native Layout**
+
+The native function-buffer argument describes the traversal-time candidate-hit table:
+
+```text
+intersection_function_buffer_arguments:
+    intersection_function_buffer      -> raw table of generated candidate-hit functions
+    intersection_function_buffer_size -> byte size of that table
+    intersection_function_stride      -> byte stride between table entries
+```
+
+The function-buffer table still only contains candidate-hit behavior: AnyHit filtering and custom
+Intersection logic. Descriptor-side data carries the rest of the portable trace program state:
+records, slot maps, bindless resources, and generated visible-function tables for Miss,
+ClosestHit, and Callable dispatch.
+
+**Lowering Strategy**
+
+When the compiler lowers `TraceProgramDescriptor<ProgramLayout>` to this function-buffer path, it
+can be thought of as:
+
+```text
+TraceProgramDescriptor<ProgramLayout>
+    intersection_function_buffer_arguments:
+        intersection_function_buffer      -> table of generated candidate-hit functions
+        intersection_function_buffer_size -> byte size of the table
+        intersection_function_stride      -> byte stride between entries
+
+    generated descriptor-side data:
+        records
+        slot maps
+        bindless resource handles
+        visible-function table for Miss
+        visible-function table for ClosestHit
+        visible-function table for Callable
+```
+
+The generated Metal-side use can be thought of as:
+
+```slang
+// Internal Metal-shaped pseudocode.
+let ifbArgs = descriptor.__intersectionFunctionBufferArguments;
+let descriptorData = descriptor.__generatedDescriptorData;
+let missFns = descriptorData.missVisibleFunctions;
+let closestHitFns = descriptorData.closestHitVisibleFunctions;
+
+metalIntersector.set_base_id(desc.sbtOffset);
+metalIntersector.set_geometry_multiplier(desc.sbtStride);
+
+let result = metalIntersector.intersect(desc.ray, scene, ifbArgs, descriptorData, payload);
+
+if (result.isNone)
+{
+    missFns[desc.missIndex](payload, descriptorData, desc.missIndex);
+}
+else
+{
+    uint logicalHitSlot =
+        instanceOffset + geometryId * desc.sbtStride + desc.sbtOffset;
+
+    closestHitFns[logicalHitSlot](payload, descriptorData, logicalHitSlot, result);
+}
+```
+
+**Gaps, Fixes, And Constraints**
+
+- **Gap 1: The function buffer still does not dispatch every ray-tracing stage.** Like ordinary
+  `intersection_function_table`, the function-buffer table dispatches candidate-hit behavior, not
+  Miss or ClosestHit. Slang fixes this by keeping candidate-hit functions in the function buffer
+  and lowering Miss, ClosestHit, and Callable to generated visible-function tables in
+  descriptor-side data.
+
+  **Constraint:** the host or Slang runtime must populate the generated visible-function tables
+  from the `ProgramLayout` reflection data described in the previous section. Miss uses
+  `desc.missIndex`, ClosestHit uses `logicalHitSlot`, and Callable uses its own callable index.
+
+- **Gap 2: The host must still build a target-side candidate-hit table.** The function-buffer form
+  is closer to the D3D/Vulkan SBT model than ordinary `intersection_function_table`, because the
+  table representation includes an explicit stride. Conceptually, this lets the backend model the
+  portable hit slot directly:
+
+  ```text
+  logicalHitSlot = instanceOffset + geometryId * desc.sbtStride + desc.sbtOffset
+  ```
+
+  **Constraint:** the host or Slang runtime must populate the function buffer consistently with the
+  reflected `ProgramLayout` hit groups and with the exact Metal IFB indexing rules. The same
+  logical slot should select both the candidate-hit function and the generated ClosestHit visible
+  function:
+
+  ```text
+  functionBuffer[logicalHitSlot]
+      -> generated AnyHit / custom Intersection candidate function
+
+  visible_function_table_1[logicalHitSlot]
+      -> generated ClosestHit function
+  ```
+
+**Concrete Example**
+
+Suppose one trace call uses `desc.sbtStride = 2`, `desc.sbtOffset = 1`, and logical
+`instanceOffset = 0`. The portable logical slots are the same as in the ordinary function-table
+example:
+
+```text
+logicalHitSlot(geometry 0) = 0 + geometryId 0 * 2 + 1 = 1
+logicalHitSlot(geometry 1) = 0 + geometryId 1 * 2 + 1 = 3
+```
+
+For the function-buffer lowering, the host or Slang runtime can lay out the candidate-hit table by
+logical hit slot:
+
+```text
+functionBuffer[0] -> unused or default candidate function
+functionBuffer[1] -> candidate function for logicalHitSlot 1
+functionBuffer[2] -> unused or default candidate function
+functionBuffer[3] -> candidate function for logicalHitSlot 3
+
+visible_function_table_1[1] -> ClosestHit for logicalHitSlot 1
+visible_function_table_1[3] -> ClosestHit for logicalHitSlot 3
+```
+
+The physical byte address of each function-buffer entry is derived from
+`intersection_function_buffer` plus `logicalHitSlot * intersection_function_stride`, subject to the
+exact Metal IFB traversal rules. The useful difference from ordinary function-table lowering is
+that the function-buffer table can be organized directly around the portable slot calculation,
+instead of requiring a separate `metalIFTIndex` to `logicalHitSlot` mapping.
 
 #### 2.2.3 Resolving The Metal Tag-List Issue With Context Types
 
@@ -504,12 +783,12 @@ This gives the compiler a source-level relationship:
 - Every group in `PrimaryTraceProgramLayout.HitGroups` is constrained to that trace context.
 - Any-hit and intersection stage structs receive input types derived from the same context.
 
-Figure 7 shows how the trace program layout connects the trace call to the grouped stage structs.
+Figure 9 shows how the trace program layout connects the trace call to the grouped stage structs.
 
 <a id="fig-context-reachability"></a>
 ![Context connects ray tracer and hit shaders](figures/042-ray-tracing-api/context-reachability.svg)
 
-*Figure 7. Context reachability contract: the trace program layout connects `RayTracer<ProgramLayout>`, the trace-wide context, hit groups, and stage input types so the compiler has a source-visible relationship.*
+*Figure 9. Context reachability contract: the trace program layout connects `RayTracer<ProgramLayout>`, the trace-wide context, hit groups, and stage input types so the compiler has a source-visible relationship.*
 
 This does not prove that arbitrary host data is correct. If the host builds an SBT or Metal
 function table that violates the reflected program layout, the program can still be wrong. The
@@ -881,16 +1160,43 @@ resources that the host or Slang runtime populates from the reflected program la
 
 Pattern C: Metal intersection function table.
 
-Metal's ordinary function table path is less flexible than the function-buffer path because
-shader code cannot set the same base-id and geometry-multiplier values in the same way. It can
-still be supported for restricted layouts, for example:
+Metal's ordinary function table path uses the same reflected `ProgramLayout`, but candidate-hit
+selection is driven by acceleration-structure function-table offsets instead of directly by
+`RayTraversalDesc.sbtOffset` and `RayTraversalDesc.sbtStride`. Host setup must therefore align the
+ordinary function-table entries with the logical hit-group slots used by generated ClosestHit
+visible-function dispatch.
 
-- the acceleration structure already contains the expected function-table offsets,
-- the shader uses a fixed `RayTraversalDesc` layout,
-- or the backend can prove that the table index matches the reflected hit-group slot.
+```cpp
+auto programLayout = reflection->findTraceProgramLayout("PrimaryTraceProgramLayout");
 
-Function-buffer lowering is the preferred general path for matching D3D/Vulkan SBT index
-calculation.
+for (auto miss : programLayout.missGroups)
+{
+    descriptor.setGeneratedMissVisibleFunction(
+        miss.slot,
+        miss.generatedMissEntryPoint);
+}
+
+for (auto hit : programLayout.hitGroups)
+{
+    descriptor.setGeneratedClosestHitVisibleFunction(
+        hit.slot,
+        hit.generatedClosestHitEntryPoint);
+
+    if (hit.generatedAnyHitEntryPoint || hit.generatedIntersectionEntryPoint)
+    {
+        uint metalIFTIndex = engineLayout.getMetalFunctionTableIndexForHitSlot(hit.slot);
+        functionTable.setFunction(
+            metalIFTIndex,
+            hit.generatedIntersectionOrAnyHitFunction);
+    }
+}
+```
+
+This is valid when the engine also builds geometry and instance acceleration-structure metadata
+so traversal selects the same `metalIFTIndex` for primitives that post-trace dispatch will map to
+`hit.slot`. The mapping from `metalIFTIndex` to `hit.slot` must be 1:1, but the numbers do not
+need to be equal. The proposal does not yet define an API for choosing ordinary function-table
+lowering versus function-buffer lowering; that is left as a backend/runtime policy to revisit.
 
 Pattern D: Manual host construction without reflection.
 

@@ -783,12 +783,13 @@ This gives the compiler a source-level relationship:
 - Every group in `PrimaryTraceProgramLayout.HitGroups` is constrained to that trace context.
 - Any-hit and intersection stage structs receive input types derived from the same context.
 
-Figure 9 shows how the trace program layout connects the trace call to the grouped stage structs.
+Figure 9 zooms into the handwritten code lines that carry the contract: the trace call names the
+program layout, and each stage `invoke(...)` method names the input context it accepts.
 
 <a id="fig-context-reachability"></a>
 ![Context connects ray tracer and hit shaders](figures/042-ray-tracing-api/context-reachability.svg)
 
-*Figure 9. Context reachability contract: the trace program layout connects `RayTracer<ProgramLayout>`, the trace-wide context, hit groups, and stage input types so the compiler has a source-visible relationship.*
+*Figure 9. Context reachability contract: the user-written trace call and stage `invoke(...)` signatures give the compiler a source-visible relationship between `RayTracer<ProgramLayout>`, the trace-wide context, hit groups, and stage input types.*
 
 This does not prove that arbitrary host data is correct. If the host builds an SBT or Metal
 function table that violates the reflected program layout, the program can still be wrong. The

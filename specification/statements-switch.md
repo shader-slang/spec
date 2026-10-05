@@ -49,7 +49,7 @@ A [`continue` statement](statements-break-and-continue.md) is allowed if the `sw
 If a `case` or `default` statement is reachable from a previous `case` or `default` statement, the control
 flow is said to _fall through_ between them. When there are no statements between the two, the fall-through is
 _trivial_. While Slang allows fall-throughs, some targets do not have native support for non-trivial
-fall-throughs. See [target compatibility](../target-compatibility.md) for details.
+fall-throughs. See [target compatibility](https://docs.shader-slang.org/en/latest/external/slang/docs/target-compatibility.html) for details.
 
 If different threads within a wave or thread group branch to different cases, divergence occurs. See
 [execution divergence and reconvergence](basics-execution-divergence-reconvergence.md) for implications.

@@ -117,7 +117,7 @@ void main(uint3 tid : SV_DispatchThreadID)
 
 A cast to [`void`](types-fundamental.md) is a no-op cast producing a `void` value. The primary use of
 a `void` cast is to mark the value as consumed, suppressing the related diagnostics. See also the
-[\[NoDiscard\]](../../../core-module-reference/attributes/nodiscard-02.html) attribute, which makes discarding
+[\[NoDiscard\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/nodiscard-02.html) attribute, which makes discarding
 a function result an error unless the result is explicitly cast to `void`.
 
 ### Examples
@@ -169,8 +169,8 @@ A matrix can be constructed from vectors in the following ways:
   - vector elements 0, 1 &harr; matrix row 0
   - vector elements 2, 3 &harr; matrix row 1
 
-For details, see [vector initialization functions](../../../core-module-reference/types/vector/init.html) and
-[matrix initialization functions](../../../core-module-reference/types/matrix/init.html).
+For details, see [vector initialization functions](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/vector/init.html) and
+[matrix initialization functions](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/matrix/init.html).
 
 > ⚠️ **Warning:** In Slang 2025 and earlier, a 4-dimensional vector could be constructed from a 2-dimensional
 > vector (`vector<T,2>`) and a single element (`T`). However, the single element would be implicitly
@@ -465,7 +465,7 @@ void main()
 ## Bit Cast and Reinterpret Cast
 
 A bit cast reinterprets an existing bit pattern as another type of the same size. A bit cast is invoked using
-the [bit\_cast](../../../core-module-reference/global-decls/bit_cast.html) function. How values are encoded as
+the [bit\_cast](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/bit_cast.html) function. How values are encoded as
 underlying bit patterns is generally [implementation-defined](basics-behavior.md). However, an application can
 reasonably expect the following:
 
@@ -475,19 +475,19 @@ reasonably expect the following:
 
 The core module also offers the following concrete HLSL-compatibility conversion and bit-cast functions:
 
-- [asdouble](../../../core-module-reference/global-decls/asdouble.html)
-- [asfloat](../../../core-module-reference/global-decls/asfloat.html)
-- [asfloat16](../../../core-module-reference/global-decls/asfloat16.html)
-- [asint](../../../core-module-reference/global-decls/asint.html)
-- [asint16](../../../core-module-reference/global-decls/asint16.html)
-- [asuint](../../../core-module-reference/global-decls/asuint.html)
-- [asuint16](../../../core-module-reference/global-decls/asuint16.html)
-- [f16tof32](../../../core-module-reference/global-decls/f16tof32.html)
-- [f32tof16](../../../core-module-reference/global-decls/f32tof16.html)
+- [asdouble](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asdouble.html)
+- [asfloat](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asfloat.html)
+- [asfloat16](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asfloat16.html)
+- [asint](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asint.html)
+- [asint16](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asint16.html)
+- [asuint](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asuint.html)
+- [asuint16](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/asuint16.html)
+- [f16tof32](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/f16tof32.html)
+- [f32tof16](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/f32tof16.html)
 
 A reinterpret cast is more general, and it allows reinterpreting a bit pattern of a different size than the
 target type. A reinterpret cast is invoked using the
-[reinterpret](../../../core-module-reference/global-decls/reinterpret.html) function, and it uses the same
+[reinterpret](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/reinterpret.html) function, and it uses the same
 union type emulation as [interface-conforming variants](types-interface.md).
 
 > 📝 **Remark:** A reinterpret cast is currently implemented by packing the source value into an `AnyValue`

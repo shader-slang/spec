@@ -20,7 +20,7 @@ Enumeration case declaration:
 ### Parameters {#parameters}
 
 - *`modifier-list`* is an optional list of modifiers:
-  - [\[Flags\]](../../../core-module-reference/attributes/flags-0.html) specifies that the
+  - [\[Flags\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/flags-0.html) specifies that the
     enumeration defines flags for a bit field.
   - See also Remark 1 in the Description section below.
 - **`'class'`** is a compatibility feature that allows the same enumeration declarations to be shared between
@@ -48,7 +48,7 @@ within the enumeration namespace using the `EnumType.ENUM_CONST` form.
 
 If an enumerator is not assigned a value, one is provided. By default, the value is the previous enumerator's
 value incremented by 1. If the value for the first enumerator is unspecified, the default is 0. However, if
-[\[Flags\]](../../../core-module-reference/attributes/flags-0.html) is specified for the enumeration, the
+[\[Flags\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/flags-0.html) is specified for the enumeration, the
 provided value is the previous enumerator's value left-shifted by 1, and the default value for the first
 enumerator is 1.
 
@@ -65,7 +65,7 @@ to add member functions, constructors, interface conformances, and similar featu
 > There are three ways to declare an unscoped enumeration:
 > - The `slangc` command-line option `-unscoped-enum` makes all named enumerations unscoped, except those
 >   that are declared using **`'enum class'`**.
-> - The [\[UnscopedEnum\]](../../../core-module-reference/attributes/unscopedenum-08.html) attribute in the
+> - The [\[UnscopedEnum\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/unscopedenum-08.html) attribute in the
 >   modifier list explicitly declares an unscoped enumeration.
 > - An anonymous enumeration is unscoped.
 >

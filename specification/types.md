@@ -117,7 +117,7 @@ Declaration of new types is allowed in:
 > valid variable declaration but `int const a = 5;` is not.
 
 > 📝 **Remark 4:** Modifier `volatile` has been deprecated in Slang 2025 and removed in Slang 2026.
-> [Atomic\<T\>](../../../core-module-reference/types/atomic-0/index.html) should be used instead.
+> [Atomic\<T\>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/atomic-0/index.html) should be used instead.
 
 
 ## Type Alias Declarations {#alias}

@@ -30,7 +30,7 @@ Slang supports a C-style preprocessor with the following directives:
 
 `#language` selects the Slang language and Slang language version for its translation unit.
 When multiple primary source files belong to one translation unit, a directive in any of them selects the version for the complete module, and their directives must agree.
-See [Language Versioning](../user-guide/11-language-version.md) for the supported version names and their compatibility rules.
+See [Language Versioning](https://docs.shader-slang.org/en/latest/external/slang/docs/user-guide/11-language-version.html) for the supported version names and their compatibility rules.
 
 ## Version Directive (GLSL)
 

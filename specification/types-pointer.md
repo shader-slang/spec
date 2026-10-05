@@ -10,8 +10,8 @@ Current limitations include:
   For handle pointers, use `DescriptorHandle<T>` instead.
 - Slang does not currently support `const` pointers.
 - Slang does not support custom alignment specification. Functions
-  [loadAligned()](../../../core-module-reference/global-decls/loadaligned-4.html) and
-  [storeAligned()](../../../core-module-reference/global-decls/storealigned-5.html) may be used for loads and
+  [loadAligned()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/loadaligned-4.html) and
+  [storeAligned()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/storealigned-5.html) may be used for loads and
   stores using pointers with known alignment.
 - Pointers are not supported on all targets.
 - Slang does not currently support inheritance with pointers. In particular, a pointer to a structure
@@ -52,8 +52,8 @@ See [type specifier syntax](types.md#syntax) for full type specifier syntax.
 ## Generic Pointer Types {#generic-pointer}
 
 Type aliases provided by the Slang standard library:
-- A generic pointer type: [Ptr<T, AccessMode, AddressSpace>](../../../core-module-reference/types/ptr-0/index.html)
-- Pointer to immutable data: [ImmutablePtr<T, AddressSpace>](../../../core-module-reference/types/immutableptr-09.html)
+- A generic pointer type: [Ptr<T, AccessMode, AddressSpace>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/ptr-0/index.html)
+- Pointer to immutable data: [ImmutablePtr<T, AddressSpace>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/immutableptr-09.html)
 
 ### Parameters
 
@@ -131,7 +131,7 @@ The default pointer address space is `AddressSpace.Device`, and the default acce
 syntax.
 
 Pointers for other address spaces and access modes may be declared by using type alias
-[Ptr<T, AccessMode, AddressSpace>](../../../core-module-reference/types/ptr-0/index.html) provided
+[Ptr<T, AccessMode, AddressSpace>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/ptr-0/index.html) provided
 by the standard library. There is no implicit conversion from read-write to read-only pointers.
 
 

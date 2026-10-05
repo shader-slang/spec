@@ -146,12 +146,12 @@ pull request. See GitHub issue #[11216](https://github.com/shader-slang/slang/is
      https://github.com/shader-slang/slang/blob/fbf41e87a3493bfe4417b3b3a92c814dde391960/source/slang/slang-parser.cpp#L5907
      for an example.
    - For a staged standard module change, use attributes
-     [\[deprecated\]](../../../core-module-reference/attributes/deprecated.html) and
-     [\[RemovedSince\]](../../../core-module-reference/attributes/removedsince-07.html) to mark declarations
+     [\[deprecated\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/deprecated.html) and
+     [\[RemovedSince\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/removedsince-07.html) to mark declarations
      deprecated and removed.
 2. Implement tests.
    - For language-version-dependent behavior changes, include before/after testing.
 3. Update [Slang User's Guide](https://github.com/shader-slang/slang/tree/master/docs/user-guide).
-4. Update [Slang Language Reference Manual](https://github.com/shader-slang/slang/tree/master/docs/language-reference).
+4. Update [Slang Language Specification](https://github.com/shader-slang/spec/tree/main/specification).
 5. Update [Slang Examples](https://github.com/shader-slang/slang/tree/master/examples) if appropriate.
 6. If the specification proposal process is used, mark the related specification proposal implemented.

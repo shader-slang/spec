@@ -14,8 +14,8 @@ global variable, assigning it to a `static const` member variable of a struct or
 as an argument to a generic value parameter.
 
 When targeting SPIR-V, a global `const` variable can be forced to be a specialization constant with the
-[\[SpecializationConstant\]](../../../core-module-reference/attributes/specializationconstant-0e.html) or
-[\[vk::specialization_constant\]](../../../core-module-reference/attributes/vk_specialization_constant.html)
+[\[SpecializationConstant\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/specializationconstant-0e.html) or
+[\[vk::specialization_constant\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/vk_specialization_constant.html)
 modifier. Specialization constants are evaluated by the target compiler before runtime.
 
 
@@ -74,15 +74,15 @@ during linking, an error is raised.
 A codegen constant expression can be fully evaluated during target program compilation.
 
 A special class of codegen constants is Vulkan specialization constants. See
-[\[vk::specialization_constant\]](../../../core-module-reference/attributes/vk_specialization_constant.html)
+[\[vk::specialization_constant\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/vk_specialization_constant.html)
 for details.
 
 **Uniform values**
 
 Uniform values are runtime values. They are immutable over a graphics launch or a compute dispatch. Uniform
 values are passed to a Slang program using
-[ConstantBuffer\<T\>](../../../core-module-reference/types/constantbuffer-08/index.html),
-[ParameterBlock\<T\>](../../../core-module-reference/types/parameterblock-09/index.html), non-static global
+[ConstantBuffer\<T\>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/constantbuffer-08/index.html),
+[ParameterBlock\<T\>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/parameterblock-09/index.html), non-static global
 `const` variables, or `uniform` entry point parameters.
 
 **Thread-group-rate values**

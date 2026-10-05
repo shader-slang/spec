@@ -77,7 +77,7 @@ The following integer types are defined:
 
 All arithmetic operations on signed and unsigned integers wrap on overflow.
 
-All target platforms support the `int`/`int32_t` and `uint`/`uint32_t` types. The support for other types depends on the target and target capabilities. See [target platforms](../target-compatibility.md) for details.
+All target platforms support the `int`/`int32_t` and `uint`/`uint32_t` types. The support for other types depends on the target and target capabilities. See [target platforms](https://docs.shader-slang.org/en/latest/external/slang/docs/target-compatibility.html) for details.
 
 All integer types are stored in memory with their natural size and alignment on all target that support them.
 
@@ -96,7 +96,7 @@ target-defined. IEEE 754 compliant targets adhere to the
 [IEEE 754-2019](https://doi.org/10.1109/IEEESTD.2019.8766229) standard.
 
 All targets support the `float`/`float32_t` type. Support for other types is target-defined. See
-[target platforms](../target-compatibility.md) for details.
+[target platforms](https://docs.shader-slang.org/en/latest/external/slang/docs/target-compatibility.html) for details.
 
 
 ## Alignment and data layout

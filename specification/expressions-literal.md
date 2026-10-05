@@ -339,7 +339,7 @@ The literal evaluation rules are as follows:
 > token that opened the raw string.
 
 A string literal represents a sequence of 8-bit bytes in UTF-8 encoding. Its type is
-[String](../../../core-module-reference/types/string-0/index.html). The underlying data format is unspecified.
+[String](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/string-0/index.html). The underlying data format is unspecified.
 
 A string literal expression consists of one or more consecutive string tokens. The value of the string
 literal is the concatenation of the string token values. Consecutive string tokens may be separated by

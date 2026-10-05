@@ -162,7 +162,7 @@ divergent path.
 The wave-tangled functions require special consideration when the execution within the wave has diverged:
 1. Not all targets support wave-tangled functions on divergent paths. When unsupported, the results are
    [undefined](basics-behavior.md#classification) when invoked on divergent paths. See
-   [target platforms](../target-compatibility.md) for details.
+   [target platforms](https://docs.shader-slang.org/en/latest/external/slang/docs/target-compatibility.html) for details.
 2. When supported, wave-tangled functions apply only between the mutually convergent thread
    set by default. That is, synchronization occurs between those threads that are on the same path.
 

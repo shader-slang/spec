@@ -22,6 +22,7 @@ Slang operators come in the following forms:
   right to left.
 - **Other operators** — Function call, generic application, subscript, member access, scope
 
+<a id="built-in-operators"></a>
 
 ## Built-in Operators
 
@@ -42,30 +43,30 @@ Slang operators come in the following forms:
 | `-`       | `T operator - (T lhs, T rhs)`           | subtraction                                       |
 
 The arithmetic operators are defined for
-[IArithmetic](../../../core-module-reference/interfaces/iarithmetic-01/index.html) types. This includes
+[IArithmetic](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/index.html) types. This includes
 built-in integer and floating-point scalar types.
 
 Description:
 
 - The **identity (unary plus)** operator returns the `val` as is.
 - The **arithmetic negation (unary minus)** operator returns the negated value of `val`.
-  See [IArithmetic.neg](../../../core-module-reference/interfaces/iarithmetic-01/neg.html) for details.
+  See [IArithmetic.neg](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/neg.html) for details.
 - The **prefix increment** operator increments `val` by 1 in place and returns the incremented value.
 - The **postfix increment** operator increments `val` by 1 and returns the value before increment.
 - The **prefix decrement** operator decrements `val` by 1 in place and returns the decremented value.
 - The **postfix decrement** operator decrements `val` by 1 in place and returns the value before decrement.
 - The **addition** operator adds `lhs` and `rhs`.
-  See [IArithmetic.add](../../../core-module-reference/interfaces/iarithmetic-01/add.html).
+  See [IArithmetic.add](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/add.html).
 - The **subtraction** operator subtracts `rhs` from `lhs`.
-  See [IArithmetic.sub](../../../core-module-reference/interfaces/iarithmetic-01/sub.html).
+  See [IArithmetic.sub](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/sub.html).
 - The **multiplication** operator multiplies `lhs` and `rhs`.
-  See [IArithmetic.mul](../../../core-module-reference/interfaces/iarithmetic-01/mul.html) for details.
+  See [IArithmetic.mul](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/mul.html) for details.
 - The **division** operator divides `lhs` by `rhs`.
-  See [IArithmetic.div](../../../core-module-reference/interfaces/iarithmetic-01/div.html) for details.
+  See [IArithmetic.div](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/div.html) for details.
 - The **remainder** operator returns the remainder of `lhs` by `rhs` division such that
   `rem = lhs - n * rhs` where `n` is an integer and `abs(rem)` < `abs(rhs)`. The sign of remainder matches the
   sign of `lhs`. That is, `lhs % rhs == lhs - trunc(lhs / rhs) * rhs`.
-  See [IArithmetic.mod](../../../core-module-reference/interfaces/iarithmetic-01/mod.html) for details.
+  See [IArithmetic.mod](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/mod.html) for details.
 
 ### Logical Operators (scalar)
 
@@ -82,35 +83,35 @@ Description:
 | `>>`      | `T operator >> (T lhs, int amount)` | bitwise right shift                          |
 
 The logical operators are defined for
-[ILogical](../../../core-module-reference/interfaces/ilogical-01/index.html) types. This includes
+[ILogical](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/index.html) types. This includes
 built-in integer and Boolean scalar types.
 
 Description:
 
 - The **logical NOT** operator interprets `val` as a Boolean value and returns the opposite Boolean value.
-  See [ILogical.not](../../../core-module-reference/interfaces/ilogical-01/not.html) for details.
+  See [ILogical.not](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/not.html) for details.
 - The **logical AND** operator interprets `lhs` and `rhs` as Boolean values and returns `true` if both
   operands are `true`. Otherwise, it returns `false`.
-  See [ILogical.and](../../../core-module-reference/interfaces/ilogical-01/and.html) for details.
+  See [ILogical.and](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/and.html) for details.
 - The **logical OR** operator interprets `lhs` and `rhs` as Boolean values and returns `true` if either
   operand is `true`. Otherwise, it returns `false`.
-  See [ILogical.or](../../../core-module-reference/interfaces/ilogical-01/or.html) for details.
+  See [ILogical.or](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/or.html) for details.
 - The **bitwise NOT** operator flips all bits in `val` and returns the value. That is, bit value 0 becomes 1,
   and bit value 1 becomes 0.
-  See [ILogical.bitNot](../../../core-module-reference/interfaces/ilogical-01/bitnot-3.html) for details.
+  See [ILogical.bitNot](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/bitnot-3.html) for details.
 - The **bitwise AND** operator performs the logical AND operation between every corresponding bit in `lhs`
   and `rhs` and returns the value.
-  See [ILogical.bitAnd](../../../core-module-reference/interfaces/ilogical-01/bitand-3.html) for details.
+  See [ILogical.bitAnd](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/bitand-3.html) for details.
 - The **bitwise OR** operator performs the logical OR operation between every corresponding bit in `lhs`
   and `rhs` and returns the value.
-  See [ILogical.bitOr](../../../core-module-reference/interfaces/ilogical-01/bitor-3.html) for details.
+  See [ILogical.bitOr](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/bitor-3.html) for details.
 - The **bitwise XOR** operator performs the logical XOR (exclusive or) operation between every corresponding
   bit in `lhs` and `rhs` and returns the value.
-  See [ILogical.bitXor](../../../core-module-reference/interfaces/ilogical-01/bitxor-3.html) for details.
+  See [ILogical.bitXor](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/bitxor-3.html) for details.
 - The **bitwise left shift** operator shifts all bits in `lhs` left by `amount`.
-  See [ILogical.shl](../../../core-module-reference/interfaces/ilogical-01/shl.html) for details.
+  See [ILogical.shl](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/shl.html) for details.
 - The **bitwise right shift** operator shifts all bits in `lhs` right by `amount`.
-  See [ILogical.shr](../../../core-module-reference/interfaces/ilogical-01/shr.html) for details.
+  See [ILogical.shr](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/ilogical-01/shr.html) for details.
 
 The `&&` and `||` operators short-circuit when their operands are scalars: the right-hand operand is evaluated
 only when it can affect the result. That is, in `lhs && rhs`, `rhs` is evaluated only when `lhs` is `true`. In
@@ -131,24 +132,24 @@ globally with the `-disable-short-circuit` compiler option.
 | `!=`      | `bool operator != (T lhs, T rhs)`   | not-equal-to comparison                      |
 
 The comparison operators are defined for
-[IComparable](../../../core-module-reference/interfaces/icomparable-01/index.html) types. This includes
+[IComparable](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/icomparable-01/index.html) types. This includes
 built-in integer, Boolean, and floating-point scalar types.
 
 Description:
 
 - The **less-than** comparison operator returns `true` if `lhs` is less than `rhs`. Otherwise, it returns
   `false`.
-  See [IComparable.lessThan](../../../core-module-reference/interfaces/icomparable-01/lessthan-4.html) for details.
+  See [IComparable.lessThan](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/icomparable-01/lessthan-4.html) for details.
 - The **less-than-or-equal-to** comparison operator returns `true` if `lhs` is less than or equal to
   `rhs`. Otherwise, it returns `false`.
-  See [IComparable.lessThanOrEquals](../../../core-module-reference/interfaces/icomparable-01/lessthanorequals-48a.html)
+  See [IComparable.lessThanOrEquals](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/icomparable-01/lessthanorequals-48a.html)
   for details.
 - The **greater-than** comparison operator returns `true` if `lhs` is greater than `rhs`. Otherwise, it returns
   `false`. Implemented using `IComparable.lessThan` with arguments swapped.
 - The **greater-than-or-equal-to** comparison operator returns `true` if `lhs` is greater than or equal to
   `rhs`. Otherwise, it returns `false`. Implemented using `IComparable.lessThanOrEquals` with arguments swapped.
 - The **equal-to** comparison operator returns `true` if `lhs` is equal to `rhs`. Otherwise, it returns `false`.
-  See [IComparable.equals](../../../core-module-reference/interfaces/icomparable-01/equals.html) for details.
+  See [IComparable.equals](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/icomparable-01/equals.html) for details.
 - The **not-equal-to** comparison operator returns `true` if `lhs` is not equal to `rhs`. Otherwise, it
   returns `false`. Implemented using `IComparable.equals` with the comparison result negated (logical NOT).
 
@@ -187,7 +188,7 @@ where `COMPOUND_ASSIGN_OP` is the operator combined with assignment and `OP` is 
 assignment.
 
 The compound assignment operator is defined for the same types as `OP`. For example, `+=` is defined for
-[IArithmetic](../../../core-module-reference/interfaces/iarithmetic-01/index.html) types.
+[IArithmetic](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarithmetic-01/index.html) types.
 
 
 > 📝 **Remark:** Unlike in C/C++, the assignment operators return an R-value.
@@ -206,7 +207,7 @@ Canonical semantics:
 
 - The **pointer dereference** operator returns the pointed value (L-value). The operand type is a pointer.
   Note that the layout parameter `L` is not captured by the returned reference. See also
-  [Ptr](../../../core-module-reference/types/ptr-0/index.html).
+  [Ptr](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/ptr-0/index.html).
 - The **address of** operator returns a pointer to the operand. The operand must be
   [addressable](expressions-value-categories.md).
 - The **comma operator** (Slang 2025 and earlier) returns the right-hand-side parameter. Starting from Slang
@@ -239,8 +240,10 @@ The ternary conditional operator is short-circuiting for a scalar condition.
 > reasons. In this deprecated form, the condition vector length must match the `trueVal` and `falseVal` vector
 > lengths, and for each element, the corresponding element of the condition selects the corresponding
 > element of either `trueVal` or `falseVal`. However, this form is non-short-circuiting. Use
-> [select()](../../../core-module-reference/global-decls/select.html) instead to make the non-short-circuiting
+> [select()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/select.html) instead to make the non-short-circuiting
 > behavior explicit.
+
+<a id="call-expression"></a>
 
 ### Call Expression
 
@@ -288,8 +291,8 @@ The base expression type must be an [array](types-array.md), a [vector](types-ve
 member.
 
 For array, vector, and matrix types, the built-in subscript operator semantics are defined by
-[IArray](../../../core-module-reference/interfaces/iarray-01/subscript.html) (for R-value base expressions)
-and [IRWArray](../../../core-module-reference/interfaces/irwarray-0123/subscript.html) (for L-value base
+[IArray](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/iarray-01/subscript.html) (for R-value base expressions)
+and [IRWArray](https://docs.shader-slang.org/en/latest/external/core-module-reference/interfaces/irwarray-0123/subscript.html) (for L-value base
 expressions). The subscript operator has a single argument, which returns the element of an array or a vector,
 or the row vector of a matrix. The returned value is an L-value if *`base-expr`* is an L-value. Otherwise, it
 is an R-value.

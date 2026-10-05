@@ -23,22 +23,22 @@ The following address spaces are defined:
 </tr>
 <tr>
   <td>Image</td>
-  <td><a href="../../../core-module-reference/types/texture1d-08.html">Texture1D&lt;...&gt;</a><br>
-      <a href="../../../core-module-reference/types/texture2d-08.html">Texture2D&lt;...&gt;</a><br>etc.</td>
+  <td><a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/types/texture1d-08.html">Texture1D&lt;...&gt;</a><br>
+      <a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/types/texture2d-08.html">Texture2D&lt;...&gt;</a><br>etc.</td>
   <td>All threads</td>
   <td>Images are multi-dimensional arrays of texels, typically containing color, depth, stencil, and similar data.</td>
 </tr>
 <tr>
   <td>Push constant</td>
-  <td><a href="../../../core-module-reference/attributes/push_constant.html">[push_constant]</a><br>
-      <a href="../../../core-module-reference/attributes/vk_push_constant.html">[vk_push_constant]</a></td>
+  <td><a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/push_constant.html">[push_constant]</a><br>
+      <a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/vk_push_constant.html">[vk_push_constant]</a></td>
   <td>All threads</td>
   <td>Push constants are small, frequently updated constants passed directly through the command stream. On Vulkan, these correspond to push constants.</td>
 </tr>
 <tr>
   <td>Storage buffer</td>
-  <td><a href="../../../core-module-reference/types/structuredbuffer-0a/index.html">StructuredBuffer&lt;T&gt;</a><br>
-      <a href="../../../core-module-reference/types/rwstructuredbuffer-012c/index.html">RWStructuredBuffer&lt;T&gt;</a></td>
+  <td><a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/types/structuredbuffer-0a/index.html">StructuredBuffer&lt;T&gt;</a><br>
+      <a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/types/rwstructuredbuffer-012c/index.html">RWStructuredBuffer&lt;T&gt;</a></td>
   <td>All threads</td>
   <td>Storage buffers are read-only or read-write buffers, typically shared between the host and Slang programs.</td>
 </tr>
@@ -74,8 +74,8 @@ The following address spaces are defined:
 </tr>
 <tr>
   <td>Specialization constant</td>
-  <td><a href="../../../core-module-reference/attributes/specializationconstant-0e.html">[SpecializationConstant]</a><br>
-      <a href="../../../core-module-reference/attributes/vk_specialization_constant.html">[vk::specialization_constant]</a></td>
+  <td><a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/specializationconstant-0e.html">[SpecializationConstant]</a><br>
+      <a href="https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/vk_specialization_constant.html">[vk::specialization_constant]</a></td>
   <td>All threads</td>
   <td>Vulkan specialization constants have values that are fixed at pipeline creation time.</td>
 </tr>

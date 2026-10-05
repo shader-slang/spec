@@ -2,7 +2,7 @@
 
 > ⚠️ **Warning:** Compile-time for is deprecated, and it has been removed in Slang 202c. Use a regular
 > [loop statement](statements-loop.md) with the
-> [\[ForceUnroll\]](../../../core-module-reference/attributes/forceunroll-05.html) attribute instead. See
+> [\[ForceUnroll\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/forceunroll-05.html) attribute instead. See
 > GitHub issue [#13065](https://github.com/shader-slang/slang/issues/13065) for details.
 
 ## Syntax

@@ -17,8 +17,9 @@ Entry point (TODO: link)
 : See Launch.
 
 [Implementation-defined behavior](basics-behavior.md#classification)
-: The observable behavior is defined by the implementation, and it is documented in the [target platforms
-  documentation](../target-compatibility.md) or documentation provided by the implementation. Implementation
+: The observable behavior is defined by the implementation, and it is documented in the
+  [target platforms documentation](https://docs.shader-slang.org/en/latest/external/slang/docs/target-compatibility.html)
+  or documentation provided by the implementation. Implementation
   includes the target language, the device and its driver, and declared extensions and available capabilities.
 
 [Launch](basics-program-execution.md)

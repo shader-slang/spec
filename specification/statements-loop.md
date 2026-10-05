@@ -85,7 +85,7 @@ condition *`cond-expr`* is evaluated to determine whether the looping continues.
 `do-while` loops, a `continue` statement jumps to evaluating the loop condition.
 
 A loop statement can be unrolled with the
-[\[ForceUnroll\]](../../../core-module-reference/attributes/forceunroll-05.html) attribute. This forces the
+[\[ForceUnroll\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/forceunroll-05.html) attribute. This forces the
 loop to be fully unrolled in the emitted target code. If the loop cannot be unrolled, an error is diagnosed.
 
 ## Examples

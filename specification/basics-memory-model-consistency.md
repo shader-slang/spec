@@ -137,8 +137,8 @@ The *sequentially-consistent* ordering implies *release-acquire* ordering with t
 memory accesses using the sequentially-consistent ordering occur in a total order.
 
 The Slang standard library provides atomic memory access primitives as follows:
-- [Relaxed atomic operations](../../../core-module-reference/global-decls/atomic.html)
-- [Atomic\<T\>](../../../core-module-reference/types/atomic-0/index.html) type
+- [Relaxed atomic operations](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/atomic.html)
+- [Atomic\<T\>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/atomic-0/index.html) type
 
 > 📝 **Remark:** It is advisable to use only relaxed-memory-order atomics for Slang code that is intended for
 > multiple targets. Most targets do not have native support for other memory ordering semantics.
@@ -157,13 +157,13 @@ There are three [address space](basics-memory-model-address-spaces.md) scopes fo
 - *Thread group* --- applies to thread group memory accesses.
 
 The following memory barrier primitives are provided by the Slang standard library:
-- [AllMemoryBarrier()](../../../core-module-reference/global-decls/allmemorybarrier-039.html)
-- [AllMemoryBarrierWithGroupSync()](../../../core-module-reference/global-decls/allmemorybarrierwithgroupsync-039gkp.html)
+- [AllMemoryBarrier()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/allmemorybarrier-039.html)
+- [AllMemoryBarrierWithGroupSync()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/allmemorybarrierwithgroupsync-039gkp.html)
 - AllMemoryBarrierWithWaveSync() (TODO: link)
-- [DeviceMemoryBarrier()](../../../core-module-reference/global-decls/devicememorybarrier-06c.html)
-- [DeviceMemoryBarrierWithGroupSync()](../../../core-module-reference/global-decls/devicememorybarrierwithgroupsync-06cjns.html)
-- [GroupMemoryBarrier()](../../../core-module-reference/global-decls/groupmemorybarrier-05b.html)
-- [GroupMemoryBarrierWithGroupSync()](../../../core-module-reference/global-decls/groupmemorybarrierwithgroupsync-05bimr.html)
+- [DeviceMemoryBarrier()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/devicememorybarrier-06c.html)
+- [DeviceMemoryBarrierWithGroupSync()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/devicememorybarrierwithgroupsync-06cjns.html)
+- [GroupMemoryBarrier()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/groupmemorybarrier-05b.html)
+- [GroupMemoryBarrierWithGroupSync()](https://docs.shader-slang.org/en/latest/external/core-module-reference/global-decls/groupmemorybarrierwithgroupsync-05bimr.html)
 - GroupMemoryBarrierWithWaveSync() (TODO: link)
 
 
@@ -206,4 +206,4 @@ to perform the atomic operations to write the results to shared memory.
 
 > 📝 **Remark:** For shared memory reduction operations, atomic reductions that do not provide return values
 > may provide better performance than atomic operations that do. See, e.g.,
-> [Atomic&lt;T&gt;.reduceAdd()](../../../core-module-reference/types/atomic-0/reduceadd-6.html).
+> [Atomic&lt;T&gt;.reduceAdd()](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/atomic-0/reduceadd-6.html).

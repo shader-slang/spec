@@ -86,15 +86,63 @@ def markdownLinesWithoutCode(file):
                 fence = None
             yield ""
 
-def scanForAnchor(file, anchorMatchers, filename, anchor):
-    for line in markdownLinesWithoutCode(file):
-        for am in anchorMatchers:
-            for m in am.finditer(line):
-                verbosePrint(f"  - found anchor {m.group(1)}")
-                if anchor == m.group(1):
-                    return
+# match: [link text](url#anchr "optional title")
+# URLs may contain balanced parentheses, e.g., https://en.wikipedia.org/wiki/Foo_(bar)
+# The title may also be written as 'title' or (title).
+linkMatcherMarkDown = re.compile(r"\[(?:[^\]\\]|\\.)*\]\(\s*((?:[^()\s#]|\([^()\s]*\))*)#?((?:[^()\s]|\([^()\s]*\))*)(?:\s+(?:\"[^\"]*\"|'[^']*'|\([^)]*\)))?\s*\)")
 
-    raise AnchorNotFoundError(f"Anchor '{anchor}' not found in file '{filename}'")
+# match:                   <a   ...          href="(url...)#(anchr)"    >
+linkMatcherHref = re.compile(r'<a\s(?:[^>]*?\s)?href="([^"#]*)#?([^"]*)"[^>]*>')
+
+# NOTE: we don't use this at the moment, since it's not supported by GitHub markdown viewer
+# match:                                 # title {#(anchor)}
+# anchorMatcherMarkdownSection = re.compile(r"^#.*\{#([^}]+)\}")
+
+# match:                  <a   ...          id="(anchr)"     >
+anchorMatcherA = re.compile(r'<a\s(?:[^>]*?\s)?id="([^"]*)"[^>]*>')
+
+# cache: real path of file -> { anchor: [ line numbers ] }
+g_anchorCache = {}
+
+# Returns the anchors defined in a markdown file as a dict mapping each
+# anchor to the list of line numbers where it is defined. Throws
+# FileNotFoundError if the file does not exist.
+def collectAnchors(filename):
+    key = os.path.realpath(filename)
+    if key in g_anchorCache:
+        return g_anchorCache[key]
+
+    verbosePrint(f"Collecting anchors: {filename}")
+
+    anchors = {}
+    with open(filename) as file:
+        lineNo = 0
+        for line in markdownLinesWithoutCode(file):
+            lineNo = lineNo + 1
+            for m in anchorMatcherA.finditer(line):
+                verbosePrint(f"  - found anchor {m.group(1)}")
+                anchors.setdefault(m.group(1), []).append(lineNo)
+
+    g_anchorCache[key] = anchors
+    return anchors
+
+# Reports anchors that are defined more than once, and empty anchors.
+# Returns the number of errors.
+def checkDuplicateAnchors(srcFile):
+    errors = 0
+
+    for anchor, lineNos in collectAnchors(srcFile).items():
+        if len(anchor) == 0:
+            for lineNo in lineNos:
+                errors = errors + 1
+                print(f"{srcFile}:{lineNo}: Empty anchor")
+            continue
+
+        for lineNo in lineNos[1:]:
+            errors = errors + 1
+            print(f"{srcFile}:{lineNo}: Anchor '{anchor}' already defined at line {lineNos[0]}")
+
+    return errors
 
 # returns True if uriPath started with externalUriPrefix and the path
 # was found
@@ -162,21 +210,6 @@ def checkExternalLink(uriPath, uriFragment):
 def checkMarkDownLinks(srcFile):
     errors = 0
 
-    # match: [link text](url#anchr "optional title")
-    # URLs may contain balanced parentheses, e.g., https://en.wikipedia.org/wiki/Foo_(bar)
-    # The title may also be written as 'title' or (title).
-    linkMatcherMarkDown = re.compile(r"\[(?:[^\]\\]|\\.)*\]\(\s*((?:[^()\s#]|\([^()\s]*\))*)#?((?:[^()\s]|\([^()\s]*\))*)(?:\s+(?:\"[^\"]*\"|'[^']*'|\([^)]*\)))?\s*\)")
-
-    # match:                       <a   ...          href="(url...)#(anchr)"    >
-    linkMatcherHref = re.compile(r'<a\s(?:[^>]*?\s)?href="([^"#]*)#?([^"]*)"[^>]*>')
-
-    # NOTE: we don't use this at the moment, since it's not supported by GitHub markdown viewer
-    # match:                                     # title {#(anchor)}
-    # anchorMatcherMarkdownSection = re.compile(r"^#.*\{#([^}]+)\}")
-
-    # match:                      <a   ...          id="(anchr)"     >
-    anchorMatcherA = re.compile(r'<a\s(?:[^>]*?\s)?id="([^"]*)"[^>]*>')
-
     verbosePrint(f"Collecting links: {srcFile}")
 
     with open(srcFile) as file1:
@@ -204,10 +237,12 @@ def checkMarkDownLinks(srcFile):
                         verbosePrint("OK")
                         continue
 
-                    with open(dstFile) as file2:
-                        if len(linkDstAnchor) > 0:
-                            verbosePrint("")
-                            scanForAnchor(file2, [ anchorMatcherA ], dstFile, linkDstAnchor)
+                    if len(linkDstAnchor) > 0:
+                        verbosePrint("")
+                        if linkDstAnchor not in collectAnchors(dstFile):
+                            raise AnchorNotFoundError(f"Anchor '{linkDstAnchor}' not found in file '{dstFile}'")
+                    elif not os.path.isfile(dstFile):
+                        raise FileNotFoundError
 
                 except FileNotFoundError:
                     errors = errors + 1
@@ -265,6 +300,7 @@ def main(argv):
 
     errors = 0
     for f in argv:
+        errors += checkDuplicateAnchors(f)
         errors += checkMarkDownLinks(f)
 
     print(f"Encountered {errors} errors")

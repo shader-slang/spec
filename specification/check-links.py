@@ -86,7 +86,7 @@ def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHt
             relPath = relPath[1:]
 
         mappedPath = os.path.join(localDir, relPath)
-        verbosePrint("uri path: " + uriPath + "   mapped path: "+mappedPath)
+        verbosePrint(" mapped path: "+mappedPath)
 
         if mdToHtmlMap and mappedPath.endswith(".md"):
             raise FileNotFoundError
@@ -161,7 +161,6 @@ def checkMarkDownLinks(srcFile):
 
                 try:
                     if linkDstFile.startswith("https://"):
-                        verbosePrintNoNewline("external")
                         checkExternalLink(linkDstFile, linkDstAnchor)
                         continue
 

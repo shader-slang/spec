@@ -27,14 +27,10 @@ def error(*args, **kwargs):
     sys.exit(2)
 
 def verbosePrint(s):
-    global g_verbose
-
     if g_verbose:
         print(s)
 
 def verbosePrintNoNewline(s):
-    global g_verbose
-
     if g_verbose:
         print(s, end="")
 
@@ -47,7 +43,7 @@ def getDefaultSlangDir():
 def printHelpAndExit():
     print('''Scans markdown files and checks for broken links
 
-Usage: check-markdown-relative-links.py [options] <files>
+Usage: check-links.py [options] <files>
 
 Options:
 -v                     Verbose output
@@ -61,6 +57,9 @@ Options:
     sys.exit(1)
 
 
+class AnchorNotFoundError(Exception):
+    pass
+
 def scanForAnchor(file, anchorMatchers, filename, anchor):
     for line in file:
         for am in anchorMatchers:
@@ -69,7 +68,7 @@ def scanForAnchor(file, anchorMatchers, filename, anchor):
                 if anchor == m.group(1):
                     return
 
-    raise NameError(f"Anchor '{anchor}' not found in file '{filename}'")
+    raise AnchorNotFoundError(f"Anchor '{anchor}' not found in file '{filename}'")
 
 # returns True if uriPath started with externalUriPrefix and the path
 # was found
@@ -105,15 +104,6 @@ def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHt
         return False
 
 def checkExternalLink(uriPath, uriFragment):
-    global g_stdlibDir
-    global g_stdlibLinkPrefix
-    global g_slangPrefix
-    global g_slangPrefixGhDir
-    global g_slangDir
-    global g_slangSpecPrefixGhDir
-    global g_slangSpecPrefixGhFile
-    global g_slangSpecDir
-
     if maybeCheckExternalLinkWithRemap(uriPath, g_stdlibLinkPrefix, g_stdlibDir, True):
         pass
     elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefix, g_slangDir, True):
@@ -149,7 +139,7 @@ def checkMarkDownLinks(srcFile):
     linkMatcherMarkDown = re.compile(r"\[(?:[^\]\\]|\\.)*\]\(([^)#]*)#?([^)]*)\)")
 
     # match:                       <a      href="(url...)(anchr)"     >
-    linkMatcherHref = re.compile(r'<a [^>]*href="([^"#]*)([^"]*)"[^>]*>')
+    linkMatcherHref = re.compile(r'<a [^>]*href="([^"#]*)#?([^"]*)"[^>]*>')
 
     # NOTE: we don't use this at the moment, since it's not supported by GitHub markdown viewer
     # match:                                     # title {#(anchor)}
@@ -180,6 +170,12 @@ def checkMarkDownLinks(srcFile):
                     else:
                         dstFile = os.path.join(os.path.dirname(srcFile), linkDstFile)
 
+                    if os.path.isdir(dstFile):
+                        if len(linkDstAnchor) > 0:
+                            raise AnchorNotFoundError(f"'{dstFile}' is a directory")
+                        verbosePrint("OK")
+                        continue
+
                     with open(dstFile) as file2:
                         if len(linkDstAnchor) > 0:
                             verbosePrint("")
@@ -190,7 +186,7 @@ def checkMarkDownLinks(srcFile):
                     print(f"{srcFile}:{lineNo}: Link destination file {linkDstFile} not found!")
                     continue
 
-                except NameError as ex:
+                except AnchorNotFoundError as ex:
                     errors = errors + 1
                     print(f"{srcFile}:{lineNo}: Link destination file {linkDstFile} does not define anchor {linkDstAnchor}")
                     warning(str(ex))
@@ -205,10 +201,6 @@ def main(argv):
     global g_slangDir
     global g_stdlibDir
 
-    # version check -- this script was developed with Python 3.12
-    if sys.version_info < (3, 12):
-        warning(f"Python version {sys.version_info.major}.{sys.version_info.minor} is not at least 3.12!")
-
     # parse options
     while len(argv) > 0:
         if argv[0] == '-v':
@@ -222,7 +214,7 @@ def main(argv):
             continue
 
         if argv[0] == '-stdlib-ref-dir' and len(argv) >= 2:
-            g_stdLibDir = argv[1]
+            g_stdlibDir = argv[1]
             argv = argv[2:]
             continue
 
@@ -248,6 +240,8 @@ def main(argv):
         errors += checkMarkDownLinks(f)
 
     print(f"Encountered {errors} errors")
+
+    sys.exit(1 if errors > 0 else 0)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -151,7 +151,12 @@ def checkDuplicateAnchors(srcFile):
 #
 # throws FileNotFoundError if uriPath started with externalUriPrefix
 # and the path was not found
-def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHtmlMap):
+#
+# if checkAnchor is set and uriFragment is non-empty, also checks that the
+# mapped markdown file defines the anchor, and throws AnchorNotFoundError
+# if it does not. Fragments on non-markdown files (e.g., GitHub line
+# anchors '#L123') are not checked.
+def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHtmlMap, uriFragment="", checkAnchor=False):
     # match whole path components only, e.g., prefix '.../slang' must not
     # match '.../slang-foo'
     externalUriPrefix = externalUriPrefix.rstrip("/")
@@ -174,6 +179,12 @@ def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHt
         if not found:
             raise FileNotFoundError
 
+        if checkAnchor and len(uriFragment) > 0:
+            if os.path.isdir(mappedPath):
+                raise AnchorNotFoundError(f"'{mappedPath}' is a directory")
+            if mappedPath.endswith(".md") and uriFragment not in collectAnchors(mappedPath):
+                raise AnchorNotFoundError(f"Anchor '{uriFragment}' not found in file '{mappedPath}'")
+
         return True
     else:
         return False
@@ -181,13 +192,13 @@ def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHt
 def checkExternalLink(uriPath, uriFragment):
     if maybeCheckExternalLinkWithRemap(uriPath, g_stdlibLinkPrefix, g_stdlibDir, True):
         pass
-    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefix, g_slangDir, True):
+    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefix, g_slangDir, True, uriFragment, True):
         pass
     elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefixGhDir, g_slangDir, False):
         pass
-    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGhDir, g_slangSpecDir, False):
+    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGhDir, g_slangSpecDir, False, uriFragment, True):
         pass
-    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGhFile, g_slangSpecDir, False):
+    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGhFile, g_slangSpecDir, False, uriFragment, True):
         pass
     elif uriPath.startswith("https://en.wikipedia.org/"):
         pass

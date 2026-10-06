@@ -60,8 +60,34 @@ Options:
 class AnchorNotFoundError(Exception):
     pass
 
-def scanForAnchor(file, anchorMatchers, filename, anchor):
+# match:                  (> )   (```...)
+codeFenceMatcher = re.compile(r"^[ >]*(`{3,}|~{3,})(.*)$")
+
+# match:                   `code`, ``co`de``, ...
+codeSpanMatcher = re.compile(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)")
+
+# Yields the lines of a markdown file with code removed so that links and
+# anchors in code are not picked up. Lines in fenced code blocks are replaced
+# by empty lines and inline code spans by spaces, so line numbers are
+# preserved. Code spans spanning multiple lines are not handled.
+def markdownLinesWithoutCode(file):
+    fence = None
     for line in file:
+        m = codeFenceMatcher.match(line)
+        if fence is None:
+            if m:
+                fence = m.group(1)
+                yield ""
+            else:
+                yield codeSpanMatcher.sub(" ", line)
+        else:
+            # closing fence: same character, at least as long, no info string
+            if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= len(fence) and m.group(2).strip() == "":
+                fence = None
+            yield ""
+
+def scanForAnchor(file, anchorMatchers, filename, anchor):
+    for line in markdownLinesWithoutCode(file):
         for am in anchorMatchers:
             for m in am.finditer(line):
                 verbosePrint(f"  - found anchor {m.group(1)}")
@@ -152,7 +178,7 @@ def checkMarkDownLinks(srcFile):
 
     with open(srcFile) as file1:
         lineNo = 0
-        for line in file1:
+        for line in markdownLinesWithoutCode(file1):
             lineNo = lineNo + 1
             for m in itertools.chain(linkMatcherMarkDown.finditer(line), linkMatcherHref.finditer(line)):
                 linkDstFile = m.group(1)

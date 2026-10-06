@@ -3,7 +3,8 @@
 An `Optional<T>` value either holds a value of type `T` or holds no value.
 The absence of a value is represented by the `none` literal.
 
-## Declaration Syntax {#syntax}
+<a id="syntax"></a>
+## Declaration Syntax
 
 ```slang
 Optional<T> varName;             // default-initialized to none
@@ -15,14 +16,16 @@ Optional<T> varName = none;      // explicitly initialized to none
 
 - `T` is the value type. `T` may be any Slang type including interface types and generics.
 
-## Members {#members}
+<a id="members"></a>
+## Members
 
 | Member     | Type   | Description                                                                         |
 | ---------- | ------ | ----------------------------------------------------------------------------------- |
 | `hasValue` | `bool` | `true` when the optional holds a value; `false` when it is `none`.                  |
 | `value`    | `T`    | The held value. Accessing `value` when `hasValue` is `false` is undefined behavior. |
 
-## The `none` Literal {#none}
+<a id="none"></a>
+## The `none` Literal
 
 The built-in keyword `none` represents the absent value.
 `none` is implicitly convertible to any `Optional<T>`.
@@ -32,7 +35,8 @@ Optional<int> a = none;    // no value
 bool absent = !a.hasValue; // true
 ```
 
-## Implicit Coercions {#coercions}
+<a id="coercions"></a>
+## Implicit Coercions
 
 Three implicit coercions are defined for `Optional<T>`:
 
@@ -56,7 +60,8 @@ This applies in function call arguments, return statements, and initializers.
 Optional<float> f = none;  // f.hasValue == false
 ```
 
-### Optional to Optional coercion {#optional-coercion}
+<a id="optional-coercion"></a>
+### Optional to Optional coercion
 
 `Optional<T>` is implicitly convertible to `Optional<U>` when `T` is implicitly
 convertible to `U`. The coercion preserves the `hasValue` state: if the source is
@@ -82,7 +87,8 @@ Optional<Square>  sq = Square{ 3 };
 Optional<IShape>  sh = sq;  // sh.hasValue == true, sh.value.area() == 9
 ```
 
-## Comparison with `none` {#comparison}
+<a id="comparison"></a>
+## Comparison with `none`
 
 An `Optional<T>` value may be compared to `none` using `==` and `!=`:
 
@@ -94,7 +100,8 @@ if (opt != none)
 
 This is equivalent to testing `opt.hasValue`.
 
-## `if (let ...)` Syntax {#if-let}
+<a id="if-let"></a>
+## `if (let ...)` Syntax
 
 The `if (let name = expr)` syntax unwraps an `Optional<T>` in a single step.
 The body executes only when `expr` has a value; inside the body, `name` is
@@ -113,7 +120,8 @@ void example()
 }
 ```
 
-## Memory Layout {#layout}
+<a id="layout"></a>
+## Memory Layout
 
 `Optional<T>` is lowered to a struct with two fields:
 
@@ -128,7 +136,8 @@ The layout follows the same rules as a struct with those two members. The
 > 📝 **Remark:** The layout is target-specific and subject to standard struct
 > alignment rules. Do not rely on a specific byte layout for serialization.
 
-## Restrictions {#restrictions}
+<a id="restrictions"></a>
+## Restrictions
 
 - `Optional<T>` cannot be used as the element type of a resource (e.g.,
   `StructuredBuffer<Optional<T>>` is not supported).

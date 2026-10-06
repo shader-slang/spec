@@ -34,7 +34,8 @@ relationships between the accesses.
 > C++ reference.
 
 
-## Data Race {#data-race}
+<a id="data-race"></a>
+## Data Race
 
 Two memory accesses conflict if they access overlapping memory locations and at least one is a write. A memory
 access conflict is a data race unless:
@@ -47,7 +48,8 @@ The *happens-before* relation is established by an atomic load-acquire observing
 memory barriers, or higher-level constructs provided by the Slang Standard Library.
 
 
-## Memory Order {#memory-order}
+<a id="memory-order"></a>
+## Memory Order
 
 The following memory orders are defined for operations in the current thread:
 
@@ -110,7 +112,8 @@ Consequences:
 
 
 
-## Atomic Memory Access {#atomics}
+<a id="atomics"></a>
+## Atomic Memory Access
 
 All atomic modifications of a single variable occur in a total order. That is, the modifications are
 serialized. For example, if one thread increments a 0-initialized atomic variable by 1 and another thread increments it by 2, all
@@ -144,7 +147,8 @@ The Slang standard library provides atomic memory access primitives as follows:
 > multiple targets. Most targets do not have native support for other memory ordering semantics.
 
 
-## Memory Barriers {#barriers}
+<a id="barriers"></a>
+## Memory Barriers
 
 A memory barrier imposes reordering constraints for memory accesses. Memory accesses before and after a
 barrier cannot be reordered across the barrier, matching the acquire-release memory order for the

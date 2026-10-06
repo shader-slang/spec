@@ -29,7 +29,8 @@ uniform path. When the execution has diverged, there is more than one such set.
 > 📝 **Remark 4:** Avoiding long divergent execution paths is often a good strategy to improve performance.
 
 
-## Divergence and Reconvergence in Structured Control Flow {#divergence}
+<a id="divergence"></a>
+## Divergence and Reconvergence in Structured Control Flow
 
 **`if` statements:**
 

@@ -18,7 +18,8 @@ Other topics:
 * [Type Attributes](types-attributes.md)
 
 
-## Type Specifiers {#specifier}
+<a id="specifier"></a>
+## Type Specifiers
 
 A [type specifier](#specifier) names a type. Type specifiers are used in variable declarations, function
 parameter and return type declarations, and elsewhere where a type is required. Type specifiers are divided
@@ -35,7 +36,8 @@ into two categories:
   specifier is a subset of the full type specifier. A type specifier is a part of the
   [variable declaration](declarations.md) syntax, which is used to declare variables, as the name suggests.
 
-### Syntax {#syntax}
+<a id="syntax"></a>
+### Syntax
 
 Simple type specifier:
 > *`simple-type-spec`* =<br>
@@ -120,7 +122,8 @@ Declaration of new types is allowed in:
 > [Atomic\<T\>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/atomic-0/index.html) should be used instead.
 
 
-## Type Alias Declarations {#alias}
+<a id="alias"></a>
+## Type Alias Declarations
 
 A [type alias](#alias) is a name that refers to a previously declared type.
 
@@ -146,7 +149,8 @@ A generic type alias declaration declares a parameterized alias for a generic ty
 [Generics](generics.md).
 
 
-## Complete and Incomplete Types {#incomplete}
+<a id="incomplete"></a>
+## Complete and Incomplete Types
 
 A type is incomplete when it is declared but not defined. An incomplete type cannot be used to declare
 variables. An incomplete type other than `void` may be completed with a subsequent definition. For further

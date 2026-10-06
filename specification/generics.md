@@ -242,7 +242,8 @@ Value parameters that are not packs cannot be constrained.
 > [#10078](https://github.com/shader-slang/slang/issues/10078) and
 > [#10185](https://github.com/shader-slang/slang/issues/10185).
 
-### Type Parameter Packs {#type-param-packs}
+<a id="type-param-packs"></a>
+### Type Parameter Packs
 
 A type parameter pack is declared using the `each TypeIdentifier` syntax. When a generic construct is
 specialized, a (possibly empty) sequence of type arguments is bound to the parameter pack.

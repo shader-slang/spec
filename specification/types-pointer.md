@@ -19,7 +19,8 @@ Current limitations include:
 
 See also GitHub issue [#9061](https://github.com/shader-slang/slang/issues/9061).
 
-## Declaration Syntax {#syntax}
+<a id="syntax"></a>
+## Declaration Syntax
 
 > *`simple-type-id-spec`* =<br>
 > &nbsp;&nbsp;&nbsp;&nbsp;[*`modifier-list`*]<br>
@@ -49,7 +50,8 @@ See [type specifier syntax](types.md#syntax) for full type specifier syntax.
 - **`'*'`** is a [pointer declaration](types-pointer.md).
 
 
-## Generic Pointer Types {#generic-pointer}
+<a id="generic-pointer"></a>
+## Generic Pointer Types
 
 Type aliases provided by the Slang standard library:
 - A generic pointer type: [Ptr<T, AccessMode, AddressSpace>](https://docs.shader-slang.org/en/latest/external/core-module-reference/types/ptr-0/index.html)
@@ -117,7 +119,8 @@ For a comprehensive description, see [pointer expressions (TODO)](expressions.md
 > ```
 
 
-## Pointer Traits {#traits}
+<a id="traits"></a>
+## Pointer Traits
 
 A pointer type has the following traits:
 - type of the pointed-to object
@@ -135,7 +138,8 @@ Pointers for other address spaces and access modes may be declared by using type
 by the standard library. There is no implicit conversion from read-write to read-only pointers.
 
 
-## Examples {#examples}
+<a id="examples"></a>
+## Examples
 
 ### Pointers Denoting a Range
 

@@ -1,10 +1,12 @@
 # Program Behavior
 
-## Observable behavior {#observable}
+<a id="observable"></a>
+## Observable behavior
 
 TODO
 
-## Classification of Behavior {#classification}
+<a id="classification"></a>
+## Classification of Behavior
 
 Slang classifies the observable behavior of a program as follows:
 

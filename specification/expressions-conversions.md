@@ -149,7 +149,8 @@ void main(uint3 tid : SV_DispatchThreadID)
 }
 ```
 
-## Conversions Between Scalar, Vector, and Matrix Types {#scalar-vector-matrix}
+<a id="scalar-vector-matrix"></a>
+## Conversions Between Scalar, Vector, and Matrix Types
 
 A scalar can be cast to a vector or matrix type. In this conversion, the scalar value is used to
 populate every element of the vector or matrix.

@@ -12,11 +12,11 @@ g_stdlibLinkPrefix = 'https://docs.shader-slang.org/en/latest/external/core-modu
 g_stdlibDir = None
 
 g_slangPrefix = 'https://docs.shader-slang.org/en/latest/external/slang'
-g_slangPrefixGH = 'https://github.com/shader-slang/slang/tree/master'
+g_slangPrefixGhDir = 'https://github.com/shader-slang/slang/tree/master'
 g_slangDir = None
 
-g_slangSpecPrefix = 'https://github.com/shader-slang/spec/blob/main'
-g_slangSpecPrefixGH = 'https://github.com/shader-slang/spec/tree/main'
+g_slangSpecPrefixGhFile = 'https://github.com/shader-slang/spec/blob/main'
+g_slangSpecPrefixGhDir = 'https://github.com/shader-slang/spec/tree/main'
 g_slangSpecDir = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
 
 def warning(*args, **kwargs):
@@ -108,21 +108,21 @@ def checkExternalLink(uriPath, uriFragment):
     global g_stdlibDir
     global g_stdlibLinkPrefix
     global g_slangPrefix
-    global g_slangPrefixGH
+    global g_slangPrefixGhDir
     global g_slangDir
-    global g_slangSpecPrefix
-    global g_slangSpecPrefixGH
+    global g_slangSpecPrefixGhDir
+    global g_slangSpecPrefixGhFile
     global g_slangSpecDir
 
     if maybeCheckExternalLinkWithRemap(uriPath, g_stdlibLinkPrefix, g_stdlibDir, True):
         pass
     elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefix, g_slangDir, True):
         pass
-    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefixGH, g_slangDir, False):
+    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangPrefixGhDir, g_slangDir, False):
         pass
-    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefix, g_slangSpecDir, False):
+    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGhDir, g_slangSpecDir, False):
         pass
-    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGH, g_slangSpecDir, False):
+    elif maybeCheckExternalLinkWithRemap(uriPath, g_slangSpecPrefixGhFile, g_slangSpecDir, False):
         pass
     elif uriPath.startswith("https://en.wikipedia.org/"):
         pass
@@ -151,8 +151,9 @@ def checkMarkDownLinks(srcFile):
     # match:                       <a      href="(url...)(anchr)"     >
     linkMatcherHref = re.compile(r'<a [^>]*href="([^"#]*)([^"]*)"[^>]*>')
 
+    # NOTE: we don't use this at the moment, since it's not supported by GitHub markdown viewer
     # match:                                     # title {#(anchor)}
-    anchorMatcherMarkdownSection = re.compile(r"^#.*\{#([^}]+)\}")
+    # anchorMatcherMarkdownSection = re.compile(r"^#.*\{#([^}]+)\}")
 
     # match:                      <a      id="(anchr)"     >
     anchorMatcherA = re.compile(r'<a [^>]*id="([^"]*)"[^>]*>')
@@ -182,7 +183,7 @@ def checkMarkDownLinks(srcFile):
                     with open(dstFile) as file2:
                         if len(linkDstAnchor) > 0:
                             verbosePrint("")
-                            scanForAnchor(file2, [ anchorMatcherMarkdownSection, anchorMatcherA ], dstFile, linkDstAnchor)
+                            scanForAnchor(file2, [ anchorMatcherA ], dstFile, linkDstAnchor)
 
                 except FileNotFoundError:
                     errors = errors + 1

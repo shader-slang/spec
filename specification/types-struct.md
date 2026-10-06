@@ -131,13 +131,15 @@ member of a `public` struct is `public`). Nested `struct` members have access to
 > ⚠️ **Warning:** Struct-from-struct inheritance is unstable in Slang 2025 and earlier language versions, and
 > has been removed in Slang 2026. Use composition (a struct as a member) instead.
 
-## Objects {#object}
+<a id="object"></a>
+## Objects
 
 An object is an *instance* of a `struct`. An instance consists of all non-static data members defined in a
 `struct`. The data members may be initialized using an initializer list or a constructor. For details, see
 [variable declarations](declarations.md).
 
-## Constructors {#constructor}
+<a id="constructor"></a>
+## Constructors
 
 ### Syntax
 
@@ -241,7 +243,8 @@ state.
 > 📝 **Remark 2:** Accessing data members that are in undefined state is undefined behavior.
 
 
-## Static Member Functions {#static-member-function}
+<a id="static-member-function"></a>
+## Static Member Functions
 
 A static member function is a regular function enclosed within the `struct` name space. Static member
 functions may access only static structure members.
@@ -249,7 +252,8 @@ functions may access only static structure members.
 Invocation of a static member function does not require an object.
 
 
-## Non-static Member Functions {#nonstatic-member-function}
+<a id="nonstatic-member-function"></a>
+## Non-static Member Functions
 
 A non-static member function has a hidden parameter `this` that refers to an object. The hidden parameter
 is used to reference the object data members and to invoke other non-static member functions.
@@ -265,7 +269,8 @@ Non-static member functions cannot be invoked without an object.
 > a non-`const` member function.
 
 
-## Properties {#property}
+<a id="property"></a>
+## Properties
 
 ### Syntax
 
@@ -467,7 +472,8 @@ int tmp3 = TestStruct.getB();
 int tmp4 = TestStruct::incrementAndReturnB();
 ```
 
-## Subscript operator {#subscript-op}
+<a id="subscript-op"></a>
+## Subscript operator
 
 ### Syntax
 
@@ -548,7 +554,8 @@ void main(uint3 id : SV_DispatchThreadID)
 }
 ```
 
-## Function call operator {#function-call-op}
+<a id="function-call-op"></a>
+## Function call operator
 
 ### Syntax
 

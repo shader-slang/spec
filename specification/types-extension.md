@@ -29,7 +29,8 @@
   - *`function-call-op-decl`* is a [function call operator declaration](types-struct.md#function-call-op).
 
 
-## Description {#extension}
+<a id="extension"></a>
+## Description
 
 An `extension` declaration extends a `struct` type, an `enum` type, or a set of such types. An `extension` may
 be used to add static data members, member functions, constructors, properties, subscript operators, function
@@ -39,7 +40,8 @@ it cannot be used to append non-static data members.
 > 📝 **Remark:** An [interface type](types-interface.md) cannot be extended. Doing so would add new
 > requirements to all conforming types, which would invalidate existing conformances.
 
-## Struct Extension {#struct}
+<a id="struct"></a>
+## Struct Extension
 
 A previously defined [struct type](types-struct.md) can be extended using an extension declaration. In the
 following example, an extension is used to add a new member function.
@@ -130,7 +132,8 @@ void main(uint3 id : SV_DispatchThreadID)
 > currently undefined which member takes effect. ([Issue #9660](https://github.com/shader-slang/slang/issues/9660))
 
 
-## Enumeration Extension {#enum}
+<a id="enum"></a>
+## Enumeration Extension
 
 Similar to a `struct`, a previously defined [enum type](types-enum.md) can be extended using an `extension`
 declaration. For non-static member functions, `this` is the value of the enumeration object.
@@ -286,7 +289,8 @@ void main(uint3 threadId : SV_DispatchThreadID)
 }
 ```
 
-## Generic Extension {#generic}
+<a id="generic"></a>
+## Generic Extension
 
 All types conforming to an interface may be extended using a generic extension declaration, which adds new
 members to all conforming types. If multiple declarations share the same signature, the one in the concrete

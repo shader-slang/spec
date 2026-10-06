@@ -1,6 +1,7 @@
 # Special Types
 
-## Opaque Types {#opaque}
+<a id="opaque"></a>
+## Opaque Types
 
 Opaque types are built-in types that have target-defined representation in memory. This includes the bit
 representation, the underlying type, and characteristics such as size and alignment. Other shader languages

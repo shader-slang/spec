@@ -7,7 +7,8 @@ The following types are collectively called the _fundamental types_:
 - The scalar floating point types
 
 
-## Void Type {#void}
+<a id="void"></a>
+## Void Type
 
 The type `void` contains no data and has a single unnamed value.
 
@@ -49,9 +50,11 @@ Variables, arrays elements, or structure data members may not have type `void`.
 > ```
 
 
-## Scalar Types {#scalar}
+<a id="scalar"></a>
+## Scalar Types
 
-### Boolean Type {#boolean}
+<a id="boolean"></a>
+### Boolean Type
 
 Type `bool` is used to represent Boolean truth values: `true` and `false`.
 
@@ -60,7 +63,8 @@ target-defined. The use of `bool` should be avoided when a specific in-memory la
 required. This includes data shared between different language targets even on the same device.
 
 
-### Integer Types {#integer}
+<a id="integer"></a>
+### Integer Types
 
 The following integer types are defined:
 
@@ -81,7 +85,8 @@ All target platforms support the `int`/`int32_t` and `uint`/`uint32_t` types. Th
 
 All integer types are stored in memory with their natural size and alignment on all target that support them.
 
-### Floating-Point Types {#floating}
+<a id="floating"></a>
+### Floating-Point Types
 
 The following floating-point type are defined:
 

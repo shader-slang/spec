@@ -104,12 +104,13 @@ def scanForAnchor(file, anchorMatchers, filename, anchor):
 # throws FileNotFoundError if uriPath started with externalUriPrefix
 # and the path was not found
 def maybeCheckExternalLinkWithRemap(uriPath, externalUriPrefix, localDir, mdToHtmlMap):
-    if uriPath.startswith(externalUriPrefix):
+    # match whole path components only, e.g., prefix '.../slang' must not
+    # match '.../slang-foo'
+    externalUriPrefix = externalUriPrefix.rstrip("/")
+    if uriPath == externalUriPrefix or uriPath.startswith(externalUriPrefix + "/"):
 
         # relative path
-        relPath = uriPath[len(externalUriPrefix):]
-        if relPath.startswith("/"):
-            relPath = relPath[1:]
+        relPath = uriPath[len(externalUriPrefix) + 1:]
 
         mappedPath = os.path.join(localDir, relPath)
         verbosePrint(" mapped path: "+mappedPath)
@@ -161,18 +162,20 @@ def checkExternalLink(uriPath, uriFragment):
 def checkMarkDownLinks(srcFile):
     errors = 0
 
-    # match:                            [link text........] ((url...)(anchr))
-    linkMatcherMarkDown = re.compile(r"\[(?:[^\]\\]|\\.)*\]\(([^)#]*)#?([^)]*)\)")
+    # match: [link text](url#anchr "optional title")
+    # URLs may contain balanced parentheses, e.g., https://en.wikipedia.org/wiki/Foo_(bar)
+    # The title may also be written as 'title' or (title).
+    linkMatcherMarkDown = re.compile(r"\[(?:[^\]\\]|\\.)*\]\(\s*((?:[^()\s#]|\([^()\s]*\))*)#?((?:[^()\s]|\([^()\s]*\))*)(?:\s+(?:\"[^\"]*\"|'[^']*'|\([^)]*\)))?\s*\)")
 
-    # match:                       <a      href="(url...)(anchr)"     >
-    linkMatcherHref = re.compile(r'<a [^>]*href="([^"#]*)#?([^"]*)"[^>]*>')
+    # match:                       <a   ...          href="(url...)#(anchr)"    >
+    linkMatcherHref = re.compile(r'<a\s(?:[^>]*?\s)?href="([^"#]*)#?([^"]*)"[^>]*>')
 
     # NOTE: we don't use this at the moment, since it's not supported by GitHub markdown viewer
     # match:                                     # title {#(anchor)}
     # anchorMatcherMarkdownSection = re.compile(r"^#.*\{#([^}]+)\}")
 
-    # match:                      <a      id="(anchr)"     >
-    anchorMatcherA = re.compile(r'<a [^>]*id="([^"]*)"[^>]*>')
+    # match:                      <a   ...          id="(anchr)"     >
+    anchorMatcherA = re.compile(r'<a\s(?:[^>]*?\s)?id="([^"]*)"[^>]*>')
 
     verbosePrint(f"Collecting links: {srcFile}")
 

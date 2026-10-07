@@ -1,14 +1,8 @@
-Preprocessor {#prepro}
-============
+> Note: This document is a work in progress. It is both incomplete and, in many cases, inaccurate.
 
-As the last phase of lexical processing the token sequence of a [=source unit=] is preprocessed to produce a new token stream.
+# Preprocessor
 
-The preprocessor supported by Slang is derived from the C/C++ preprocessor with a few changes and extensions.
-
-Issue: We either need to pick a normative reference here for some existing preprocessor (and thus bind ourselves to eventually supporting the semantics of that normative reference), or we need to take the time to fully document what the semantics of our current preprocessor are.
-
-Slang programs may use the following preprocessor directives, with the same semantics as their C/C++ equivalent:
-
+Slang supports a C-style preprocessor with the following directives:
 
 * `#include`
 * `#define`
@@ -20,27 +14,40 @@ Slang programs may use the following preprocessor directives, with the same sema
 * `#warning`
 * `#line`
 * `#pragma`
+* `#language`, `#lang`
+* `#version`
 
+## Language Directive (Slang)
 
-An implementation may use any implementation-specified means to resolve paths provided to `#include` directives.
+> *`LanguageDirective`* =<br>
+> &nbsp;&nbsp;&nbsp;&nbsp;(**`'#lang'`** | **`'#language'`**)<br>
+> &nbsp;&nbsp;&nbsp;&nbsp;[*`SourceLanguage`*]<br>
+> &nbsp;&nbsp;&nbsp;&nbsp;*`SourceLanguageVersion`*<br>
+>
+> *`SourceLanguage`* = **`'slang'`**
+>
+> *`SourceLanguageVersion`* = **`<[[:alnum:]]+>`**
 
-An implementation that supports `#pragma  once` may use any implementation-specified means to determine if two [=source units=] are identical.
+`#language` selects the Slang language and Slang language version for its translation unit.
+When multiple primary source files belong to one translation unit, a directive in any of them selects the version for the complete module, and their directives must agree.
+See [Language Versioning](https://docs.shader-slang.org/en/latest/external/slang/docs/user-guide/11-language-version.html) for the supported version names and their compatibility rules.
 
-Changes {#prepro.changes}
--------
+## Version Directive (GLSL)
 
-The input to the Slang preprocessor is a token sequence produced by the rules in Chapter 2, and does not use the definition of "preprocessor tokens" as they are used by the C/C++ preprocessor.
+> *`VersionDirective`* =<br>
+> &nbsp;&nbsp;&nbsp;&nbsp;**`'#version'`**<br>
+> &nbsp;&nbsp;&nbsp;&nbsp;*`GlslLanguageVersion`*<br>
+>
+> *`GlslLanguageVersion`* = **`<[[:digit:]]+>`**
 
-Note: The key place where this distinction matters is in macros that perform token pasting.
-The input to the Slang preprocessor has to be a valid sequence of tokens *before* any token pasting occurs.
+`#version` selects GLSL and declares the GLSL version used by that source unit.
 
-When tokens are pasted with the `##` operator, the resulting concatenated text is decomposed into one or more new tokens.
-It is an error if the concatenated text does not form a valid sequence of tokens.
+All primary source units in one translation unit must use one source language.
+The source language explicitly requested through the compilation API or `-lang` takes precedence over the language inferred from file-name extensions, and source directives are expected to agree with that selection.
+For backward compatibility, a conflicting `#language` or `#version` currently produces a warning and overrides the request-level selection before parsing begins.
+Conflicting source directives within one translation unit are an error.
 
-Note: The C/C++ preprocessor always yields a single token from any token pasting, whether or not that token is valid.
+The deprecated `-allow-glsl` option is equivalent to explicitly requesting GLSL for every translation unit in a compilation request.
+It has no independent effect on preprocessing, parsing, semantic checking, or code generation after that request-level normalization.
 
-Extensions {#prepro.extensions}
-----------
-
-Issue: At the very least we need to document support for the GLSL `#version` directive, if we intend to keep it.
-
+> Note: This section is not yet complete.

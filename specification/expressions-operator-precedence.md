@@ -9,7 +9,7 @@ determines the order in which they group.
 | ----- | -------------------------------------------------------------------------- | ------------- |
 | 0     | atoms (literals, names, parenthesized, builtin keyword expressions)        | —             |
 | 1     | postfix `()` `[]` `.` `::` `->` `++` `--` `<...>` (generic specialization) | left          |
-| 2     | prefix/unary `+` `-` `!` `~` `++` `--` `*` `&`                             | right         |
+| 2     | prefix/unary `+` `-` `!` `~` `++` `--` `*` `&` **`try`**                   | right         |
 | 3     | `*` `/` `%`                                                                | left          |
 | 4     | `+` `-`                                                                    | left          |
 | 5     | `<<` `>>`                                                                  | left          |

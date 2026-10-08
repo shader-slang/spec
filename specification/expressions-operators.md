@@ -249,7 +249,7 @@ The ternary conditional operator is short-circuiting for a scalar condition.
 
 **Grammar:**
 
-> *`callable-expr`* **`'('`** [ *`arg-expr`* (**`','`** *`arg-expr`*)\* ] **`')'`**
+> *`call-expr`* = *`callable-expr`* **`'('`** [ *`arg-expr`* (**`','`** *`arg-expr`*)\* ] **`')'`**
 
 A _call expression_ consists of a base expression *`callable-expr`* and a list of argument expressions
 *`arg-expr`*.

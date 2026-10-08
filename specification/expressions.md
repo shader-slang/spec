@@ -46,6 +46,7 @@ Contents
   * [Operator Precedence](expressions-operator-precedence.md)
   * [Casts and Conversions](expressions-conversions.md)
   * [Overload Resolution](expressions-overload-resolution.md)
+* [`try` expression](expressions-try.md)
 * [Lambda expressions](expressions-lambda.md)
 * [Initializer Expressions](expressions-initializer.md)
 * [Value Categories](expressions-value-categories.md)

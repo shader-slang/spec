@@ -274,9 +274,7 @@ If an argument is not supplied to a parameter that has a default value, the defa
 error to omit an argument for a parameter that does not have a default.
 
 If the callable expression is an invocable object or an object member and the function declaration is not
-static, then the object is passed as the argument to the implicit `this` parameter.
-
-
+static, then the object is passed as the argument to the implicit [`this`](expressions-this.md) parameter.
 
 ### Subscript Expression
 

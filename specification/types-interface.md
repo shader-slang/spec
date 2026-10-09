@@ -35,8 +35,6 @@ Associated named type declaration:
   - *`subscript-op-decl`* is a [subscript operator declaration](types-struct.md#subscript-op).
   - *`function-call-op-decl`* is a [function call operator declaration](types-struct.md#function-call-op).
 
-
-
 ## Description
 
 An `interface` specifies a set of members that a conforming type must provide. An interface can then
@@ -81,6 +79,8 @@ A member function implementation is compatible with an interface member function
 
 A member property (or variable) is compatible with an interface member property when the implementation
 property (or variable) is convertible to the interface property and vice versa.
+
+The [`This` type](types-this.md) within an interface refers to the concrete type conforming to the interface.
 
 Interface members may be declared with access control specifiers `public` or `internal`. The default member
 visibility is the same as the visibility of the interface. See [access control (TODO)](TODO) for further

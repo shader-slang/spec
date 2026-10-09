@@ -122,6 +122,8 @@ A structure may conform to one or more [interface](types-interface.md) types.
 
 A structure may be extended with a [type extension](types-extension.md).
 
+The [`This` type](types-this.md) within a structure refers to the structure type itself.
+
 `struct` members may be declared with access control specifiers `public`, `internal`, or `private` (specified
 in *`modifier-list`*). The default member visibility is `internal`, except that starting with language version
 2026 a member with no explicit specifier inherits the visibility of its enclosing `struct` (so an unmodified
@@ -255,8 +257,9 @@ Invocation of a static member function does not require an object.
 <a id="nonstatic-member-function"></a>
 ## Non-static Member Functions
 
-A non-static member function has a hidden parameter `this` that refers to an object. The hidden parameter
-is used to reference the object data members and to invoke other non-static member functions.
+A non-static member function has an implicit instance parameter [`this`](expressions-this.md) that refers to
+an object. The implicit instance parameter is used to reference the object data members and to invoke other non-static
+member functions.
 
 In the function body, other members may be referenced using `this.`, although it is optional.
 
@@ -655,11 +658,3 @@ D3D constant buffer layout is similar to the natural layout with two differences
 - If a data member crosses a 16-byte boundary and its offset is not aligned by 16, the offset is rounded up to the
   next multiple of 16.
   - In HLSL, this is called an _improper straddle_.
-
-This Type
----------
-
-Within the body of a structure or interface declaration, the keyword `This` may be used to refer to the
-enclosing type. Inside of a structure type declaration, `This` refers to the structure type itself.  Inside
-of an interface declaration, `This` refers to the concrete type that is conforming to the interface (that is,
-the type of `this`).

@@ -91,3 +91,9 @@ TODO: `[]`
 ### Member Access Operator
 
 TODO: `.`
+
+### Member Calls
+
+An L-value object can be used to call mutable and immutable members functions, accessors, and function call
+operators. An R-value object can be only used to call immutable member functions, accessors, and function
+call operators.

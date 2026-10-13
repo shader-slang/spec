@@ -20,9 +20,9 @@ The following expressions are L-values:
 7. Applying a subscript operator when both:
    - The base is an L-value
    - The subscript operator is built-in, OR it is user-defined with a setter accessor
-8. [`this` expression](expressions-this.md) in a
+8. [`this` expression](expressions-this.md) in a constructor or a
    [`[mutating]`](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/mutating.html)
-   context
+   member.
 9. Return value for a non-copyable return type
 10. Access to a member when the base is an L-value
 11. Swizzle expression when both:
@@ -50,7 +50,7 @@ L-values are required in the following places:
 - Argument to an `out`/`inout`/`__ref` parameter
 - Left-hand-side operand of an assignment operator, including compound assignment operators
 - Operand to pre-increment, pre-decrement, post-increment, and post-decrement operators
-- Object receiving a `[mutating]` or `[ref]` member function call
+- Object receiving a `[mutating]` member function call
 - Object receiving a property setter call or a user-defined subscript operator setter call, unless the setter
   has been explicitly marked as
   [`[nonmutating]`](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/nonmutating.html).

@@ -152,28 +152,35 @@ Declaration with body:
 > **`'__init'`** [*`generic-params-decl`*] **`'('`** *`param-list`* **`')'`** (**`'where'`** *`where-clause`*)\*<br>
 > &nbsp;&nbsp;&nbsp;&nbsp;**`'{'`** *`body-stmt`*\*  **`'}'`**
 
-
 ### Description
 
-When a user-provided constructor is defined for a `struct`, a constructor is executed on object
-instantiation. A constructor can have any number of parameters. A constructor does not have a return
-type. More than one constructors may be defined in which case overload resolution is performed to select the
-most appropriate constructor given the initialization parameters.
+When a user-provided constructor is defined for a `struct`, a constructor is executed when a value of the
+struct type is constructed. A constructor can have any number of parameters. A constructor does not have a
+return type, but a `return` statement in a constructor body returns a value of the struct type. More than one
+constructor may be defined.
 
-The constructor parameters are provided in the optional initializer list. When an initializer is not provided,
-the no-parameter constructor is invoked.
+In the body of a constructor, [`this`](expressions-this.md) refers to the value being constructed. Before the
+body executes, the fields of **`this`** have been initialized to their default values if defaults have been
+specified. The body may modify **`this`** in place. The result of the constructor call is either the value
+returned by a `return` statement or **`this`** if the constructor exits without explicitly returning a value.
 
-If a non-static data member is not initialized by the constructor, it has an undefined state after object
-instantiation.
+The constructor arguments are provided in the optional initializer list of a
+[variable declaration](declarations-variable.md). When an initializer list is not provided, the no-parameter
+constructor is invoked. If multiple constructors have been defined,
+[overload resolution](expressions-overload-resolution.md) is performed to select the most appropriate
+constructor given the arguments. A value may also be constructed directly using an
+[initializer expression](expressions-initializer.md).
+
+If a non-static data member is not initialized by the constructor and it does not have a default value, it has
+an undefined state after instantiation.
 
 `const` data members cannot be initialized by the constructor.
 
 *`where-clause`* is an optional generic constraint expression, discussed in [generics](generics.md).
 
-
 **Example:**
 ```hlsl
-struct TestClass
+struct TestStruct
 {
     int a, b;
 
@@ -185,7 +192,7 @@ struct TestClass
 
     __init(int _a)
     {
-        a = 1;
+        a = _a;
         b = 2;
     }
 
@@ -196,18 +203,18 @@ struct TestClass
     }
 }
 
-TestClass obj1;
+TestStruct obj1;
 // obj1.a = 1;
 // obj1.b = 2;
 //
-// Note: TestClass obj1 = { }; also calls the constructor
+// Note: TestStruct obj1 = { }; also calls the constructor
 // without parameters
 
-TestClass obj2 = { 42 };
+TestStruct obj2 = { 42 };
 // obj2.a = 42;
 // obj2.b = 2;
 
-TestClass obj3 = { 42, 43 };
+TestStruct obj3 = { 42, 43 };
 // obj3.a = 42;
 // obj3.b = 43;
 
@@ -216,12 +223,12 @@ TestClass obj3 = { 42, 43 };
 When no user-provided constructor is defined, an aggregate initialization is performed, instead. In aggregate
 initialization, an initializer list contains values for the `struct` non-static data members. If the
 initializer list does not contain enough values, the remaining data members are default-initialized. If no
-initializer list is provided, a class without a user-provided constructor is instantiated in an undefined
+initializer list is provided, a struct without a user-provided constructor is instantiated in an undefined
 state.
 
-> 📝 **Remark 1:** When a class without user-provided constructor is instantiated without an initializer list, the
-> object's initial state is undefined. This includes data members which have members with user-provided
-> constructors.
+> 📝 **Remark 1:** When a struct without user-provided constructor is instantiated without an initializer
+> list, the object's initial state is undefined. This includes data members that have members with
+> user-provided constructors.
 >
 > ```hlsl
 > struct TestField
@@ -230,7 +237,7 @@ state.
 >     __init() { x = 5; }
 > }
 >
-> struct TestClass
+> struct TestStruct
 > {
 >     int a, b;
 >     TestField f;
@@ -239,7 +246,7 @@ state.
 > // note: obj is instantiated with an undefined state
 > // regardless of TestField having a user-provided constructor.
 >
-> TestClass obj;
+> TestStruct obj;
 > ```
 
 > 📝 **Remark 2:** Accessing data members that are in undefined state is undefined behavior.
@@ -257,9 +264,9 @@ Invocation of a static member function does not require an object.
 <a id="nonstatic-member-function"></a>
 ## Non-static Member Functions
 
-A non-static member function has an implicit instance parameter [`this`](expressions-this.md) that refers to
-an object. The implicit instance parameter is used to reference the object data members and to invoke other non-static
-member functions.
+A non-static member function has an implicit receiver parameter [`this`](expressions-this.md) that refers to
+the invoked object. The receiver parameter is used to reference the object data members and to invoke other
+non-static member functions.
 
 In the function body, other members may be referenced using `this.`, although it is optional.
 
@@ -324,7 +331,7 @@ The property declaration forms without accessor or accessor body declarations ar
 
 **Example:**
 ```hlsl
-struct TestClass
+struct TestStruct
 {
     float m_val;
 
@@ -349,7 +356,7 @@ struct TestClass
 [shader("compute")]
 void main(uint3 id : SV_DispatchThreadID)
 {
-    TestClass obj = { };
+    TestStruct obj = { };
 
     // this sets both obj.m_val and obj.m_valIsPositive
     obj.someProp = 3.0f;
@@ -365,7 +372,7 @@ void main(uint3 id : SV_DispatchThreadID)
 > 📝 **Remark 3:** In the example above, the property could have also been declared as:
 >
 > ```hlsl
-> struct TestClass
+> struct TestStruct
 > {
 >     // ...
 >

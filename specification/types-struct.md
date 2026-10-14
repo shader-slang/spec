@@ -49,7 +49,8 @@ Member list:
 - *`member-list`* is a list of struct members. A member is one of:
   - *`var-decl`* is a member variable declaration. See [Variables (TODO)](TODO)
   - *`type-decl`* is a nested [type declaration](types.md).
-  - *`function-decl`* is a member function declaration. See [Functions (TODO)](TODO)
+  - *`function-decl`* is a member function declaration. See
+    [function declarations](declarations-functions.md).
   - *`constructor-decl`* is a [constructor declaration](#constructor).
   - *`property-decl`* is a [property declaration](#property).
   - *`subscript-op-decl`* is a [subscript operator declaration](#subscript-op).

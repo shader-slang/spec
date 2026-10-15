@@ -22,20 +22,20 @@ Associated named type declaration:
 
 - *`modifier-list`* is an optional list of modifiers (TODO: link)
 - *`identifier`* is the name of the declared interface type
-- *`generic-params-decl`* is an optional generic parameters declaration. See [Generics (TODO)](TODO).
+- *`generic-params-decl`* is an optional generic parameters declaration. See [generics](generics.md).
 - *`bases-clause`* is an optional list of inherited [interfaces](types-interface.md).
-- *`where-clause`* is an optional generic constraint expression. See [Generics (TODO)](TODO).
+- *`where-clause`* is an optional generic constraint expression. See [generics](generics.md).
 - *`member-list`* is a list of interface members. A member is one of:
   - *`var-decl`* is a `static` `const` member variable declaration of type
-    [int](types-fundamental.md#integer) or [bool](types-fundamental.md#boolean). See [Variables (TODO)](TODO)
+    [int](types-fundamental.md#integer) or [bool](types-fundamental.md#boolean). See
+    [variable declarations](declarations-variable.md).
   - *`associated-type-decl`* is an associated type declaration. See below.
-  - *`function-decl`* is a member function declaration. See [Functions (TODO)](TODO)
+  - *`function-decl`* is a member function declaration. See
+    [function declarations](declarations-functions.md).
   - *`constructor-decl`* is a [constructor declaration](types-struct.md#constructor).
   - *`property-decl`* is a [property declaration](types-struct.md#property).
   - *`subscript-op-decl`* is a [subscript operator declaration](types-struct.md#subscript-op).
   - *`function-call-op-decl`* is a [function call operator declaration](types-struct.md#function-call-op).
-
-
 
 ## Description
 
@@ -82,6 +82,8 @@ A member function implementation is compatible with an interface member function
 A member property (or variable) is compatible with an interface member property when the implementation
 property (or variable) is convertible to the interface property and vice versa.
 
+The [`This` type](types-this.md) within an interface refers to the concrete type conforming to the interface.
+
 Interface members may be declared with access control specifiers `public` or `internal`. The default member
 visibility is the same as the visibility of the interface. See [access control (TODO)](TODO) for further
 information.
@@ -89,9 +91,28 @@ information.
 When a [structure](types-struct.md) implements an interface member requirement, the visibility of the member
 may not be higher than the requirement. However, it can be lower.
 
-**Example:**
+> 📝 **Remark 1:** The **`This`** type is often used to specify that an interface method has the same
+> parameter or return type as the concrete implementing type. See [This type](types-this.md) for further
+> discussion.
 
-```hlsl
+> 📝 **Remark 2:** The **`This`** type in an interface may be considered an implicit generic type parameter,
+> whose argument is the conforming type. Note that **`This`** never refers to the interface itself, since the
+> interface itself is not a type; it is a contract for a type.
+
+> 📝 **Remark 3:** The test for an inheriting member function compatibility is equivalent to whether a wrapper
+> function with the interface member function signature may invoke the inheriting member function, passing the
+> parameters and the return value as is. See
+> [wrapper-based conformance test](#wrapper-conformance-test-example) below.
+
+> 📝 **Remark 4:** An interface can also be a parameterized generic. See
+> [parameterized interface](#parameterized-interface-example) below for an example. See
+> also [generics](generics.md) for further information on generics.
+
+### Examples
+
+Interface conformance basics:
+
+```slang
 interface IReq
 {
 }
@@ -216,69 +237,65 @@ struct TestClass : ITest
 }
 ```
 
-> 📝 **Remark 1:** The test for an inheriting member function compatibility is equivalent to whether a wrapper
-> function with the interface member function signature may invoke the inheriting member function, passing the
-> parameters and the return value as is.
->
-> For example:
-> ```hlsl
-> interface IBase
-> {
->     // a member function that a concrete type
->     // must provide
->     int32_t someFunc(int8_t a, int16_t b);
-> }
->
-> struct Test : IBase
-> {
->     // Implementation of IBase.someFunc(). This is
->     // compatible because the corresponding wrapper
->     // is well-formed (see below)
->     int16_t someFunc(int a, int32_t b)
->     {
->         return int16_t(a + b);
->     }
-> }
->
-> // A wrapper invoking Test.someFunc() with the
-> // parameters and the return value of the interface
-> // member function declaration
-> int32_t IBase_wrapper_Test_someFunc(
->     Test obj, int8_t a, int16_t b)
-> {
->     return obj.someFunc(a, b);
-> }
-> ```
+<a id="wrapper-conformance-test-example"></a>
 
-> 📝 **Remark 2:** An interface can also be parameterized using generics.
->
-> For example:
->
-> ```hlsl
-> interface ITypedReq<T>
-> {
->     T someFunc(T param);
-> }
->
-> struct TestClass : ITypedReq<uint>
-> {
->     uint someFunc(uint param)
->     {
->         return 123 + param;
->     }
-> }
->
-> [shader("compute")]
-> void main(uint3 id : SV_DispatchThreadID)
-> {
->     TestClass obj = {  };
->
->     obj.someFunc(id.x);
-> }
-> ```
->
-> See [Generics (TODO)](TODO) for further information on generics.
+Wrapper-based conformance test:
 
+```slang
+interface IBase
+{
+    // a member function that a concrete type
+    // must provide
+    int32_t someFunc(int8_t a, int16_t b);
+}
+
+struct Test : IBase
+{
+    // Implementation of IBase.someFunc(). This is
+    // compatible because the corresponding wrapper
+    // is well-formed (see below)
+    int16_t someFunc(int a, int32_t b)
+    {
+        return int16_t(a + b);
+    }
+}
+
+// A wrapper invoking Test.someFunc() with the
+// parameters and the return value of the interface
+// member function declaration
+int32_t IBase_wrapper_Test_someFunc(
+    Test obj, int8_t a, int16_t b)
+{
+    return obj.someFunc(a, b);
+}
+```
+
+<a id="parameterized-interface-example"></a>
+
+Parameterized interface:
+
+```slang
+interface ITypedReq<T>
+{
+    T someFunc(T param);
+}
+
+struct TestClass : ITypedReq<uint>
+{
+    uint someFunc(uint param)
+    {
+        return 123 + param;
+    }
+}
+
+[shader("compute")]
+void main(uint3 id : SV_DispatchThreadID)
+{
+    TestClass obj = {  };
+
+    obj.someFunc(id.x);
+}
+```
 
 ## Interface-Conforming Variants
 
@@ -306,10 +323,9 @@ dispatching.
 > [existential type](https://en.wikipedia.org/wiki/Type_system#Existential_types), meaning that its type
 > exists such that it conforms to the specified interface.
 
+### Example
 
-## Example
-
-```hlsl
+```slang
 RWStructuredBuffer<int> outputBuffer;
 
 interface IBase
@@ -450,7 +466,6 @@ void main(uint3 id : SV_DispatchThreadID)
     outputBuffer[id.x] += iobj.getUnderlyingWidth();
 }
 ```
-
 
 ## Memory Layout and Dispatch Mechanism
 

@@ -11,6 +11,7 @@ Slang types:
 * [Optional Types](types-optional.md)
 * [Pointers](types-pointer.md)
 * [Interfaces](types-interface.md)
+* [`This` type](types-this.md)
 * [Special Types](types-special.md)
 
 Other topics:

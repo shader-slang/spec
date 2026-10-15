@@ -60,6 +60,8 @@ Multiple enumerators may share the same numeric value.
 An enumeration may be extended using the [extension](types-extension.md#enum) syntax. An extension can be used
 to add member functions, constructors, interface conformances, and similar features to the enumeration.
 
+The [`This` type](types-this.md) within an enumeration extension refers to the enumeration type.
+
 
 > 📝 **Remark 1:** Slang currently supports *unscoped* enumerations, in which the named constants are defined
 > in the same namespace as the enumeration type. The enumerators of an unscoped enumeration can also be

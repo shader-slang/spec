@@ -136,7 +136,8 @@ void main(uint3 id : SV_DispatchThreadID)
 ## Enumeration Extension
 
 Similar to a `struct`, a previously defined [enum type](types-enum.md) can be extended using an `extension`
-declaration. For non-static member functions, `this` is the value of the enumeration object.
+declaration. For non-static member functions, [`this`](expressions-this.md) is the value of the enumeration
+object.
 
 An enumerator is an immutable instance of an enumeration type.
 

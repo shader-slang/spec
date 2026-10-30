@@ -19,5 +19,7 @@ examples:
 
 Slang makes no guarantees about layout rules or type conversion rules of opaque types.
 
+<a id="cbuffer-and-tbuffer"></a>
+## `cbuffer` and `tbuffer` types
 
 **TODO**: Add other special types

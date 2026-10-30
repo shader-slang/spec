@@ -61,11 +61,11 @@ Compatibility pointer member lookup:
 
 ### Parameters
 
--# *`identifier`* is a [lexical identifier](lexical-structure.md).
--# *`simple-type-spec`* is a [type expression](types.md) that names a type but does not declare one.
--# *`value-expr`* is a [value expression](expressions.md).
--# *`pointer-value-expr`* is a [value expression](expressions.md) (*`value-expr`*) that has a
-   [pointer type](types-pointer.md).
+- *`identifier`* is a [lexical identifier](lexical-structure.md).
+- *`simple-type-spec`* is a [type expression](types.md) that names a type but does not declare one.
+- *`value-expr`* is a [value expression](expressions.md).
+- *`pointer-value-expr`* is a [value expression](expressions.md) (*`value-expr`*) that has a
+  [pointer type](types-pointer.md).
 
 > 📝 **Remark 2:** Relationships between identifiers and value and type expressions:
 > - *`identifier-expr`* is a *`value-expr`*.
@@ -105,7 +105,7 @@ non-static member lookups are performed on the dereferenced value.
 The recommended operator for all member access is `.`. Operators `::` and `->` are provided for compatibility.
 
 > 📝 **Remark 3:** Unqualified lookup does not consider visibility. Inaccessible declarations are filtered out
-> in [overload resolution](expressions-overload-resolution.md).
+> in [overload resolution](expressions-overload-resolution.md) and [lookup result](#lookup-result) handling.
 
 <a id="unqualified-name-lookup"></a>
 ## Unqualified Name Lookup
@@ -201,15 +201,17 @@ The result handling is expected to differ significantly between Slang 2018–202
 
 A name lookup results in a set of declarations. The set is narrowed down to a single declaration as follows:
 
-1. Declarations that do not fit the context of the name are removed:
+1. Declarations that are not accessible from the referencing location are removed. If no declarations
+   remain, the reference is an error.
+2. Declarations that do not fit the context of the name are removed:
    - Where a type is expected, only type declarations are kept.
    - Where a value of a known type is expected, declarations whose values cannot be converted to that type
      are removed.
-2. If the name is called, [overload resolution](expressions-overload-resolution.md) selects the best candidate
+3. If the name is called, [overload resolution](expressions-overload-resolution.md) selects the best candidate
    among the remaining declarations. Declarations that cannot be called with the given arguments are not
    candidates.
-3. Otherwise, if a single declaration remains, the name refers to that declaration.
-4. Otherwise, the reference is ambiguous, and it is an error.
+4. Otherwise, if a single declaration remains, the name refers to that declaration.
+5. Otherwise, the reference is ambiguous, and it is an error.
 
 > 📝 **Remark 10:** Lookup stops only if the first scope where the name is found holds a single
 > non-overloadable declaration. Such a declaration therefore hides declarations of any kind in the enclosing

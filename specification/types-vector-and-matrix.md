@@ -12,7 +12,8 @@ The default values for `T` and `N` are `float` and `4`. This is for backwards co
 
 An element of a vector is accessed by the following means:
 - Using the subscript operator `[]` (index `0` denotes the first element).
-- Using the member access operator `.` where the elements are named `x`, `y`, `z`, `w` corresponding to indexes `0`, `1`, `2`, `3`.
+- Using the member access operator `.` where the elements are named `x`, `y`, `z`, `w` corresponding to
+  indices `0`, `1`, `2`, `3`. Element names `r`, `g`, `b`, `a` are synonymous with `x`, `y`, `z`, `w`.
 
 **Example:**
 ```slang
@@ -22,6 +23,7 @@ int tmp;
 
 tmp = v[0]; // tmp is 1
 tmp = v.w;  // tmp is 4
+tmp = v.g;  // tmp is 2
 v[1] = 9;   // v is { 1, 9, 3, 4 };
 ```
 
@@ -41,9 +43,12 @@ int2 tmp2;
 int3 tmp3;
 
 tmp2 = v.xy;                   // tmp2 is { 1, 2 }
-tmp3 = v.xww;                  // tmp3 is { 1, 4, 4 }
+tmp3 = v.xwa;                  // tmp3 is { 1, 4, 4 }
 v.xz = vector<int, 2>(-1, -3); // v becomes { -1, 2, -3, 4 }
 ```
+
+> 📝 **Remark 1:** Slang allows mixing element names `x`, `y`, `z`, `w` and `r`, `g`, `b`, `a` in a swizzle
+> expression.
 
 ### Operators
 
@@ -174,9 +179,9 @@ The [matrix multiplication](https://en.wikipedia.org/wiki/Matrix_multiplication)
 - matrix/vector form `mul(m, v)` where `m` is an `M`×`N` matrix and `v` is a vector of length `N`. The result is a vector of length `M`.
   - `v` is interpreted as a column vector, *i.e.*, an `N`×`1` matrix.
 
-> 📝 **Remark 1:** The operator `*` performs element-wise multiplication. It should be used only when the element-wise multiplication of same-sized matrices is desired.
+> 📝 **Remark 2:** The operator `*` performs element-wise multiplication. It should be used only when the element-wise multiplication of same-sized matrices is desired.
 
-> 📝 **Remark 2:** The operator `*` differs from GLSL, where it performs matrix multiplication. When porting code from GLSL to Slang, replace matrix multiplications using `*` with calls to `mul()`.
+> 📝 **Remark 3:** The operator `*` differs from GLSL, where it performs matrix multiplication. When porting code from GLSL to Slang, replace matrix multiplications using `*` with calls to `mul()`.
 
 
 ### Standard Type Aliases
@@ -207,7 +212,7 @@ Under row-major layout, a matrix is laid out in memory equivalently to an `R`-el
 Under column-major layout, a matrix is laid out in memory equivalent to the row-major layout of its transpose.
 That is, the layout is equivalent to a `C`-element array of `vector<T,R>` elements.
 
-> 📝 **Remark 1:** Slang currently does *not* support the HLSL `row_major` and `column_major` modifiers to set the
+> 📝 **Remark 4:** Slang currently does *not* support the HLSL `row_major` and `column_major` modifiers to set the
 > layout used for specific declarations.
 
 The alignment of a matrix is target-specified. In general, it is at least the alignment of the element and at

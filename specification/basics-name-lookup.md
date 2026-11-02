@@ -26,13 +26,9 @@ Type identifier expression when *`identifier`* names a type:
 
 > *`type-identifier`* = *`identifier`*
 
-[Identifier expression](expressions-identifier.md) when *`identifier`* names a function or variable:
-
-> *`identifier-expr`* = *`identifier`*
-
-Member identifier when *`identifier`* names a [`struct`](types-struct.md), a [`class`](types-class.md), an
-[`enum`](types-enum.md), a [`namespace`](TODO.md), a [`vector`](types-vector-and-matrix.md), or a
-[`matrix`](types-vector-and-matrix.md) member:
+Member identifier when *`identifier`* names a member of a [`struct`](types-struct.md), a
+[`class`](types-class.md), an [`enum`](types-enum.md), a [`namespace`](TODO.md), a
+[`vector`](types-vector-and-matrix.md), or a [`matrix`](types-vector-and-matrix.md):
 
 > *`member-identifier`* = *`identifier`*
 
@@ -64,21 +60,18 @@ Compatibility pointer member lookup:
 - *`identifier`* is a [lexical identifier](lexical-structure.md).
 - *`simple-type-spec`* is a [type expression](types.md) that names a type but does not declare one.
 - *`value-expr`* is a [value expression](expressions.md).
-- *`pointer-value-expr`* is a [value expression](expressions.md) (*`value-expr`*) that has a
-  [pointer type](types-pointer.md).
+- *`pointer-value-expr`* is a [value expression](expressions.md) that has a [pointer type](types-pointer.md).
 
 > 📝 **Remark 2:** Relationships between identifiers and value and type expressions:
-> - *`identifier-expr`* is a *`value-expr`*.
-> - *`pointer-value-expr`* is a *`value-expr`* that has a [pointer type](types-pointer.md).
-> - *`type-identifier`* is a *`simple-type-spec`*.
+> - [Identifier expression](expressions-identifier.md) is a *`value-expr`*.
+> - *`type-identifier`* is a [*`simple-type-spec`*](types.md).
 
 ## Description
 
 There are two kinds of name lookup in Slang:
 
-- _Unqualified lookup_, in which the name has no prefix as a qualifier. The name is resolved using the
-  [unqualified name lookup](#unqualified-name-lookup) rules.
-- _Member lookup_, in which the lookup is performed in the context of:
+- [unqualified name lookup](#unqualified-name-lookup), in which the name has no prefix as a qualifier.
+- [member lookup](#member-lookup), in which the lookup is performed in the context of:
   - a [`namespace`](TODO.md). This includes *`global-name`* lookup.
   - a [`struct`](types-struct.md), a [`class`](types-class.md), or an [`enum`](types-enum.md) type.
   - a value of a [`struct`](types-struct.md), a [`class`](types-class.md), or an [`enum`](types-enum.md) type.
@@ -165,6 +158,7 @@ This section is incomplete.
 > 📝 **Remark 7:** Name lookup improvements for Slang 202c are tracked by GitHub issue
 > [#13979](https://github.com/shader-slang/slang/issues/13979).
 
+<a id="member-lookup"></a>
 ## Member Lookup
 
 Given a base expression and an identifier, the member lookup returns all members associated with that
@@ -179,6 +173,9 @@ If the base expression is:
 - a value of an [interface](types-interface.md) type, or of a generic type parameter constrained by an
   interface, the requirements of the interface are considered.
 
+A special case of member lookup is the lookup for a global name (*`global-name`*), that is, the `::` prefix
+before the identifier. This denotes a lookup in the [global namespace](basics-scope.md).
+
 The members of a type include the members that [`extension`](types-extension.md) declarations add to the type,
 and the members inherited from its base types.
 
@@ -189,8 +186,8 @@ and the members inherited from its base types.
 > [interfaces](types-interface.md), [generics](generics.md), and [`This` type](types-this.md).
 
 > 📝 **Remark 9:** For values of [`vector`](types-vector-and-matrix.md) and
-> [`matrix`](types-vector-and-matrix.md) types, swizzle expressions combine multiple members. These are
-> handled separately. See [member expressions](expressions-member-access.md).
+> [`matrix`](types-vector-and-matrix.md) types, swizzle expressions can combine multiple members. These are
+> handled separately. See [Vector and Matrix Types](types-vector-and-matrix.md) for details.
 
 <a id="lookup-result"></a>
 ## Lookup Result

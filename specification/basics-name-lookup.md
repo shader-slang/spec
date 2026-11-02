@@ -145,8 +145,9 @@ declaration.
 The [`cbuffer`](types-special.md#cbuffer-and-tbuffer) and [`tbuffer`](types-special.md#cbuffer-and-tbuffer)
 declarations without an instance name, and the unscoped [`enum`](types-enum.md) declarations, are
 _transparent_. Their members are looked up as if they were in the same scope as the declaration itself. An
-`enum` is unscoped when it has the `[UnscopedEnum]` attribute or when it is compiled with the
-`-unscoped-enum` option.
+`enum` is unscoped when it has the
+[\[UnscopedEnum\]](https://docs.shader-slang.org/en/latest/external/core-module-reference/attributes/unscopedenum-08.html)
+attribute or when it is compiled with the `-unscoped-enum` option.
 
 > ⚠️ **Warning 1:** The Slang 2018–2026 name lookup, overload resolution, and declaration shadowing rules have
 > several caveats. `slangc` diagnoses these issues as warnings on a best-effort basis.

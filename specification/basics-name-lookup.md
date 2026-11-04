@@ -1,8 +1,6 @@
 # Name Lookup
 
-Name lookup is the procedure for resolving a name. The result is a set of declarations that are associated
-with the name. The set is then narrowed down to a single declaration, as described in
-[Lookup Result](#lookup-result).
+Name lookup is the procedure for resolving a name. The result is a declaration denoted by that name.
 
 ## Grammar
 
@@ -69,7 +67,6 @@ Compatibility pointer member lookup:
 ## Description
 
 There are two kinds of name lookup in Slang:
-
 - [unqualified name lookup](#unqualified-name-lookup), in which the name has no prefix as a qualifier.
 - [member lookup](#member-lookup), in which the lookup is performed in the context of:
   - a [`namespace`](TODO.md). This includes *`global-name`* lookup.
@@ -77,25 +74,36 @@ There are two kinds of name lookup in Slang:
   - a value of a [`struct`](types-struct.md), a [`class`](types-class.md), or an [`enum`](types-enum.md) type.
 
 A member is static when it is:
-- a [`namespace`](TODO.md) member.
+- a [`namespace`](TODO.md).
+- a member of a [`namespace`](TODO.md). This includes [variables](declarations-variable.md),
+  [bindings](declarations.md), and [functions](declarations-functions.md) that are not members of a type.
 - a [static data member](types-struct.md) or a
   [static member function](types-struct.md#static-member-function).
-- an [enumeration](types-enum.md) case declaration.
+- a named constant of an [enumeration](types-enum.md).
+- a [type](types.md), a [type alias](types.md#alias), or an [associated type](types-interface.md).
 
 A member is non-static when it is:
 - a non-static [data member](types-struct.md) or
   [member function](types-struct.md#nonstatic-member-function) of a
   [`struct`](types-struct.md), a [`class`](types-class.md), or an [`enum`](types-enum.md).
 
-The left-hand side operand of the non-static member lookup is a value.
-
 The left-hand side operand of the static member lookup is either a value or a type. When the operand is a
 value, the lookup is performed on the type of the value and the value is ignored.
+
+The left-hand side operand of the non-static member lookup is a value of a [`struct`](types-struct.md),
+[`class`](types-class.md), or [`enum`](types-enum.md) type.
 
 The left-hand side operand of a pointer member lookup is a [pointer-typed](types-pointer.md) value. Static and
 non-static member lookups are performed on the dereferenced value.
 
 The recommended operator for all member access is `.`. Operators `::` and `->` are provided for compatibility.
+
+The name lookup procedure consists of the following steps:
+
+1. [Unqualified name lookup](#unqualified-name-lookup) or [member lookup](#member-lookup) is performed. The
+   result is a set of declarations referred to by the name.
+2. The [lookup result](#lookup-result) is processed, and the set is narrowed down to a single declaration. It
+   is an error if this cannot be done.
 
 > 📝 **Remark 3:** Unqualified lookup does not consider visibility. Inaccessible declarations are filtered out
 > in [overload resolution](expressions-overload-resolution.md) and [lookup result](#lookup-result) handling.
@@ -112,7 +120,7 @@ enclosing scopes, up to and including the global namespace.
 
 The enclosing scopes of a declaration include the scopes of the types, `extension` declarations, and generic
 declarations that contain it. For example, in the body of a member function, the members of the enclosing type
-are found by unqualified lookup. See [scope](basics-scope.md) for the scopes and their contents.
+are found by unqualified lookup. See [scope](basics-scope.md) for the details on scopes.
 
 Lookup has a context-based filter:
 - In value and type expression lookups, variable, function, type, and namespace declarations are looked
@@ -190,6 +198,9 @@ and the members inherited from its base types.
 > [`matrix`](types-vector-and-matrix.md) types, swizzle expressions can combine multiple members. These are
 > handled separately. See [Vector and Matrix Types](types-vector-and-matrix.md) for details.
 
+> 📝 **Remark 10:** See [scope](basics-scope.md) for a detailed description of type scopes, including nested
+> scopes and inherited members.
+
 <a id="lookup-result"></a>
 ## Lookup Result
 
@@ -197,10 +208,10 @@ The result handling is expected to differ significantly between Slang 2018–202
 
 ### Slang 2018–2026
 
-A name lookup results in a set of declarations. The set is narrowed down to a single declaration as follows:
+Unqualified name lookup or member lookup results in a set of candidate declarations. The set is narrowed down
+to a single declaration as follows:
 
-1. Declarations that are not accessible from the referencing location are removed. If no declarations
-   remain, the reference is an error.
+1. Declarations that are not accessible from the referencing location are removed.
 2. Declarations that do not fit the context of the name are removed:
    - Where a type is expected, only type declarations are kept.
    - Where a value of a known type is expected, declarations whose values cannot be converted to that type
@@ -209,22 +220,88 @@ A name lookup results in a set of declarations. The set is narrowed down to a si
    among the remaining declarations. Declarations that cannot be called with the given arguments are not
    candidates.
 4. Otherwise, if a single declaration remains, the name refers to that declaration.
-5. Otherwise, the reference is ambiguous, and it is an error.
-
-> 📝 **Remark 10:** Lookup stops only if the first scope where the name is found holds a single
-> non-overloadable declaration. Such a declaration therefore hides declarations of any kind in the enclosing
-> scopes. For example, a local variable hides a type with the same name:
->
-> ```hlsl
-> struct T { int v; }
->
-> void f()
-> {
->     int T = 1;
->     T x;        // Error: `T` refers to the local variable, not to the type
-> }
-> ```
+5. Otherwise, it is an error: either no declarations remain, or the reference is ambiguous.
 
 ### Slang 202c
 
 This section is incomplete. See Remark 7.
+
+## Examples
+
+Basic name lookup:
+
+```slang
+RWStructuredBuffer<int> output;
+
+[numthreads(1,1,1)]
+void main(uint3 tid : SV_DispatchThreadID)
+{
+    // First, an unqualified name lookup is performed for 'tid'.
+    // 'tid' is found in the scope of the function parameters, and it
+    // denotes the first parameter.
+    //
+    // Then, 'x' is looked up in the type of the value referenced by 'tid'. Since
+    // 'tid' is of type vector<uint, 3>, it has the member 'x'. 'x' refers
+    // to the first vector element (element index 0).
+    let v = tid.x;
+
+    // The left side of the assignment performs a member lookup in the
+    // global namespace, which has the static member 'output'. 'output'
+    // refers to a variable of type RWStructuredBuffer<int>, which
+    // declares a subscript operator. That operator is used for the
+    // assignment.
+    //
+    // The argument for the subscript operator is 'v'. This is an
+    // unqualified name lookup, and 'v' is found in the current scope (the
+    // let declaration).
+    ::output[v] = 1;
+}
+```
+
+Overloaded callable lookup:
+
+```slang
+uint myFunc(uint i)
+{
+    return i + 1;
+}
+
+uint myFunc(int i)
+{
+    return (uint)(i * 123);
+}
+
+uint myFunc(uint i, uint j)
+{
+    return i + j;
+}
+
+uint myFunc(int i, int j)
+{
+    return i + j;
+}
+
+RWStructuredBuffer<uint> output;
+
+[numthreads(1,1,1)]
+void main(uint3 tid : SV_DispatchThreadID)
+{
+    // In the right side, myFunc is called with two arguments, types: uint, uint
+    //
+    // The unqualified name lookup finds the following declarations:
+    // 1. uint myFunc(uint i)
+    // 2. uint myFunc(int i)
+    // 3. uint myFunc(uint i, uint j)
+    // 4. uint myFunc(int i, int j)
+    //
+    // Declarations 1 and 2 are not considered in overload resolution, since
+    // they cannot be called by two argument.
+    //
+    // Of the remaining candidates, declaration 3 is the best, since it does not
+    // require argument conversions whereas declaration 4 does. Hence, the
+    // declaration 3 is selected as the target for the call expression.
+    let v = myFunc(tid.x, tid.y);
+
+    output[0] = v;
+}
+```

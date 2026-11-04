@@ -3,6 +3,8 @@
 Declarations
 ============
 
+TODO: Define overloadable and non-overloadable declarations.
+
 Modules
 -------
 

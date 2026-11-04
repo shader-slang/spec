@@ -108,7 +108,7 @@ Declaration of new types is allowed in:
 - [extension](types-extension.md) members declaring nested types
 - [typedef](#alias) declarations
 
-> 📝 **Remark 1:** *`simple-type-spec`* is a syntactic subset of the full *`type-expr`*. The subset only names
+> 📝 **Remark 1:** *`simple-type-spec`* is a syntactic subset of the full *`type-spec`*. The subset only names
 > a type but never declares one.
 
 > 📝 **Remark 2:** The dual nature of type expressions---naming and possibly declaring a type---is a side
